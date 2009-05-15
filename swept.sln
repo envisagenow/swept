@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "swept", "swept\swept.csproj", "{BC619D2C-C72E-4111-9489-E353B858A712}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sweptTests", "sweptTests\sweptTests.csproj", "{485E504A-C357-463B-9C75-0FAB7ADFB186}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BC619D2C-C72E-4111-9489-E353B858A712}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BC619D2C-C72E-4111-9489-E353B858A712}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BC619D2C-C72E-4111-9489-E353B858A712}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BC619D2C-C72E-4111-9489-E353B858A712}.Release|Any CPU.Build.0 = Release|Any CPU
+		{485E504A-C357-463B-9C75-0FAB7ADFB186}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{485E504A-C357-463B-9C75-0FAB7ADFB186}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{485E504A-C357-463B-9C75-0FAB7ADFB186}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{485E504A-C357-463B-9C75-0FAB7ADFB186}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
