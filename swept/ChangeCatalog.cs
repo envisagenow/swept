@@ -27,6 +27,12 @@ namespace swept
             changes.Add(change);
         }
 
+        public void Remove(string changeID)
+        {
+            IsDirty = true;
+            changes.RemoveAll(c => c.ID == changeID);
+        }
+
         public List<Change> FindAll(Predicate<Change> match)
         {
             return changes.FindAll(match);

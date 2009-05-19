@@ -12,6 +12,13 @@ namespace swept
         internal SourceFileCatalog InMemorySourceFiles;
         internal SourceFileCatalog LastSavedSourceFiles;
 
+        public Librarian()
+        {
+            InMemorySourceFiles = new SourceFileCatalog();
+            LastSavedSourceFiles = new SourceFileCatalog();
+            changeCatalog = new ChangeCatalog();
+        }
+
         internal bool ChangeNeedsPersisting
         {
             get
@@ -43,6 +50,25 @@ namespace swept
             SourceFile workingFile = InMemorySourceFiles.FetchFile( fileName );
             SourceFile diskFile = LastSavedSourceFiles.FetchFile( fileName );
             diskFile.CopyCompletionsFrom( workingFile );
+
+            Persist();
+        }
+
+        public void PasteFile(string fileName)
+        {
+            SourceFile pastedWorkingFile = InMemorySourceFiles.FetchFile(fileName);
+            SourceFile pastedDiskFile = LastSavedSourceFiles.FetchFile(fileName);
+
+            string copyPrefix = "Copy of ";
+            if (fileName.StartsWith(copyPrefix))
+            {
+                string baseFileName = fileName.Substring(copyPrefix.Length);
+                SourceFile baseDiskFile = LastSavedSourceFiles.FetchFile(baseFileName);
+
+                pastedDiskFile.CopyCompletionsFrom(baseDiskFile);
+            }
+
+            pastedWorkingFile.CopyCompletionsFrom(pastedDiskFile);
 
             Persist();
         }

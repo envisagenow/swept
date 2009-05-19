@@ -40,6 +40,11 @@ namespace swept
             Librarian.SaveFile( fileName );
         }
 
+        public void WhenFilePasted(string fileName)
+        {
+            Librarian.PasteFile( fileName );
+        }
+
         public void WhenFileSavedAs(string originalName, string newName)
         {
             Librarian.SaveFileAs(originalName, newName);

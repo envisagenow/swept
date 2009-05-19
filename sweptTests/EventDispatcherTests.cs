@@ -38,6 +38,7 @@ namespace swept.Tests
 
             librarian = new Librarian();
             librarian.InMemorySourceFiles = fileCat;
+            librarian.LastSavedSourceFiles = new SourceFileCatalog(fileCat);
             librarian.changeCatalog = changeCat;
             librarian.SolutionPath = "mockpath";
 
@@ -49,39 +50,45 @@ namespace swept.Tests
         }
 
         [Test]
-        public void WhenChangeListUpdated_TaskWindow_RefreshesTasks()
+        public void WhenFilePasted_VerifyNewFileHasCompletions_OfOriginal()
         {
-            dispatcher.WhenFileGetsFocus("foo.cs");
-            int initialChangeCount = window.Tasks.Count;
-            changeCat.Add(new Change("Inf09", "Change delegates to lambdas", FileLanguage.CSharp));
+            string pastedName = "Copy of bari.cs";
+            dispatcher.WhenFilePasted(pastedName);
 
-            dispatcher.WhenChangeListUpdated();
+            XmlDocument doc = new XmlDocument();
+            doc.LoadXml(librarian.LastSavedSourceFiles.ToXmlText());
 
-            Assert.AreEqual(initialChangeCount + 1, window.Tasks.Count);
+            Assert.IsTrue(IsCompletionSaved(doc, pastedName));
         }
 
         [Test]
-        public void WhenChangeListUpdated_EmptyTaskWindow_RefreshesItsEmptiness()
+        public void WhenFilePasted_ItGetsNoCompletions_IfItDoesNotDuplicate_AnExistingFile()
         {
-            dispatcher.WhenNonSourceGetsFocus();
-            changeCat.Add(new Change("Inf09", "Change delegates to lambdas", FileLanguage.CSharp));
-            dispatcher.WhenChangeListUpdated();
+            string pastedName = "Copy of weezy.cs";
+            dispatcher.WhenFilePasted(pastedName);
 
-            Assert.AreEqual(0, window.Tasks.Count);
+            XmlDocument doc = new XmlDocument();
+            doc.LoadXml(librarian.LastSavedSourceFiles.ToXmlText());
+
+            string completionXPath = String.Format("//SourceFile[@Name='{0}']", pastedName);
+            Assert.IsNotNull(doc.SelectSingleNode(completionXPath));
+
+            Assert.IsFalse(IsCompletionSaved(doc, pastedName));
         }
 
         [Test]
-        public void WhenChangeListUpdated_ChangeCatalogPersisted()
+        public void WhenFilePasted_ItGetsNoCompletions_IfItIsNotNamed_CopyOfSomething()
         {
-            Assert.IsFalse(librarian.ChangeNeedsPersisting);
+            string pastedName = "weezy.cs";
+            dispatcher.WhenFilePasted(pastedName);
 
-            changeCat.Add(new Change("Inf09", "Change delegates to lambdas", FileLanguage.CSharp));
+            XmlDocument doc = new XmlDocument();
+            doc.LoadXml(librarian.LastSavedSourceFiles.ToXmlText());
 
-            Assert.IsTrue(librarian.ChangeNeedsPersisting);
-            
-            dispatcher.WhenChangeListUpdated();
+            string completionXPath = String.Format("//SourceFile[@Name='{0}']", pastedName);
+            Assert.IsNotNull(doc.SelectSingleNode(completionXPath));
 
-            Assert.IsFalse(librarian.ChangeNeedsPersisting);
+            Assert.IsFalse(IsCompletionSaved(doc, pastedName));
         }
 
 
@@ -99,11 +106,36 @@ namespace swept.Tests
             XmlDocument doc = new XmlDocument();
             doc.LoadXml(librarian.LastSavedSourceFiles.ToXmlText());
 
-            //  Original file still exists, without pending unsaved change
             //  "newgadgets" now exists, with the "14" completion saved
-            Assert.IsFalse(IsCompletionSaved(doc, originalName));
             Assert.IsTrue(IsCompletionSaved(doc, newName));
         }
+
+        [Test]
+        public void WhenFileSavedAs_OriginalStillHas_EarlierCompletions()
+        {
+            string originalName = "gadgets.cs";
+            SourceFile originalFile = new SourceFile(originalName);
+            fileCat.Files.Add(originalFile);
+
+            changeCat.Add(new Change("12", "Replace old MultiSelect control with new one", FileLanguage.CSharp));
+            originalFile.Completions.Add(new Completion("12"));
+
+            dispatcher.WhenFileSaved(originalName);
+            
+            originalFile.Completions.Add(new Completion("14"));
+
+            string newName = "new" + originalName;
+            dispatcher.WhenFileSavedAs(originalName, newName);
+
+            XmlDocument doc = new XmlDocument();
+            doc.LoadXml(librarian.LastSavedSourceFiles.ToXmlText());
+
+            //  Original file still exists, without pending unsaved change
+            //  But it does have all earlier saved changes
+            Assert.IsFalse(IsCompletionSaved(doc, originalName));
+            Assert.IsTrue(IsCompletionSaved(doc, originalName, "12"));
+        }
+
 
         [Test]
         public void WhenFileSaved_OtherFilesRemainUnsaved()
@@ -136,6 +168,7 @@ namespace swept.Tests
             SourceFile fileGadgets = new SourceFile(nameGadgets);
             fileGadgets.Completions.Add(new Completion("14"));
             fileCat.Add(fileGadgets);
+            librarian.sourceIsDirty = true;
 
             Assert.IsTrue(librarian.ChangeNeedsPersisting);
 
@@ -145,27 +178,11 @@ namespace swept.Tests
             Assert.IsTrue(IsCompletionSaved(doc, "bari.cs"));
             dispatcher.WhenFileSaved(nameGadgets);
 
-            Assert.IsTrue(librarian.ChangeNeedsPersisting);
-        }
-
-        [Test]
-        public void WhenTaskCompletionChanged_CatalogNeedsPersistence()
-        {
             Assert.IsFalse(librarian.ChangeNeedsPersisting);
-
-            dispatcher.WhenTaskCompletionChanged();
-
-            Assert.IsTrue(librarian.ChangeNeedsPersisting);
-        }
-
-        private static bool IsCompletionSaved(XmlDocument doc, string fileName)
-        {
-            string completionXPath = String.Format( "//SourceFile[@Name='{0}']/Completion[@ID='14']", fileName );
-            return doc.SelectSingleNode( completionXPath ) != null;
         }
 
         [Test]
-        public void NewUnsavedFile_NotAddedToCatalog()
+        public void WhenFileSaved_NewUnsavedFile_NotAddedToCatalog()
         {
             //prep filecatalog with two SourceFiles
             Completion completion = new Completion( "14" );
@@ -188,6 +205,27 @@ namespace swept.Tests
 
             //check widgets.cs doesn't exist
             Assert.IsNull( doc.SelectSingleNode( "//SourceFile[@Name='widgets.cs']" ) );
+        }
+
+        [Test]
+        public void WhenTaskCompletionChanged_CatalogNeedsPersistence()
+        {
+            Assert.IsFalse(librarian.ChangeNeedsPersisting);
+
+            dispatcher.WhenTaskCompletionChanged();
+
+            Assert.IsTrue(librarian.ChangeNeedsPersisting);
+        }
+
+        private static bool IsCompletionSaved(XmlDocument doc, string fileName)
+        {
+            return IsCompletionSaved(doc, fileName, "14");
+        }
+
+        private static bool IsCompletionSaved(XmlDocument doc, string fileName, string id)
+        {
+            string completionXPath = String.Format("//SourceFile[@Name='{0}']/Completion[@ID='{1}']", fileName, id);
+            return doc.SelectSingleNode(completionXPath) != null;
         }
 
 
@@ -262,11 +300,10 @@ namespace swept.Tests
         }
 
         [Test]
-        public void WhenFileChangesAbandoned_NewFileRemainsIncomplete()
+        public void WhenFileChangesAbandoned_NewFileNotRecorded()
         {
             AbandonFileChanges( "badfile.cs" );
         }
-
 
         private void AbandonFileChanges( string fileName )
         {
@@ -292,21 +329,19 @@ namespace swept.Tests
         [Test]
         public void WhenFileDeleted_FileRemovedFromCatalogs()
         {
-            librarian._savedCatalog = null;
             Assert.IsTrue( fileCat.Files.Contains( bari ) );
 
             dispatcher.WhenFileDeleted( fileNameBari );
 
             Assert.IsFalse( fileCat.Files.Contains( bari ) );
             Assert.IsFalse(librarian.ChangeNeedsPersisting);
-            Assert.IsNotNull(librarian._savedCatalog);
+            Assert.IsNotNull(librarian.LastSavedSourceFiles);
         }
 
         [Test]
         public void WhenSourceFileRenamed_ChangesAreCarriedOver()
         {
             Assert.IsTrue(fileCat.Files.Contains(bari));
-            librarian._savedCatalog = null;
             
             Assert.AreEqual(1, bari.Completions.Count);
 
@@ -317,16 +352,15 @@ namespace swept.Tests
             Assert.AreEqual(1, nextGreat.Completions.Count);
 
             Assert.IsFalse(librarian.ChangeNeedsPersisting);
-            Assert.IsNotNull(librarian._savedCatalog);
+            Assert.IsNotNull(librarian.LastSavedSourceFiles);
         }
 
         [Test]
         public void WhenSolutionSaved_DiskCatalogSaved()
         {
-            librarian._savedCatalog = null;
+            librarian.sourceIsDirty = true;
             dispatcher.WhenSolutionSaved();
             Assert.IsFalse(librarian.ChangeNeedsPersisting);
-            Assert.IsNotNull(librarian._savedCatalog);
         }
     }
 }
