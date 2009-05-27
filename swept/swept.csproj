@@ -55,6 +55,7 @@
   <ItemGroup>
     <Compile Include="Change.cs" />
     <Compile Include="ChangeCatalog.cs" />
+    <Compile Include="ChangeWindow.cs" />
     <Compile Include="EventDispatcher.cs">
       <SubType>Code</SubType>
     </Compile>

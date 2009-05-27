@@ -79,7 +79,7 @@ namespace swept.Tests
             Assert.IsFalse(librarian.ChangeNeedsPersisting);
         }
 
-        [Test, Ignore("Incomplete")]
+        [Test, Ignore("On hold until MockDialog created")]
         public void WhenChangeAdded_IfChangeExistedPreviously_UserCanKeepHistory()
         {
             // Remove Change 14
@@ -95,7 +95,7 @@ namespace swept.Tests
             Assert.IsTrue(IsCompletionSaved(doc, "bari.cs", "14"));
         }
 
-        [Test, Ignore("Incomplete")]
+        [Test, Ignore("On hold until MockDialog created")]
         public void WhenChangeAdded_IfChangeExistedPreviously_UserCanRemoveHistory()
         {
             // Remove Change 14
@@ -130,6 +130,7 @@ namespace swept.Tests
             Assert.AreEqual(initialChangeCount - 1, window.Tasks.Count);
         }
 
+        //todo: where am I?
 
     }
 }

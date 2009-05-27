@@ -23,7 +23,6 @@ namespace swept
             Librarian.OpenSolution(solutionPath);
         }
 
-
         public void WhenFileGetsFocus( string fileName )
         {
             taskWindow.ChangeFile(fileName, Librarian);
