@@ -10,16 +10,16 @@ using System.Xml;
 namespace swept.Tests
 {
     [TestFixture]
-    public class LibrarianTests
+    public class ProjectLibrarianTests
     {
         private string _HerePath;
-        private Librarian Horace;
+        private ProjectLibrarian Horace;
 
         [SetUp]
         public void Setup()
         {
             _HerePath = @"f:\over\here.sln";
-            Horace = new Librarian { SolutionPath = _HerePath };
+            Horace = new ProjectLibrarian { SolutionPath = _HerePath };
         }
 
         [Test]
@@ -35,7 +35,7 @@ namespace swept.Tests
         [Test]
         public void SeparateCatalogs_CreatedBy_SolutionPathChange()
         {
-            Horace = new Librarian();
+            Horace = new ProjectLibrarian();
             Horace.SolutionPath = "my/path";
 
             Assert.IsNotNull( Horace.InMemorySourceFiles );

@@ -6,13 +6,13 @@ using System.Text;
 
 namespace swept
 {
-    public class Librarian
+    public class ProjectLibrarian
     {
         internal ChangeCatalog changeCatalog;
         internal SourceFileCatalog InMemorySourceFiles;
         internal SourceFileCatalog LastSavedSourceFiles;
 
-        public Librarian()
+        public ProjectLibrarian()
         {
             InMemorySourceFiles = new SourceFileCatalog();
             LastSavedSourceFiles = new SourceFileCatalog();

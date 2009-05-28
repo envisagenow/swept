@@ -9,6 +9,7 @@ namespace swept
     public class TaskWindow
     {
         private SourceFile currentFile;
+        internal ProjectLibrarian librarian;
         public SourceFile File
         {
             get { return currentFile; }
@@ -25,6 +26,7 @@ namespace swept
         {
             get { return tasks; }
         }
+
 
         public void ChangeFile( SourceFile file, List<Change> changes )
         {
@@ -46,19 +48,20 @@ namespace swept
             BuildTasks(changes);
         }
 
-        public void ChangeFile(string fileName, Librarian librarian)
+        public void ChangeFile(object sender, FileEventArgs args)
         {
-            SourceFile file = librarian.FetchWorkingFile(fileName);
+            SourceFile file = librarian.FetchWorkingFile(args.Name);
             List<Change> changes = librarian.changeCatalog.FindAll(c => c.Language == file.Language);
             ChangeFile(file, changes);
         }
 
 
-        public void NoSourceFile()
+        public void NoSourceFile(object sender, EventArgs args)
         {
             title = "No source file";
             tasks.Clear();
         }
+
 
         public void ClickEntry( int index )
         {

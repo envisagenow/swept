@@ -14,7 +14,7 @@ namespace swept.Tests
         private SourceFileCatalog sourceCat;
 
         private EventDispatcher dispatcher;
-        private Librarian librarian;
+        private ProjectLibrarian librarian;
 
         private TaskWindow taskWindow;
         private ChangeWindow changeWindow;
@@ -36,7 +36,7 @@ namespace swept.Tests
 
             sourceCat.Files.Add(bar);
 
-            librarian = new Librarian();
+            librarian = new ProjectLibrarian();
             librarian.InMemorySourceFiles = sourceCat;
             librarian.LastSavedSourceFiles = new SourceFileCatalog(sourceCat);
             librarian.changeCatalog = changeCat;

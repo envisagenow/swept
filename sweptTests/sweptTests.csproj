@@ -57,13 +57,14 @@
     <Compile Include="ChangeCatalogTests.cs" />
     <Compile Include="ChangeListEventTests.cs" />
     <Compile Include="ChangeWindowTests.cs" />
+    <Compile Include="EventExperiments.cs" />
+    <Compile Include="StarterTests.cs" />
     <Compile Include="TaskTests.cs" />
     <Compile Include="ChangeTests.cs" />
     <Compile Include="CompletionTests.cs" />
     <Compile Include="TaskWindowTests.cs" />
     <Compile Include="EventDispatcherTests.cs" />
-    <Compile Include="LibrarianTests.cs" />
-    <Compile Include="MockLibrarian.cs" />
+    <Compile Include="ProjectLibrarianTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SerializationTests.cs" />
     <Compile Include="SourceFileCatalogTests.cs" />

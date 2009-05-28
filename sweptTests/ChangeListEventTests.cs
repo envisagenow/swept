@@ -9,6 +9,7 @@ namespace swept.Tests
     [TestFixture]
     public class ChangeListEventTests
     {
+        Starter starter;
         private TaskWindow window;
         private string fileNameBari;
         private SourceFile bari;
@@ -16,34 +17,33 @@ namespace swept.Tests
         private SourceFileCatalog fileCat;
 
         private EventDispatcher dispatcher;
-        private Librarian librarian;
+        private ProjectLibrarian librarian;
 
         [SetUp]
         public void SetUp()
         {
-            changeCat = new ChangeCatalog();
+            starter = new Starter();
+            starter.Start();
+
+            librarian = starter.Librarian;
+            dispatcher = starter.Dispatcher;
+
+            changeCat = librarian.changeCatalog;
             string indentID = "14";
             changeCat.Add(new Change(indentID, "indentation cleanup", FileLanguage.CSharp));
 
-            fileCat = new SourceFileCatalog();
-            fileCat.ChangeCatalog = changeCat;
+            fileCat = librarian.InMemorySourceFiles;
 
             fileNameBari = "bari.cs";
             bari = new SourceFile(fileNameBari);
             bari.Completions.Add(new Completion(indentID));
             fileCat.Files.Add(bari);
 
-            librarian = new Librarian();
-            librarian.InMemorySourceFiles = fileCat;
             librarian.LastSavedSourceFiles = new SourceFileCatalog(fileCat);
-            librarian.changeCatalog = changeCat;
             librarian.SolutionPath = "mockpath";
-
-            dispatcher = new EventDispatcher();
-            dispatcher.Librarian = librarian;
-
             librarian.Persist();
-            window = dispatcher.taskWindow = new TaskWindow();
+
+            window = dispatcher.taskWindow;
         }
 
 
@@ -129,8 +129,5 @@ namespace swept.Tests
 
             Assert.AreEqual(initialChangeCount - 1, window.Tasks.Count);
         }
-
-        //todo: where am I?
-
     }
 }

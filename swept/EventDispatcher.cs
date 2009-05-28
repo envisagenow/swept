@@ -6,26 +6,47 @@ using System;
 
 namespace swept
 {
-    class EventDispatcher
+    public class FileEventArgs : EventArgs
+    {
+        public string Name;
+    }
+
+
+    public class EventDispatcher
     {
         internal TaskWindow taskWindow;
-        public Librarian Librarian { get; set; }
+        public ProjectLibrarian Librarian { get; set; }
 
+        #region Initialization
 
         public void WhenPluginStarted()
         {
             //  Somebody else is firing up the dispatcher, if it catches the event here...
-            Librarian = new Librarian();
+            Librarian = new ProjectLibrarian();
         }
 
         public void WhenSolutionOpened( string solutionPath )
         {
             Librarian.OpenSolution(solutionPath);
         }
+        #endregion
 
+
+        public event EventHandler<FileEventArgs> RaiseFileGotFocus;
         public void WhenFileGetsFocus( string fileName )
         {
-            taskWindow.ChangeFile(fileName, Librarian);
+            if (RaiseFileGotFocus != null)
+            {
+                RaiseFileGotFocus(this, new FileEventArgs { Name = fileName } );
+            }
+        }
+
+
+        public event EventHandler RaiseNonSourceGotFocus;
+        public void WhenNonSourceGetsFocus()
+        {
+            if (RaiseNonSourceGotFocus != null)
+                RaiseNonSourceGotFocus(this, new EventArgs());
         }
 
         public void WhenChangeListUpdated()
@@ -59,11 +80,6 @@ namespace swept
             Librarian.DeleteFile( fileName );
         }
 
-        public void WhenNonSourceGetsFocus()
-        {
-            taskWindow.NoSourceFile();
-        }
-
         public void WhenFileRenamed(string oldName, string newName)
         {
             Librarian.RenameFile(oldName, newName);
@@ -79,6 +95,6 @@ namespace swept
             Librarian.Persist();
         }
 
-        //  We've implemented to here
     }
+
 }
