@@ -79,36 +79,45 @@ namespace swept.Tests
             Assert.IsFalse(librarian.ChangeNeedsPersisting);
         }
 
-        [Test, Ignore("On hold until MockDialog created")]
+        [Test]
         public void WhenChangeAdded_IfChangeExistedPreviously_UserCanKeepHistory()
         {
             // Remove Change 14
             changeCat.Remove("14");
 
             // Add Change 14 back
+            Change change = new Change("14", "indentation cleanup", FileLanguage.CSharp);
+            dispatcher.WhenChangeAdded( change );
+
             // User Requests to keep History
+            //TODO: move this beyond null implementation
 
-            // Bari should have 14 completed already
-
+            // Bari SHOULD have 14 completed already
             XmlDocument doc = new XmlDocument();
             doc.LoadXml(librarian.LastSavedSourceFiles.ToXmlText());
             Assert.IsTrue(IsCompletionSaved(doc, "bari.cs", "14"));
         }
 
-        [Test, Ignore("On hold until MockDialog created")]
+        [Test]
         public void WhenChangeAdded_IfChangeExistedPreviously_UserCanRemoveHistory()
         {
             // Remove Change 14
             changeCat.Remove("14");
 
-            // Add Change 14 back
             // User Requests to remove History
+            dispatcher.Librarian._keepHistory = false;
 
-            // Bari should have 14 completed already
+            // Add Change 14 back
+            Change change = new Change("14", "indentation cleanup", FileLanguage.CSharp);
+            dispatcher.WhenChangeAdded(change);
 
+            dispatcher.WhenFileSaved("bari.cs");
+
+
+            // Bari SHOULD NOT have 14 completed already
             XmlDocument doc = new XmlDocument();
             doc.LoadXml(librarian.LastSavedSourceFiles.ToXmlText());
-            Assert.IsTrue(IsCompletionSaved(doc, "bari.cs", "14"));
+            Assert.IsFalse(IsCompletionSaved(doc, "bari.cs", "14"));
         }
 
         private static bool IsCompletionSaved(XmlDocument doc, string fileName, string id)

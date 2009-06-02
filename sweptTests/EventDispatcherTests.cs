@@ -206,7 +206,7 @@ namespace swept.Tests
 
             //check widgets.cs doesn't exist
             Assert.IsNull( doc.SelectSingleNode( "//SourceFile[@Name='widgets.cs']" ) );
-        }
+        } 
 
         [Test]
         public void WhenTaskCompletionChanged_CatalogNeedsPersistence()

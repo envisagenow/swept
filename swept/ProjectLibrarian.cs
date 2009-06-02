@@ -45,17 +45,18 @@ namespace swept
             return InMemorySourceFiles.FetchFile( fileName );
         }
 
-        internal void SaveFile( string fileName )
+        internal void SaveFile( object sender, FileEventArgs args )
         {
-            SourceFile workingFile = InMemorySourceFiles.FetchFile( fileName );
-            SourceFile diskFile = LastSavedSourceFiles.FetchFile( fileName );
+            SourceFile workingFile = InMemorySourceFiles.FetchFile( args.Name );
+            SourceFile diskFile = LastSavedSourceFiles.FetchFile(args.Name);
             diskFile.CopyCompletionsFrom( workingFile );
 
             Persist();
         }
 
-        public void PasteFile(string fileName)
+        public void PasteFile(object sender, FileEventArgs args)
         {
+            string fileName = args.Name;
             SourceFile pastedWorkingFile = InMemorySourceFiles.FetchFile(fileName);
             SourceFile pastedDiskFile = LastSavedSourceFiles.FetchFile(fileName);
 
@@ -73,8 +74,11 @@ namespace swept
             Persist();
         }
 
-        internal void SaveFileAs(string originalName, string newName)
+        internal void SaveFileAs(object sender, FileListEventArgs args)
         {
+            string originalName = args.Names[0];
+            string newName = args.Names[1];
+
             SourceFile workingOriginalFile = InMemorySourceFiles.FetchFile(originalName);
             SourceFile diskOriginalFile = LastSavedSourceFiles.FetchFile(originalName);
             SourceFile workingNewFile = InMemorySourceFiles.FetchFile(newName);
@@ -109,6 +113,31 @@ namespace swept
 
             Persist();
         }
+
+        public void AddChange(Change change)
+        {
+            changeCatalog.Add(change);
+
+            //if we have any completions pre-existing for this ID
+            List<SourceFile> filesWithHistory = InMemorySourceFiles.Files.FindAll(file => file.Completions.Exists(c => c.ChangeID == change.ID));
+            if (filesWithHistory.Count > 0)
+            {
+                bool keep = dialoguerKeepHistoryOfChange(change);
+
+                //if discard, sweep them out of the file catalogs.
+                if (!keep)
+                {
+                    filesWithHistory.ForEach(file => file.Completions.RemoveAll(c => c.ChangeID == change.ID));
+                }
+            }
+        }
+
+        internal bool _keepHistory = true;
+        private bool dialoguerKeepHistoryOfChange(Change change)
+        {
+            return _keepHistory;
+        }
+
 
         public void SourceCatalogChanged()
         {

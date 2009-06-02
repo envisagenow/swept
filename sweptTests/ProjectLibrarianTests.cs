@@ -46,7 +46,8 @@ namespace swept.Tests
         [Test]
         public void CanSave()
         {
-            Horace.SaveFile( "some_file" );
+            FileEventArgs args = new FileEventArgs { Name = "some_file" };
+            Horace.SaveFile( this, args );
         }
 
         [Test]
@@ -54,5 +55,54 @@ namespace swept.Tests
         {
             SourceFile foo = Horace.FetchWorkingFile( "foo.cs" );
         }
+
+        [Test]
+        public void CanAddChange()
+        {
+            Assert.AreEqual(0, Horace.changeCatalog.changes.Count);
+
+            Horace.AddChange(new Change("14", "here I am", FileLanguage.CSharp));
+
+            Assert.AreEqual(1, Horace.changeCatalog.changes.Count);
+        }
+
+        [Test]
+        public void CanAddChange_AndKeepHistoricalCompletions()
+        {
+            Change historicalChange = new Change("14", "here I am", FileLanguage.CSharp);
+            Horace.AddChange(historicalChange);
+            SourceFile foo = new SourceFile("foo.cs");
+            foo.Language = FileLanguage.CSharp;
+            Horace.InMemorySourceFiles.Add(foo);
+            foo.Completions.Add(new Completion("14"));
+
+            Horace.changeCatalog.Remove("14");
+
+            //  In this case, the user chooses to keep history...somehow.
+            Horace.AddChange(historicalChange);
+
+            Assert.AreEqual(1, foo.Completions.Count);
+        }
+
+        [Test]
+        public void CanAddChange_AndDiscardHistoricalCompletions()
+        {
+            Change historicalChange = new Change("14", "here I am", FileLanguage.CSharp);
+            Horace.AddChange(historicalChange);
+            SourceFile foo = new SourceFile("foo.cs");
+            foo.Language = FileLanguage.CSharp;
+            Horace.InMemorySourceFiles.Add(foo);
+            foo.Completions.Add(new Completion("14"));
+
+            Horace.changeCatalog.Remove("14");
+
+            //  In this case, the user chooses to discard history...somehow.
+            Horace._keepHistory = false;
+            Horace.AddChange(historicalChange);
+
+            Assert.AreEqual(0, foo.Completions.Count);
+        }
+
+
     }
 }

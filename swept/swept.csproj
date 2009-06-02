@@ -59,6 +59,7 @@
     <Compile Include="EventDispatcher.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="EventArgClasses.cs" />
     <Compile Include="Starter.cs" />
     <Compile Include="Task.cs" />
     <Compile Include="Completion.cs" />

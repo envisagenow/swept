@@ -8,48 +8,38 @@ namespace swept.Tests
     [TestFixture]
     public class ChangeWindowTests
     {
-        private string fileNameBari;
+        Starter starter;
+
         private SourceFile bar;
         private ChangeCatalog changeCat;
-        private SourceFileCatalog sourceCat;
+        private SourceFileCatalog fileCat;
 
         private EventDispatcher dispatcher;
         private ProjectLibrarian librarian;
 
         private TaskWindow taskWindow;
         private ChangeWindow changeWindow;
-        //private ChangeCatalog changeCat;
-        //private EventDispatcher dispatcher;
 
 
         [SetUp]
         public void SetUp()
         {
-            changeCat = new ChangeCatalog();
+            starter = new Starter();
+            starter.Start();
+            librarian = starter.Librarian;
+            dispatcher = starter.Dispatcher;
+
+            changeCat = librarian.changeCatalog;
             string indentID = "14";
             changeCat.Add(new Change(indentID, "indentation cleanup", FileLanguage.CSharp));
 
             bar = new SourceFile("bar.cs");
 
-            sourceCat = new SourceFileCatalog();
-            sourceCat.ChangeCatalog = changeCat;
+            fileCat = librarian.InMemorySourceFiles;
+            fileCat.Files.Add(bar);
 
-            sourceCat.Files.Add(bar);
-
-            librarian = new ProjectLibrarian();
-            librarian.InMemorySourceFiles = sourceCat;
-            librarian.LastSavedSourceFiles = new SourceFileCatalog(sourceCat);
-            librarian.changeCatalog = changeCat;
-            librarian.SolutionPath = "mockpath";
-
-            dispatcher = new EventDispatcher();
-            dispatcher.Librarian = librarian;
-
-            librarian.Persist();
-            taskWindow = dispatcher.taskWindow = new TaskWindow();
-
-            changeWindow = new ChangeWindow();
-            changeWindow.Changes = changeCat;
+            taskWindow = dispatcher.taskWindow;
+            changeWindow = dispatcher.changeWindow;
         }
 
         [Test]

@@ -8,7 +8,6 @@ using System;
 namespace swept
 {
     public class Completion
-
     {
         public string ChangeID;
 

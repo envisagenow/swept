@@ -6,15 +6,10 @@ using System;
 
 namespace swept
 {
-    public class FileEventArgs : EventArgs
-    {
-        public string Name;
-    }
-
-
     public class EventDispatcher
     {
         internal TaskWindow taskWindow;
+        internal ChangeWindow changeWindow;
         public ProjectLibrarian Librarian { get; set; }
 
         #region Initialization
@@ -36,11 +31,8 @@ namespace swept
         public void WhenFileGetsFocus( string fileName )
         {
             if (RaiseFileGotFocus != null)
-            {
-                RaiseFileGotFocus(this, new FileEventArgs { Name = fileName } );
-            }
+                RaiseFileGotFocus(this, new FileEventArgs { Name = fileName });
         }
-
 
         public event EventHandler RaiseNonSourceGotFocus;
         public void WhenNonSourceGetsFocus()
@@ -49,26 +41,34 @@ namespace swept
                 RaiseNonSourceGotFocus(this, new EventArgs());
         }
 
-        public void WhenChangeListUpdated()
-        {
-            taskWindow.RefreshChangeList( Librarian.changeCatalog );
-            Librarian.Persist();
-        }
 
+        public event EventHandler<FileEventArgs> RaiseFileSaved;
         public void WhenFileSaved( string fileName )
         {
-            Librarian.SaveFile( fileName );
+            if (RaiseFileSaved != null)
+                RaiseFileSaved(this, new FileEventArgs { Name = fileName });
+
         }
 
+        public event EventHandler<FileEventArgs> RaiseFilePasted;
         public void WhenFilePasted(string fileName)
         {
-            Librarian.PasteFile( fileName );
+            if (RaiseFilePasted != null)
+                RaiseFilePasted(this, new FileEventArgs { Name = fileName });
         }
 
-        public void WhenFileSavedAs(string originalName, string newName)
+        public event EventHandler<FileListEventArgs> RaiseFileSavedAs;
+        public void WhenFileSavedAs(string oldName, string newName)
         {
-            Librarian.SaveFileAs(originalName, newName);
+            if (RaiseFileSavedAs != null)
+            {
+                var names = new List<string>();
+                names.Add(oldName);
+                names.Add(newName);
+                RaiseFileSavedAs(this, new FileListEventArgs { Names = names });
+            }
         }
+
 
         public void WhenFileChangesAbandoned( string fileName )
         {
@@ -83,6 +83,18 @@ namespace swept
         public void WhenFileRenamed(string oldName, string newName)
         {
             Librarian.RenameFile(oldName, newName);
+        }
+
+        public void WhenChangeAdded( Change change )
+        {
+            Librarian.AddChange( change );
+            WhenChangeListUpdated();
+        }
+
+        public void WhenChangeListUpdated()
+        {
+            taskWindow.RefreshChangeList(Librarian.changeCatalog);
+            Librarian.Persist();
         }
 
         public void WhenTaskCompletionChanged()
