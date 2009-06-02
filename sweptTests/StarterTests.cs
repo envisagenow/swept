@@ -15,8 +15,6 @@ namespace swept.Tests
         {
             starter = new Starter();
             starter.Start();
-            //librarian = starter.Librarian;
-            //changeCat = librarian.changeCatalog;
         }
 
         [Test]
