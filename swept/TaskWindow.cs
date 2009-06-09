@@ -27,6 +27,7 @@ namespace swept
             get { return tasks; }
         }
 
+        public bool Visible { get; set; }
 
         public void ChangeFile( SourceFile file, List<Change> changes )
         {
@@ -93,6 +94,11 @@ namespace swept
                 entry.Completed = currentFile.Completions.Exists(c => c.ChangeID == entry.ID);
                 tasks.Add(entry);
             }
+        }
+
+        public void ToggleVisibility(object sender, EventArgs e)
+        {
+            Visible = !Visible;
         }
     }
 }

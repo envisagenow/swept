@@ -91,17 +91,17 @@ namespace swept
             Persist();
         }
 
-        internal void RevertFile(string fileName)
+        internal void RevertFile(object sender, FileEventArgs args)
         {
-            SourceFile workingFile = InMemorySourceFiles.FetchFile( fileName );
-            SourceFile diskFile = LastSavedSourceFiles.FetchFile( fileName );
+            SourceFile workingFile = InMemorySourceFiles.FetchFile( args.Name );
+            SourceFile diskFile = LastSavedSourceFiles.FetchFile(args.Name);
             workingFile.CopyCompletionsFrom(diskFile);
         }
 
-        public void DeleteFile( string fileName )
+        public void DeleteFile(object sender, FileEventArgs args )
         {
-            InMemorySourceFiles.Delete( fileName );
-            LastSavedSourceFiles.Delete( fileName );
+            InMemorySourceFiles.Delete( args.Name );
+            LastSavedSourceFiles.Delete( args.Name );
 
             Persist();
         }

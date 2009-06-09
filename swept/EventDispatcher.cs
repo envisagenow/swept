@@ -47,7 +47,6 @@ namespace swept
         {
             if (RaiseFileSaved != null)
                 RaiseFileSaved(this, new FileEventArgs { Name = fileName });
-
         }
 
         public event EventHandler<FileEventArgs> RaiseFilePasted;
@@ -69,16 +68,28 @@ namespace swept
             }
         }
 
-
+        public event EventHandler<FileEventArgs> RaiseFileChangesAbandoned;
         public void WhenFileChangesAbandoned( string fileName )
         {
-            Librarian.RevertFile( fileName );
+            if( RaiseFileChangesAbandoned != null )
+                RaiseFileChangesAbandoned( this, new FileEventArgs { Name = fileName } );
         }
 
+        public event EventHandler<FileEventArgs> RaiseFileDeleted;
         public void WhenFileDeleted( string fileName )
         {
-            Librarian.DeleteFile( fileName );
+            if (RaiseFileDeleted != null)
+                RaiseFileDeleted(this, new FileEventArgs { Name = fileName });
         }
+
+        public event EventHandler<EventArgs> RaiseTaskWindowToggled;
+         public void WhenTaskWindowToggled()
+        {
+            if (RaiseTaskWindowToggled != null)
+                RaiseTaskWindowToggled(this, new EventArgs { });
+        }
+
+
 
         public void WhenFileRenamed(string oldName, string newName)
         {

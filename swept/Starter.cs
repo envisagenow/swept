@@ -19,11 +19,15 @@ namespace swept
             TaskWindow taskWindow = new TaskWindow();
             taskWindow.librarian = Librarian;
             Dispatcher.taskWindow = taskWindow;
+
             Dispatcher.RaiseNonSourceGotFocus += taskWindow.NoSourceFile;
             Dispatcher.RaiseFileGotFocus += taskWindow.ChangeFile;
             Dispatcher.RaiseFileSaved += Librarian.SaveFile;
             Dispatcher.RaiseFilePasted += Librarian.PasteFile;
             Dispatcher.RaiseFileSavedAs += Librarian.SaveFileAs;
+            Dispatcher.RaiseFileChangesAbandoned += Librarian.RevertFile;
+            Dispatcher.RaiseFileDeleted += Librarian.DeleteFile;
+            Dispatcher.RaiseTaskWindowToggled += taskWindow.ToggleVisibility;
 
             Dispatcher.changeWindow = new ChangeWindow();
             Dispatcher.changeWindow.Changes = Librarian.changeCatalog;

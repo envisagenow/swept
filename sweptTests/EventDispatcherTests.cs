@@ -363,5 +363,14 @@ namespace swept.Tests
             dispatcher.WhenSolutionSaved();
             Assert.IsFalse(librarian.ChangeNeedsPersisting);
         }
+
+        [Test]
+        public void WhenTaskWindowToggled_VisibilityChanges()
+        {
+            dispatcher.taskWindow.Visible = false;
+            dispatcher.WhenTaskWindowToggled();
+
+            Assert.IsTrue(dispatcher.taskWindow.Visible);
+        }
     }
 }
