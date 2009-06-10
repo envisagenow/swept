@@ -42,5 +42,13 @@ namespace swept
         {
             IsDirty = false;
         }
+
+        //TODO: Serialization/deserialization
+        public string ToXmlText()
+        {
+            return 
+@"<ChangeCatalog>
+</ChangeCatalog>";
+        }
     }
 }
