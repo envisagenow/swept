@@ -103,8 +103,7 @@ namespace swept.Tests
     <SourceFile Name='blue.cs'>
         <Completion ID='id11' />
     </SourceFile>
-</SourceFileCatalog>
-";
+</SourceFileCatalog>";
             Assert.AreEqual( answer, text );
         }
 

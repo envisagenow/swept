@@ -111,7 +111,7 @@ namespace swept
             {
                 xmlText += source.ToXmlText();
             }
-            xmlText += String.Format( "</{0}>\r\n", catalogLabel );
+            xmlText += String.Format( "</{0}>", catalogLabel );
             return xmlText;
         }
 
