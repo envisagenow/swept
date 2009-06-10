@@ -13,4 +13,9 @@ namespace swept
     {
         public List<string> Names;
     }
+
+    public class ChangeEventArgs : EventArgs
+    {
+        public Change change;
+    }
 }

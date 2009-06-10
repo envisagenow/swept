@@ -83,22 +83,33 @@ namespace swept
         }
 
         public event EventHandler<EventArgs> RaiseTaskWindowToggled;
-         public void WhenTaskWindowToggled()
+        public void WhenTaskWindowToggled()
         {
             if (RaiseTaskWindowToggled != null)
                 RaiseTaskWindowToggled(this, new EventArgs { });
         }
 
 
-
+        public event EventHandler<FileListEventArgs> RaiseFileRenamed;
         public void WhenFileRenamed(string oldName, string newName)
         {
-            Librarian.RenameFile(oldName, newName);
+            if (RaiseFileRenamed != null)
+            {
+                var names = new List<string>();
+                names.Add(oldName);
+                names.Add(newName);
+                RaiseFileRenamed(this, new FileListEventArgs { Names = names });
+            }
         }
 
+        public event EventHandler<ChangeEventArgs> RaiseChangeAdded;
         public void WhenChangeAdded( Change change )
         {
-            Librarian.AddChange( change );
+            if (RaiseChangeAdded != null)
+            {
+                RaiseChangeAdded(this, new ChangeEventArgs{ change = change });
+            }
+
             WhenChangeListUpdated();
         }
 
@@ -118,6 +129,9 @@ namespace swept
             Librarian.Persist();
         }
 
+
+        //TODO: Bring in other events as they're found when wrestling with Visual Studio Addin API.
+        //TODO: Think through other events that the ChangeWindow may publish
     }
 
 }

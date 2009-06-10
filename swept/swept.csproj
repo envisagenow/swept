@@ -56,10 +56,14 @@
     <Compile Include="Change.cs" />
     <Compile Include="ChangeCatalog.cs" />
     <Compile Include="ChangeWindow.cs" />
+    <Compile Include="DialogPresenter.cs" />
     <Compile Include="EventDispatcher.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="EventArgClasses.cs" />
+    <Compile Include="IDialogPresenter.cs" />
+    <Compile Include="ILibraryWriter.cs" />
+    <Compile Include="LibraryWriter.cs" />
     <Compile Include="Starter.cs" />
     <Compile Include="Task.cs" />
     <Compile Include="Completion.cs" />

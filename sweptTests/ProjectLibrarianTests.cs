@@ -47,7 +47,22 @@ namespace swept.Tests
         public void CanSave()
         {
             FileEventArgs args = new FileEventArgs { Name = "some_file" };
+            MockLibraryWriter writer = new MockLibraryWriter();
+            Horace.writer = writer;
             Horace.SaveFile( this, args );
+
+            //TODO: set up more meaningful data, so we no longer pass with our current (horribly cheesy) implementation 
+            string expectedXmlText = 
+@"<SweptProjectData>
+<ChangeCatalog>
+</ChangeCatalog>
+<SourceFileCatalog>
+    <SourceFile Name='some_file'>
+    </SourceFile>
+</SourceFileCatalog>
+</SweptProjectData>";
+
+            Assert.AreEqual(expectedXmlText, writer.XmlText);
         }
 
         [Test]
@@ -61,7 +76,8 @@ namespace swept.Tests
         {
             Assert.AreEqual(0, Horace.changeCatalog.changes.Count);
 
-            Horace.AddChange(new Change("14", "here I am", FileLanguage.CSharp));
+            Change change = new Change("14", "here I am", FileLanguage.CSharp);
+            Horace.AddChange(this, new ChangeEventArgs { change = change });
 
             Assert.AreEqual(1, Horace.changeCatalog.changes.Count);
         }
@@ -70,7 +86,7 @@ namespace swept.Tests
         public void CanAddChange_AndKeepHistoricalCompletions()
         {
             Change historicalChange = new Change("14", "here I am", FileLanguage.CSharp);
-            Horace.AddChange(historicalChange);
+            Horace.AddChange(this, new ChangeEventArgs { change = historicalChange });
             SourceFile foo = new SourceFile("foo.cs");
             foo.Language = FileLanguage.CSharp;
             Horace.InMemorySourceFiles.Add(foo);
@@ -78,8 +94,12 @@ namespace swept.Tests
 
             Horace.changeCatalog.Remove("14");
 
-            //  In this case, the user chooses to keep history...somehow.
-            Horace.AddChange(historicalChange);
+            //  In this case, the user chooses to keep history.
+            MockDialogPresenter talker = new MockDialogPresenter();
+            talker.KeepHistoricalResponse = true;
+            Horace.talker = talker;
+
+            Horace.AddChange(this, new ChangeEventArgs { change = historicalChange });
 
             Assert.AreEqual(1, foo.Completions.Count);
         }
@@ -88,7 +108,7 @@ namespace swept.Tests
         public void CanAddChange_AndDiscardHistoricalCompletions()
         {
             Change historicalChange = new Change("14", "here I am", FileLanguage.CSharp);
-            Horace.AddChange(historicalChange);
+            Horace.AddChange(this, new ChangeEventArgs { change = historicalChange });
             SourceFile foo = new SourceFile("foo.cs");
             foo.Language = FileLanguage.CSharp;
             Horace.InMemorySourceFiles.Add(foo);
@@ -96,9 +116,12 @@ namespace swept.Tests
 
             Horace.changeCatalog.Remove("14");
 
-            //  In this case, the user chooses to discard history...somehow.
-            Horace._keepHistory = false;
-            Horace.AddChange(historicalChange);
+            //  In this case, the user chooses to discard history.
+            MockDialogPresenter talker = new MockDialogPresenter();
+            talker.KeepHistoricalResponse = false;
+            Horace.talker = talker;
+
+            Horace.AddChange(this, new ChangeEventArgs { change = historicalChange });
 
             Assert.AreEqual(0, foo.Completions.Count);
         }

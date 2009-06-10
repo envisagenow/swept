@@ -42,6 +42,9 @@ namespace swept.Tests
             bari.Completions.Add(new Completion(indentID));
             fileCat.Files.Add(bari);
 
+            MockLibraryWriter writer = new MockLibraryWriter();
+            librarian.writer = writer;
+
             librarian.LastSavedSourceFiles = new SourceFileCatalog(fileCat);
             librarian.SolutionPath = "mockpath";
             librarian.Persist();

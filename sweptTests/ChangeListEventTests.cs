@@ -39,6 +39,8 @@ namespace swept.Tests
             bari.Completions.Add(new Completion(indentID));
             fileCat.Files.Add(bari);
 
+            MockLibraryWriter writer = new MockLibraryWriter();
+            librarian.writer = writer;
             librarian.LastSavedSourceFiles = new SourceFileCatalog(fileCat);
             librarian.SolutionPath = "mockpath";
             librarian.Persist();
@@ -85,12 +87,14 @@ namespace swept.Tests
             // Remove Change 14
             changeCat.Remove("14");
 
+            // User Requests to keep History
+            MockDialogPresenter talker = new MockDialogPresenter();
+            talker.KeepHistoricalResponse = true;
+            dispatcher.Librarian.talker = talker;
+
             // Add Change 14 back
             Change change = new Change("14", "indentation cleanup", FileLanguage.CSharp);
             dispatcher.WhenChangeAdded( change );
-
-            // User Requests to keep History
-            //TODO: move this beyond null implementation
 
             // Bari SHOULD have 14 completed already
             XmlDocument doc = new XmlDocument();
@@ -105,14 +109,15 @@ namespace swept.Tests
             changeCat.Remove("14");
 
             // User Requests to remove History
-            dispatcher.Librarian._keepHistory = false;
+            MockDialogPresenter talker = new MockDialogPresenter();
+            talker.KeepHistoricalResponse = false;
+            dispatcher.Librarian.talker = talker;
 
             // Add Change 14 back
             Change change = new Change("14", "indentation cleanup", FileLanguage.CSharp);
             dispatcher.WhenChangeAdded(change);
 
             dispatcher.WhenFileSaved("bari.cs");
-
 
             // Bari SHOULD NOT have 14 completed already
             XmlDocument doc = new XmlDocument();

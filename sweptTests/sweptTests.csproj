@@ -58,6 +58,8 @@
     <Compile Include="ChangeListEventTests.cs" />
     <Compile Include="ChangeWindowTests.cs" />
     <Compile Include="EventExperiments.cs" />
+    <Compile Include="MockDialogPresenter.cs" />
+    <Compile Include="MockLibraryWriter.cs" />
     <Compile Include="StarterTests.cs" />
     <Compile Include="TaskTests.cs" />
     <Compile Include="ChangeTests.cs" />
