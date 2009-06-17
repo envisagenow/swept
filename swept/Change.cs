@@ -20,6 +20,11 @@ namespace swept
             Description = description;
             Language = language;
         }
+
+        public string ToXmlText()
+        {
+            return "    <Change ID='" + ID + "' Description='" + Description + "' Language='" + Language.ToString() + "' />";
+        }
     }
 
     public enum FileLanguage

@@ -18,4 +18,10 @@ namespace swept
     {
         public Change change;
     }
+
+    public class TaskEventArgs : EventArgs
+    {
+        public Task task;
+        public SourceFile file;
+    }
 }

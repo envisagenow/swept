@@ -77,7 +77,7 @@ namespace swept
             RefreshChangeList(changes);
         }
 
-        public void RefreshChangeList(List<Change> changes)     //todo this may go away, preferring ChangeCat overload...
+        public void RefreshChangeList(List<Change> changes)     //TODO: this may go away, preferring ChangeCat overload...
         {
             BuildTasks(changes);
         }

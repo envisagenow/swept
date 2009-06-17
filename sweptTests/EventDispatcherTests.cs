@@ -236,17 +236,17 @@ namespace swept.Tests
         [Test]
         public void WhenFileGetsFocus_BecomesCurrentFile()
         {
-            dispatcher.WhenFileGetsFocus( "foo.cs" );
+            dispatcher.WhenFileGotFocus( "foo.cs" );
             Assert.AreEqual( "foo.cs", window.File.Name );
 
-            dispatcher.WhenFileGetsFocus( "bar.cs" );
+            dispatcher.WhenFileGotFocus( "bar.cs" );
             Assert.AreEqual( "bar.cs", window.File.Name );
         }
 
         [Test]
         public void WhenFileGetsFocus_TaskWindowUpdates()
         {
-            dispatcher.WhenFileGetsFocus( "foo.cs" );
+            dispatcher.WhenFileGotFocus( "foo.cs" );
             Assert.AreEqual( "foo.cs", window.File.Name );
         }
 
@@ -254,7 +254,7 @@ namespace swept.Tests
         public void FileFocusChange_IncludesUnsavedCompletions()
         {
             librarian.changeCatalog.Add( new Change( "728", "Date Normalization", FileLanguage.CSharp ) );
-            dispatcher.WhenFileGetsFocus( "party_planning.cs" );
+            dispatcher.WhenFileGotFocus( "party_planning.cs" );
 
             Assert.AreEqual( 2, window.Tasks.Count );
             SourceFile partyFile = window.File;
@@ -267,7 +267,7 @@ namespace swept.Tests
             Assert.AreEqual( 0, partyFile.Completions.Count );
 
             //  User done with party planning--switch to another file
-            dispatcher.WhenFileGetsFocus( fileNameBari );
+            dispatcher.WhenFileGotFocus( fileNameBari );
 
             //  Now we've stored completions in the working source file object
             Assert.AreEqual( 2, partyFile.Completions.Count );
@@ -276,7 +276,7 @@ namespace swept.Tests
         [Test]
         public void WhenNonSourceGetsFocus_NoSourceFileInTaskWindow()
         {
-            dispatcher.WhenFileGetsFocus("foo.cs");
+            dispatcher.WhenFileGotFocus("foo.cs");
             Assert.AreEqual("foo.cs", window.Title);
             Assert.AreEqual(1, window.Tasks.Count);
 

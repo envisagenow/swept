@@ -43,12 +43,18 @@ namespace swept
             IsDirty = false;
         }
 
-        //TODO: Serialization/deserialization
         public string ToXmlText()
         {
-            return 
-@"<ChangeCatalog>
-</ChangeCatalog>";
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine("<ChangeCatalog>");
+
+            foreach(Change change in this.changes)
+            {
+                sb.AppendLine(change.ToXmlText());
+            }
+
+            sb.Append("</ChangeCatalog>");
+            return sb.ToString();
         }
     }
 }

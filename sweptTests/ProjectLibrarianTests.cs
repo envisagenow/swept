@@ -46,24 +46,52 @@ namespace swept.Tests
         [Test]
         public void CanSave()
         {
-            FileEventArgs args = new FileEventArgs { Name = "some_file" };
             MockLibraryWriter writer = new MockLibraryWriter();
             Horace.writer = writer;
-            Horace.SaveFile( this, args );
 
-            //TODO: set up more meaningful data, so we no longer pass with our current (horribly cheesy) implementation 
-            string expectedXmlText = 
+            string someFileName = "some_file.cs";
+            SourceFile someFile = new SourceFile(someFileName);
+            someFile.AddNewCompletion("007");
+            Horace.InMemorySourceFiles.Add(someFile);
+
+            FileEventArgs args = new FileEventArgs { Name = someFileName };
+            Horace.SaveFile(this, args);
+
+            string expectedXmlText =
 @"<SweptProjectData>
 <ChangeCatalog>
 </ChangeCatalog>
 <SourceFileCatalog>
-    <SourceFile Name='some_file'>
+    <SourceFile Name='some_file.cs'>
+        <Completion ID='007' />
     </SourceFile>
 </SourceFileCatalog>
 </SweptProjectData>";
 
             Assert.AreEqual(expectedXmlText, writer.XmlText);
         }
+
+        [Test]
+        public void Can_Save_catalog_with_Change()
+        {
+            MockLibraryWriter writer = new MockLibraryWriter();
+            Horace.writer = writer;
+
+            Horace.changeCatalog.Add(new Change("Uno", "Eliminate profanity from error messages.", FileLanguage.CSharp));
+            Horace.Persist();
+
+            string expectedXmlText =
+@"<SweptProjectData>
+<ChangeCatalog>
+    <Change ID='Uno' Description='Eliminate profanity from error messages.' Language='CSharp' />
+</ChangeCatalog>
+<SourceFileCatalog>
+</SourceFileCatalog>
+</SweptProjectData>";
+
+            Assert.AreEqual(expectedXmlText, writer.XmlText);
+        }
+
 
         [Test]
         public void CanFetchWorkingFile()

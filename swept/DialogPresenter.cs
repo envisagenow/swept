@@ -13,7 +13,7 @@ namespace swept
 
         public bool KeepHistoricalCompletionsForChange(Change historicalChange)
         {
-            //TODO:  Actually bring up dialog box with sane message
+            //SELF:  Actually bring up dialog box with sane message
             throw new NotImplementedException("We shouldn't call for a real dialog box yet.");
         }
 

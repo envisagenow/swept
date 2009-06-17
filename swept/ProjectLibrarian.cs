@@ -157,7 +157,7 @@ namespace swept
         private string ToXmlText()
         {
             return string.Format(
-                @"<SweptProjectData>
+@"<SweptProjectData>
 {0}
 {1}
 </SweptProjectData>", 
