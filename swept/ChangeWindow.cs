@@ -18,6 +18,19 @@ namespace swept
         public void AddChange(Change change)
         {
             Changes.Add(change);
+            WhenChangesUpdated();
         }
+
+        public event EventHandler RaiseChangesUpdated;
+        public void WhenChangesUpdated()
+        {
+            if (RaiseChangesUpdated != null)
+            {
+                RaiseChangesUpdated(this, new EventArgs());
+            }
+        }
+
+
+
     }
 }

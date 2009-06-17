@@ -27,8 +27,11 @@ namespace swept
         #endregion
 
 
+
+        #region Publish events
+
         public event EventHandler<FileEventArgs> RaiseFileGotFocus;
-        public void WhenFileGetsFocus( string fileName )
+        public void WhenFileGotFocus( string fileName )
         {
             if (RaiseFileGotFocus != null)
                 RaiseFileGotFocus(this, new FileEventArgs { Name = fileName });
@@ -113,25 +116,43 @@ namespace swept
             WhenChangeListUpdated();
         }
 
+        #endregion
+
+
+        //TODO:  Convert to event form
         public void WhenChangeListUpdated()
         {
             taskWindow.RefreshChangeList(Librarian.changeCatalog);
             Librarian.Persist();
         }
 
+        //TODO:  Convert to event form
         public void WhenTaskCompletionChanged()
         {
             Librarian.SourceCatalogChanged();
         }
 
+        //TODO:  Convert to event form
         public void WhenSolutionSaved()
         {
             Librarian.Persist();
         }
 
 
-        //TODO: Bring in other events as they're found when wrestling with Visual Studio Addin API.
-        //TODO: Think through other events that the ChangeWindow may publish
+
+        //SELF: Bring in other events as they're found when wrestling with Visual Studio Addin API.
+        //SELF: Think through other events that the ChangeWindow may publish
+
+
+        #region Event listeners
+
+        public void ChangesUpdated(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+
     }
 
 }
