@@ -40,10 +40,11 @@ namespace swept
             Dispatcher.RaiseTaskWindowToggled += TaskWindow.ToggleVisibility;
             Dispatcher.RaiseFileRenamed += Librarian.RenameFile;
             Dispatcher.RaiseChangeAdded += Librarian.AddChange;
-
+            Dispatcher.RaiseTaskCompletionChanged += Librarian.TaskCompletionChanged;
+            Dispatcher.RaiseSolutionSaved += Librarian.SolutionSaved;
 
             //  Subscribe the dispatcher to events from the ChangeWindow
-            ChangeWindow.RaiseChangesUpdated += Dispatcher.ChangesUpdated;
+            //wrongly.... ChangeWindow.RaiseChangesUpdated += Dispatcher.ChangesUpdated;
 
 
 

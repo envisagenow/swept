@@ -23,6 +23,34 @@ namespace swept.Tests
         }
 
         [Test]
+        public void SaveSolution_will_persist_all_unsaved_SourceFiles()
+        {
+            MockLibraryWriter writer = new MockLibraryWriter();
+            Horace.writer = writer;
+
+            string someFileName = "some_file.cs";
+            SourceFile someFile = new SourceFile(someFileName);
+            someFile.AddNewCompletion("007");
+            Horace.InMemorySourceFiles.Add(someFile);
+
+            Horace.SolutionSaved(this, new EventArgs());
+
+            string expectedXmlText =
+@"<SweptProjectData>
+<ChangeCatalog>
+</ChangeCatalog>
+<SourceFileCatalog>
+    <SourceFile Name='some_file.cs'>
+        <Completion ID='007' />
+    </SourceFile>
+</SourceFileCatalog>
+</SweptProjectData>";
+
+            Assert.AreEqual(expectedXmlText, writer.XmlText);
+        }
+
+
+        [Test]
         public void CanSetSolutionPath()
         {
             Assert.AreEqual( _HerePath, Horace.SolutionPath );

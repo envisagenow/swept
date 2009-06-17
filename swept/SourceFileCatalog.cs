@@ -103,6 +103,7 @@ namespace swept
             return cat;
         }
 
+        //FUTURE: Sort SourceFiles when writing them out
         public string ToXmlText()
         {
             string catalogLabel = "SourceFileCatalog";

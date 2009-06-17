@@ -9,9 +9,9 @@ namespace swept
 {
     public class ProjectLibrarian
     {
-        internal ChangeCatalog changeCatalog;
         internal SourceFileCatalog InMemorySourceFiles;
         internal SourceFileCatalog LastSavedSourceFiles;
+        internal ChangeCatalog changeCatalog;
         internal IDialogPresenter talker;
         internal ILibraryWriter writer;
         
@@ -32,6 +32,7 @@ namespace swept
             }
         }
 
+        //TODO:  Remove sourceIsDirty, make tests pass via more mature methods.
         internal bool sourceIsDirty;
 
         public string SolutionPath { get; internal set; }
@@ -141,6 +142,20 @@ namespace swept
             }
         }
 
+        #region Event Listeners
+        public void TaskCompletionChanged(object sender, EventArgs args)
+        {
+            SourceCatalogChanged();
+        }
+
+        public void SolutionSaved(object sender, EventArgs args)
+        {
+            LastSavedSourceFiles = new SourceFileCatalog(InMemorySourceFiles);
+            Persist();
+        }
+
+        #endregion
+
         public void SourceCatalogChanged()
         {
             sourceIsDirty = true;
@@ -150,6 +165,8 @@ namespace swept
         {
             sourceIsDirty = false;
             changeCatalog.MarkClean();
+
+
 
             writer.Save( "swept.progress.library", ToXmlText() );
         }

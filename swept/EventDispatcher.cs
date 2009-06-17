@@ -44,7 +44,6 @@ namespace swept
                 RaiseNonSourceGotFocus(this, new EventArgs());
         }
 
-
         public event EventHandler<FileEventArgs> RaiseFileSaved;
         public void WhenFileSaved( string fileName )
         {
@@ -116,42 +115,34 @@ namespace swept
             WhenChangeListUpdated();
         }
 
+        public event EventHandler RaiseTaskCompletionChanged;
+        public void WhenTaskCompletionChanged()
+        {
+            if( RaiseTaskCompletionChanged != null )
+                RaiseTaskCompletionChanged(this, new EventArgs());
+        }
+
+        public event EventHandler RaiseSolutionSaved;
+        public void WhenSolutionSaved()
+        {
+            if ( RaiseSolutionSaved != null)
+                RaiseSolutionSaved(this, new EventArgs());
+        }
+
         #endregion
 
 
         //TODO:  Convert to event form
         public void WhenChangeListUpdated()
         {
+            //TODO:  Figure out how to send this event without having to post the entire change catalog...
             taskWindow.RefreshChangeList(Librarian.changeCatalog);
-            Librarian.Persist();
+            Librarian.Persist();    //  Save only the change list?
         }
-
-        //TODO:  Convert to event form
-        public void WhenTaskCompletionChanged()
-        {
-            Librarian.SourceCatalogChanged();
-        }
-
-        //TODO:  Convert to event form
-        public void WhenSolutionSaved()
-        {
-            Librarian.Persist();
-        }
-
 
 
         //SELF: Bring in other events as they're found when wrestling with Visual Studio Addin API.
         //SELF: Think through other events that the ChangeWindow may publish
-
-
-        #region Event listeners
-
-        public void ChangesUpdated(object sender, EventArgs e)
-        {
-            throw new NotImplementedException();
-        }
-
-        #endregion
 
     }
 

@@ -43,6 +43,7 @@ namespace swept
             IsDirty = false;
         }
 
+        //FUTURE: Sort changes when writing them out
         public string ToXmlText()
         {
             StringBuilder sb = new StringBuilder();

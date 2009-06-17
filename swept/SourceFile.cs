@@ -101,6 +101,7 @@ namespace swept
             return file;
         }
 
+        //FUTURE: Sort Completions when writing them out
         public string ToXmlText()
         {
             string elementLabel = "SourceFile";

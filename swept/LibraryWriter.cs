@@ -12,7 +12,5 @@ namespace swept
         {
             throw new NotImplementedException( "I can't save to disk yet");
         }
-
     }
-
 }

@@ -173,7 +173,7 @@ namespace swept.Tests
             fileGadgets.Completions.Add(new Completion("14"));
             fileCat.Add(fileGadgets);
             librarian.sourceIsDirty = true;
-
+ 
             Assert.IsTrue(librarian.ChangeNeedsPersisting);
 
             XmlDocument doc = new XmlDocument();
@@ -183,6 +183,9 @@ namespace swept.Tests
             dispatcher.WhenFileSaved(nameGadgets);
 
             Assert.IsFalse(librarian.ChangeNeedsPersisting);
+
+            //TODO, check that the output is as it should be
+            // i.e., bari should have a completion for change id 14.
         }
 
         [Test]
