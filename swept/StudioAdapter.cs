@@ -92,14 +92,6 @@ namespace swept
                 EventFileDeleted(this, new FileEventArgs { Name = fileName });
         }
 
-        // TODO: move to TaskWindow
-        public event EventHandler<EventArgs> EventTaskWindowToggled;
-        public void RaiseTaskWindowToggled()
-        {
-            if (EventTaskWindowToggled != null)
-                EventTaskWindowToggled(this, new EventArgs { });
-        }
-
 
         public event EventHandler<FileListEventArgs> EventFileRenamed;
         public void RaiseFileRenamed(string oldName, string newName)
@@ -113,25 +105,6 @@ namespace swept
             }
         }
 
-        // TODO: relo to ChangeWindow
-        public event EventHandler<ChangeEventArgs> EventChangeAdded;
-        public void RaiseChangeAdded(Change change)
-        {
-            if (EventChangeAdded != null)
-            {
-                EventChangeAdded(this, new ChangeEventArgs { change = change });
-            }
-
-            WhenChangeListUpdated();
-        }
-
-        public event EventHandler EventTaskCompletionChanged;
-        public void RaiseTaskCompletionChanged()
-        {
-            if (EventTaskCompletionChanged != null)
-                EventTaskCompletionChanged(this, new EventArgs());
-        }
-
         public event EventHandler EventSolutionSaved;
         public void RaiseSolutionSaved()
         {
@@ -140,14 +113,6 @@ namespace swept
         }
 
         #endregion
-        // TODO: move to ChangeWindow
-        // TODO: Convert to event form
-        public void WhenChangeListUpdated()
-        {
-            taskWindow.RefreshChangeList();
-            Librarian.Persist();
-        }
-
         //SELF: Bring in other events as they're found when wrestling with Visual Studio Addin API.
         //SELF: Think through other events that the ChangeWindow may publish
     }

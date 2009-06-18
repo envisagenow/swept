@@ -64,6 +64,7 @@
     <Compile Include="TaskTests.cs" />
     <Compile Include="ChangeTests.cs" />
     <Compile Include="CompletionTests.cs" />
+    <Compile Include="TaskWindowEventTests.cs" />
     <Compile Include="TaskWindowTests.cs" />
     <Compile Include="StudioAdapterTests.cs" />
     <Compile Include="ProjectLibrarianTests.cs" />

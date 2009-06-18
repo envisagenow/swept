@@ -34,11 +34,9 @@ namespace swept
 
         public void ChangeFile( SourceFile file, List<Change> changes )
         {
-            //  Stash completions in file leaving focus
-            if( currentFile != null )
-            {
-                currentFile.SetCompletionsFromTasks( tasks );
-            }
+            //  Store any progress on the file that's losing focus
+            if (currentFile != null)
+                currentFile.SetCompletionsFromTasks(tasks);
 
             currentFile = file;
             tasks = new List<Task>();
@@ -52,23 +50,7 @@ namespace swept
             BuildTasks(changes);
         }
 
-        public void HearFileGotFocus(object sender, FileEventArgs args)
-        {
-            SourceFile file = FileCatalog.Fetch(args.Name);
-
-            // TODO: Tuck this implementation into the ChangeCatalog
-            List<Change> changes = ChangeCatalog.FindAll(c => c.Language == file.Language);
-            ChangeFile(file, changes);
-        }
-
-
-        public void HearNonSourceGotFocus(object sender, EventArgs args)
-        {
-            ChangeFile(null, null);
-        }
-
-
-        public void ClickEntry( int index )
+        public void ClickEntry(int index)
         {
             Task toggledChange = this.tasks[index];
             toggledChange.Completed = !toggledChange.Completed;
@@ -95,9 +77,51 @@ namespace swept
             }
         }
 
-        public void HearTaskWindowToggled(object sender, EventArgs e)
+        #region Raise events
+        
+        public event EventHandler EventTaskCompletionChanged;
+        public void RaiseTaskCompletionChanged()
+        {
+            if (EventTaskCompletionChanged != null)
+                EventTaskCompletionChanged(this, new EventArgs());
+        }
+
+        public event EventHandler<EventArgs> EventTaskWindowToggled;
+        public void RaiseTaskWindowToggled()
+        {
+            if (EventTaskWindowToggled != null)
+                EventTaskWindowToggled(this, new EventArgs { });
+        }
+
+        #endregion
+
+        #region Event listeners
+
+        public void HearFileGotFocus(object sender, FileEventArgs args)
+        {
+            SourceFile file = FileCatalog.Fetch(args.Name);
+
+            // TODO: Tuck this implementation into the ChangeCatalog
+            List<Change> changes = ChangeCatalog.FindAll(c => c.Language == file.Language);
+            ChangeFile(file, changes);
+        }
+
+        public void HearNonSourceGotFocus(object sender, EventArgs args)
+        {
+            ChangeFile(null, null);
+        }
+
+        public void HearChangeListUpdated(object sender, EventArgs args)
+        {
+            RefreshChangeList();
+        }
+
+        public void HearTaskWindowToggled(object sender, EventArgs args)
         {
             Visible = !Visible;
         }
+
+        #endregion
+
     }
 }

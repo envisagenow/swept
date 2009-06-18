@@ -215,16 +215,6 @@ namespace swept.Tests
             Assert.IsNull( doc.SelectSingleNode( "//SourceFile[@Name='widgets.cs']" ) );
         } 
 
-        [Test]
-        public void WhenTaskCompletionChanged_CatalogNeedsPersistence()
-        {
-            Assert.IsFalse(librarian.ChangeNeedsPersisting);
-
-            adapter.RaiseTaskCompletionChanged();
-
-            Assert.IsTrue(librarian.ChangeNeedsPersisting);
-        }
-
         private static bool IsCompletionSaved(XmlDocument doc, string fileName)
         {
             return IsCompletionSaved(doc, fileName, "14");
@@ -372,15 +362,6 @@ namespace swept.Tests
             librarian.unsavedSourceChangesExist = true;
             adapter.RaiseSolutionSaved();
             Assert.IsFalse(librarian.ChangeNeedsPersisting);
-        }
-
-        [Test]
-        public void WhenTaskWindowToggled_VisibilityChanges()
-        {
-            adapter.taskWindow.Visible = false;
-            adapter.RaiseTaskWindowToggled();
-
-            Assert.IsTrue(adapter.taskWindow.Visible);
         }
     }
 }

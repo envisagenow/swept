@@ -16,9 +16,9 @@ namespace swept
         internal IDialogPresenter showGUI;
         internal ILibraryWriter persister;
 
-        public void HearSolutionOpened(object sender, FileEventArgs args)
+        public void HearSolutionOpened(object sender, FileEventArgs arg)
         {
-            OpenSolution(args.Name);
+            OpenSolution(arg.Name);
         }
 
         public ProjectLibrarian()
@@ -64,6 +64,11 @@ namespace swept
             SourceFile diskFile = savedSourceImage.Fetch(args.Name);
             diskFile.CopyCompletionsFrom( workingFile );
 
+            Persist();
+        }
+
+        public void HearChangeListUpdated(object sender, EventArgs e)
+        {
             Persist();
         }
 

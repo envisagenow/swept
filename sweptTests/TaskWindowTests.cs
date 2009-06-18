@@ -9,6 +9,7 @@ using swept;
 
 namespace swept.Tests
 {
+
     [TestFixture]
     public class TaskWindowTests
     {

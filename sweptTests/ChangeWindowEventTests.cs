@@ -13,7 +13,8 @@ namespace swept.Tests
     public class ChangeWindowEventTests
     {
         Starter starter;
-        private TaskWindow window;
+        private TaskWindow taskWindow;
+        private ChangeWindow changeWindow;
         private string fileName;
         private SourceFile file;
         private ChangeCatalog changeCat;
@@ -48,19 +49,20 @@ namespace swept.Tests
             librarian.SolutionPath = "mockpath";
             librarian.Persist();
 
-            window = adapter.taskWindow;
+            taskWindow = adapter.taskWindow;
+            changeWindow = adapter.changeWindow;
         }
 
         [Test]
         public void WhenChangeListUpdated_TaskWindow_RefreshesTasks()
         {
             adapter.RaiseFileGotFocus("foo.cs");
-            int initialChangeCount = window.Tasks.Count;
+            int initialChangeCount = taskWindow.Tasks.Count;
             changeCat.Add(new Change("Inf09", "Change delegates to lambdas", FileLanguage.CSharp));
 
-            adapter.WhenChangeListUpdated();
+            changeWindow.RaiseChangeListUpdated();
 
-            Assert.AreEqual(initialChangeCount + 1, window.Tasks.Count);
+            Assert.AreEqual(initialChangeCount + 1, taskWindow.Tasks.Count);
         }
 
         [Test]
@@ -68,9 +70,10 @@ namespace swept.Tests
         {
             adapter.RaiseNonSourceGetsFocus();
             changeCat.Add(new Change("Inf09", "Change delegates to lambdas", FileLanguage.CSharp));
-            adapter.WhenChangeListUpdated();
 
-            Assert.AreEqual(0, window.Tasks.Count);
+            changeWindow.RaiseChangeListUpdated();
+
+            Assert.AreEqual(0, taskWindow.Tasks.Count);
         }
 
         [Test]
@@ -79,7 +82,7 @@ namespace swept.Tests
             Assert.IsFalse(librarian.ChangeNeedsPersisting);
             changeCat.Add(new Change("Inf09", "Change delegates to lambdas", FileLanguage.CSharp));
             Assert.IsTrue(librarian.ChangeNeedsPersisting);
-            adapter.WhenChangeListUpdated();
+            changeWindow.RaiseChangeListUpdated();
             Assert.IsFalse(librarian.ChangeNeedsPersisting);
         }
 
@@ -95,9 +98,9 @@ namespace swept.Tests
 
             // Add Change 14 back
             Change change = new Change("14", "indentation cleanup", FileLanguage.CSharp);
-            adapter.RaiseChangeAdded( change );
+            changeWindow.RaiseChangeAdded( change );
 
-            // Bari SHOULD have 14 completed already
+            // Bari has kept the completion of Change 14
             XmlDocument doc = new XmlDocument();
             doc.LoadXml(librarian.savedSourceImage.ToXmlText());
             Assert.IsTrue(IsCompletionSaved(doc, "bari.cs", "14"));
@@ -115,11 +118,11 @@ namespace swept.Tests
 
             // Add Change 14 back
             Change change = new Change("14", "indentation cleanup", FileLanguage.CSharp);
-            adapter.RaiseChangeAdded(change);
+            changeWindow.RaiseChangeAdded(change);
 
             adapter.RaiseFileSaved("bari.cs");
 
-            // Bari SHOULD NOT have 14 completed already
+            // Bari has removed the completion of Change 14
             XmlDocument doc = new XmlDocument();
             doc.LoadXml(librarian.savedSourceImage.ToXmlText());
             Assert.IsFalse(IsCompletionSaved(doc, "bari.cs", "14"));
@@ -136,12 +139,12 @@ namespace swept.Tests
         public void WhenChangeRemoved_TaskWindow_RefreshesTasks()
         {
             adapter.RaiseFileGotFocus("foo.cs");
-            int initialChangeCount = window.Tasks.Count;
+            int initialChangeCount = taskWindow.Tasks.Count;
             changeCat.Remove("14");
 
-            adapter.WhenChangeListUpdated();
+            changeWindow.RaiseChangeListUpdated();
 
-            Assert.AreEqual(initialChangeCount - 1, window.Tasks.Count);
+            Assert.AreEqual(initialChangeCount - 1, taskWindow.Tasks.Count);
         }
     }
 }

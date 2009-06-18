@@ -9,27 +9,34 @@ namespace swept
 {
     public class ChangeWindow
     {
-        public int ChangeCount {
-            get
-            {
-                return Changes.changes.Count;
-            }
-        }
+        public ChangeCatalog ChangeCatalog;
 
-        public ChangeCatalog Changes { get; set; }
+        public int ChangeCount
+        {
+            get { return ChangeCatalog.changes.Count; }
+        }
 
         public void AddChange(Change change)
         {
-            Changes.Add(change);
+            ChangeCatalog.Add(change);
         }
 
-        //public event EventHandler RaiseChangesUpdated;
-        //public void WhenChangesUpdated()
-        //{
-        //    if (RaiseChangesUpdated != null)
-        //    {
-        //        RaiseChangesUpdated(this, new EventArgs());
-        //    }
-        //}
+        #region Publish events
+        public event EventHandler<ChangeEventArgs> EventChangeAdded;
+        public void RaiseChangeAdded(Change change)
+        {
+            if (EventChangeAdded != null)
+                EventChangeAdded(this, new ChangeEventArgs { change = change });
+
+            RaiseChangeListUpdated();
+        }
+
+        public event EventHandler EventChangeListUpdated;
+        public void RaiseChangeListUpdated()
+        {
+            if (EventChangeListUpdated != null)
+                EventChangeListUpdated(this, new EventArgs());
+        }
+        #endregion
     }
 }
