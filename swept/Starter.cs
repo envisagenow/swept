@@ -21,7 +21,9 @@ namespace swept
             Adapter.Librarian = Librarian;
 
             TaskWindow = new TaskWindow();
-            TaskWindow.librarian = Librarian;
+            TaskWindow.ChangeCatalog = Librarian.changeCatalog;
+            TaskWindow.FileCatalog = Librarian.unsavedSourceImage;
+
             Adapter.taskWindow = TaskWindow;
 
             ChangeWindow = new ChangeWindow();
@@ -40,16 +42,17 @@ namespace swept
             Adapter.EventFileDeleted += Librarian.HearFileDeleted;
             Adapter.EventFileRenamed += Librarian.HearFileRenamed;
             Adapter.EventSolutionSaved += Librarian.HearSolutionSaved;
+            Adapter.EventSolutionOpened += Librarian.HearSolutionOpened;
 
             //TODO:  Relocate these events to the ChangeWindow
-            Adapter.EventChangeAdded += Librarian.AddChange;
+            Adapter.EventChangeAdded += Librarian.HearChangeAdded;
 
             //TODO:  Relocate these events to the TaskWindow
-            Adapter.EventTaskCompletionChanged += Librarian.TaskCompletionChanged;
-            Adapter.EventTaskWindowToggled += TaskWindow.ToggleVisibility;
+            Adapter.EventTaskCompletionChanged += Librarian.HearTaskCompletionChanged;
+            Adapter.EventTaskWindowToggled += TaskWindow.HearTaskWindowToggled;
 
-            //  Subscribe the librarian to events from the ChangeWindow
-            //ChangeWindow.EventChangesUpdated += Librarian.ChangesUpdated;
+            // TODO: Subscribe the librarian to events from the ChangeWindow
+            //ChangeWindow.EventChangesUpdated += Librarian.HearChangesUpdated;
 
         }
     }

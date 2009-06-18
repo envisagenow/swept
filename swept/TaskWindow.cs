@@ -10,7 +10,9 @@ namespace swept
     public class TaskWindow
     {
         private SourceFile currentFile;
-        internal ProjectLibrarian librarian;
+        internal SourceFileCatalog FileCatalog;
+        internal ChangeCatalog ChangeCatalog;
+        
         public SourceFile File
         {
             get { return currentFile; }
@@ -52,16 +54,17 @@ namespace swept
 
         public void HearFileGotFocus(object sender, FileEventArgs args)
         {
-            SourceFile file = librarian.FetchUnsavedFile(args.Name);
-            List<Change> changes = librarian.changeCatalog.FindAll(c => c.Language == file.Language);
+            SourceFile file = FileCatalog.Fetch(args.Name);
+
+            // TODO: Tuck this implementation into the ChangeCatalog
+            List<Change> changes = ChangeCatalog.FindAll(c => c.Language == file.Language);
             ChangeFile(file, changes);
         }
 
 
         public void HearNonSourceGotFocus(object sender, EventArgs args)
         {
-            title = "No source file";
-            tasks.Clear();
+            ChangeFile(null, null);
         }
 
 
@@ -71,15 +74,10 @@ namespace swept
             toggledChange.Completed = !toggledChange.Completed;
         }
 
-        public void RefreshChangeList(ChangeCatalog cat)
+        public void RefreshChangeList()
         {
             if (File == null) return;
-            List<Change> changes = cat.FindAll(c => c.Language ==  File.Language);
-            RefreshChangeList(changes);
-        }
-
-        public void RefreshChangeList(List<Change> changes)     //TODO: this may go away, preferring ChangeCat overload...
-        {
+            List<Change> changes = ChangeCatalog.FindAll(c => c.Language ==  File.Language);
             BuildTasks(changes);
         }
 
@@ -97,7 +95,7 @@ namespace swept
             }
         }
 
-        public void ToggleVisibility(object sender, EventArgs e)
+        public void HearTaskWindowToggled(object sender, EventArgs e)
         {
             Visible = !Visible;
         }

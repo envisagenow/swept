@@ -15,7 +15,12 @@ namespace swept
         internal ChangeCatalog changeCatalog;
         internal IDialogPresenter showGUI;
         internal ILibraryWriter persister;
-        
+
+        public void HearSolutionOpened(object sender, FileEventArgs args)
+        {
+            OpenSolution(args.Name);
+        }
+
         public ProjectLibrarian()
         {
             unsavedSourceImage = new SourceFileCatalog();
@@ -52,7 +57,8 @@ namespace swept
             return unsavedSourceImage.Fetch( fileName );
         }
 
-        internal void HearFileSaved( object sender, FileEventArgs args )
+        #region Event Listeners
+        internal void HearFileSaved(object sender, FileEventArgs args)
         {
             SourceFile workingFile = unsavedSourceImage.Fetch( args.Name );
             SourceFile diskFile = savedSourceImage.Fetch(args.Name);
@@ -124,7 +130,7 @@ namespace swept
             Persist();
         }
 
-        public void AddChange(object sender, ChangeEventArgs args)
+        public void HearChangeAdded(object sender, ChangeEventArgs args)
         {
             Change change = args.change;
             changeCatalog.Add(change);
@@ -143,8 +149,7 @@ namespace swept
             }
         }
 
-        #region Event Listeners
-        public void TaskCompletionChanged(object sender, EventArgs args)
+        public void HearTaskCompletionChanged(object sender, EventArgs args)
         {
             SourceCatalogChanged();
         }

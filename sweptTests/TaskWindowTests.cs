@@ -62,33 +62,31 @@ namespace swept.Tests
         }
 
         [Test]
-        public void EntryClick_TogglesCompletion()
+        public void clicking_a_task_should_toggle_its_completion()
         {
             //  We should start with 0 completed, 1 not
             Assert.IsTrue( window.Tasks[0].Completed );
             Assert.IsFalse( window.Tasks[1].Completed );
 
-            //  Clicking 0 should clear 0, leave 1
+            //  Clicking 0 should clear 0, and not affect 1
             window.ClickEntry( 0 );
             Assert.IsFalse( window.Tasks[0].Completed );
             Assert.IsFalse( window.Tasks[1].Completed );
 
-            //  Clicking 0 again should mark it completed, again
+            //  Clicking 0 again should complete 0, and not affect 1
             window.ClickEntry( 0 );
             Assert.IsTrue( window.Tasks[0].Completed );
             Assert.IsFalse( window.Tasks[1].Completed );
 
-            //  Clicking 1 should leave 0
+            //  Clicking 1 should complete 1, and not affect 0
             window.ClickEntry( 1 );
             Assert.IsTrue( window.Tasks[0].Completed );
             Assert.IsTrue( window.Tasks[1].Completed );
 
-            //  Clicking 1 should leave 0
+            //  Clicking 1 again should clear 1, and not affect 0
             window.ClickEntry( 1 );
             Assert.IsTrue( window.Tasks[0].Completed );
             Assert.IsFalse( window.Tasks[1].Completed );
         }
-
-
     }
 }

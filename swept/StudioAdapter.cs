@@ -15,25 +15,28 @@ namespace swept
 
         #region Initialization
 
-
-        public void WhenPluginStarted()
+        // TODO: Convert to event form
+        public void WhenAddinStarted()
         {
-            // TODO: Scratch up a new everything when plugin is started
+            // TODO: Scratch up a new everything when the Swept addin is started
             //Starter starter = new Starter(this);
 
             // TODO: ? Clear this self-load out?
             Librarian = new ProjectLibrarian();
         }
 
-        public void WhenSolutionOpened(string solutionPath)
-        {
-            Librarian.OpenSolution(solutionPath);
-        }
         #endregion
 
 
 
         #region Publish events
+
+        public event EventHandler<FileEventArgs> EventSolutionOpened;
+        public void RaiseSolutionOpened(string solutionPath)
+        {
+            if (EventSolutionOpened != null)
+                EventSolutionOpened(this, new FileEventArgs { Name = solutionPath });
+        }
 
         public event EventHandler<FileEventArgs> EventFileGotFocus;
         public void RaiseFileGotFocus(string fileName)
@@ -141,15 +144,11 @@ namespace swept
         // TODO: Convert to event form
         public void WhenChangeListUpdated()
         {
-            // TODO: Figure out how to send this event without having to post the entire change catalog...
-            taskWindow.RefreshChangeList(Librarian.changeCatalog);
-            Librarian.Persist();    //  Save only the change list?
+            taskWindow.RefreshChangeList();
+            Librarian.Persist();
         }
-
 
         //SELF: Bring in other events as they're found when wrestling with Visual Studio Addin API.
         //SELF: Think through other events that the ChangeWindow may publish
-
     }
-
 }

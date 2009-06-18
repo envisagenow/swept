@@ -134,7 +134,7 @@ namespace swept.Tests
             Assert.AreEqual(0, Horace.changeCatalog.changes.Count);
 
             Change change = new Change("14", "here I am", FileLanguage.CSharp);
-            Horace.AddChange(this, new ChangeEventArgs { change = change });
+            Horace.HearChangeAdded(this, new ChangeEventArgs { change = change });
 
             Assert.AreEqual(1, Horace.changeCatalog.changes.Count);
         }
@@ -143,7 +143,7 @@ namespace swept.Tests
         public void CanAddChange_AndKeepHistoricalCompletions()
         {
             Change historicalChange = new Change("14", "here I am", FileLanguage.CSharp);
-            Horace.AddChange(this, new ChangeEventArgs { change = historicalChange });
+            Horace.HearChangeAdded(this, new ChangeEventArgs { change = historicalChange });
             SourceFile foo = new SourceFile("foo.cs");
             foo.Language = FileLanguage.CSharp;
             Horace.unsavedSourceImage.Add(foo);
@@ -156,7 +156,7 @@ namespace swept.Tests
             talker.KeepHistoricalResponse = true;
             Horace.showGUI = talker;
 
-            Horace.AddChange(this, new ChangeEventArgs { change = historicalChange });
+            Horace.HearChangeAdded(this, new ChangeEventArgs { change = historicalChange });
 
             Assert.AreEqual(1, foo.Completions.Count);
         }
@@ -165,7 +165,7 @@ namespace swept.Tests
         public void CanAddChange_AndDiscardHistoricalCompletions()
         {
             Change historicalChange = new Change("14", "here I am", FileLanguage.CSharp);
-            Horace.AddChange(this, new ChangeEventArgs { change = historicalChange });
+            Horace.HearChangeAdded(this, new ChangeEventArgs { change = historicalChange });
             SourceFile foo = new SourceFile("foo.cs");
             foo.Language = FileLanguage.CSharp;
             Horace.unsavedSourceImage.Add(foo);
@@ -178,7 +178,7 @@ namespace swept.Tests
             talker.KeepHistoricalResponse = false;
             Horace.showGUI = talker;
 
-            Horace.AddChange(this, new ChangeEventArgs { change = historicalChange });
+            Horace.HearChangeAdded(this, new ChangeEventArgs { change = historicalChange });
 
             Assert.AreEqual(0, foo.Completions.Count);
         }

@@ -295,7 +295,7 @@ namespace swept.Tests
         {
             ProjectLibrarian incumbent = adapter.Librarian;
 
-            adapter.WhenPluginStarted();
+            adapter.WhenAddinStarted();
 
             Assert.IsNotNull( adapter.Librarian );
             Assert.AreNotSame( incumbent, adapter.Librarian );
@@ -330,10 +330,11 @@ namespace swept.Tests
         public void WhenSolutionOpened_LibrarianGetsNewPath()
         {
             string newPath = @"new\location";
-            adapter.WhenSolutionOpened( newPath );
+            adapter.RaiseSolutionOpened( newPath );
             Assert.AreEqual( newPath, adapter.Librarian.SolutionPath );
         }
 
+        // TODO: Change this to not remove file from catalogs
         [Test]
         public void WhenFileDeleted_FileRemovedFromCatalogs()
         {
@@ -345,6 +346,8 @@ namespace swept.Tests
             Assert.IsFalse(librarian.ChangeNeedsPersisting);
             Assert.IsNotNull(librarian.savedSourceImage);
         }
+        // TODO: !! add a dialog when re-adding, 'keep or discard history for this source file?'
+
 
         [Test]
         public void WhenSourceFileRenamed_ChangesAreCarriedOver()
