@@ -63,7 +63,7 @@ namespace swept
                 Completions.Add( new Completion( changeID ) );
         }
 
-
+        //TODO: refactor into SourceFile.Clone( file )
         public void CopyCompletionsFrom( SourceFile workingFile )
         {
             Completions.Clear();
@@ -73,8 +73,8 @@ namespace swept
         public void SetCompletionsFromTasks( List<Task> tasks )
         {
             Completions = new List<Completion>();
-            foreach( Task entry in tasks.FindAll( t => t.Completed ) )
-                AddNewCompletion( entry.ID );
+            foreach( Task completed in tasks.FindAll( t => t.Completed ) )
+                AddNewCompletion( completed.ID );
         }
 
         public void AddNewCompletion( string changeID )
@@ -90,7 +90,7 @@ namespace swept
                 throw new Exception( "Can't create a null source file." );
 
             if( xmlNode.Attributes["Name"] == null )
-                throw new Exception( "Can not create a source file without a Name attribute.  Please add one." );
+                throw new Exception( "A SourceFile node must have a Name attribute.  Please add one." );
 
             SourceFile file = new SourceFile( xmlNode.Attributes["Name"].Value );
             foreach( XmlNode completionNode in xmlNode.SelectNodes( "Completion" ) )

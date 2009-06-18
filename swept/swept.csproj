@@ -57,7 +57,7 @@
     <Compile Include="ChangeCatalog.cs" />
     <Compile Include="ChangeWindow.cs" />
     <Compile Include="DialogPresenter.cs" />
-    <Compile Include="EventDispatcher.cs">
+    <Compile Include="StudioAdapter.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="EventArgClasses.cs" />

@@ -93,7 +93,7 @@ namespace swept.Tests
         public void CanSerializeToXMLText()
         {
             SourceFileCatalog fileCat = new SourceFileCatalog();
-            SourceFile blue = fileCat.FetchFile( "blue.cs" );
+            SourceFile blue = fileCat.Fetch( "blue.cs" );
 
             blue.Completions.Add( new Completion( "id11" ) );
 
@@ -120,7 +120,7 @@ namespace swept.Tests
             SourceFile.FromNode( null );
         }
 
-        [Test, ExpectedException( ExpectedMessage="Can not create a source file without a Name attribute.  Please add one." )]
+        [Test, ExpectedException( ExpectedMessage="A SourceFile node must have a Name attribute.  Please add one." )]
         public void SourceFileNodeMissingNameThrows()
         {
             SourceFileCatalog.FromXmlText( "<SourceFileCatalog><SourceFile /></SourceFileCatalog>" );

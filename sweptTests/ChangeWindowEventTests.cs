@@ -16,7 +16,7 @@ namespace swept.Tests
         private ChangeCatalog changeCat;
         private SourceFileCatalog fileCat;
 
-        private EventDispatcher dispatcher;
+        private StudioAdapter dispatcher;
         private ProjectLibrarian librarian;
 
         [SetUp]
@@ -26,13 +26,13 @@ namespace swept.Tests
             starter.Start();
 
             librarian = starter.Librarian;
-            dispatcher = starter.Dispatcher;
+            dispatcher = starter.Adapter;
 
             changeCat = librarian.changeCatalog;
             string indentID = "14";
             changeCat.Add(new Change(indentID, "indentation cleanup", FileLanguage.CSharp));
 
-            fileCat = librarian.InMemorySourceFiles;
+            fileCat = librarian.unsavedSourceImage;
 
             fileNameBari = "bari.cs";
             bari = new SourceFile(fileNameBari);
@@ -40,8 +40,8 @@ namespace swept.Tests
             fileCat.Files.Add(bari);
 
             MockLibraryWriter writer = new MockLibraryWriter();
-            librarian.writer = writer;
-            librarian.LastSavedSourceFiles = new SourceFileCatalog(fileCat);
+            librarian.persister = writer;
+            librarian.savedSourceImage = SourceFileCatalog.Clone(fileCat);
             librarian.SolutionPath = "mockpath";
             librarian.Persist();
 
@@ -53,7 +53,7 @@ namespace swept.Tests
         [Test]
         public void WhenChangeListUpdated_TaskWindow_RefreshesTasks()
         {
-            dispatcher.WhenFileGotFocus("foo.cs");
+            dispatcher.RaiseFileGotFocus("foo.cs");
             int initialChangeCount = window.Tasks.Count;
             changeCat.Add(new Change("Inf09", "Change delegates to lambdas", FileLanguage.CSharp));
 
@@ -65,7 +65,7 @@ namespace swept.Tests
         [Test]
         public void WhenChangeListUpdated_EmptyTaskWindow_RefreshesItsEmptiness()
         {
-            dispatcher.WhenNonSourceGetsFocus();
+            dispatcher.RaiseNonSourceGetsFocus();
             changeCat.Add(new Change("Inf09", "Change delegates to lambdas", FileLanguage.CSharp));
             dispatcher.WhenChangeListUpdated();
 
@@ -91,15 +91,15 @@ namespace swept.Tests
             // User Requests to keep History
             MockDialogPresenter talker = new MockDialogPresenter();
             talker.KeepHistoricalResponse = true;
-            dispatcher.Librarian.talker = talker;
+            dispatcher.Librarian.showGUI = talker;
 
             // Add Change 14 back
             Change change = new Change("14", "indentation cleanup", FileLanguage.CSharp);
-            dispatcher.WhenChangeAdded( change );
+            dispatcher.RaiseChangeAdded( change );
 
             // Bari SHOULD have 14 completed already
             XmlDocument doc = new XmlDocument();
-            doc.LoadXml(librarian.LastSavedSourceFiles.ToXmlText());
+            doc.LoadXml(librarian.savedSourceImage.ToXmlText());
             Assert.IsTrue(IsCompletionSaved(doc, "bari.cs", "14"));
         }
 
@@ -112,17 +112,17 @@ namespace swept.Tests
             // User Requests to remove History
             MockDialogPresenter talker = new MockDialogPresenter();
             talker.KeepHistoricalResponse = false;
-            dispatcher.Librarian.talker = talker;
+            dispatcher.Librarian.showGUI = talker;
 
             // Add Change 14 back
             Change change = new Change("14", "indentation cleanup", FileLanguage.CSharp);
-            dispatcher.WhenChangeAdded(change);
+            dispatcher.RaiseChangeAdded(change);
 
-            dispatcher.WhenFileSaved("bari.cs");
+            dispatcher.RaiseFileSaved("bari.cs");
 
             // Bari SHOULD NOT have 14 completed already
             XmlDocument doc = new XmlDocument();
-            doc.LoadXml(librarian.LastSavedSourceFiles.ToXmlText());
+            doc.LoadXml(librarian.savedSourceImage.ToXmlText());
             Assert.IsFalse(IsCompletionSaved(doc, "bari.cs", "14"));
         }
 
@@ -136,7 +136,7 @@ namespace swept.Tests
         [Test]
         public void WhenChangeRemoved_TaskWindow_RefreshesTasks()
         {
-            dispatcher.WhenFileGotFocus("foo.cs");
+            dispatcher.RaiseFileGotFocus("foo.cs");
             int initialChangeCount = window.Tasks.Count;
             changeCat.Remove("14");
 

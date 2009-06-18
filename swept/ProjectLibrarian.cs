@@ -9,68 +9,68 @@ namespace swept
 {
     public class ProjectLibrarian
     {
-        internal SourceFileCatalog InMemorySourceFiles;
-        internal SourceFileCatalog LastSavedSourceFiles;
+        internal SourceFileCatalog unsavedSourceImage;
+        internal SourceFileCatalog savedSourceImage;
         internal ChangeCatalog changeCatalog;
-        internal IDialogPresenter talker;
-        internal ILibraryWriter writer;
+        internal IDialogPresenter showGUI;
+        internal ILibraryWriter persister;
         
         public ProjectLibrarian()
         {
-            InMemorySourceFiles = new SourceFileCatalog();
-            LastSavedSourceFiles = new SourceFileCatalog();
+            unsavedSourceImage = new SourceFileCatalog();
+            savedSourceImage = new SourceFileCatalog();
             changeCatalog = new ChangeCatalog();
-            talker = new DialogPresenter();
-            writer = new LibraryWriter();
+            showGUI = new DialogPresenter();
+            persister = new LibraryWriter();
         }
 
         internal bool ChangeNeedsPersisting
         {
             get
             {
-                return changeCatalog.IsDirty || sourceIsDirty;
+                return changeCatalog.IsDirty || unsavedSourceChangesExist;
             }
         }
 
-        //TODO:  Remove sourceIsDirty, make tests pass via more mature methods.
-        internal bool sourceIsDirty;
+        //TODO:  Reimplement flag in the SourceFileCatalog, make tests pass via more mature methods.
+        internal bool unsavedSourceChangesExist;
 
         public string SolutionPath { get; internal set; }
         public void OpenSolution(string solutionPath)
         {
             SolutionPath = solutionPath;
             changeCatalog = LoadChangeCatalog(SolutionPath);
-            InMemorySourceFiles = LoadSourceFileCatalog(SolutionPath);
-            InMemorySourceFiles.ChangeCatalog = changeCatalog;
-            LastSavedSourceFiles = new SourceFileCatalog(InMemorySourceFiles);
+            unsavedSourceImage = LoadSourceFileCatalog(SolutionPath);
+            unsavedSourceImage.ChangeCatalog = changeCatalog;
+            savedSourceImage = SourceFileCatalog.Clone(unsavedSourceImage);
         }
 
 
-        public SourceFile FetchWorkingFile( string fileName )
+        public SourceFile FetchUnsavedFile( string fileName )
         {
-            return InMemorySourceFiles.FetchFile( fileName );
+            return unsavedSourceImage.Fetch( fileName );
         }
 
-        internal void SaveFile( object sender, FileEventArgs args )
+        internal void HearFileSaved( object sender, FileEventArgs args )
         {
-            SourceFile workingFile = InMemorySourceFiles.FetchFile( args.Name );
-            SourceFile diskFile = LastSavedSourceFiles.FetchFile(args.Name);
+            SourceFile workingFile = unsavedSourceImage.Fetch( args.Name );
+            SourceFile diskFile = savedSourceImage.Fetch(args.Name);
             diskFile.CopyCompletionsFrom( workingFile );
 
             Persist();
         }
 
-        public void PasteFile(object sender, FileEventArgs args)
+        public void HearFilePasted(object sender, FileEventArgs args)
         {
             string fileName = args.Name;
-            SourceFile pastedWorkingFile = InMemorySourceFiles.FetchFile(fileName);
-            SourceFile pastedDiskFile = LastSavedSourceFiles.FetchFile(fileName);
+            SourceFile pastedWorkingFile = unsavedSourceImage.Fetch(fileName);
+            SourceFile pastedDiskFile = savedSourceImage.Fetch(fileName);
 
             string copyPrefix = "Copy of ";
             if (fileName.StartsWith(copyPrefix))
             {
                 string baseFileName = fileName.Substring(copyPrefix.Length);
-                SourceFile baseDiskFile = LastSavedSourceFiles.FetchFile(baseFileName);
+                SourceFile baseDiskFile = savedSourceImage.Fetch(baseFileName);
 
                 pastedDiskFile.CopyCompletionsFrom(baseDiskFile);
             }
@@ -80,15 +80,15 @@ namespace swept
             Persist();
         }
 
-        internal void SaveFileAs(object sender, FileListEventArgs args)
+        internal void HearFileSavedAs(object sender, FileListEventArgs args)
         {
             string oldName = args.Names[0];
             string newName = args.Names[1];
 
-            SourceFile workingOriginalFile = InMemorySourceFiles.FetchFile(oldName);
-            SourceFile diskOriginalFile = LastSavedSourceFiles.FetchFile(oldName);
-            SourceFile workingNewFile = InMemorySourceFiles.FetchFile(newName);
-            SourceFile diskNewFile = LastSavedSourceFiles.FetchFile(newName);
+            SourceFile workingOriginalFile = unsavedSourceImage.Fetch(oldName);
+            SourceFile diskOriginalFile = savedSourceImage.Fetch(oldName);
+            SourceFile workingNewFile = unsavedSourceImage.Fetch(newName);
+            SourceFile diskNewFile = savedSourceImage.Fetch(newName);
 
             diskNewFile.CopyCompletionsFrom(workingOriginalFile);
             workingOriginalFile.CopyCompletionsFrom(diskOriginalFile);
@@ -97,28 +97,28 @@ namespace swept
             Persist();
         }
 
-        internal void RevertFile(object sender, FileEventArgs args)
+        internal void HearFileChangesAbandoned(object sender, FileEventArgs args)
         {
-            SourceFile workingFile = InMemorySourceFiles.FetchFile( args.Name );
-            SourceFile diskFile = LastSavedSourceFiles.FetchFile(args.Name);
+            SourceFile workingFile = unsavedSourceImage.Fetch( args.Name );
+            SourceFile diskFile = savedSourceImage.Fetch(args.Name);
             workingFile.CopyCompletionsFrom(diskFile);
         }
 
-        public void DeleteFile(object sender, FileEventArgs args )
+        public void HearFileDeleted(object sender, FileEventArgs args )
         {
-            InMemorySourceFiles.Delete( args.Name );
-            LastSavedSourceFiles.Delete( args.Name );
+            unsavedSourceImage.Delete( args.Name );
+            savedSourceImage.Delete( args.Name );
 
             Persist();
         }
 
-        public void RenameFile(object sender, FileListEventArgs args)
+        public void HearFileRenamed(object sender, FileListEventArgs args)
         {
             string oldName = args.Names[0];
             string newName = args.Names[1];
 
-            InMemorySourceFiles.Rename(oldName, newName);
-            LastSavedSourceFiles.Rename(oldName, newName);
+            unsavedSourceImage.Rename(oldName, newName);
+            savedSourceImage.Rename(oldName, newName);
 
             Persist();
         }
@@ -129,10 +129,10 @@ namespace swept
             changeCatalog.Add(change);
 
             //if we have any completions pre-existing for this ID
-            List<SourceFile> filesWithHistory = InMemorySourceFiles.Files.FindAll(file => file.Completions.Exists(c => c.ChangeID == change.ID));
+            List<SourceFile> filesWithHistory = unsavedSourceImage.Files.FindAll(file => file.Completions.Exists(c => c.ChangeID == change.ID));
             if (filesWithHistory.Count > 0)
             {
-                bool keep = talker.KeepHistoricalCompletionsForChange(change);
+                bool keep = showGUI.KeepHistoricalCompletionsForChange(change);
 
                 //if discard, sweep them out of the file catalogs.
                 if (!keep)
@@ -148,9 +148,9 @@ namespace swept
             SourceCatalogChanged();
         }
 
-        public void SolutionSaved(object sender, EventArgs args)
+        public void HearSolutionSaved(object sender, EventArgs args)
         {
-            LastSavedSourceFiles = new SourceFileCatalog(InMemorySourceFiles);
+            savedSourceImage = SourceFileCatalog.Clone(unsavedSourceImage);
             Persist();
         }
 
@@ -158,17 +158,17 @@ namespace swept
 
         public void SourceCatalogChanged()
         {
-            sourceIsDirty = true;
+            unsavedSourceChangesExist = true;
         }
 
         virtual internal void Persist() 
         {
-            sourceIsDirty = false;
+            unsavedSourceChangesExist = false;
             changeCatalog.MarkClean();
 
 
 
-            writer.Save( "swept.progress.library", ToXmlText() );
+            persister.Save( "swept.progress.library", ToXmlText() );
         }
 
         private string ToXmlText()
@@ -179,7 +179,7 @@ namespace swept
 {1}
 </SweptProjectData>", 
                 changeCatalog.ToXmlText(), 
-                LastSavedSourceFiles.ToXmlText()
+                savedSourceImage.ToXmlText()
             );
         }
 

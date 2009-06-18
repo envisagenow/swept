@@ -15,7 +15,7 @@ namespace swept.Tests
         private ChangeCatalog changeCat;
 
         [SetUp]
-        public void CanCreate()
+        public void can_create()
         {
             fileCat = new SourceFileCatalog();
             changeCat = new ChangeCatalog();
@@ -23,35 +23,39 @@ namespace swept.Tests
         }
 
         [Test]
-        public void OneArgConstructorClonesNewCatalog()
+        public void can_Clone_FileCatalog()
         {
             fileCat.Files.Add( new SourceFile( "flubber.cs" ) );
 
-            SourceFileCatalog secondCat = new SourceFileCatalog( fileCat );
+            SourceFileCatalog secondCat = SourceFileCatalog.Clone( fileCat );
 
             Assert.AreEqual( fileCat.Files.Count, secondCat.Files.Count );
             Assert.AreEqual( "flubber.cs", secondCat.Files[0].Name );
         }
 
         [Test]
-        public void CloneCopiesCompletions()
+        public void Clone_includes_SourceFile_Completions()
         {
-            //check that completions are carried over
-            SourceFile file = new SourceFile( "flubber.cs" );
-            file.Completions.Add( new Completion( "33" ) );
-            fileCat.Files.Add( file );
-            SourceFileCatalog secondCat = new SourceFileCatalog( fileCat );
+            //  I have completed change 33 in file flubber.cs
+            string fileName = "flubber.cs";
+            SourceFile file = new SourceFile(fileName);
+            file.Completions.Add(new Completion("33"));
+            fileCat.Files.Add(file);
 
-            SourceFile secondFile = secondCat.Files[0];
+            SourceFileCatalog clonedCat = SourceFileCatalog.Clone(fileCat);
 
-            Assert.AreEqual( 1, secondFile.Completions.Count );
+            SourceFile clonedFile = clonedCat.Fetch(fileName);
+            Assert.AreEqual(file.Completions.Count, clonedFile.Completions.Count);
+            Assert.AreEqual(file.Name, clonedFile.Name);
+
+            Assert.AreNotSame(file, clonedFile);
         }
 
         [Test]
-        public void ChangeCatalogComesOverWhenCloning()
+        public void Clone_does_not_duplicate_ChangeCatalog()
         {
-            SourceFileCatalog secondCat = new SourceFileCatalog( fileCat );
-            Assert.AreEqual( changeCat, secondCat.ChangeCatalog );
+            SourceFileCatalog secondCat = SourceFileCatalog.Clone( fileCat );
+            Assert.AreSame( changeCat, secondCat.ChangeCatalog );
         }
 
         [Test]
@@ -63,55 +67,56 @@ namespace swept.Tests
         }
 
         [Test]
-        public void CanReturnSourceFile()
+        public void Fetch_returns_SourceFile()
         {
             SourceFile entry = new SourceFile( "foo.cs" );
             fileCat.Files.Add( entry );
 
-            SourceFile file = fileCat.FetchFile( "foo.cs" );
+            SourceFile file = fileCat.Fetch( "foo.cs" );
             Assert.AreEqual( "foo.cs", file.Name );
         }
 
         [Test]
-        public void CanDistinguishFilesByPath()
+        public void valid_SourceFile_returned_from_Fetching_unknown_filename()
         {
-            SourceFile entry1 = new SourceFile( "folder1\\thing.cs" );
-            SourceFile entry2 = new SourceFile( "folder2\\thing.cs" );
-
-            fileCat.Files.Add( entry1 );
-            fileCat.Files.Add( entry2 );
-
-            Assert.AreEqual( 2, fileCat.Files.Count );
-        }
-
-        [Test]
-        public void RecognizesSameFile()
-        {
-            SourceFile entry = new SourceFile( "folder1\\thing.cs" );
-
-            fileCat.Add( entry );
-            fileCat.Add( entry );
-
-            Assert.AreEqual( 1, fileCat.Files.Count );
-        }
-
-        [Test]
-        public void ValidSourceFileReturnedFromUnknownName()
-        {
-            SourceFile file = fileCat.FetchFile( "unknown.html" );
+            SourceFile file = fileCat.Fetch( "unknown.html" );
             Assert.AreEqual( "unknown.html", file.Name );
             Assert.AreEqual( 0, file.Completions.Count );
         }
 
         [Test]
-        public void FileCatalogRemembersFetchedSourceFiles()
+        public void will_not_add_duplicate_files_twice()
         {
-            SourceFile blue = fileCat.FetchFile( "blue.cs" );
+            SourceFile entry1 = new SourceFile("folder1\\thing.cs");
+            SourceFile entry2 = new SourceFile("folder1\\thing.cs");
+
+            fileCat.Add(entry1);
+            fileCat.Add(entry2);
+
+            Assert.AreEqual(1, fileCat.Files.Count);
+        }
+
+        [Test]
+        public void files_that_differ_in_path_are_different_SourceFiles()
+        {
+            SourceFile entry1 = new SourceFile("folder1\\thing.cs");
+            SourceFile entry2 = new SourceFile("folder2\\thing.cs");
+
+            fileCat.Files.Add(entry1);
+            fileCat.Files.Add(entry2);
+
+            Assert.AreEqual(2, fileCat.Files.Count);
+        }
+
+        [Test]
+        public void FileCatalog_remembers_Fetched_SourceFiles()
+        {
+            SourceFile blue = fileCat.Fetch( "blue.cs" );
 
             blue.Completions.Add( new Completion( "id11" ) );
             Assert.AreEqual( 1, fileCat.Files.Count );
 
-            SourceFile alsoBlue = fileCat.FetchFile( "blue.cs" );
+            SourceFile alsoBlue = fileCat.Fetch( "blue.cs" );
             Assert.AreEqual( 1, alsoBlue.Completions.Count );
             Assert.AreSame( blue, alsoBlue );
         }
@@ -120,14 +125,14 @@ namespace swept.Tests
         public void CanDelete_ExistingFile()
         {
             string blueName = "blue.cs";
-            SourceFile blue = fileCat.FetchFile(blueName);
+            SourceFile blue = fileCat.Fetch(blueName);
 
             blue.Completions.Add(new Completion("id11"));
             Assert.AreEqual(1, fileCat.Files.Count);
 
             fileCat.Delete(blueName);
 
-            SourceFile alsoBlue = fileCat.FetchFile(blueName);
+            SourceFile alsoBlue = fileCat.Fetch(blueName);
             Assert.AreEqual(0, alsoBlue.Completions.Count);
         }
 

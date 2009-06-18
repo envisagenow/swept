@@ -17,23 +17,26 @@ namespace swept
             Files = new List<SourceFile>();
         }
 
-        public SourceFileCatalog( SourceFileCatalog fileCat )
+        public static SourceFileCatalog Clone( SourceFileCatalog parent )
         {
-            ChangeCatalog = fileCat.ChangeCatalog;
+            SourceFileCatalog newCatalog = new SourceFileCatalog();
 
-            Files = new List<SourceFile>();
-            foreach( SourceFile file in fileCat.Files )
+            newCatalog.ChangeCatalog = parent.ChangeCatalog;
+            foreach (SourceFile file in parent.Files)
             {
-                SourceFile newSourceFile = new SourceFile( file.Name );
-                newSourceFile.CopyCompletionsFrom( file );
-                Files.Add( newSourceFile );
+                SourceFile newSourceFile = new SourceFile(file.Name);
+                newSourceFile.CopyCompletionsFrom(file);
+                newCatalog.Files.Add(newSourceFile);
             }
+
+            return newCatalog;
         }
 
-        public void Add( SourceFile file )
+        public void Add(SourceFile file)
         {
-            if( !Files.Contains( file ) )
-                Files.Add( file );
+            if (Files.Exists(sf => sf.Name == file.Name))
+                return;
+            Files.Add(file);
         }
 
         public void Delete( string fileName )
@@ -45,7 +48,7 @@ namespace swept
 
         public void Rename(string oldName, string newName)
         {
-            SourceFile file = FetchFile(oldName);
+            SourceFile file = Fetch(oldName);
             file.Name = newName;
         }
 
@@ -54,7 +57,7 @@ namespace swept
             return Files.Find( f => f.Name == name );
         }
 
-        internal SourceFile FetchFile( string name )
+        internal SourceFile Fetch( string name )
         {
             SourceFile foundFile = Find( name );
 

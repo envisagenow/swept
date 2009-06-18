@@ -20,7 +20,7 @@ namespace swept.Tests
         [Test]
         public void EventDispatcher_IsConnected()
         {
-            EventDispatcher ed = starter.Dispatcher;
+            StudioAdapter ed = starter.Adapter;
 
             Assert.IsNotNull(ed.taskWindow);
             Assert.IsNotNull(ed.Librarian);

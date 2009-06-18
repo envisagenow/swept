@@ -14,7 +14,7 @@ namespace swept.Tests
         private ChangeCatalog changeCat;
         private SourceFileCatalog fileCat;
 
-        private EventDispatcher dispatcher;
+        private StudioAdapter dispatcher;
         private ProjectLibrarian librarian;
 
         private TaskWindow taskWindow;
@@ -27,7 +27,7 @@ namespace swept.Tests
             starter = new Starter();
             starter.Start();
             librarian = starter.Librarian;
-            dispatcher = starter.Dispatcher;
+            dispatcher = starter.Adapter;
 
             changeCat = librarian.changeCatalog;
             string indentID = "14";
@@ -35,7 +35,7 @@ namespace swept.Tests
 
             bar = new SourceFile("bar.cs");
 
-            fileCat = librarian.InMemorySourceFiles;
+            fileCat = librarian.unsavedSourceImage;
             fileCat.Files.Add(bar);
 
             taskWindow = dispatcher.taskWindow;

@@ -26,14 +26,14 @@ namespace swept.Tests
         public void SaveSolution_will_persist_all_unsaved_SourceFiles()
         {
             MockLibraryWriter writer = new MockLibraryWriter();
-            Horace.writer = writer;
+            Horace.persister = writer;
 
             string someFileName = "some_file.cs";
             SourceFile someFile = new SourceFile(someFileName);
             someFile.AddNewCompletion("007");
-            Horace.InMemorySourceFiles.Add(someFile);
+            Horace.unsavedSourceImage.Add(someFile);
 
-            Horace.SolutionSaved(this, new EventArgs());
+            Horace.HearSolutionSaved(this, new EventArgs());
 
             string expectedXmlText =
 @"<SweptProjectData>
@@ -66,24 +66,24 @@ namespace swept.Tests
             Horace = new ProjectLibrarian();
             Horace.SolutionPath = "my/path";
 
-            Assert.IsNotNull( Horace.InMemorySourceFiles );
-            Assert.IsNotNull( Horace.LastSavedSourceFiles );
-            Assert.AreNotSame( Horace.InMemorySourceFiles, Horace.LastSavedSourceFiles );
+            Assert.IsNotNull( Horace.unsavedSourceImage );
+            Assert.IsNotNull( Horace.savedSourceImage );
+            Assert.AreNotSame( Horace.unsavedSourceImage, Horace.savedSourceImage );
         }
 
         [Test]
         public void CanSave()
         {
             MockLibraryWriter writer = new MockLibraryWriter();
-            Horace.writer = writer;
+            Horace.persister = writer;
 
             string someFileName = "some_file.cs";
             SourceFile someFile = new SourceFile(someFileName);
             someFile.AddNewCompletion("007");
-            Horace.InMemorySourceFiles.Add(someFile);
+            Horace.unsavedSourceImage.Add(someFile);
 
             FileEventArgs args = new FileEventArgs { Name = someFileName };
-            Horace.SaveFile(this, args);
+            Horace.HearFileSaved(this, args);
 
             string expectedXmlText =
 @"<SweptProjectData>
@@ -103,7 +103,7 @@ namespace swept.Tests
         public void Can_Save_catalog_with_Change()
         {
             MockLibraryWriter writer = new MockLibraryWriter();
-            Horace.writer = writer;
+            Horace.persister = writer;
 
             Horace.changeCatalog.Add(new Change("Uno", "Eliminate profanity from error messages.", FileLanguage.CSharp));
             Horace.Persist();
@@ -124,7 +124,7 @@ namespace swept.Tests
         [Test]
         public void CanFetchWorkingFile()
         {
-            SourceFile foo = Horace.FetchWorkingFile( "foo.cs" );
+            SourceFile foo = Horace.FetchUnsavedFile( "foo.cs" );
         }
 
         [Test]
@@ -145,7 +145,7 @@ namespace swept.Tests
             Horace.AddChange(this, new ChangeEventArgs { change = historicalChange });
             SourceFile foo = new SourceFile("foo.cs");
             foo.Language = FileLanguage.CSharp;
-            Horace.InMemorySourceFiles.Add(foo);
+            Horace.unsavedSourceImage.Add(foo);
             foo.Completions.Add(new Completion("14"));
 
             Horace.changeCatalog.Remove("14");
@@ -153,7 +153,7 @@ namespace swept.Tests
             //  In this case, the user chooses to keep history.
             MockDialogPresenter talker = new MockDialogPresenter();
             talker.KeepHistoricalResponse = true;
-            Horace.talker = talker;
+            Horace.showGUI = talker;
 
             Horace.AddChange(this, new ChangeEventArgs { change = historicalChange });
 
@@ -167,7 +167,7 @@ namespace swept.Tests
             Horace.AddChange(this, new ChangeEventArgs { change = historicalChange });
             SourceFile foo = new SourceFile("foo.cs");
             foo.Language = FileLanguage.CSharp;
-            Horace.InMemorySourceFiles.Add(foo);
+            Horace.unsavedSourceImage.Add(foo);
             foo.Completions.Add(new Completion("14"));
 
             Horace.changeCatalog.Remove("14");
@@ -175,7 +175,7 @@ namespace swept.Tests
             //  In this case, the user chooses to discard history.
             MockDialogPresenter talker = new MockDialogPresenter();
             talker.KeepHistoricalResponse = false;
-            Horace.talker = talker;
+            Horace.showGUI = talker;
 
             Horace.AddChange(this, new ChangeEventArgs { change = historicalChange });
 

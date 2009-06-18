@@ -65,7 +65,7 @@
     <Compile Include="ChangeTests.cs" />
     <Compile Include="CompletionTests.cs" />
     <Compile Include="TaskWindowTests.cs" />
-    <Compile Include="EventDispatcherTests.cs" />
+    <Compile Include="StudioAdapterTests.cs" />
     <Compile Include="ProjectLibrarianTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SerializationTests.cs" />

@@ -49,15 +49,15 @@ namespace swept
             BuildTasks(changes);
         }
 
-        public void ChangeFile(object sender, FileEventArgs args)
+        public void HearFileGotFocus(object sender, FileEventArgs args)
         {
-            SourceFile file = librarian.FetchWorkingFile(args.Name);
+            SourceFile file = librarian.FetchUnsavedFile(args.Name);
             List<Change> changes = librarian.changeCatalog.FindAll(c => c.Language == file.Language);
             ChangeFile(file, changes);
         }
 
 
-        public void NoSourceFile(object sender, EventArgs args)
+        public void HearNonSourceGotFocus(object sender, EventArgs args)
         {
             title = "No source file";
             tasks.Clear();

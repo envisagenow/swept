@@ -10,16 +10,16 @@ using System.Xml;
 namespace swept.Tests
 {
     [TestFixture]
-    public class EventDispatcherTests
+    public class StudioAdapterTests
     {
-        Starter starter;
+        private Starter starter;
         private TaskWindow window;
-        private string fileNameBari;
-        private SourceFile bari;
+        private string fileName;
+        private SourceFile file;
         private ChangeCatalog changeCat;
         private SourceFileCatalog fileCat;
 
-        private EventDispatcher dispatcher;
+        private StudioAdapter adapter;
         private ProjectLibrarian librarian;
 
         [SetUp]
@@ -29,27 +29,27 @@ namespace swept.Tests
             starter.Start();
             
             librarian = starter.Librarian;
-            dispatcher = starter.Dispatcher;
+            adapter = starter.Adapter;
 
             changeCat = librarian.changeCatalog;
             string indentID = "14";
             changeCat.Add(new Change(indentID, "indentation cleanup", FileLanguage.CSharp));
 
-            fileCat = librarian.InMemorySourceFiles;
+            fileCat = librarian.unsavedSourceImage;
 
-            fileNameBari = "bari.cs";
-            bari = new SourceFile(fileNameBari);
-            bari.Completions.Add(new Completion(indentID));
-            fileCat.Files.Add(bari);
+            fileName = "bari.cs";
+            file = new SourceFile(fileName);
+            file.Completions.Add(new Completion(indentID));
+            fileCat.Files.Add(file);
 
             MockLibraryWriter writer = new MockLibraryWriter();
-            librarian.writer = writer;
+            librarian.persister = writer;
 
-            librarian.LastSavedSourceFiles = new SourceFileCatalog(fileCat);
+            librarian.savedSourceImage = SourceFileCatalog.Clone(fileCat);
             librarian.SolutionPath = "mockpath";
             librarian.Persist();
 
-            window = dispatcher.taskWindow;
+            window = adapter.taskWindow;
         }
 
         
@@ -57,10 +57,10 @@ namespace swept.Tests
         public void WhenFilePasted_VerifyNewFileHasCompletions_OfOriginal()
         {
             string pastedName = "Copy of bari.cs";
-            dispatcher.WhenFilePasted(pastedName);
+            adapter.RaiseFilePasted(pastedName);
 
             XmlDocument doc = new XmlDocument();
-            doc.LoadXml(librarian.LastSavedSourceFiles.ToXmlText());
+            doc.LoadXml(librarian.savedSourceImage.ToXmlText());
 
             Assert.IsTrue(IsCompletionSaved(doc, pastedName));
         }
@@ -69,10 +69,10 @@ namespace swept.Tests
         public void WhenFilePasted_ItGetsNoCompletions_IfItDoesNotDuplicate_AnExistingFile()
         {
             string pastedName = "Copy of weezy.cs";
-            dispatcher.WhenFilePasted(pastedName);
+            adapter.RaiseFilePasted(pastedName);
 
             XmlDocument doc = new XmlDocument();
-            doc.LoadXml(librarian.LastSavedSourceFiles.ToXmlText());
+            doc.LoadXml(librarian.savedSourceImage.ToXmlText());
 
             string completionXPath = String.Format("//SourceFile[@Name='{0}']", pastedName);
             Assert.IsNotNull(doc.SelectSingleNode(completionXPath));
@@ -84,10 +84,10 @@ namespace swept.Tests
         public void WhenFilePasted_ItGetsNoCompletions_IfItIsNotNamed_CopyOfSomething()
         {
             string pastedName = "weezy.cs";
-            dispatcher.WhenFilePasted(pastedName);
+            adapter.RaiseFilePasted(pastedName);
 
             XmlDocument doc = new XmlDocument();
-            doc.LoadXml(librarian.LastSavedSourceFiles.ToXmlText());
+            doc.LoadXml(librarian.savedSourceImage.ToXmlText());
 
             string completionXPath = String.Format("//SourceFile[@Name='{0}']", pastedName);
             Assert.IsNotNull(doc.SelectSingleNode(completionXPath));
@@ -105,10 +105,10 @@ namespace swept.Tests
             fileCat.Files.Add(originalFile);
 
             string newName = "new" + originalName;
-            dispatcher.WhenFileSavedAs(originalName, newName);
+            adapter.RaiseFileSavedAs(originalName, newName);
 
             XmlDocument doc = new XmlDocument();
-            doc.LoadXml(librarian.LastSavedSourceFiles.ToXmlText());
+            doc.LoadXml(librarian.savedSourceImage.ToXmlText());
 
             //  "newgadgets" now exists, with the "14" completion saved
             Assert.IsTrue(IsCompletionSaved(doc, newName));
@@ -124,15 +124,15 @@ namespace swept.Tests
             changeCat.Add(new Change("12", "Replace old MultiSelect control with new one", FileLanguage.CSharp));
             originalFile.Completions.Add(new Completion("12"));
 
-            dispatcher.WhenFileSaved(originalName);
+            adapter.RaiseFileSaved(originalName);
             
             originalFile.Completions.Add(new Completion("14"));
 
             string newName = "new" + originalName;
-            dispatcher.WhenFileSavedAs(originalName, newName);
+            adapter.RaiseFileSavedAs(originalName, newName);
 
             XmlDocument doc = new XmlDocument();
-            doc.LoadXml(librarian.LastSavedSourceFiles.ToXmlText());
+            doc.LoadXml(librarian.savedSourceImage.ToXmlText());
 
             //  Original file still exists, without pending unsaved change
             //  But it does have all earlier saved changes
@@ -155,10 +155,10 @@ namespace swept.Tests
             fileCat.Files.Add(widgetsFile);
 
             //  User saves gadgets, but not widgets
-            dispatcher.WhenFileSaved(gadgetsName);
+            adapter.RaiseFileSaved(gadgetsName);
 
             XmlDocument doc = new XmlDocument();
-            doc.LoadXml(librarian.LastSavedSourceFiles.ToXmlText());
+            doc.LoadXml(librarian.savedSourceImage.ToXmlText());
 
             Assert.IsTrue(IsCompletionSaved(doc, "bari.cs"));
             Assert.IsTrue(IsCompletionSaved(doc, gadgetsName));
@@ -172,15 +172,15 @@ namespace swept.Tests
             SourceFile fileGadgets = new SourceFile(nameGadgets);
             fileGadgets.Completions.Add(new Completion("14"));
             fileCat.Add(fileGadgets);
-            librarian.sourceIsDirty = true;
+            librarian.unsavedSourceChangesExist = true;
  
             Assert.IsTrue(librarian.ChangeNeedsPersisting);
 
             XmlDocument doc = new XmlDocument();
-            doc.LoadXml(librarian.LastSavedSourceFiles.ToXmlText());
+            doc.LoadXml(librarian.savedSourceImage.ToXmlText());
 
             Assert.IsTrue(IsCompletionSaved(doc, "bari.cs"));
-            dispatcher.WhenFileSaved(nameGadgets);
+            adapter.RaiseFileSaved(nameGadgets);
 
             Assert.IsFalse(librarian.ChangeNeedsPersisting);
 
@@ -202,10 +202,10 @@ namespace swept.Tests
             fileUnsaved.Completions.Add( completion );
 
             // save bari
-            dispatcher.WhenFileSaved( fileNameBari );
+            adapter.RaiseFileSaved( fileName );
 
             XmlDocument doc = new XmlDocument();
-            doc.LoadXml( librarian.LastSavedSourceFiles.ToXmlText() );
+            doc.LoadXml( librarian.savedSourceImage.ToXmlText() );
 
             //check that bari.cs is saved
             Assert.IsTrue( IsCompletionSaved( doc, "bari.cs" ) );
@@ -219,7 +219,7 @@ namespace swept.Tests
         {
             Assert.IsFalse(librarian.ChangeNeedsPersisting);
 
-            dispatcher.WhenTaskCompletionChanged();
+            adapter.RaiseTaskCompletionChanged();
 
             Assert.IsTrue(librarian.ChangeNeedsPersisting);
         }
@@ -239,17 +239,17 @@ namespace swept.Tests
         [Test]
         public void WhenFileGetsFocus_BecomesCurrentFile()
         {
-            dispatcher.WhenFileGotFocus( "foo.cs" );
+            adapter.RaiseFileGotFocus( "foo.cs" );
             Assert.AreEqual( "foo.cs", window.File.Name );
 
-            dispatcher.WhenFileGotFocus( "bar.cs" );
+            adapter.RaiseFileGotFocus( "bar.cs" );
             Assert.AreEqual( "bar.cs", window.File.Name );
         }
 
         [Test]
         public void WhenFileGetsFocus_TaskWindowUpdates()
         {
-            dispatcher.WhenFileGotFocus( "foo.cs" );
+            adapter.RaiseFileGotFocus( "foo.cs" );
             Assert.AreEqual( "foo.cs", window.File.Name );
         }
 
@@ -257,7 +257,7 @@ namespace swept.Tests
         public void FileFocusChange_IncludesUnsavedCompletions()
         {
             librarian.changeCatalog.Add( new Change( "728", "Date Normalization", FileLanguage.CSharp ) );
-            dispatcher.WhenFileGotFocus( "party_planning.cs" );
+            adapter.RaiseFileGotFocus( "party_planning.cs" );
 
             Assert.AreEqual( 2, window.Tasks.Count );
             SourceFile partyFile = window.File;
@@ -270,7 +270,7 @@ namespace swept.Tests
             Assert.AreEqual( 0, partyFile.Completions.Count );
 
             //  User done with party planning--switch to another file
-            dispatcher.WhenFileGotFocus( fileNameBari );
+            adapter.RaiseFileGotFocus( fileName );
 
             //  Now we've stored completions in the working source file object
             Assert.AreEqual( 2, partyFile.Completions.Count );
@@ -279,11 +279,11 @@ namespace swept.Tests
         [Test]
         public void WhenNonSourceGetsFocus_NoSourceFileInTaskWindow()
         {
-            dispatcher.WhenFileGotFocus("foo.cs");
+            adapter.RaiseFileGotFocus("foo.cs");
             Assert.AreEqual("foo.cs", window.Title);
             Assert.AreEqual(1, window.Tasks.Count);
 
-            dispatcher.WhenNonSourceGetsFocus();
+            adapter.RaiseNonSourceGetsFocus();
             
             Assert.AreEqual( "No source file", window.Title );
             Assert.AreEqual(0, window.Tasks.Count);
@@ -292,18 +292,18 @@ namespace swept.Tests
         [Test]
         public void WhenPluginStarted_DispatcherCreatesDiskLibrarian()
         {
-            ProjectLibrarian incumbent = dispatcher.Librarian;
+            ProjectLibrarian incumbent = adapter.Librarian;
 
-            dispatcher.WhenPluginStarted();
+            adapter.WhenPluginStarted();
 
-            Assert.IsNotNull( dispatcher.Librarian );
-            Assert.AreNotSame( incumbent, dispatcher.Librarian );
+            Assert.IsNotNull( adapter.Librarian );
+            Assert.AreNotSame( incumbent, adapter.Librarian );
         }
 
         [Test]
         public void WhenFileChangesAbandoned_PreexistingCompletionsKept()
         {
-            AbandonFileChanges( fileNameBari );
+            AbandonFileChanges( fileName );
         }
 
         [Test]
@@ -314,12 +314,12 @@ namespace swept.Tests
 
         private void AbandonFileChanges( string fileName )
         {
-            SourceFile file = librarian.FetchWorkingFile( fileName );
+            SourceFile file = librarian.FetchUnsavedFile( fileName );
             int startingCompletionsCount = file.Completions.Count;
 
             file.AddNewCompletion( "id_88" );
             file.AddNewCompletion( "id_99" );
-            dispatcher.WhenFileChangesAbandoned( fileName );
+            adapter.RaiseFileChangesAbandoned( fileName );
 
             Assert.AreEqual( startingCompletionsCount, file.Completions.Count );
         }
@@ -329,54 +329,54 @@ namespace swept.Tests
         public void WhenSolutionOpened_LibrarianGetsNewPath()
         {
             string newPath = @"new\location";
-            dispatcher.WhenSolutionOpened( newPath );
-            Assert.AreEqual( newPath, dispatcher.Librarian.SolutionPath );
+            adapter.WhenSolutionOpened( newPath );
+            Assert.AreEqual( newPath, adapter.Librarian.SolutionPath );
         }
 
         [Test]
         public void WhenFileDeleted_FileRemovedFromCatalogs()
         {
-            Assert.IsTrue( fileCat.Files.Contains( bari ) );
+            Assert.IsTrue( fileCat.Files.Contains( file ) );
 
-            dispatcher.WhenFileDeleted( fileNameBari );
+            adapter.RaiseFileDeleted( fileName );
 
-            Assert.IsFalse( fileCat.Files.Contains( bari ) );
+            Assert.IsFalse( fileCat.Files.Contains( file ) );
             Assert.IsFalse(librarian.ChangeNeedsPersisting);
-            Assert.IsNotNull(librarian.LastSavedSourceFiles);
+            Assert.IsNotNull(librarian.savedSourceImage);
         }
 
         [Test]
         public void WhenSourceFileRenamed_ChangesAreCarriedOver()
         {
-            Assert.IsTrue(fileCat.Files.Contains(bari));
+            Assert.IsTrue(fileCat.Files.Contains(file));
             
-            Assert.AreEqual(1, bari.Completions.Count);
+            Assert.AreEqual(1, file.Completions.Count);
 
             string newName = "nextgreatname.cs";
-            dispatcher.WhenFileRenamed(fileNameBari, newName);
+            adapter.RaiseFileRenamed(fileName, newName);
 
-            SourceFile nextGreat = fileCat.FetchFile(newName);
+            SourceFile nextGreat = fileCat.Fetch(newName);
             Assert.AreEqual(1, nextGreat.Completions.Count);
 
             Assert.IsFalse(librarian.ChangeNeedsPersisting);
-            Assert.IsNotNull(librarian.LastSavedSourceFiles);
+            Assert.IsNotNull(librarian.savedSourceImage);
         }
 
         [Test]
         public void WhenSolutionSaved_DiskCatalogSaved()
         {
-            librarian.sourceIsDirty = true;
-            dispatcher.WhenSolutionSaved();
+            librarian.unsavedSourceChangesExist = true;
+            adapter.RaiseSolutionSaved();
             Assert.IsFalse(librarian.ChangeNeedsPersisting);
         }
 
         [Test]
         public void WhenTaskWindowToggled_VisibilityChanges()
         {
-            dispatcher.taskWindow.Visible = false;
-            dispatcher.WhenTaskWindowToggled();
+            adapter.taskWindow.Visible = false;
+            adapter.RaiseTaskWindowToggled();
 
-            Assert.IsTrue(dispatcher.taskWindow.Visible);
+            Assert.IsTrue(adapter.taskWindow.Visible);
         }
     }
 }
