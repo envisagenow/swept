@@ -15,11 +15,7 @@ namespace swept
         internal ChangeCatalog changeCatalog;
         internal IDialogPresenter showGUI;
         internal ILibraryWriter persister;
-
-        public void HearSolutionOpened(object sender, FileEventArgs arg)
-        {
-            OpenSolution(arg.Name);
-        }
+        public string SolutionPath { get; internal set; }
 
         public ProjectLibrarian()
         {
@@ -30,6 +26,8 @@ namespace swept
             persister = new LibraryWriter();
         }
 
+        //TODO:  Reimplement flag in the SourceFileCatalog, make tests pass via more mature methods.
+        internal bool unsavedSourceChangesExist;
         internal bool ChangeNeedsPersisting
         {
             get
@@ -38,15 +36,15 @@ namespace swept
             }
         }
 
-        //TODO:  Reimplement flag in the SourceFileCatalog, make tests pass via more mature methods.
-        internal bool unsavedSourceChangesExist;
 
-        public string SolutionPath { get; internal set; }
         public void OpenSolution(string solutionPath)
         {
             SolutionPath = solutionPath;
+
+            // TODO: Make this not lame
             changeCatalog = LoadChangeCatalog(SolutionPath);
             unsavedSourceImage = LoadSourceFileCatalog(SolutionPath);
+            
             unsavedSourceImage.ChangeCatalog = changeCatalog;
             savedSourceImage = SourceFileCatalog.Clone(unsavedSourceImage);
         }
@@ -58,7 +56,12 @@ namespace swept
         }
 
         #region Event Listeners
-        internal void HearFileSaved(object sender, FileEventArgs args)
+        public void HearSolutionOpened(object sender, FileEventArgs arg)
+        {
+            OpenSolution(arg.Name);
+        }
+
+        public void HearFileSaved(object sender, FileEventArgs args)
         {
             SourceFile workingFile = unsavedSourceImage.Fetch( args.Name );
             SourceFile diskFile = savedSourceImage.Fetch(args.Name);
@@ -92,7 +95,7 @@ namespace swept
             Persist();
         }
 
-        internal void HearFileSavedAs(object sender, FileListEventArgs args)
+        public void HearFileSavedAs(object sender, FileListEventArgs args)
         {
             string oldName = args.Names[0];
             string newName = args.Names[1];
@@ -109,7 +112,7 @@ namespace swept
             Persist();
         }
 
-        internal void HearFileChangesAbandoned(object sender, FileEventArgs args)
+        public void HearFileChangesAbandoned(object sender, FileEventArgs args)
         {
             SourceFile workingFile = unsavedSourceImage.Fetch( args.Name );
             SourceFile diskFile = savedSourceImage.Fetch(args.Name);
@@ -172,7 +175,7 @@ namespace swept
             unsavedSourceChangesExist = true;
         }
 
-        virtual internal void Persist() 
+        internal void Persist() 
         {
             unsavedSourceChangesExist = false;
             changeCatalog.MarkClean();
@@ -194,7 +197,7 @@ namespace swept
             );
         }
 
-        virtual protected SourceFileCatalog LoadSourceFileCatalog(string solutionPath) { return new SourceFileCatalog(); }
-        virtual protected ChangeCatalog LoadChangeCatalog( string solutionPath ) { return new ChangeCatalog(); }
+        protected SourceFileCatalog LoadSourceFileCatalog(string solutionPath) { return new SourceFileCatalog(); }
+        protected ChangeCatalog LoadChangeCatalog( string solutionPath ) { return new ChangeCatalog(); }
     }
 }

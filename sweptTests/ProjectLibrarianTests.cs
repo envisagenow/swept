@@ -23,6 +23,11 @@ namespace swept.Tests
             Horace = new ProjectLibrarian { SolutionPath = _HerePath };
         }
 
+        // TODO: OpenSolution tests
+        //  OpenSolution_with_no_Swept_Library_will_start_smoothly
+        //  OpenSolution_finding_Swept_Library_will_load_Changes_and_SourceFiles
+
+
         [Test]
         public void SaveSolution_will_persist_all_unsaved_SourceFiles()
         {
