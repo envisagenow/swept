@@ -71,11 +71,12 @@ namespace swept
             workingFile.Completions.ForEach( c => Completions.Add( c.Clone() ) );
         }
 
-        public void SetCompletionsFromTasks( List<Task> tasks )
+        public void AdjustCompletionFrom(Task alteredTask)
         {
-            Completions = new List<Completion>();
-            foreach( Task completed in tasks.FindAll( t => t.Completed ) )
-                AddNewCompletion( completed.ID );
+            if (alteredTask.Completed)
+                Completions.Add(new Completion(alteredTask.ID));
+            else
+                Completions.RemoveAll(c => c.ChangeID == alteredTask.ID);
         }
 
         public void AddNewCompletion( string changeID )

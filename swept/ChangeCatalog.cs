@@ -22,6 +22,11 @@ namespace swept
             return changes.FindAll( c => c.Language == fileLanguage );
         }
 
+        public List<Change> GetChangesForFile(SourceFile file)
+        {
+            return GetListForLanguage(file.Language);
+        }
+
         public void Add(Change change)
         {
             IsDirty = true;

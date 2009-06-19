@@ -231,17 +231,17 @@ namespace swept.Tests
         public void WhenFileGetsFocus_BecomesCurrentFile()
         {
             adapter.RaiseFileGotFocus( "foo.cs" );
-            Assert.AreEqual( "foo.cs", window.File.Name );
+            Assert.AreEqual( "foo.cs", window.CurrentFile.Name );
 
             adapter.RaiseFileGotFocus( "bar.cs" );
-            Assert.AreEqual( "bar.cs", window.File.Name );
+            Assert.AreEqual( "bar.cs", window.CurrentFile.Name );
         }
 
         [Test]
         public void WhenFileGetsFocus_TaskWindowUpdates()
         {
             adapter.RaiseFileGotFocus( "foo.cs" );
-            Assert.AreEqual( "foo.cs", window.File.Name );
+            Assert.AreEqual( "foo.cs", window.CurrentFile.Name );
         }
 
         [Test]
@@ -251,19 +251,19 @@ namespace swept.Tests
             adapter.RaiseFileGotFocus( "party_planning.cs" );
 
             Assert.AreEqual( 2, window.Tasks.Count );
-            SourceFile partyFile = window.File;
+            SourceFile partyFile = window.CurrentFile;
             Assert.AreEqual( 0, partyFile.Completions.Count );
 
-            window.ClickEntry( 0 );
-            window.ClickEntry( 1 );
+            window.ToggleTaskCompletion( 0 );
+            window.ToggleTaskCompletion( 1 );
 
-            //  Nothing recorded in the partyFile completions yet
-            Assert.AreEqual( 0, partyFile.Completions.Count );
+            //  partyFile completions are kept up to date
+            Assert.AreEqual(2, partyFile.Completions.Count);
 
             //  User done with party planning--switch to another file
             adapter.RaiseFileGotFocus( fileName );
 
-            //  Now we've stored completions in the working source file object
+            //  Even though we're working elsewhere, completions are kept correct
             Assert.AreEqual( 2, partyFile.Completions.Count );
         }
 

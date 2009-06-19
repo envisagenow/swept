@@ -9,20 +9,31 @@ namespace swept
 {
     public class TaskWindow
     {
-        private SourceFile currentFile;
         internal SourceFileCatalog FileCatalog;
         internal ChangeCatalog ChangeCatalog;
-        
-        public SourceFile File
-        {
-            get { return currentFile; }
-        }
 
-        private String title;
         public String Title
         {
-            get { return title; }
+            get { return CurrentFile.Name; }
         }
+
+        private SourceFile _currentFile;
+        public SourceFile CurrentFile
+        {
+            get
+            {
+                //SELF:  Keep an eye on this, it may be too cute.
+                // A lazy-init "Null Object" pattern.  Cleans null checks and branches out of the code.
+                if (_currentFile == null)
+                    _currentFile = new SourceFile("No source file") { Language = FileLanguage.None };
+                return _currentFile;
+            }
+            private set
+            {
+                _currentFile = value;
+            }
+        }
+
 
         private List<Task> tasks = new List<Task>();
         public List<Task> Tasks
@@ -31,48 +42,51 @@ namespace swept
         }
 
         public bool Visible { get; set; }
-
-        public void ChangeFile( SourceFile file, List<Change> changes )
+        private void ToggleWindowVisibility()
         {
-            //  Store any progress on the file that's losing focus
-            if (currentFile != null)
-                currentFile.SetCompletionsFromTasks(tasks);
-
-            currentFile = file;
-            tasks = new List<Task>();
-            if( file == null )
-            {
-                title = "No source file";
-                return;
-            }
-            title = file.Name;
-
-            BuildTasks(changes);
+            Visible = !Visible;
         }
 
-        public void ClickEntry(int index)
+        public void ToggleTaskCompletion(int index)
         {
-            Task toggledChange = this.tasks[index];
-            toggledChange.Completed = !toggledChange.Completed;
+            Task task = this.tasks[index];
+            task.Completed = !task.Completed;
+            CurrentFile.AdjustCompletionFrom(task);
+        }
+
+        private void ShowFile(string fileName)
+        {
+            ShowFile(FileCatalog.Fetch(fileName));
+        }
+
+        public void ShowFile(SourceFile file)
+        {
+            List<Change> changes = ChangeCatalog.GetChangesForFile(file);
+            ShowFile(file, changes);
+        }
+
+
+        internal void ShowFile(SourceFile file, List<Change> changes)
+        {
+            CurrentFile = file;
+            ListTasks(changes);
         }
 
         public void RefreshChangeList()
         {
-            if (File == null) return;
-            List<Change> changes = ChangeCatalog.FindAll(c => c.Language ==  File.Language);
-            BuildTasks(changes);
+            List<Change> changes = ChangeCatalog.GetChangesForFile( CurrentFile );
+            ListTasks(changes);
         }
 
-        private void BuildTasks(List<Change> changes)
+        private void ListTasks(List<Change> changes)
         {
-            if (changes == null) return;
-
             tasks.Clear();
+            if (changes == null) return;
 
             foreach (Change change in changes)
             {
                 Task entry = Task.FromChange(change);
-                entry.Completed = currentFile.Completions.Exists(c => c.ChangeID == entry.ID);
+                entry.Completed = CurrentFile.Completions.Exists(c => c.ChangeID == entry.ID);
                 tasks.Add(entry);
             }
         }
@@ -99,16 +113,12 @@ namespace swept
 
         public void HearFileGotFocus(object sender, FileEventArgs args)
         {
-            SourceFile file = FileCatalog.Fetch(args.Name);
-
-            // TODO: Tuck this implementation into the ChangeCatalog
-            List<Change> changes = ChangeCatalog.FindAll(c => c.Language == file.Language);
-            ChangeFile(file, changes);
+            ShowFile(args.Name);
         }
 
         public void HearNonSourceGotFocus(object sender, EventArgs args)
         {
-            ChangeFile(null, null);
+            ShowFile(null, null);
         }
 
         public void HearChangeListUpdated(object sender, EventArgs args)
@@ -118,7 +128,7 @@ namespace swept
 
         public void HearTaskWindowToggled(object sender, EventArgs args)
         {
-            Visible = !Visible;
+            ToggleWindowVisibility();
         }
 
         #endregion
