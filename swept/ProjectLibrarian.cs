@@ -55,29 +55,17 @@ namespace swept
             return unsavedSourceImage.Fetch( fileName );
         }
 
-        #region Event Listeners
-        public void HearSolutionOpened(object sender, FileEventArgs arg)
+        private void SaveFile(string fileName)
         {
-            OpenSolution(arg.Name);
-        }
-
-        public void HearFileSaved(object sender, FileEventArgs args)
-        {
-            SourceFile workingFile = unsavedSourceImage.Fetch( args.Name );
-            SourceFile diskFile = savedSourceImage.Fetch(args.Name);
-            diskFile.CopyCompletionsFrom( workingFile );
+            SourceFile workingFile = unsavedSourceImage.Fetch(fileName);
+            SourceFile diskFile = savedSourceImage.Fetch(fileName);
+            diskFile.CopyCompletionsFrom(workingFile);
 
             Persist();
         }
-
-        public void HearChangeListUpdated(object sender, EventArgs e)
+        
+        private void PasteFile(string fileName)
         {
-            Persist();
-        }
-
-        public void HearFilePasted(object sender, FileEventArgs args)
-        {
-            string fileName = args.Name;
             SourceFile pastedWorkingFile = unsavedSourceImage.Fetch(fileName);
             SourceFile pastedDiskFile = savedSourceImage.Fetch(fileName);
 
@@ -94,12 +82,9 @@ namespace swept
 
             Persist();
         }
-
-        public void HearFileSavedAs(object sender, FileListEventArgs args)
+        
+        private void SaveFileAs(string oldName, string newName)
         {
-            string oldName = args.Names[0];
-            string newName = args.Names[1];
-
             SourceFile workingOriginalFile = unsavedSourceImage.Fetch(oldName);
             SourceFile diskOriginalFile = savedSourceImage.Fetch(oldName);
             SourceFile workingNewFile = unsavedSourceImage.Fetch(newName);
@@ -111,36 +96,23 @@ namespace swept
 
             Persist();
         }
-
-        public void HearFileChangesAbandoned(object sender, FileEventArgs args)
+        
+        private void AbandonFileChanges(string fileName)
         {
-            SourceFile workingFile = unsavedSourceImage.Fetch( args.Name );
-            SourceFile diskFile = savedSourceImage.Fetch(args.Name);
+            SourceFile workingFile = unsavedSourceImage.Fetch(fileName);
+            SourceFile diskFile = savedSourceImage.Fetch(fileName);
             workingFile.CopyCompletionsFrom(diskFile);
         }
 
-        public void HearFileDeleted(object sender, FileEventArgs args )
+        private void DeleteFile(string fileName)
         {
-            unsavedSourceImage.Delete( args.Name );
-            savedSourceImage.Delete( args.Name );
-
+            unsavedSourceImage.Delete(fileName);
+            savedSourceImage.Delete(fileName);
             Persist();
         }
 
-        public void HearFileRenamed(object sender, FileListEventArgs args)
+        private void AddChange(Change change)
         {
-            string oldName = args.Names[0];
-            string newName = args.Names[1];
-
-            unsavedSourceImage.Rename(oldName, newName);
-            savedSourceImage.Rename(oldName, newName);
-
-            Persist();
-        }
-
-        public void HearChangeAdded(object sender, ChangeEventArgs args)
-        {
-            Change change = args.change;
             changeCatalog.Add(change);
 
             //if we have any completions pre-existing for this ID
@@ -156,6 +128,66 @@ namespace swept
                 }
             }
         }
+        
+        private void RenameFile(string oldName, string newName)
+        {
+            unsavedSourceImage.Rename(oldName, newName);
+            savedSourceImage.Rename(oldName, newName);
+
+            Persist();
+        }
+
+        private void SaveSolution()
+        {
+            savedSourceImage = SourceFileCatalog.Clone(unsavedSourceImage);
+            Persist();
+        }
+
+        #region Event Listeners
+        public void HearSolutionOpened(object sender, FileEventArgs arg)
+        {
+            OpenSolution(arg.Name);
+        }
+
+        public void HearFileSaved(object sender, FileEventArgs args)
+        {
+            SaveFile(args.Name);
+        }
+
+        public void HearChangeListUpdated(object sender, EventArgs e)
+        {
+            Persist();
+        }
+
+        public void HearFilePasted(object sender, FileEventArgs args)
+        {
+            PasteFile(args.Name);
+        }
+
+        public void HearFileSavedAs(object sender, FileListEventArgs args)
+        {
+            SaveFileAs(args.Names[0], args.Names[1]);
+        }
+
+        public void HearFileChangesAbandoned(object sender, FileEventArgs args)
+        {
+            AbandonFileChanges(args.Name);
+        }
+
+        public void HearFileDeleted(object sender, FileEventArgs args)
+        {
+            DeleteFile(args.Name);
+        }
+
+        public void HearFileRenamed(object sender, FileListEventArgs args)
+        {
+            RenameFile(args.Names[0], args.Names[1]);
+        }
+
+        public void HearChangeAdded(object sender, ChangeEventArgs args)
+        {
+            AddChange(args.change);
+        }
 
         public void HearTaskCompletionChanged(object sender, EventArgs args)
         {
@@ -164,8 +196,7 @@ namespace swept
 
         public void HearSolutionSaved(object sender, EventArgs args)
         {
-            savedSourceImage = SourceFileCatalog.Clone(unsavedSourceImage);
-            Persist();
+            SaveSolution();
         }
 
         #endregion
