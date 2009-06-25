@@ -10,6 +10,24 @@ using System.Xml;
 
 namespace swept.Tests
 {
+    [AttributeUsage(AttributeTargets.Method)]
+    public class WoefulAttribute : Attribute { }
+
+    [AttributeUsage(AttributeTargets.Method)]
+    public class ExemplaryAttribute : Attribute {
+        public string Reason;
+        public ExemplaryAttribute(string reason)
+        {
+            Reason = reason;
+        }
+
+    }
+
+    [AttributeUsage(AttributeTargets.Method)]
+    public class MehAttribute : Attribute { }
+
+
+
     [TestFixture]
     public class StudioAdapterTests
     {
@@ -303,9 +321,9 @@ namespace swept.Tests
             AbandonFileChanges( "badfile.cs" );
         }
 
-        private void AbandonFileChanges( string fileName )
+        private void AbandonFileChanges(string fileName)
         {
-            SourceFile file = librarian.FetchUnsavedFile( fileName );
+            SourceFile file = librarian.unsavedSourceImage.Fetch( fileName );
             int startingCompletionsCount = file.Completions.Count;
 
             file.AddNewCompletion( "id_88" );
@@ -316,7 +334,7 @@ namespace swept.Tests
         }
 
 
-        [Test]
+        [Test, Exemplary( "Not really, but I wanted an example." )]
         public void WhenSolutionOpened_LibrarianGetsNewPath()
         {
             string newPath = @"new\location";

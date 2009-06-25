@@ -37,22 +37,16 @@ namespace swept
         }
 
 
-        public void OpenSolution(string solutionPath)
+        private void OpenSolution(string solutionPath)
         {
             SolutionPath = solutionPath;
 
             // TODO: Make this not lame
             changeCatalog = LoadChangeCatalog(SolutionPath);
             unsavedSourceImage = LoadSourceFileCatalog(SolutionPath);
-            
+
             unsavedSourceImage.ChangeCatalog = changeCatalog;
             savedSourceImage = SourceFileCatalog.Clone(unsavedSourceImage);
-        }
-
-
-        public SourceFile FetchUnsavedFile( string fileName )
-        {
-            return unsavedSourceImage.Fetch( fileName );
         }
 
         private void SaveFile(string fileName)
@@ -63,7 +57,7 @@ namespace swept
 
             Persist();
         }
-        
+
         private void PasteFile(string fileName)
         {
             SourceFile pastedWorkingFile = unsavedSourceImage.Fetch(fileName);
@@ -82,7 +76,7 @@ namespace swept
 
             Persist();
         }
-        
+
         private void SaveFileAs(string oldName, string newName)
         {
             SourceFile workingOriginalFile = unsavedSourceImage.Fetch(oldName);
@@ -96,7 +90,7 @@ namespace swept
 
             Persist();
         }
-        
+
         private void AbandonFileChanges(string fileName)
         {
             SourceFile workingFile = unsavedSourceImage.Fetch(fileName);
@@ -128,7 +122,7 @@ namespace swept
                 }
             }
         }
-        
+
         private void RenameFile(string oldName, string newName)
         {
             unsavedSourceImage.Rename(oldName, newName);
@@ -206,14 +200,14 @@ namespace swept
             unsavedSourceChangesExist = true;
         }
 
-        internal void Persist() 
+        internal void Persist()
         {
             unsavedSourceChangesExist = false;
             changeCatalog.MarkClean();
 
 
 
-            persister.Save( "swept.progress.library", ToXmlText() );
+            persister.Save("swept.progress.library", ToXmlText());
         }
 
         private string ToXmlText()
@@ -222,13 +216,13 @@ namespace swept
 @"<SweptProjectData>
 {0}
 {1}
-</SweptProjectData>", 
-                changeCatalog.ToXmlText(), 
+</SweptProjectData>",
+                changeCatalog.ToXmlText(),
                 savedSourceImage.ToXmlText()
             );
         }
 
         protected SourceFileCatalog LoadSourceFileCatalog(string solutionPath) { return new SourceFileCatalog(); }
-        protected ChangeCatalog LoadChangeCatalog( string solutionPath ) { return new ChangeCatalog(); }
+        protected ChangeCatalog LoadChangeCatalog(string solutionPath) { return new ChangeCatalog(); }
     }
 }

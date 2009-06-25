@@ -126,13 +126,6 @@ namespace swept.Tests
             Assert.AreEqual(expectedXmlText, writer.XmlText);
         }
 
-
-        [Test]
-        public void CanFetchWorkingFile()
-        {
-            SourceFile foo = Horace.FetchUnsavedFile( "foo.cs" );
-        }
-
         [Test]
         public void CanAddChange()
         {
