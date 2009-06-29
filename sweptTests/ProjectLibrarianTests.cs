@@ -23,10 +23,20 @@ namespace swept.Tests
             Horace = new ProjectLibrarian { SolutionPath = _HerePath };
         }
 
+        [Test]
+        public void Swept_Library_sought_in_expected_location()
+        {
+            Assert.AreEqual(@"f:\over\here.swept.library", Horace.LibraryPath);
+
+            FileEventArgs args = new FileEventArgs();
+            args.Name = @"d:\code\CoolProject\mySolution.sln";
+            Horace.HearSolutionOpened(this, args);
+            Assert.AreEqual(@"d:\code\CoolProject\mySolution.swept.library", Horace.LibraryPath);
+        }
+
         // TODO: OpenSolution tests
         //  OpenSolution_with_no_Swept_Library_will_start_smoothly
         //  OpenSolution_finding_Swept_Library_will_load_Changes_and_SourceFiles
-
 
         [Test]
         public void SaveSolution_will_persist_all_unsaved_SourceFiles()
@@ -54,7 +64,6 @@ namespace swept.Tests
 
             Assert.AreEqual(expectedXmlText, writer.XmlText);
         }
-
 
         [Test]
         public void CanSetSolutionPath()

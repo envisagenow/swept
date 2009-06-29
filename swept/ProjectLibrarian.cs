@@ -2,9 +2,10 @@
 //  This software is open source, under the terms of the MIT License.
 //  The MIT License, roughly:  Keep this notice.  Beyond that, do whatever you want with this code.
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
-using System.Collections;
+using System.IO;
 
 namespace swept
 {
@@ -16,6 +17,10 @@ namespace swept
         internal IDialogPresenter showGUI;
         internal ILibraryWriter persister;
         public string SolutionPath { get; internal set; }
+        public object LibraryPath
+        {
+            get { return Path.ChangeExtension(SolutionPath, "swept.library"); }
+        }
 
         public ProjectLibrarian()
         {
