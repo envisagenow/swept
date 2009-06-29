@@ -23,37 +23,38 @@ namespace swept.Tests
 
 
         [Test]
-        public void SourceFileCatalogFromXmlText()
+        public void SourceFileCatalog_FromXmlText_gets_all_Files()
         {
-            string catalogText = 
-@"<SourceFileCatalog>
-    <SourceFile Name=""bar.cs"">
-        <Completion ID=""AB1"" />
-    </SourceFile>
-</SourceFileCatalog>";
+            SourceFileCatalog cat = get_testing_SourceFileCatalog();
+            Assert.AreEqual(2, cat.Files.Count);
 
-            SourceFileCatalog cat = SourceFileCatalog.FromXmlText( catalogText );
-            Assert.AreEqual( 1, cat.Files.Count );
-
-            SourceFile file = cat.Files[0];
-            Assert.AreEqual( "bar.cs", file.Name );
+            SourceFile bar_cs = cat.Files[0];
+            Assert.AreEqual( "bar.cs", bar_cs.Name );
         }
 
-
         [Test]
-        public void SourceFilePopulateCompletions()
+        public void SourceFileCatalog_FromXmlText_gets_all_Completions()
         {
-            string catalogText = 
+            SourceFileCatalog cat = get_testing_SourceFileCatalog();
+            SourceFile bar_cs = cat.Files[0];
+            Assert.AreEqual(2, bar_cs.Completions.Count);
+            Assert.AreEqual( "AB2", bar_cs.Completions[1].ChangeID );
+        }
+
+        private static SourceFileCatalog get_testing_SourceFileCatalog()
+        {
+            string catalogText =
 @"<SourceFileCatalog>
-    <SourceFile Name=""bar.cs"">
-        <Completion ID=""AB1"" />
+    <SourceFile Name='bar.cs'>
+        <Completion ID='AB1' />
+        <Completion ID='AB2' />
+    </SourceFile>
+    <SourceFile Name='foo.cs'>
+        <Completion ID='anotherID' />
     </SourceFile>
 </SourceFileCatalog>";
 
-            SourceFileCatalog cat = SourceFileCatalog.FromXmlText( catalogText );
-
-            SourceFile file = cat.Files[0];
-            Assert.AreEqual( "AB1", file.Completions[0].ChangeID );
+            return SourceFileCatalog.FromXmlText(catalogText);
         }
 
         [Test]
@@ -67,10 +68,9 @@ namespace swept.Tests
         [Test]
         public void Completion_ToXmlText_ShouldEscapeIDs()
         {
-            Completion comp = new Completion( "cr<unescaped>" );
-            Assert.AreEqual( "        <Completion ID='cr<unescaped>' />\r\n", comp.ToXmlText() );
+            Completion comp = new Completion( "cr<un'escaped>" );
+            Assert.AreEqual( "        <Completion ID='cr<un\'escaped>' />\r\n", comp.ToXmlText() );
         }
-
 
         [Test]
         public void SourceFile_ToXmlText()
@@ -89,14 +89,13 @@ namespace swept.Tests
             Assert.AreEqual( expectedFile, serializedFile );
         }
 
-
         [Test]
-        public void CanSerializeToXMLText()
+        public void SourceFileCatalog_ToXMLText()
         {
             SourceFileCatalog fileCat = new SourceFileCatalog();
-            SourceFile blue = fileCat.Fetch( "blue.cs" );
+            SourceFile blue_cs = fileCat.Fetch( "blue.cs" );
 
-            blue.Completions.Add( new Completion( "id11" ) );
+            blue_cs.Completions.Add( new Completion( "id11" ) );
 
             string text = fileCat.ToXmlText();
             string answer =
