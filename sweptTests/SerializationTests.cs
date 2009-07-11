@@ -44,7 +44,8 @@ namespace swept.Tests
         private static SourceFileCatalog get_testing_SourceFileCatalog()
         {
             string catalogText =
-@"<SourceFileCatalog>
+@"<SweptProjectData>
+<SourceFileCatalog>
     <SourceFile Name='bar.cs'>
         <Completion ID='AB1' />
         <Completion ID='AB2' />
@@ -52,7 +53,8 @@ namespace swept.Tests
     <SourceFile Name='foo.cs'>
         <Completion ID='anotherID' />
     </SourceFile>
-</SourceFileCatalog>";
+</SourceFileCatalog>
+</SweptProjectData>";
 
             return SourceFileCatalog.FromXmlText(catalogText);
         }
@@ -108,7 +110,7 @@ namespace swept.Tests
         }
 
         #region Exception testing
-        [Test, ExpectedException( ExpectedMessage="Document must have a <SourceFileCatalog> root node.  Please supply one." )]
+        [Test, ExpectedException( ExpectedMessage="Document must have a <SourceFileCatalog> node.  Please supply one." )]
         public void IncorrectRootNodeThrows()
         {
             SourceFileCatalog.FromXmlText( "<IncorrectRoot><other /></IncorrectRoot>" );
@@ -123,7 +125,7 @@ namespace swept.Tests
         [Test, ExpectedException( ExpectedMessage="A SourceFile node must have a Name attribute.  Please add one." )]
         public void SourceFileNodeMissingNameThrows()
         {
-            SourceFileCatalog.FromXmlText( "<SourceFileCatalog><SourceFile /></SourceFileCatalog>" );
+            SourceFileCatalog.FromXmlText("<SweptProjectData><SourceFileCatalog><SourceFile /></SourceFileCatalog></SweptProjectData>");
         }
 
 

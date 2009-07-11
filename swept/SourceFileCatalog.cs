@@ -90,13 +90,13 @@ namespace swept
 
         public static SourceFileCatalog FromXmlDocument( XmlDocument doc )
         {
-            XmlNode root = doc.SelectSingleNode( "SourceFileCatalog" );
-            if( root == null )
-                throw new Exception( "Document must have a <SourceFileCatalog> root node.  Please supply one." );
+            XmlNode node = doc.SelectSingleNode( "SweptProjectData/SourceFileCatalog" );
+            if( node == null )
+                throw new Exception( "Document must have a <SourceFileCatalog> node.  Please supply one." );
 
             SourceFileCatalog cat = new SourceFileCatalog();
 
-            XmlNodeList files = root.SelectNodes( "SourceFile" );
+            XmlNodeList files = node.SelectNodes( "SourceFile" );
             foreach( XmlNode fileNode in files )
             {
                 SourceFile file = SourceFile.FromNode( fileNode );

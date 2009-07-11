@@ -4,18 +4,29 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.IO;
 
 namespace swept.Tests
 {
-    class MockLibraryWriter : ILibraryWriter
+    class MockLibraryPersister : ILibraryPersister
     {
         public string FileName { get; set; }
-        public string XmlText { get; private set; }
+        public string XmlText { get; set; }
 
         public void Save(string fileName, string xmlText)
         {
             FileName = fileName;
             XmlText = xmlText;
         }
+
+        public string LoadLibrary(string libraryPath)
+        {
+            if (ThrowExceptionWhenLoadingLibrary)
+                throw new FileNotFoundException();
+
+            return XmlText;
+        }
+
+        public bool ThrowExceptionWhenLoadingLibrary;
     }
 }

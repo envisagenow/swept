@@ -15,9 +15,9 @@ namespace swept
         internal SourceFileCatalog savedSourceImage;
         internal ChangeCatalog changeCatalog;
         internal IDialogPresenter showGUI;
-        internal ILibraryWriter persister;
+        internal ILibraryPersister persister;
         public string SolutionPath { get; internal set; }
-        public object LibraryPath
+        public string LibraryPath
         {
             get { return Path.ChangeExtension(SolutionPath, "swept.library"); }
         }
@@ -28,7 +28,7 @@ namespace swept
             savedSourceImage = new SourceFileCatalog();
             changeCatalog = new ChangeCatalog();
             showGUI = new DialogPresenter();
-            persister = new LibraryWriter();
+            persister = new LibraryPersister();
         }
 
         //TODO:  Reimplement flag in the SourceFileCatalog, make tests pass via more mature methods.
@@ -46,12 +46,42 @@ namespace swept
         {
             SolutionPath = solutionPath;
 
+            string libraryXmlText = GetLibraryXmlText();
+            changeCatalog = ChangeCatalog.FromXmlText(libraryXmlText);
+
+            savedSourceImage = SourceFileCatalog.FromXmlText(libraryXmlText);
+            savedSourceImage.ChangeCatalog = changeCatalog;
+            unsavedSourceImage = SourceFileCatalog.Clone(savedSourceImage);
+
+            /*
             // TODO: Make this not lame
             changeCatalog = LoadChangeCatalog(SolutionPath);
             unsavedSourceImage = LoadSourceFileCatalog(SolutionPath);
 
             unsavedSourceImage.ChangeCatalog = changeCatalog;
             savedSourceImage = SourceFileCatalog.Clone(unsavedSourceImage);
+             * */
+        }
+
+        private string GetLibraryXmlText()
+        {
+            string libraryXmlText = null;
+            try
+            {
+                libraryXmlText = persister.LoadLibrary(LibraryPath);
+            }
+            catch (Exception)
+            {
+                libraryXmlText = 
+@"<SweptProjectData>
+<ChangeCatalog>    
+</ChangeCatalog>
+<SourceFileCatalog>
+</SourceFileCatalog>
+</SweptProjectData>"; 
+            }
+
+            return libraryXmlText;
         }
 
         private void SaveFile(string fileName)

@@ -61,7 +61,7 @@ namespace swept.Tests
             file.Completions.Add(new Completion(indentID));
             fileCat.Files.Add(file);
 
-            MockLibraryWriter writer = new MockLibraryWriter();
+            MockLibraryPersister writer = new MockLibraryPersister();
             librarian.persister = writer;
 
             librarian.savedSourceImage = SourceFileCatalog.Clone(fileCat);

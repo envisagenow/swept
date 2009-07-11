@@ -7,12 +7,15 @@ using System.Collections.Generic;
 using System.Text;
 using System;
 using System.Xml;
+using System.IO;
 
 namespace swept.Tests
 {
     [TestFixture]
     public class ProjectLibrarianTests
     {
+        private static string _SingleSourceFileLibraryText;
+        private static string _SingleChangeLibraryText;
         private string _HerePath;
         private ProjectLibrarian Horace;
 
@@ -21,37 +24,7 @@ namespace swept.Tests
         {
             _HerePath = @"f:\over\here.sln";
             Horace = new ProjectLibrarian { SolutionPath = _HerePath };
-        }
-
-        [Test]
-        public void Swept_Library_sought_in_expected_location()
-        {
-            Assert.AreEqual(@"f:\over\here.swept.library", Horace.LibraryPath);
-
-            FileEventArgs args = new FileEventArgs();
-            args.Name = @"d:\code\CoolProject\mySolution.sln";
-            Horace.HearSolutionOpened(this, args);
-            Assert.AreEqual(@"d:\code\CoolProject\mySolution.swept.library", Horace.LibraryPath);
-        }
-
-        // TODO: OpenSolution tests
-        //  OpenSolution_with_no_Swept_Library_will_start_smoothly
-        //  OpenSolution_finding_Swept_Library_will_load_Changes_and_SourceFiles
-
-        [Test]
-        public void SaveSolution_will_persist_all_unsaved_SourceFiles()
-        {
-            MockLibraryWriter writer = new MockLibraryWriter();
-            Horace.persister = writer;
-
-            string someFileName = "some_file.cs";
-            SourceFile someFile = new SourceFile(someFileName);
-            someFile.AddNewCompletion("007");
-            Horace.unsavedSourceImage.Add(someFile);
-
-            Horace.HearSolutionSaved(this, new EventArgs());
-
-            string expectedXmlText =
+            _SingleSourceFileLibraryText =
 @"<SweptProjectData>
 <ChangeCatalog>
 </ChangeCatalog>
@@ -62,7 +35,94 @@ namespace swept.Tests
 </SourceFileCatalog>
 </SweptProjectData>";
 
-            Assert.AreEqual(expectedXmlText, writer.XmlText);
+            _SingleChangeLibraryText =
+@"<SweptProjectData>
+<ChangeCatalog>
+    <Change ID='30-Persist' Description='Update to use persister' Language='CSharp' />
+</ChangeCatalog>
+<SourceFileCatalog>
+</SourceFileCatalog>
+</SweptProjectData>";
+
+        }
+
+        private static MockLibraryPersister Get_mock_Persister(string libraryText)
+        {
+            MockLibraryPersister persister = new MockLibraryPersister();
+            persister.XmlText = libraryText;
+            return persister;
+        }
+
+        private static FileEventArgs Get_testfile_FileEventArgs()
+        {
+            FileEventArgs args = new FileEventArgs();
+            args.Name = @"d:\code\CoolProject\mySolution.sln";
+            return args;
+        }
+        [Test]
+        public void Swept_Library_sought_in_expected_location()
+        {
+            Assert.AreEqual(@"f:\over\here.swept.library", Horace.LibraryPath);
+
+            Horace.persister = Get_mock_Persister(_SingleSourceFileLibraryText);
+
+            Horace.HearSolutionOpened(this, Get_testfile_FileEventArgs());
+            Assert.AreEqual(@"d:\code\CoolProject\mySolution.swept.library", Horace.LibraryPath);
+        }
+
+        // TODO: OpenSolution tests
+        //  
+
+        [Test]
+        public void OpenSolution_finding_Swept_Library_will_load_SourceFiles()
+        {
+            Horace.persister = Get_mock_Persister(_SingleSourceFileLibraryText);
+            Horace.HearSolutionOpened(this, Get_testfile_FileEventArgs());
+
+            SourceFile someFile = Horace.savedSourceImage.Fetch("some_file.cs");
+
+            Assert.AreEqual(1, someFile.Completions.Count);
+        }
+
+        [Test]
+        public void OpenSolution_finding_Swept_Library_will_load_Changes()
+        {
+            Horace.persister = Get_mock_Persister( _SingleChangeLibraryText );
+            Horace.HearSolutionOpened(this, Get_testfile_FileEventArgs());
+
+            Assert.AreEqual(1, Horace.changeCatalog.changes.Count);
+            Change change = Horace.changeCatalog.changes[0];
+            Assert.AreEqual("30-Persist", change.ID);
+            Assert.AreEqual(FileLanguage.CSharp, change.Language);
+        }
+
+        [Test]
+        public void OpenSolution_with_no_Swept_Library_will_start_smoothly()
+        {
+            MockLibraryPersister mock = Get_mock_Persister(_SingleChangeLibraryText);
+            Horace.persister = mock;
+            mock.ThrowExceptionWhenLoadingLibrary = true; 
+            
+            Horace.HearSolutionOpened(this, Get_testfile_FileEventArgs());
+
+            Assert.AreEqual(0, Horace.changeCatalog.changes.Count);
+            Assert.AreEqual(0, Horace.unsavedSourceImage.Files.Count);
+        }
+
+        [Test]
+        public void SaveSolution_will_persist_all_unsaved_SourceFiles()
+        {
+            MockLibraryPersister writer = new MockLibraryPersister();
+            Horace.persister = writer;
+
+            string someFileName = "some_file.cs";
+            SourceFile someFile = new SourceFile(someFileName);
+            someFile.AddNewCompletion("007");
+            Horace.unsavedSourceImage.Add(someFile);
+
+            Horace.HearSolutionSaved(this, new EventArgs());            
+
+            Assert.AreEqual(_SingleSourceFileLibraryText, writer.XmlText);
         }
 
         [Test]
@@ -89,7 +149,7 @@ namespace swept.Tests
         [Test]
         public void CanSave()
         {
-            MockLibraryWriter writer = new MockLibraryWriter();
+            MockLibraryPersister writer = new MockLibraryPersister();
             Horace.persister = writer;
 
             string someFileName = "some_file.cs";
@@ -100,25 +160,14 @@ namespace swept.Tests
             FileEventArgs args = new FileEventArgs { Name = someFileName };
             Horace.HearFileSaved(this, args);
 
-            string expectedXmlText =
-@"<SweptProjectData>
-<ChangeCatalog>
-</ChangeCatalog>
-<SourceFileCatalog>
-    <SourceFile Name='some_file.cs'>
-        <Completion ID='007' />
-    </SourceFile>
-</SourceFileCatalog>
-</SweptProjectData>";
-
-            Assert.AreEqual(expectedXmlText, writer.XmlText);
+            Assert.AreEqual(_SingleSourceFileLibraryText, writer.XmlText);
         }
 
         [Test]
         public void Can_Save_catalog_with_Change()
         {
-            MockLibraryWriter writer = new MockLibraryWriter();
-            Horace.persister = writer;
+            MockLibraryPersister persister = new MockLibraryPersister();
+            Horace.persister = persister;
 
             Horace.changeCatalog.Add(new Change("Uno", "Eliminate profanity from error messages.", FileLanguage.CSharp));
             Horace.Persist();
@@ -132,7 +181,7 @@ namespace swept.Tests
 </SourceFileCatalog>
 </SweptProjectData>";
 
-            Assert.AreEqual(expectedXmlText, writer.XmlText);
+            Assert.AreEqual(expectedXmlText, persister.XmlText);
         }
 
         [Test]

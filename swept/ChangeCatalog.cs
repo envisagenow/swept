@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Xml;
 
 namespace swept
 {
@@ -16,6 +17,7 @@ namespace swept
         {
             changes = new List<Change>();
         }
+
 
         public List<Change> GetListForLanguage( FileLanguage fileLanguage )
         {
@@ -63,5 +65,40 @@ namespace swept
             sb.Append("</ChangeCatalog>");
             return sb.ToString();
         }
+
+        /// <summary>Will return a new instance from the proper XML text</summary>
+        public static ChangeCatalog FromXmlText(string xmlText)
+        {
+            try
+            {
+                XmlDocument doc = new XmlDocument();
+                doc.LoadXml(xmlText);
+                return FromXmlDocument(doc);
+            }
+            catch (XmlException xe)
+            {
+                throw new Exception(String.Format("Text [{0}] was not valid XML.  Please check its contents.  Details: {1}", xmlText, xe.Message));
+            }
+        }
+
+        public static ChangeCatalog FromXmlDocument(XmlDocument doc)
+        {
+            XmlNode node = doc.SelectSingleNode("SweptProjectData/ChangeCatalog");
+            if (node == null)
+                throw new Exception("Document must have a <ChangeCatalog> node.  Please supply one.");
+
+            ChangeCatalog cat = new ChangeCatalog();
+
+            XmlNodeList changes = node.SelectNodes("Change");
+            foreach (XmlNode changeNode in changes)
+            {
+                Change change = Change.FromNode(changeNode);
+
+                cat.changes.Add(change);
+            }
+
+            return cat;
+        }
+
     }
 }

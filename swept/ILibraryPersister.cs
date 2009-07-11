@@ -8,9 +8,9 @@ using System.Collections;
 
 namespace swept
 {
-    public interface ILibraryWriter
+    public interface ILibraryPersister
     {
         void Save( string fileName, string xmlText );
+        string LoadLibrary(string libraryPath);
     }
-
 }
