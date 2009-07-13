@@ -101,9 +101,13 @@ namespace swept.Tests
             changeWindow.RaiseChangeAdded( change );
 
             // Bari has kept the completion of Change 14
-            XmlDocument doc = new XmlDocument();
-            doc.LoadXml(librarian.savedSourceImage.ToXmlText());
-            Assert.IsTrue(IsCompletionSaved(doc, "bari.cs", "14"));
+            SourceFile savedBari = librarian.savedSourceImage.Fetch("bari.cs");
+            Assert.AreEqual(1, savedBari.Completions.Count);
+            Assert.AreEqual("14", savedBari.Completions[0].ChangeID);
+
+            //XmlDocument doc = new XmlDocument();
+            //doc.LoadXml(librarian.savedSourceImage.ToXmlText());
+            //Assert.IsTrue(IsCompletionSaved(doc, "bari.cs", "14"));
         }
 
         [Test]
@@ -123,17 +127,8 @@ namespace swept.Tests
             adapter.RaiseFileSaved("bari.cs");
 
             // Bari has removed the completion of Change 14
-            XmlDocument doc = new XmlDocument();
-            doc.LoadXml(librarian.savedSourceImage.ToXmlText());
-            Assert.IsFalse(IsCompletionSaved(doc, "bari.cs", "14"));
+            Assert.IsFalse(TestProbe.IsCompletionSaved(librarian, "bari.cs", "14"));
         }
-
-        private static bool IsCompletionSaved(XmlDocument doc, string fileName, string id)
-        {
-            string completionXPath = String.Format("//SourceFile[@Name='{0}']/Completion[@ID='{1}']", fileName, id);
-            return doc.SelectSingleNode(completionXPath) != null;
-        }
-
 
         [Test]
         public void WhenChangeRemoved_TaskWindow_RefreshesTasks()

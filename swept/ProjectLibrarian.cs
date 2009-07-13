@@ -9,11 +9,20 @@ using System.IO;
 
 namespace swept
 {
+
     public class ProjectLibrarian
     {
-        internal SourceFileCatalog unsavedSourceImage;
-        internal SourceFileCatalog savedSourceImage;
+        //  There are two major data collections per solution:  The Change and Source File catalogs.
+
+        //  The Change Catalog holds things the team wants to improve in this solution.
         internal ChangeCatalog changeCatalog;
+
+        //  The Source File Catalog holds all the completions, grouped per file.
+        internal SourceFileCatalog savedSourceImage;
+
+        //  Another copy of the source files are kept, to hold progress in multiple unsaved files.
+        internal SourceFileCatalog unsavedSourceImage;
+
         internal IDialogPresenter showGUI;
         internal ILibraryPersister persister;
         public string SolutionPath { get; internal set; }
@@ -45,22 +54,14 @@ namespace swept
         private void OpenSolution(string solutionPath)
         {
             SolutionPath = solutionPath;
+            XmlPort port = new XmlPort();
 
             string libraryXmlText = GetLibraryXmlText();
-            changeCatalog = ChangeCatalog.FromXmlText(libraryXmlText);
 
-            savedSourceImage = SourceFileCatalog.FromXmlText(libraryXmlText);
+            changeCatalog = port.ChangeCatalog_FromText(libraryXmlText);
+            savedSourceImage = port.SourceFileCatalog_FromText(libraryXmlText);
             savedSourceImage.ChangeCatalog = changeCatalog;
             unsavedSourceImage = SourceFileCatalog.Clone(savedSourceImage);
-
-            /*
-            // TODO: Make this not lame
-            changeCatalog = LoadChangeCatalog(SolutionPath);
-            unsavedSourceImage = LoadSourceFileCatalog(SolutionPath);
-
-            unsavedSourceImage.ChangeCatalog = changeCatalog;
-            savedSourceImage = SourceFileCatalog.Clone(unsavedSourceImage);
-             * */
         }
 
         private string GetLibraryXmlText()
@@ -70,7 +71,7 @@ namespace swept
             {
                 libraryXmlText = persister.LoadLibrary(LibraryPath);
             }
-            catch (Exception)
+            catch
             {
                 libraryXmlText = 
 @"<SweptProjectData>
@@ -240,24 +241,9 @@ namespace swept
             unsavedSourceChangesExist = false;
             changeCatalog.MarkClean();
 
+            var port = new XmlPort();
 
-
-            persister.Save("swept.progress.library", ToXmlText());
+            persister.Save("swept.progress.library", port.ToText( this ));
         }
-
-        private string ToXmlText()
-        {
-            return string.Format(
-@"<SweptProjectData>
-{0}
-{1}
-</SweptProjectData>",
-                changeCatalog.ToXmlText(),
-                savedSourceImage.ToXmlText()
-            );
-        }
-
-        protected SourceFileCatalog LoadSourceFileCatalog(string solutionPath) { return new SourceFileCatalog(); }
-        protected ChangeCatalog LoadChangeCatalog(string solutionPath) { return new ChangeCatalog(); }
     }
 }

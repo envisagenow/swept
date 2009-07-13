@@ -3,7 +3,6 @@
 //  The MIT License, roughly:  Keep this notice.  Beyond that, do whatever you want with this code.
 using NUnit.Framework;
 using NUnit.Framework.Constraints;
-using NUnit.Framework.SyntaxHelpers;
 using swept;
 using System.Collections.Generic;
 using System.Text;
@@ -36,18 +35,6 @@ namespace swept.Tests
             changes = cat.GetListForLanguage(FileLanguage.CSharp);
             Assert.AreEqual(1, changes.Count);
             Assert.AreEqual("e1", changes[0].ID);
-        }
-
-        [Test]
-        public void Can_serialize_ToXml()
-        {
-            cat.Add(new Change("1", "Desc", FileLanguage.CSharp));
-            string expectedXml =
-@"<ChangeCatalog>
-    <Change ID='1' Description='Desc' Language='CSharp' />
-</ChangeCatalog>";
-
-            Assert.AreEqual(expectedXml, cat.ToXmlText());
         }
     }
 }

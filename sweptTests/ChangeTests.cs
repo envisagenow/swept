@@ -25,17 +25,5 @@ namespace swept.Tests
             Assert.AreEqual( newDescription, chg.Description );
             Assert.AreEqual( newLanguage, chg.Language );
         }
-
-        [Test]
-        public void Can_serialize_ToXml()
-        {
-            Change change = new Change("Uno", "Eliminate profanity from error messages.", FileLanguage.CSharp);
-
-            string xmlText = change.ToXmlText();
-
-            string expectedXml = "    <Change ID='Uno' Description='Eliminate profanity from error messages.' Language='CSharp' />";
-
-            Assert.AreEqual(expectedXml, xmlText);
-        }
     }
 }

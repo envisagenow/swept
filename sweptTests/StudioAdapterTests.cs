@@ -10,24 +10,6 @@ using System.Xml;
 
 namespace swept.Tests
 {
-    [AttributeUsage(AttributeTargets.Method)]
-    public class WoefulAttribute : Attribute { }
-
-    [AttributeUsage(AttributeTargets.Method)]
-    public class ExemplaryAttribute : Attribute {
-        public string Reason;
-        public ExemplaryAttribute(string reason)
-        {
-            Reason = reason;
-        }
-
-    }
-
-    [AttributeUsage(AttributeTargets.Method)]
-    public class MehAttribute : Attribute { }
-
-
-
     [TestFixture]
     public class StudioAdapterTests
     {
@@ -78,10 +60,7 @@ namespace swept.Tests
             string pastedName = "Copy of bari.cs";
             adapter.RaiseFilePasted(pastedName);
 
-            XmlDocument doc = new XmlDocument();
-            doc.LoadXml(librarian.savedSourceImage.ToXmlText());
-
-            Assert.IsTrue(IsCompletionSaved(doc, pastedName));
+            Assert.IsTrue(TestProbe.IsCompletionSaved(librarian, pastedName));
         }
 
         [Test]
@@ -90,13 +69,7 @@ namespace swept.Tests
             string pastedName = "Copy of weezy.cs";
             adapter.RaiseFilePasted(pastedName);
 
-            XmlDocument doc = new XmlDocument();
-            doc.LoadXml(librarian.savedSourceImage.ToXmlText());
-
-            string completionXPath = String.Format("//SourceFile[@Name='{0}']", pastedName);
-            Assert.IsNotNull(doc.SelectSingleNode(completionXPath));
-
-            Assert.IsFalse(IsCompletionSaved(doc, pastedName));
+            Assert.IsFalse(TestProbe.IsCompletionSaved(librarian, pastedName));
         }
 
         [Test]
@@ -105,13 +78,7 @@ namespace swept.Tests
             string pastedName = "weezy.cs";
             adapter.RaiseFilePasted(pastedName);
 
-            XmlDocument doc = new XmlDocument();
-            doc.LoadXml(librarian.savedSourceImage.ToXmlText());
-
-            string completionXPath = String.Format("//SourceFile[@Name='{0}']", pastedName);
-            Assert.IsNotNull(doc.SelectSingleNode(completionXPath));
-
-            Assert.IsFalse(IsCompletionSaved(doc, pastedName));
+            Assert.IsFalse(TestProbe.IsCompletionSaved(librarian, pastedName));
         }
 
 
@@ -126,11 +93,8 @@ namespace swept.Tests
             string newName = "new" + originalName;
             adapter.RaiseFileSavedAs(originalName, newName);
 
-            XmlDocument doc = new XmlDocument();
-            doc.LoadXml(librarian.savedSourceImage.ToXmlText());
-
             //  "newgadgets" now exists, with the "14" completion saved
-            Assert.IsTrue(IsCompletionSaved(doc, newName));
+            Assert.IsTrue(TestProbe.IsCompletionSaved(librarian, newName));
         }
 
         [Test]
@@ -150,13 +114,10 @@ namespace swept.Tests
             string newName = "new" + originalName;
             adapter.RaiseFileSavedAs(originalName, newName);
 
-            XmlDocument doc = new XmlDocument();
-            doc.LoadXml(librarian.savedSourceImage.ToXmlText());
-
             //  Original file still exists, without pending unsaved change
             //  But it does have all earlier saved changes
-            Assert.IsFalse(IsCompletionSaved(doc, originalName));
-            Assert.IsTrue(IsCompletionSaved(doc, originalName, "12"));
+            Assert.IsFalse(TestProbe.IsCompletionSaved(librarian, originalName));
+            Assert.IsTrue(TestProbe.IsCompletionSaved(librarian, originalName, "12"));
         }
 
 
@@ -176,12 +137,9 @@ namespace swept.Tests
             //  User saves gadgets, but not widgets
             adapter.RaiseFileSaved(gadgetsName);
 
-            XmlDocument doc = new XmlDocument();
-            doc.LoadXml(librarian.savedSourceImage.ToXmlText());
-
-            Assert.IsTrue(IsCompletionSaved(doc, "bari.cs"));
-            Assert.IsTrue(IsCompletionSaved(doc, gadgetsName));
-            Assert.IsFalse(IsCompletionSaved(doc, widgetsName));
+            Assert.IsTrue(TestProbe.IsCompletionSaved(librarian, "bari.cs"));
+            Assert.IsTrue(TestProbe.IsCompletionSaved(librarian, gadgetsName));
+            Assert.IsFalse(TestProbe.IsCompletionSaved(librarian, widgetsName));
         }
 
         [Test]
@@ -195,55 +153,33 @@ namespace swept.Tests
  
             Assert.IsTrue(librarian.ChangeNeedsPersisting);
 
-            XmlDocument doc = new XmlDocument();
-            doc.LoadXml(librarian.savedSourceImage.ToXmlText());
-
-            Assert.IsTrue(IsCompletionSaved(doc, "bari.cs"));
+            Assert.IsTrue(TestProbe.IsCompletionSaved(librarian, "bari.cs"));
             adapter.RaiseFileSaved(nameGadgets);
 
             Assert.IsFalse(librarian.ChangeNeedsPersisting);
 
-            //TODO, check that the output is as it should be
-            // i.e., bari should have a completion for change id 14.
+            Assert.IsTrue(TestProbe.IsCompletionSaved(librarian, "bari.cs"));
         }
 
         [Test]
-        public void WhenFileSaved_NewUnsavedFile_NotAddedToCatalog()
+        public void When_single_file_saved_other_files_remain_unsaved()
         {
-            //prep filecatalog with two SourceFiles
+            // set up a new file (widgets.cs) with unsaved changes
             Completion completion = new Completion( "14" );
 
             string fileNameUnsaved = "widgets.cs";
             SourceFile fileUnsaved = new SourceFile( fileNameUnsaved );
             fileCat.Files.Add( fileUnsaved );
 
-            // complete something on widgets
             fileUnsaved.Completions.Add( completion );
 
             // save bari
             adapter.RaiseFileSaved( fileName );
-
-            XmlDocument doc = new XmlDocument();
-            doc.LoadXml( librarian.savedSourceImage.ToXmlText() );
-
-            //check that bari.cs is saved
-            Assert.IsTrue( IsCompletionSaved( doc, "bari.cs" ) );
+            Assert.IsTrue(TestProbe.IsCompletionSaved(librarian, "bari.cs"));
 
             //check widgets.cs doesn't exist
-            Assert.IsNull( doc.SelectSingleNode( "//SourceFile[@Name='widgets.cs']" ) );
-        } 
-
-        private static bool IsCompletionSaved(XmlDocument doc, string fileName)
-        {
-            return IsCompletionSaved(doc, fileName, "14");
+            Assert.IsFalse(librarian.savedSourceImage.Files.Exists(fi => fi.Name == fileNameUnsaved));
         }
-
-        private static bool IsCompletionSaved(XmlDocument doc, string fileName, string id)
-        {
-            string completionXPath = String.Format("//SourceFile[@Name='{0}']/Completion[@ID='{1}']", fileName, id);
-            return doc.SelectSingleNode(completionXPath) != null;
-        }
-
 
         [Test]
         public void WhenFileGetsFocus_BecomesCurrentFile()

@@ -85,34 +85,5 @@ namespace swept
         }
 
 
-        #region Serialization
-        public static SourceFile FromNode( XmlNode xmlNode )
-        {
-            if( xmlNode == null )
-                throw new Exception( "Can't create a null source file." );
-
-            if( xmlNode.Attributes["Name"] == null )
-                throw new Exception( "A SourceFile node must have a Name attribute.  Please add one." );
-
-            SourceFile file = new SourceFile( xmlNode.Attributes["Name"].Value );
-            foreach( XmlNode completionNode in xmlNode.SelectNodes( "Completion" ) )
-            {
-                Completion comp = Completion.FromNode( completionNode );
-                file.Completions.Add( comp );
-            }
-            return file;
-        }
-
-        //FUTURE: Sort Completions when writing them out
-        public string ToXmlText()
-        {
-            string elementLabel = "SourceFile";
-            string xmlText = String.Format( "    <{0} Name='{1}'>\r\n", elementLabel, Name );
-            Completions.ForEach( c => xmlText += c.ToXmlText() );
-            xmlText += String.Format( "    </{0}>\r\n", elementLabel );
-
-            return xmlText;
-        }
-        #endregion Serialization
     }
 }

@@ -28,7 +28,6 @@ namespace swept
         #endregion
 
 
-
         #region Publish events
 
         public event EventHandler<FileEventArgs> EventSolutionOpened;

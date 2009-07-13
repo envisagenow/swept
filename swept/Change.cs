@@ -23,21 +23,6 @@ namespace swept
             Language = language;
         }
 
-        public static Change FromNode(XmlNode xmlNode)
-        {
-            if (xmlNode == null)
-                throw new Exception("Can't create a null source file.");
-
-            FileLanguage lang = (FileLanguage)Enum.Parse( typeof(FileLanguage), xmlNode.Attributes["Language"].Value);
-
-            Change change = new Change(xmlNode.Attributes["ID"].Value, xmlNode.Attributes["Description"].Value, lang);
-            
-            return change;
-        }
-        public string ToXmlText()
-        {
-            return "    <Change ID='" + ID + "' Description='" + Description + "' Language='" + Language.ToString() + "' />";
-        }
     }
 
     public enum FileLanguage

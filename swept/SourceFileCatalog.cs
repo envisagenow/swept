@@ -71,55 +71,5 @@ namespace swept
             return foundFile;
         }
 
-
-        #region Serialization
-        /// <summary>Will return a new instance from the proper XML text</summary>
-        public static SourceFileCatalog FromXmlText( string xmlText )
-        {
-            try
-            {
-                XmlDocument doc = new XmlDocument();
-                doc.LoadXml( xmlText );
-                return FromXmlDocument( doc );
-            }
-            catch( XmlException xe )
-            {
-                throw new Exception( String.Format( "Text [{0}] was not valid XML.  Please check its contents.  Details: {1}", xmlText, xe.Message ) );
-            }
-        }
-
-        public static SourceFileCatalog FromXmlDocument( XmlDocument doc )
-        {
-            XmlNode node = doc.SelectSingleNode( "SweptProjectData/SourceFileCatalog" );
-            if( node == null )
-                throw new Exception( "Document must have a <SourceFileCatalog> node.  Please supply one." );
-
-            SourceFileCatalog cat = new SourceFileCatalog();
-
-            XmlNodeList files = node.SelectNodes( "SourceFile" );
-            foreach( XmlNode fileNode in files )
-            {
-                SourceFile file = SourceFile.FromNode( fileNode );
-
-                cat.Files.Add( file );
-            }
-
-            return cat;
-        }
-
-        //FUTURE: Sort SourceFiles when writing them out
-        public string ToXmlText()
-        {
-            string catalogLabel = "SourceFileCatalog";
-            string xmlText = String.Format( "<{0}>\r\n", catalogLabel );
-            foreach( SourceFile source in Files )
-            {
-                xmlText += source.ToXmlText();
-            }
-            xmlText += String.Format( "</{0}>", catalogLabel );
-            return xmlText;
-        }
-
-        #endregion
     }
 }

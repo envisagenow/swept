@@ -24,18 +24,5 @@ namespace swept
             return new Completion( ChangeID );
         }
 
-        #region Serialization
-        public static Completion FromNode( XmlNode completion )
-        {
-            string changeID = completion.Attributes["ID"].Value;
-            Completion fileChange = new Completion( changeID );
-            return fileChange;
-        }
-
-        public string ToXmlText()
-        {
-            return string.Format( "        <Completion ID='{0}' />\r\n", ChangeID );
-        }
-        #endregion Serialization
     }
 }
