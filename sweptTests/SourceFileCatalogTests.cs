@@ -14,11 +14,17 @@ namespace swept.Tests
     {
         private SourceFileCatalog fileCat;
         private ChangeCatalog changeCat;
+        private SourceFileCatalog blackCat;
+        private SourceFileCatalog whiteCat;
+
 
         [SetUp]
         public void can_create()
         {
             fileCat = new SourceFileCatalog();
+            blackCat = new SourceFileCatalog();
+            whiteCat = new SourceFileCatalog();
+            
             changeCat = new ChangeCatalog();
             fileCat.ChangeCatalog = changeCat;
         }
@@ -145,6 +151,56 @@ namespace swept.Tests
 
             fileCat.Delete(blueName);
             Assert.AreEqual(fileCount, fileCat.Files.Count);
+        }
+
+
+
+        [Test]
+        public void Empty_Catalogs_are_Equal()
+        {
+            Assert.IsTrue(whiteCat.Equals(blackCat));
+        }
+
+        [Test]
+        public void One_SourceFile_difference_makes_Unequal()
+        {
+            whiteCat.Add(new SourceFile("meow.cs"));
+
+            Assert.IsFalse(whiteCat.Equals(blackCat));
+        }
+
+
+        [Test]
+        public void Different_FileNames_makes_Unequal()
+        {
+            whiteCat.Add(new SourceFile("meow.cs"));
+            blackCat.Add(new SourceFile("meow1.cs"));
+
+            Assert.IsFalse(whiteCat.Equals(blackCat));
+        }
+
+        [Test]
+        public void Catalogs_With_Equal_Files_Equal()
+        {
+            whiteCat.Add(new SourceFile("meow.cs"));
+            blackCat.Add(new SourceFile("meow.cs"));
+
+            Assert.IsTrue(whiteCat.Equals(blackCat));
+            
+        }
+
+        [Test]
+        public void Catalogs_with_synonymous_Files_with_different_Completions_are_Unequal()
+        {
+            SourceFile meow1 = new SourceFile("meow.cs");
+            SourceFile meow2 = new SourceFile("meow.cs");
+            meow1.AddNewCompletion("101");
+            meow2.AddNewCompletion("102");
+
+            whiteCat.Add(meow1);
+            blackCat.Add(meow2);
+
+            Assert.IsFalse(whiteCat.Equals(blackCat));
         }
     }
 }

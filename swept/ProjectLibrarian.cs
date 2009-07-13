@@ -41,12 +41,19 @@ namespace swept
         }
 
         //TODO:  Reimplement flag in the SourceFileCatalog, make tests pass via more mature methods.
-        internal bool unsavedSourceChangesExist;
+        internal bool SourceFileChangesUnsaved
+        {
+            get
+            {
+                return !unsavedSourceImage.Equals(savedSourceImage);
+            }
+        }
+
         internal bool ChangeNeedsPersisting
         {
             get
             {
-                return changeCatalog.IsDirty || unsavedSourceChangesExist;
+                return changeCatalog.IsDirty || SourceFileChangesUnsaved;
             }
         }
 
@@ -233,12 +240,10 @@ namespace swept
 
         public void SourceCatalogChanged()
         {
-            unsavedSourceChangesExist = true;
         }
 
         internal void Persist()
         {
-            unsavedSourceChangesExist = false;
             changeCatalog.MarkClean();
 
             var port = new XmlPort();

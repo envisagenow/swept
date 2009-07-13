@@ -37,6 +37,7 @@ namespace swept
         {
             if (Files.Exists(sf => sf.Name == file.Name))
                 return;
+            
             Files.Add(file);
         }
 
@@ -51,6 +52,22 @@ namespace swept
         {
             SourceFile file = Fetch(oldName);
             file.Name = newName;
+        }
+
+        public bool Equals(SourceFileCatalog catalog)
+        {
+            if (Files.Count != catalog.Files.Count)
+                return false;
+
+            int UpperBound = Files.Count;
+
+            for (int i = 0; i < UpperBound; i++)
+            {
+                if (!Files[i].Equals(catalog.Files[i]))
+                    return false;    
+            }
+
+            return true;
         }
 
         private SourceFile Find( string name )

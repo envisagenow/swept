@@ -18,6 +18,7 @@ namespace swept.Tests
         private static string _SingleChangeLibraryText;
         private string _HerePath;
         private ProjectLibrarian Horace;
+        private MockLibraryPersister persister;
 
         [SetUp]
         public void Setup()
@@ -44,13 +45,8 @@ namespace swept.Tests
 </SourceFileCatalog>
 </SweptProjectData>";
 
-        }
-
-        private static MockLibraryPersister Get_mock_Persister(string libraryText)
-        {
-            MockLibraryPersister persister = new MockLibraryPersister();
-            persister.XmlText = libraryText;
-            return persister;
+            persister = new MockLibraryPersister();
+            Horace.persister = persister;
         }
 
         private static FileEventArgs Get_testfile_FileEventArgs()
@@ -59,24 +55,21 @@ namespace swept.Tests
             args.Name = @"d:\code\CoolProject\mySolution.sln";
             return args;
         }
+
         [Test]
         public void Swept_Library_sought_in_expected_location()
         {
             Assert.AreEqual(@"f:\over\here.swept.library", Horace.LibraryPath);
-
-            Horace.persister = Get_mock_Persister(_SingleSourceFileLibraryText);
+            persister.ThrowExceptionWhenLoadingLibrary = true;
 
             Horace.HearSolutionOpened(this, Get_testfile_FileEventArgs());
             Assert.AreEqual(@"d:\code\CoolProject\mySolution.swept.library", Horace.LibraryPath);
         }
 
-        // TODO: OpenSolution tests
-        //  
-
         [Test]
         public void OpenSolution_finding_Swept_Library_will_load_SourceFiles()
         {
-            Horace.persister = Get_mock_Persister(_SingleSourceFileLibraryText);
+            persister.XmlText = _SingleSourceFileLibraryText;
             Horace.HearSolutionOpened(this, Get_testfile_FileEventArgs());
 
             SourceFile someFile = Horace.savedSourceImage.Fetch("some_file.cs");
@@ -87,7 +80,7 @@ namespace swept.Tests
         [Test]
         public void OpenSolution_finding_Swept_Library_will_load_Changes()
         {
-            Horace.persister = Get_mock_Persister( _SingleChangeLibraryText );
+            persister.XmlText = _SingleChangeLibraryText;
             Horace.HearSolutionOpened(this, Get_testfile_FileEventArgs());
 
             Assert.AreEqual(1, Horace.changeCatalog.changes.Count);
@@ -99,9 +92,7 @@ namespace swept.Tests
         [Test]
         public void OpenSolution_with_no_Swept_Library_will_start_smoothly()
         {
-            MockLibraryPersister mock = Get_mock_Persister(_SingleChangeLibraryText);
-            Horace.persister = mock;
-            mock.ThrowExceptionWhenLoadingLibrary = true; 
+            persister.ThrowExceptionWhenLoadingLibrary = true; 
             
             Horace.HearSolutionOpened(this, Get_testfile_FileEventArgs());
 
@@ -112,9 +103,6 @@ namespace swept.Tests
         [Test]
         public void SaveSolution_will_persist_all_unsaved_SourceFiles()
         {
-            MockLibraryPersister writer = new MockLibraryPersister();
-            Horace.persister = writer;
-
             string someFileName = "some_file.cs";
             SourceFile someFile = new SourceFile(someFileName);
             someFile.AddNewCompletion("007");
@@ -122,7 +110,7 @@ namespace swept.Tests
 
             Horace.HearSolutionSaved(this, new EventArgs());            
 
-            Assert.AreEqual(_SingleSourceFileLibraryText, writer.XmlText);
+            Assert.AreEqual(_SingleSourceFileLibraryText, persister.XmlText);
         }
 
         [Test]
@@ -138,9 +126,6 @@ namespace swept.Tests
         [Test]
         public void SeparateCatalogs_CreatedBy_SolutionPathChange()
         {
-            Horace = new ProjectLibrarian();
-            Horace.SolutionPath = "my/path";
-
             Assert.IsNotNull( Horace.unsavedSourceImage );
             Assert.IsNotNull( Horace.savedSourceImage );
             Assert.AreNotSame( Horace.unsavedSourceImage, Horace.savedSourceImage );
@@ -149,9 +134,6 @@ namespace swept.Tests
         [Test]
         public void CanSave()
         {
-            MockLibraryPersister writer = new MockLibraryPersister();
-            Horace.persister = writer;
-
             string someFileName = "some_file.cs";
             SourceFile someFile = new SourceFile(someFileName);
             someFile.AddNewCompletion("007");
@@ -160,15 +142,12 @@ namespace swept.Tests
             FileEventArgs args = new FileEventArgs { Name = someFileName };
             Horace.HearFileSaved(this, args);
 
-            Assert.AreEqual(_SingleSourceFileLibraryText, writer.XmlText);
+            Assert.AreEqual(_SingleSourceFileLibraryText, persister.XmlText);
         }
 
         [Test]
         public void Can_Save_catalog_with_Change()
         {
-            MockLibraryPersister persister = new MockLibraryPersister();
-            Horace.persister = persister;
-
             Horace.changeCatalog.Add(new Change("Uno", "Eliminate profanity from error messages.", FileLanguage.CSharp));
             Horace.Persist();
 
@@ -182,6 +161,33 @@ namespace swept.Tests
 </SweptProjectData>";
 
             Assert.AreEqual(expectedXmlText, persister.XmlText);
+        }
+
+        [Test]
+        public void When_SourceFileCatalog_Changed_it_reports_unsaved_Changes()
+        {
+            string someFileName = "some_file.cs";
+            SourceFile someFile = new SourceFile(someFileName);
+            someFile.AddNewCompletion("007");
+
+            Assert.IsFalse(Horace.SourceFileChangesUnsaved);
+
+            Horace.unsavedSourceImage.Add(someFile);
+            Assert.IsTrue(Horace.SourceFileChangesUnsaved);
+        }
+
+
+        [Test]
+        public void When_SourceFileCatalog_Saved_it_reports_no_unsaved_Changes()
+        {
+            string someFileName = "some_file.cs";
+            SourceFile someFile = new SourceFile(someFileName);
+            someFile.AddNewCompletion("007");
+            
+            Horace.unsavedSourceImage.Add(someFile);
+
+            Horace.HearSolutionSaved(this, new EventArgs());
+            Assert.IsFalse(Horace.SourceFileChangesUnsaved);
         }
 
         [Test]

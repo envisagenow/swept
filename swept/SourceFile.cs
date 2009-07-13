@@ -84,6 +84,23 @@ namespace swept
             Completions.Add( new Completion( changeID ) );
         }
 
+        public bool Equals(SourceFile file)
+        {
+            if( Name != file.Name ) return false;
 
+            if (Completions.Count != file.Completions.Count)
+                return false;
+
+            int UpperBound = Completions.Count;
+
+            for (int i = 0; i < UpperBound; i++)
+            {
+                if (!Completions[i].ChangeID.Equals(file.Completions[i].ChangeID))
+                    return false;
+            }
+
+            //compare completions...
+            return true;
+        }
     }
 }

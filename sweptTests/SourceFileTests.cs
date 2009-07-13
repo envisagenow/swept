@@ -13,11 +13,15 @@ namespace swept.Tests
     public class SourceFileTests
     {
         private SourceFile file;
+        private SourceFile bargle;
+        private SourceFile bargle2;
 
         [SetUp]
         public void SetUp()
         {
             file = new SourceFile( "foo.cs" );
+            bargle = new SourceFile("bargle.cs");
+            bargle2 = new SourceFile("bargle.cs");
         }
 
         [Test]
@@ -74,6 +78,41 @@ namespace swept.Tests
 
             Assert.AreEqual( 1, file.Completions.Count );
             Assert.AreEqual( arbitraryID, file.Completions[0].ChangeID );
+        }
+
+        [Test]
+        public void Files_with_different_Names_Unequal()
+        {
+            Assert.IsFalse(file.Equals(bargle));
+        }
+
+        [Test]
+        public void Same_Name_Files_are_Equal()
+        {
+            Assert.IsTrue(bargle.Equals(bargle2));
+        }
+
+        [Test]
+        public void One_Completion_difference_makes_Unequal()
+        {
+            bargle.AddNewCompletion("789");
+            Assert.IsFalse(bargle.Equals(bargle2));
+        }
+
+        [Test]
+        public void Equal_Completions_make_Equal_Files()
+        {
+            bargle.AddNewCompletion("789");
+            bargle2.AddNewCompletion("789");
+            Assert.IsTrue(bargle.Equals(bargle2));
+        }
+
+        [Test]
+        public void Unequal_Completions_make_Unequal_Files()
+        {
+            bargle.AddNewCompletion("456");
+            bargle2.AddNewCompletion("344");
+            Assert.IsFalse(bargle.Equals(bargle2));
         }
     }
 }

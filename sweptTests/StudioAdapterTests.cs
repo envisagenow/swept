@@ -149,7 +149,6 @@ namespace swept.Tests
             SourceFile fileGadgets = new SourceFile(nameGadgets);
             fileGadgets.Completions.Add(new Completion("14"));
             fileCat.Add(fileGadgets);
-            librarian.unsavedSourceChangesExist = true;
  
             Assert.IsTrue(librarian.ChangeNeedsPersisting);
 
@@ -313,7 +312,8 @@ namespace swept.Tests
         [Test]
         public void WhenSolutionSaved_DiskCatalogSaved()
         {
-            librarian.unsavedSourceChangesExist = true;
+            librarian.unsavedSourceImage.Add(new SourceFile("moo.cs"));
+            Assert.IsTrue(librarian.ChangeNeedsPersisting);
             adapter.RaiseSolutionSaved();
             Assert.IsFalse(librarian.ChangeNeedsPersisting);
         }

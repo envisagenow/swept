@@ -41,6 +41,8 @@ namespace swept
             changes.RemoveAll(c => c.ID == changeID);
         }
 
+        // TODO: Edit a Change
+
         public List<Change> FindAll(Predicate<Change> match)
         {
             return changes.FindAll(match);
