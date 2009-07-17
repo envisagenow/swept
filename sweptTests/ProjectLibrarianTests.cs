@@ -3,19 +3,13 @@
 //  The MIT License, roughly:  Keep this notice.  Beyond that, do whatever you want with this code.
 using NUnit.Framework;
 using swept;
-using System.Collections.Generic;
-using System.Text;
 using System;
-using System.Xml;
-using System.IO;
 
 namespace swept.Tests
 {
     [TestFixture]
     public class ProjectLibrarianTests
     {
-        private static string _SingleSourceFileLibraryText;
-        private static string _SingleChangeLibraryText;
         private string _HerePath;
         private ProjectLibrarian Horace;
         private MockLibraryPersister persister;
@@ -25,25 +19,6 @@ namespace swept.Tests
         {
             _HerePath = @"f:\over\here.sln";
             Horace = new ProjectLibrarian { SolutionPath = _HerePath };
-            _SingleSourceFileLibraryText =
-@"<SweptProjectData>
-<ChangeCatalog>
-</ChangeCatalog>
-<SourceFileCatalog>
-    <SourceFile Name='some_file.cs'>
-        <Completion ID='007' />
-    </SourceFile>
-</SourceFileCatalog>
-</SweptProjectData>";
-
-            _SingleChangeLibraryText =
-@"<SweptProjectData>
-<ChangeCatalog>
-    <Change ID='30-Persist' Description='Update to use persister' Language='CSharp' />
-</ChangeCatalog>
-<SourceFileCatalog>
-</SourceFileCatalog>
-</SweptProjectData>";
 
             persister = new MockLibraryPersister();
             Horace.persister = persister;
@@ -69,7 +44,7 @@ namespace swept.Tests
         [Test]
         public void OpenSolution_finding_Swept_Library_will_load_SourceFiles()
         {
-            persister.XmlText = _SingleSourceFileLibraryText;
+            persister.XmlText = TestProbe.SingleFileLibrary_text;
             Horace.HearSolutionOpened(this, Get_testfile_FileEventArgs());
 
             SourceFile someFile = Horace.savedSourceImage.Fetch("some_file.cs");
@@ -80,7 +55,7 @@ namespace swept.Tests
         [Test]
         public void OpenSolution_finding_Swept_Library_will_load_Changes()
         {
-            persister.XmlText = _SingleChangeLibraryText;
+            persister.XmlText = TestProbe.SingleChangeLibrary_text;
             Horace.HearSolutionOpened(this, Get_testfile_FileEventArgs());
 
             Assert.AreEqual(1, Horace.changeCatalog.changes.Count);
@@ -110,7 +85,7 @@ namespace swept.Tests
 
             Horace.HearSolutionSaved(this, new EventArgs());            
 
-            Assert.AreEqual(_SingleSourceFileLibraryText, persister.XmlText);
+            Assert.AreEqual(TestProbe.SingleFileLibrary_text, persister.XmlText);
         }
 
         [Test]
@@ -142,7 +117,7 @@ namespace swept.Tests
             FileEventArgs args = new FileEventArgs { Name = someFileName };
             Horace.HearFileSaved(this, args);
 
-            Assert.AreEqual(_SingleSourceFileLibraryText, persister.XmlText);
+            Assert.AreEqual(TestProbe.SingleFileLibrary_text, persister.XmlText);
         }
 
         [Test]

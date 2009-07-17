@@ -18,23 +18,39 @@ namespace swept.Tests
         public void CanCreate()
         {
             cat = new ChangeCatalog();
-        }
 
-        [Test]
-        public void CanGetChangesFilteredByLanguage()
-        {
             cat.Add(new Change("e1", "Fix 'using' statements", FileLanguage.CSharp));
             cat.Add(new Change("e2", "Upgrade to XHTML", FileLanguage.HTML));
             cat.Add(new Change("e3", "Put <title> on all pages", FileLanguage.HTML));
 
-            List<Change> changes = cat.GetListForLanguage(FileLanguage.HTML);
+        }
+
+        [Test]
+        public void GetChanges_returns_all_pertinent_Changes()
+        {
+            List<Change> changes = cat.GetChangesForFile(new SourceFile("index.html"));
             List<Change> moreChanges = cat.FindAll(ch => ch.Language == FileLanguage.HTML);
             Assert.IsTrue(changes.TrueForAll(ch => moreChanges.Contains(ch)));
             Assert.AreEqual(moreChanges.Count, changes.Count);
+        }
 
-            changes = cat.GetListForLanguage(FileLanguage.CSharp);
+        [Test]
+        public void GetChanges_returns_only_pertinent_Changes()
+        {
+            List<Change> changes = cat.GetChangesForFile(new SourceFile("hello_world.cs"));
             Assert.AreEqual(1, changes.Count);
             Assert.AreEqual("e1", changes[0].ID);
         }
+
+        [Test]
+        public void Empty_Catalog_returns_empty_list()
+        {
+            List<Change> changes = cat.GetChangesForFile(new SourceFile("hello_style.css"));
+            Assert.AreEqual(0, changes.Count);
+        }
+
+        // TODO: Remove, MarkClean
+
+        // TODO: Equals
     }
 }

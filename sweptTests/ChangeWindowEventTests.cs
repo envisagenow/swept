@@ -104,10 +104,6 @@ namespace swept.Tests
             SourceFile savedBari = librarian.savedSourceImage.Fetch("bari.cs");
             Assert.AreEqual(1, savedBari.Completions.Count);
             Assert.AreEqual("14", savedBari.Completions[0].ChangeID);
-
-            //XmlDocument doc = new XmlDocument();
-            //doc.LoadXml(librarian.savedSourceImage.ToXmlText());
-            //Assert.IsTrue(IsCompletionSaved(doc, "bari.cs", "14"));
         }
 
         [Test]

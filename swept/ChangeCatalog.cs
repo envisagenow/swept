@@ -19,14 +19,14 @@ namespace swept
         }
 
 
-        public List<Change> GetListForLanguage( FileLanguage fileLanguage )
-        {
-            return changes.FindAll( c => c.Language == fileLanguage );
-        }
-
         public List<Change> GetChangesForFile(SourceFile file)
         {
             return GetListForLanguage(file.Language);
+        }
+
+        private List<Change> GetListForLanguage(FileLanguage fileLanguage)
+        {
+            return changes.FindAll(c => c.Language == fileLanguage);
         }
 
         public void Add(Change change)
