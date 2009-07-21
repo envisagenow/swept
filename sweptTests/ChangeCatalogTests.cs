@@ -51,6 +51,79 @@ namespace swept.Tests
 
         // TODO: Remove, MarkClean
 
-        // TODO: Equals
+        // Equals() tests
+        [Test]
+        public void Can_compare_equality_with_empty_Catalogs()
+        {
+            ChangeCatalog cat1 = new ChangeCatalog();
+            ChangeCatalog cat2 = new ChangeCatalog();
+
+            Assert.IsTrue( cat1.Equals( cat2 ) );
+        }
+
+        [Test]
+        public void Can_compare_equality_with_different_sized_Catalogs()
+        {
+            ChangeCatalog cat1 = new ChangeCatalog();
+            ChangeCatalog cat2 = new ChangeCatalog();
+
+            Change change = new Change( "testId", "Test CHange", FileLanguage.CSharp );
+            cat2.Add( change );
+
+
+            Assert.IsFalse( cat1.Equals( cat2 ) );
+        }
+
+        [Test]
+        public void Can_compare_equality_with_same_sized_different_content_Catalogs()
+        {
+            ChangeCatalog cat1 = new ChangeCatalog();
+            ChangeCatalog cat2 = new ChangeCatalog();
+
+            Change change = new Change( "SomeID", "A really groovy change", FileLanguage.CSharp );
+            cat1.Add( change );
+
+            change = new Change( "testId", "Test CHange", FileLanguage.CSharp );
+            cat2.Add( change );
+
+            Assert.IsFalse( cat1.Equals( cat2 ) );
+        }
+
+        [Test]
+        public void Changes_sort_alphabetically_by_ID()
+        {
+            Change a_17 = new Change( "a_17", "Do this thing", FileLanguage.CSharp );
+            Change a_18 = new Change( "a_18", "Do this thing", FileLanguage.CSharp );
+            Change a_117 = new Change( "a_117", "Do this thing", FileLanguage.CSharp );
+            Change a_177 = new Change( "a_177", "Do this thing", FileLanguage.CSharp );
+            Change b_52 = new Change( "b_52", "Do this, too", FileLanguage.CSharp );
+
+            ChangeCatalog cat = new ChangeCatalog();
+
+            cat.Add( b_52 );
+            cat.Add( a_17 );
+            cat.Add( a_177 );
+            cat.Add( a_117 );
+            cat.Add( a_18 );
+
+            Assert.AreEqual( 0, cat.changes.IndexOfKey( a_117.ID ) );
+            Assert.AreEqual( 1, cat.changes.IndexOfKey( a_17.ID ) );
+            Assert.AreEqual( 2, cat.changes.IndexOfKey( a_177.ID ) );
+            Assert.AreEqual( 3, cat.changes.IndexOfKey( a_18.ID ) );
+            Assert.AreEqual( 4, cat.changes.IndexOfKey( b_52.ID ) );
+        }
+
+
+        [Test, ExpectedException( ExpectedMessage = "An entry with the same key already exists.")]
+        public void Adding_Duplicate_id_failure()
+        {
+            ChangeCatalog cat = new ChangeCatalog();
+
+            Change a_17 = new Change( "a_17", "Do this thing", FileLanguage.CSharp );
+            Change a_17a = new Change( "a_17", "Do this thing", FileLanguage.CSharp );
+
+            cat.Add( a_17 );
+            cat.Add( a_17a );
+        }
     }
 }

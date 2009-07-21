@@ -38,7 +38,7 @@ namespace swept.Tests
 
             bar = new SourceFile("bar.cs");
 
-            fileCat = librarian.unsavedSourceImage;
+            fileCat = librarian.unsavedSourceCatalog;
             fileCat.Files.Add(bar);
 
             taskWindow = dispatcher.taskWindow;

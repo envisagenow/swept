@@ -36,7 +36,7 @@ namespace swept.Tests
             string indentID = "14";
             changeCat.Add(new Change(indentID, "indentation cleanup", FileLanguage.CSharp));
 
-            fileCat = librarian.unsavedSourceImage;
+            fileCat = librarian.unsavedSourceCatalog;
 
             fileName = "bari.cs";
             file = new SourceFile(fileName);
@@ -46,7 +46,7 @@ namespace swept.Tests
             MockLibraryPersister writer = new MockLibraryPersister();
             librarian.persister = writer;
 
-            librarian.savedSourceImage = SourceFileCatalog.Clone(fileCat);
+            librarian.savedSourceCatalog = SourceFileCatalog.Clone(fileCat);
             librarian.SolutionPath = "mockpath";
             librarian.Persist();
 
@@ -177,7 +177,7 @@ namespace swept.Tests
             Assert.IsTrue(TestProbe.IsCompletionSaved(librarian, "bari.cs"));
 
             //check widgets.cs doesn't exist
-            Assert.IsFalse(librarian.savedSourceImage.Files.Exists(fi => fi.Name == fileNameUnsaved));
+            Assert.IsFalse(librarian.savedSourceCatalog.Files.Exists(fi => fi.Name == fileNameUnsaved));
         }
 
         [Test]
@@ -258,7 +258,7 @@ namespace swept.Tests
 
         private void AbandonFileChanges(string fileName)
         {
-            SourceFile file = librarian.unsavedSourceImage.Fetch( fileName );
+            SourceFile file = librarian.unsavedSourceCatalog.Fetch( fileName );
             int startingCompletionsCount = file.Completions.Count;
 
             file.AddNewCompletion( "id_88" );
@@ -287,7 +287,7 @@ namespace swept.Tests
 
             Assert.IsFalse( fileCat.Files.Contains( file ) );
             Assert.IsFalse(librarian.ChangeNeedsPersisting);
-            Assert.IsNotNull(librarian.savedSourceImage);
+            Assert.IsNotNull(librarian.savedSourceCatalog);
         }
         // TODO: !! add a dialog when re-adding, 'keep or discard history for this source file?'
 
@@ -306,13 +306,13 @@ namespace swept.Tests
             Assert.AreEqual(1, nextGreat.Completions.Count);
 
             Assert.IsFalse(librarian.ChangeNeedsPersisting);
-            Assert.IsNotNull(librarian.savedSourceImage);
+            Assert.IsNotNull(librarian.savedSourceCatalog);
         }
 
         [Test]
         public void WhenSolutionSaved_DiskCatalogSaved()
         {
-            librarian.unsavedSourceImage.Add(new SourceFile("moo.cs"));
+            librarian.unsavedSourceCatalog.Add(new SourceFile("moo.cs"));
             Assert.IsTrue(librarian.ChangeNeedsPersisting);
             adapter.RaiseSolutionSaved();
             Assert.IsFalse(librarian.ChangeNeedsPersisting);

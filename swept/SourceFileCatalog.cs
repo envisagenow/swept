@@ -18,6 +18,7 @@ namespace swept
             Files = new List<SourceFile>();
         }
 
+        // TODO: Change this over to an instance 0-arg method.
         public static SourceFileCatalog Clone( SourceFileCatalog parent )
         {
             SourceFileCatalog newCatalog = new SourceFileCatalog();

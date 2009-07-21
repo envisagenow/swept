@@ -25,5 +25,39 @@ namespace swept.Tests
             Assert.AreEqual( newDescription, chg.Description );
             Assert.AreEqual( newLanguage, chg.Language );
         }
+
+        [Test]
+        public void Can_compare_equality()
+        {
+            Change change1 = new Change();
+            Change change2 = new Change();
+
+            Assert.IsTrue(change1.Equals( change2 ));
+        }
+
+        [Test]
+        public void Can_compare_inequal_objects()
+        {
+            Change change1 = new Change( "101-443", "Remove all dinguses", FileLanguage.CSharp );
+            Change change2 = new Change( "5987515", "Frob all wobbishes", FileLanguage.CSS );
+
+            Assert.IsFalse( change1.Equals( change2 ) );
+
+            change1.ID = change2.ID;
+            Assert.IsFalse( change1.Equals( change2 ) );
+
+            change1.Description = change2.Description;
+            Assert.IsFalse( change1.Equals( change2 ) );
+
+            change1.Language = change2.Language;
+            Assert.IsTrue( change1.Equals( change2 ) );
+        }
+
+        [Test]
+        public void Can_compare_to_null()
+        {
+            Change change1 = new Change();
+            Assert.IsFalse( change1.Equals( null ) );
+        }
     }
 }

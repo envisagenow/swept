@@ -47,7 +47,7 @@ namespace swept.Tests
             persister.XmlText = TestProbe.SingleFileLibrary_text;
             Horace.HearSolutionOpened(this, Get_testfile_FileEventArgs());
 
-            SourceFile someFile = Horace.savedSourceImage.Fetch("some_file.cs");
+            SourceFile someFile = Horace.savedSourceCatalog.Fetch("some_file.cs");
 
             Assert.AreEqual(1, someFile.Completions.Count);
         }
@@ -59,8 +59,8 @@ namespace swept.Tests
             Horace.HearSolutionOpened(this, Get_testfile_FileEventArgs());
 
             Assert.AreEqual(1, Horace.changeCatalog.changes.Count);
-            Change change = Horace.changeCatalog.changes[0];
-            Assert.AreEqual("30-Persist", change.ID);
+            Change change = Horace.changeCatalog.changes["30-Persist"];
+            Assert.AreEqual( "Update to use persister", change.Description );
             Assert.AreEqual(FileLanguage.CSharp, change.Language);
         }
 
@@ -72,7 +72,7 @@ namespace swept.Tests
             Horace.HearSolutionOpened(this, Get_testfile_FileEventArgs());
 
             Assert.AreEqual(0, Horace.changeCatalog.changes.Count);
-            Assert.AreEqual(0, Horace.unsavedSourceImage.Files.Count);
+            Assert.AreEqual(0, Horace.unsavedSourceCatalog.Files.Count);
         }
 
         [Test]
@@ -81,7 +81,7 @@ namespace swept.Tests
             string someFileName = "some_file.cs";
             SourceFile someFile = new SourceFile(someFileName);
             someFile.AddNewCompletion("007");
-            Horace.unsavedSourceImage.Add(someFile);
+            Horace.unsavedSourceCatalog.Add(someFile);
 
             Horace.HearSolutionSaved(this, new EventArgs());            
 
@@ -101,9 +101,9 @@ namespace swept.Tests
         [Test]
         public void SeparateCatalogs_CreatedBy_SolutionPathChange()
         {
-            Assert.IsNotNull( Horace.unsavedSourceImage );
-            Assert.IsNotNull( Horace.savedSourceImage );
-            Assert.AreNotSame( Horace.unsavedSourceImage, Horace.savedSourceImage );
+            Assert.IsNotNull( Horace.unsavedSourceCatalog );
+            Assert.IsNotNull( Horace.savedSourceCatalog );
+            Assert.AreNotSame( Horace.unsavedSourceCatalog, Horace.savedSourceCatalog );
         }
 
         [Test]
@@ -112,7 +112,7 @@ namespace swept.Tests
             string someFileName = "some_file.cs";
             SourceFile someFile = new SourceFile(someFileName);
             someFile.AddNewCompletion("007");
-            Horace.unsavedSourceImage.Add(someFile);
+            Horace.unsavedSourceCatalog.Add(someFile);
 
             FileEventArgs args = new FileEventArgs { Name = someFileName };
             Horace.HearFileSaved(this, args);
@@ -145,10 +145,10 @@ namespace swept.Tests
             SourceFile someFile = new SourceFile(someFileName);
             someFile.AddNewCompletion("007");
 
-            Assert.IsFalse(Horace.SourceFileChangesUnsaved);
+            Assert.IsFalse(Horace.SourceFileCatalogUnsaved);
 
-            Horace.unsavedSourceImage.Add(someFile);
-            Assert.IsTrue(Horace.SourceFileChangesUnsaved);
+            Horace.unsavedSourceCatalog.Add(someFile);
+            Assert.IsTrue(Horace.SourceFileCatalogUnsaved);
         }
 
 
@@ -159,10 +159,10 @@ namespace swept.Tests
             SourceFile someFile = new SourceFile(someFileName);
             someFile.AddNewCompletion("007");
             
-            Horace.unsavedSourceImage.Add(someFile);
+            Horace.unsavedSourceCatalog.Add(someFile);
 
             Horace.HearSolutionSaved(this, new EventArgs());
-            Assert.IsFalse(Horace.SourceFileChangesUnsaved);
+            Assert.IsFalse(Horace.SourceFileCatalogUnsaved);
         }
 
         [Test]
@@ -183,7 +183,7 @@ namespace swept.Tests
             Horace.HearChangeAdded(this, new ChangeEventArgs { change = historicalChange });
             SourceFile foo = new SourceFile("foo.cs");
             foo.Language = FileLanguage.CSharp;
-            Horace.unsavedSourceImage.Add(foo);
+            Horace.unsavedSourceCatalog.Add(foo);
             foo.Completions.Add(new Completion("14"));
 
             Horace.changeCatalog.Remove("14");
@@ -205,7 +205,7 @@ namespace swept.Tests
             Horace.HearChangeAdded(this, new ChangeEventArgs { change = historicalChange });
             SourceFile foo = new SourceFile("foo.cs");
             foo.Language = FileLanguage.CSharp;
-            Horace.unsavedSourceImage.Add(foo);
+            Horace.unsavedSourceCatalog.Add(foo);
             foo.Completions.Add(new Completion("14"));
 
             Horace.changeCatalog.Remove("14");

@@ -16,12 +16,12 @@ namespace swept
 
         public static Task FromChange( Change change )
         {
-            Task entry = new Task();
-            entry.ID = change.ID;
-            entry.Description = change.Description;
-            entry.Language = change.Language;
-            entry.Completed = false;
-            return entry;
+            Task task = new Task();
+            task.ID = change.ID;
+            task.Description = change.Description;
+            task.Language = change.Language;
+            task.Completed = false;
+            return task;
         }
     }
 }

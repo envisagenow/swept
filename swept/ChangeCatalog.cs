@@ -5,47 +5,66 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Xml;
+using System.Linq;
 
 namespace swept
 {
     public class ChangeCatalog
     {
         public bool IsDirty { get; private set; }
-        internal List<Change> changes;
+        internal SortedList<string, Change> changes;
 
         public ChangeCatalog()
         {
-            changes = new List<Change>();
+            changes = new SortedList<string, Change>();
         }
 
+        public bool Equals(ChangeCatalog cat1)
+        {
+            if (changes.Count != cat1.changes.Count)
+            {
+                return false;
+            }
+
+            for (int i = 0; i < changes.Count; i++)
+            {
+                // TODO: !!!
+                //if (!changes[i].Equals(cat1.changes[i]))
+                    return false;
+            }
+             
+            return true;
+        }
 
         public List<Change> GetChangesForFile(SourceFile file)
         {
             return GetListForLanguage(file.Language);
         }
 
-        private List<Change> GetListForLanguage(FileLanguage fileLanguage)
+        private List<Change> GetListForLanguage( FileLanguage fileLanguage )
         {
-            return changes.FindAll(c => c.Language == fileLanguage);
+            List<Change> changeList = changes.Values.ToList<Change>();
+            return changeList.FindAll( change => change.Language == fileLanguage );
         }
 
         public void Add(Change change)
         {
             IsDirty = true;
-            changes.Add(change);
+            changes.Add( change.ID, change);
         }
 
         public void Remove(string changeID)
         {
             IsDirty = true;
-            changes.RemoveAll(c => c.ID == changeID);
+            changes.Remove( changeID );
         }
 
         // TODO: Edit a Change
 
         public List<Change> FindAll(Predicate<Change> match)
         {
-            return changes.FindAll(match);
+            List<Change> changeList = changes.Values.ToList<Change>();
+            return changeList.FindAll( match );
         }
 
         public void MarkClean()

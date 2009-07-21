@@ -140,12 +140,6 @@ namespace swept.Tests
             port.SourceFileCatalog_FromText("<IncorrectRoot><other /></IncorrectRoot>");
         }
 
-        [Test, ExpectedException(ExpectedMessage = "Can't create a null source file.")]
-        public void NullSourceFileThrows()
-        {
-            port.SourceFile_FromNode(null);
-        }
-
         [Test, ExpectedException(ExpectedMessage = "A SourceFile node must have a Name attribute.  Please add one.")]
         public void SourceFileNodeMissingNameThrows()
         {

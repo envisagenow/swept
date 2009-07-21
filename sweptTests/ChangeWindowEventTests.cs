@@ -36,7 +36,7 @@ namespace swept.Tests
             string indentID = "14";
             changeCat.Add(new Change(indentID, "indentation cleanup", FileLanguage.CSharp));
 
-            fileCat = librarian.unsavedSourceImage;
+            fileCat = librarian.unsavedSourceCatalog;
 
             fileName = "bari.cs";
             file = new SourceFile(fileName);
@@ -45,7 +45,7 @@ namespace swept.Tests
 
             MockLibraryPersister writer = new MockLibraryPersister();
             librarian.persister = writer;
-            librarian.savedSourceImage = SourceFileCatalog.Clone(fileCat);
+            librarian.savedSourceCatalog = SourceFileCatalog.Clone(fileCat);
             librarian.SolutionPath = "mockpath";
             librarian.Persist();
 
@@ -101,7 +101,7 @@ namespace swept.Tests
             changeWindow.RaiseChangeAdded( change );
 
             // Bari has kept the completion of Change 14
-            SourceFile savedBari = librarian.savedSourceImage.Fetch("bari.cs");
+            SourceFile savedBari = librarian.savedSourceCatalog.Fetch("bari.cs");
             Assert.AreEqual(1, savedBari.Completions.Count);
             Assert.AreEqual("14", savedBari.Completions[0].ChangeID);
         }

@@ -15,7 +15,7 @@ namespace swept
         protected internal string Description;
         protected internal FileLanguage Language;
 
-        protected Change() { }
+        protected internal Change() { }
         public Change( string id, string description, FileLanguage language )
         {
             ID = id;
@@ -23,6 +23,19 @@ namespace swept
             Language = language;
         }
 
+        public bool Equals( Change change )
+        {
+            if (change == null) return false;
+            
+            if (ID != change.ID)
+                return false;
+            if (Description != change.Description)
+                return false;
+            if (Language != change.Language)
+                return false;
+
+            return true;
+        }
     }
 
     public enum FileLanguage

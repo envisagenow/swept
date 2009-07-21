@@ -18,10 +18,10 @@ namespace swept
         internal ChangeCatalog changeCatalog;
 
         //  The Source File Catalog holds all the completions, grouped per file.
-        internal SourceFileCatalog savedSourceImage;
+        internal SourceFileCatalog savedSourceCatalog;
 
         //  Another copy of the source files are kept, to hold progress in multiple unsaved files.
-        internal SourceFileCatalog unsavedSourceImage;
+        internal SourceFileCatalog unsavedSourceCatalog;
 
         internal IDialogPresenter showGUI;
         internal ILibraryPersister persister;
@@ -33,19 +33,29 @@ namespace swept
 
         public ProjectLibrarian()
         {
-            unsavedSourceImage = new SourceFileCatalog();
-            savedSourceImage = new SourceFileCatalog();
+            unsavedSourceCatalog = new SourceFileCatalog();
+            savedSourceCatalog = new SourceFileCatalog();
             changeCatalog = new ChangeCatalog();
             showGUI = new DialogPresenter();
             persister = new LibraryPersister();
         }
 
-        //TODO:  Reimplement flag in the SourceFileCatalog, make tests pass via more mature methods.
-        internal bool SourceFileChangesUnsaved
+        internal bool SourceFileCatalogUnsaved
         {
             get
             {
-                return !unsavedSourceImage.Equals(savedSourceImage);
+                return !unsavedSourceCatalog.Equals( savedSourceCatalog );
+            }
+        }
+
+        internal bool ChangeCatalogUnsaved
+        {
+            get
+            {
+                return changeCatalog.IsDirty;
+
+                // TODO: goal code below
+                //return !unsavedChangeImage.Equals( savedChangeImage );
             }
         }
 
@@ -53,7 +63,7 @@ namespace swept
         {
             get
             {
-                return changeCatalog.IsDirty || SourceFileChangesUnsaved;
+                return changeCatalog.IsDirty || SourceFileCatalogUnsaved;
             }
         }
 
@@ -65,10 +75,15 @@ namespace swept
 
             string libraryXmlText = GetLibraryXmlText();
 
-            changeCatalog = port.ChangeCatalog_FromText(libraryXmlText);
-            savedSourceImage = port.SourceFileCatalog_FromText(libraryXmlText);
-            savedSourceImage.ChangeCatalog = changeCatalog;
-            unsavedSourceImage = SourceFileCatalog.Clone(savedSourceImage);
+            changeCatalog = port.ChangeCatalog_FromText( libraryXmlText );
+
+            // TODO: goal below:
+            // unsavedChangeCatalog = SourceFileCatalog.Clone(savedChangeCatalog);
+            // unsavedChangeCatalog = savedChangeCatalog.Clone();
+
+            savedSourceCatalog = port.SourceFileCatalog_FromText( libraryXmlText );
+            savedSourceCatalog.ChangeCatalog = changeCatalog;
+            unsavedSourceCatalog = SourceFileCatalog.Clone(savedSourceCatalog);
         }
 
         private string GetLibraryXmlText()
@@ -94,8 +109,8 @@ namespace swept
 
         private void SaveFile(string fileName)
         {
-            SourceFile workingFile = unsavedSourceImage.Fetch(fileName);
-            SourceFile diskFile = savedSourceImage.Fetch(fileName);
+            SourceFile workingFile = unsavedSourceCatalog.Fetch(fileName);
+            SourceFile diskFile = savedSourceCatalog.Fetch(fileName);
             diskFile.CopyCompletionsFrom(workingFile);
 
             Persist();
@@ -103,14 +118,14 @@ namespace swept
 
         private void PasteFile(string fileName)
         {
-            SourceFile pastedWorkingFile = unsavedSourceImage.Fetch(fileName);
-            SourceFile pastedDiskFile = savedSourceImage.Fetch(fileName);
+            SourceFile pastedWorkingFile = unsavedSourceCatalog.Fetch(fileName);
+            SourceFile pastedDiskFile = savedSourceCatalog.Fetch(fileName);
 
             string copyPrefix = "Copy of ";
             if (fileName.StartsWith(copyPrefix))
             {
                 string baseFileName = fileName.Substring(copyPrefix.Length);
-                SourceFile baseDiskFile = savedSourceImage.Fetch(baseFileName);
+                SourceFile baseDiskFile = savedSourceCatalog.Fetch(baseFileName);
 
                 pastedDiskFile.CopyCompletionsFrom(baseDiskFile);
             }
@@ -122,10 +137,10 @@ namespace swept
 
         private void SaveFileAs(string oldName, string newName)
         {
-            SourceFile workingOriginalFile = unsavedSourceImage.Fetch(oldName);
-            SourceFile diskOriginalFile = savedSourceImage.Fetch(oldName);
-            SourceFile workingNewFile = unsavedSourceImage.Fetch(newName);
-            SourceFile diskNewFile = savedSourceImage.Fetch(newName);
+            SourceFile workingOriginalFile = unsavedSourceCatalog.Fetch(oldName);
+            SourceFile diskOriginalFile = savedSourceCatalog.Fetch(oldName);
+            SourceFile workingNewFile = unsavedSourceCatalog.Fetch(newName);
+            SourceFile diskNewFile = savedSourceCatalog.Fetch(newName);
 
             diskNewFile.CopyCompletionsFrom(workingOriginalFile);
             workingOriginalFile.CopyCompletionsFrom(diskOriginalFile);
@@ -136,15 +151,15 @@ namespace swept
 
         private void AbandonFileChanges(string fileName)
         {
-            SourceFile workingFile = unsavedSourceImage.Fetch(fileName);
-            SourceFile diskFile = savedSourceImage.Fetch(fileName);
+            SourceFile workingFile = unsavedSourceCatalog.Fetch(fileName);
+            SourceFile diskFile = savedSourceCatalog.Fetch(fileName);
             workingFile.CopyCompletionsFrom(diskFile);
         }
 
         private void DeleteFile(string fileName)
         {
-            unsavedSourceImage.Delete(fileName);
-            savedSourceImage.Delete(fileName);
+            unsavedSourceCatalog.Delete(fileName);
+            savedSourceCatalog.Delete(fileName);
             Persist();
         }
 
@@ -153,7 +168,7 @@ namespace swept
             changeCatalog.Add(change);
 
             //if we have any completions pre-existing for this ID
-            List<SourceFile> filesWithHistory = unsavedSourceImage.Files.FindAll(file => file.Completions.Exists(c => c.ChangeID == change.ID));
+            List<SourceFile> filesWithHistory = unsavedSourceCatalog.Files.FindAll(file => file.Completions.Exists(c => c.ChangeID == change.ID));
             if (filesWithHistory.Count > 0)
             {
                 bool keep = showGUI.KeepHistoricalCompletionsForChange(change);
@@ -168,15 +183,15 @@ namespace swept
 
         private void RenameFile(string oldName, string newName)
         {
-            unsavedSourceImage.Rename(oldName, newName);
-            savedSourceImage.Rename(oldName, newName);
+            unsavedSourceCatalog.Rename(oldName, newName);
+            savedSourceCatalog.Rename(oldName, newName);
 
             Persist();
         }
 
         private void SaveSolution()
         {
-            savedSourceImage = SourceFileCatalog.Clone(unsavedSourceImage);
+            savedSourceCatalog = SourceFileCatalog.Clone(unsavedSourceCatalog);
             Persist();
         }
 

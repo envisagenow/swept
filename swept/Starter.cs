@@ -22,7 +22,7 @@ namespace swept
 
             TaskWindow = new TaskWindow();
             TaskWindow.ChangeCatalog = Librarian.changeCatalog;
-            TaskWindow.FileCatalog = Librarian.unsavedSourceImage;
+            TaskWindow.FileCatalog = Librarian.unsavedSourceCatalog;
 
             Adapter.taskWindow = TaskWindow;
 

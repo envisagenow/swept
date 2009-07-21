@@ -92,7 +92,8 @@ namespace swept
         }
 
         #region Raise events
-        
+
+        // TODO: Make a test for this, not sure how it slipped by...
         public event EventHandler EventTaskCompletionChanged;
         public void RaiseTaskCompletionChanged()
         {

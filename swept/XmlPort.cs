@@ -16,7 +16,7 @@ namespace swept
 {1}
 </SweptProjectData>",
                 ToText( librarian.changeCatalog ),
-                ToText(librarian.savedSourceImage)
+                ToText(librarian.savedSourceCatalog)
             );
         }
 
@@ -25,9 +25,9 @@ namespace swept
         {
             string catalogLabel = "ChangeCatalog";
             string xmlText = String.Format("<{0}>\r\n", catalogLabel);
-            foreach (Change change in changeCatalog.changes)
+            foreach (KeyValuePair<string, Change> pair in changeCatalog.changes)
             {
-                xmlText += ToText(change);
+                xmlText += ToText( pair.Value );
             }
             xmlText += String.Format("</{0}>", catalogLabel);
             return xmlText;
@@ -82,6 +82,7 @@ namespace swept
             }
             catch (XmlException xe)
             {
+                // TODO: test
                 throw new Exception(String.Format("Text [{0}] was not valid XML.  Please check its contents.  Details: {1}", xmlText, xe.Message));
             }
         }
@@ -89,6 +90,8 @@ namespace swept
         public ChangeCatalog ChangeCatalog_FromXmlDocument(XmlDocument doc)
         {
             XmlNode node = doc.SelectSingleNode("SweptProjectData/ChangeCatalog");
+
+            // TODO: test valid xml, not expected format
             if (node == null)
                 throw new Exception("Document must have a <ChangeCatalog> node.  Please supply one.");
 
@@ -104,17 +107,14 @@ namespace swept
             {
                 Change change = Change_FromNode(changeNode);
 
-                cat.changes.Add(change);
+                cat.Add(change);
             }
 
             return cat;
         }
 
-        public static Change Change_FromNode(XmlNode xmlNode)
+        private static Change Change_FromNode(XmlNode xmlNode)
         {
-            if (xmlNode == null)
-                throw new Exception("Can't create a null source file.");
-
             FileLanguage lang = (FileLanguage)Enum.Parse(typeof(FileLanguage), xmlNode.Attributes["Language"].Value);
 
             Change change = new Change(xmlNode.Attributes["ID"].Value, xmlNode.Attributes["Description"].Value, lang);
@@ -160,11 +160,8 @@ namespace swept
             return cat;
         } 
 
-        public SourceFile SourceFile_FromNode(XmlNode xmlNode)
+        private SourceFile SourceFile_FromNode(XmlNode xmlNode)
         {
-            if (xmlNode == null)
-                throw new Exception("Can't create a null source file.");
-
             if (xmlNode.Attributes["Name"] == null)
                 throw new Exception("A SourceFile node must have a Name attribute.  Please add one.");
 
