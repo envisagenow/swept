@@ -93,14 +93,6 @@ namespace swept
 
         #region Raise events
 
-        // TODO: Make a test for this, not sure how it slipped by...
-        public event EventHandler EventTaskCompletionChanged;
-        public void RaiseTaskCompletionChanged()
-        {
-            if (EventTaskCompletionChanged != null)
-                EventTaskCompletionChanged(this, new EventArgs());
-        }
-
         public event EventHandler<EventArgs> EventTaskWindowToggled;
         public void RaiseTaskWindowToggled()
         {

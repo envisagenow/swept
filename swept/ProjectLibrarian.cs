@@ -12,18 +12,15 @@ namespace swept
 
     public class ProjectLibrarian
     {
-        //  There are two major data collections per solution:  The Change and Source File catalogs.
+        //  There are two major collections per solution:  The Change and Source File catalogs.
 
         //  The Change Catalog holds things the team wants to improve in this solution.
         internal ChangeCatalog changeCatalog;
-        internal ChangeCatalog savedChangeCatalog;
+        internal ChangeCatalog savedChangeCatalog;  //  For comparison to know when there are unsaved changes.
 
-
-        //  The Source File Catalog holds all the completions, grouped per file.
-        internal SourceFileCatalog savedSourceCatalog;
-
-        //  Another copy of the source files are kept, to hold progress in multiple unsaved files.
-        internal SourceFileCatalog unsavedSourceCatalog;
+        //  The Source File Catalog tracks which changes have been completed for which files.
+        internal SourceFileCatalog sourceCatalog;
+        internal SourceFileCatalog savedSourceCatalog;  //  For comparison to know when there are unsaved changes.
 
         internal IDialogPresenter showGUI;
         internal ILibraryPersister persister;
@@ -35,7 +32,7 @@ namespace swept
 
         public ProjectLibrarian()
         {
-            unsavedSourceCatalog = new SourceFileCatalog();
+            sourceCatalog = new SourceFileCatalog();
             savedSourceCatalog = new SourceFileCatalog();
             savedChangeCatalog = new ChangeCatalog();
             changeCatalog = new ChangeCatalog();
@@ -47,7 +44,7 @@ namespace swept
         {
             get
             {
-                return savedSourceCatalog.Equals( unsavedSourceCatalog );
+                return savedSourceCatalog.Equals( sourceCatalog );
             }
         }
 
@@ -82,7 +79,7 @@ namespace swept
 
             savedSourceCatalog = port.SourceFileCatalog_FromText( libraryXmlText );
             savedSourceCatalog.ChangeCatalog = changeCatalog;
-            unsavedSourceCatalog = SourceFileCatalog.Clone(savedSourceCatalog);
+            sourceCatalog = SourceFileCatalog.Clone(savedSourceCatalog);
         }
 
         private string GetLibraryXmlText()
@@ -108,7 +105,7 @@ namespace swept
 
         private void SaveFile(string fileName)
         {
-            SourceFile workingFile = unsavedSourceCatalog.Fetch(fileName);
+            SourceFile workingFile = sourceCatalog.Fetch(fileName);
             SourceFile diskFile = savedSourceCatalog.Fetch(fileName);
             diskFile.CopyCompletionsFrom(workingFile);
 
@@ -117,7 +114,7 @@ namespace swept
 
         private void PasteFile(string fileName)
         {
-            SourceFile pastedWorkingFile = unsavedSourceCatalog.Fetch(fileName);
+            SourceFile pastedWorkingFile = sourceCatalog.Fetch(fileName);
             SourceFile pastedDiskFile = savedSourceCatalog.Fetch(fileName);
 
             string copyPrefix = "Copy of ";
@@ -136,9 +133,9 @@ namespace swept
 
         private void SaveFileAs(string oldName, string newName)
         {
-            SourceFile workingOriginalFile = unsavedSourceCatalog.Fetch(oldName);
+            SourceFile workingOriginalFile = sourceCatalog.Fetch(oldName);
             SourceFile diskOriginalFile = savedSourceCatalog.Fetch(oldName);
-            SourceFile workingNewFile = unsavedSourceCatalog.Fetch(newName);
+            SourceFile workingNewFile = sourceCatalog.Fetch(newName);
             SourceFile diskNewFile = savedSourceCatalog.Fetch(newName);
 
             diskNewFile.CopyCompletionsFrom(workingOriginalFile);
@@ -150,14 +147,14 @@ namespace swept
 
         private void AbandonFileChanges(string fileName)
         {
-            SourceFile workingFile = unsavedSourceCatalog.Fetch(fileName);
+            SourceFile workingFile = sourceCatalog.Fetch(fileName);
             SourceFile diskFile = savedSourceCatalog.Fetch(fileName);
             workingFile.CopyCompletionsFrom(diskFile);
         }
 
         private void DeleteFile(string fileName)
         {
-            unsavedSourceCatalog.Delete(fileName);
+            sourceCatalog.Delete(fileName);
             savedSourceCatalog.Delete(fileName);
             Persist();
         }
@@ -167,7 +164,7 @@ namespace swept
             changeCatalog.Add(change);
 
             //if we have any completions pre-existing for this ID
-            List<SourceFile> filesWithHistory = unsavedSourceCatalog.Files.FindAll(file => file.Completions.Exists(c => c.ChangeID == change.ID));
+            List<SourceFile> filesWithHistory = sourceCatalog.Files.FindAll(file => file.Completions.Exists(c => c.ChangeID == change.ID));
             if (filesWithHistory.Count > 0)
             {
                 bool keep = showGUI.KeepHistoricalCompletionsForChange(change);
@@ -182,7 +179,7 @@ namespace swept
 
         private void RenameFile(string oldName, string newName)
         {
-            unsavedSourceCatalog.Rename(oldName, newName);
+            sourceCatalog.Rename(oldName, newName);
             savedSourceCatalog.Rename(oldName, newName);
 
             Persist();
@@ -191,7 +188,7 @@ namespace swept
         private void SaveSolution()
         {
             // TODO: Goal:  savedSourceCatalog = unsavedSourceCatalog.Clone();
-            savedSourceCatalog = SourceFileCatalog.Clone(unsavedSourceCatalog);
+            savedSourceCatalog = SourceFileCatalog.Clone(sourceCatalog);
             Persist();
         }
 
@@ -241,11 +238,6 @@ namespace swept
             AddChange(args.change);
         }
 
-        public void HearTaskCompletionChanged(object sender, EventArgs args)
-        {
-            SourceCatalogChanged();
-        }
-
         public void HearSolutionSaved(object sender, EventArgs args)
         {
             SaveSolution();
@@ -253,13 +245,9 @@ namespace swept
 
         #endregion
 
-        public void SourceCatalogChanged()
-        {
-        }
-
         internal void Persist()
         {
-            //changeCatalog.MarkClean();
+            savedChangeCatalog = changeCatalog.Clone();
 
             var port = new XmlPort();
 

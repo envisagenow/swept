@@ -74,18 +74,33 @@ namespace swept.Tests
         }
 
         [Test]
-        public void Different_content_Catalogs_are_Inequal()
+        public void Catalogs_are_Inequal_with_different_IDs()
         {
             ChangeCatalog cat1 = new ChangeCatalog();
             ChangeCatalog cat2 = new ChangeCatalog();
 
-            Change change = new Change( "SomeID", "A really groovy change", FileLanguage.CSharp );
-            cat1.Add( change );
+            Change change = new Change("SomeID", "A really groovy change", FileLanguage.CSharp);
+            cat1.Add(change);
 
-            change = new Change( "testId", "Test CHange", FileLanguage.CSharp );
-            cat2.Add( change );
+            change = new Change("testId", "Test Change", FileLanguage.CSharp);
+            cat2.Add(change);
 
-            Assert.IsFalse( cat1.Equals( cat2 ) );
+            Assert.IsFalse(cat1.Equals(cat2));
+        }
+
+        [Test]
+        public void Catalogs_are_Inequal_with_same_IDs_different_content()
+        {
+            ChangeCatalog cat1 = new ChangeCatalog();
+            ChangeCatalog cat2 = new ChangeCatalog();
+
+            Change change = new Change("SomeID", "A really groovy change", FileLanguage.CSharp);
+            cat1.Add(change);
+
+            change = new Change("SomeID", "Test Change", FileLanguage.CSharp);
+            cat2.Add(change);
+
+            Assert.IsFalse(cat1.Equals(cat2));
         }
 
         [Test]

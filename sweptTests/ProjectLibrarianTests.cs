@@ -72,7 +72,7 @@ namespace swept.Tests
             Horace.HearSolutionOpened(this, Get_testfile_FileEventArgs());
 
             Assert.AreEqual(0, Horace.changeCatalog.changes.Count);
-            Assert.AreEqual(0, Horace.unsavedSourceCatalog.Files.Count);
+            Assert.AreEqual(0, Horace.sourceCatalog.Files.Count);
         }
 
         [Test]
@@ -81,7 +81,7 @@ namespace swept.Tests
             string someFileName = "some_file.cs";
             SourceFile someFile = new SourceFile(someFileName);
             someFile.AddNewCompletion("007");
-            Horace.unsavedSourceCatalog.Add(someFile);
+            Horace.sourceCatalog.Add(someFile);
 
             Horace.HearSolutionSaved(this, new EventArgs());            
 
@@ -101,9 +101,9 @@ namespace swept.Tests
         [Test]
         public void SeparateCatalogs_CreatedBy_SolutionPathChange()
         {
-            Assert.IsNotNull( Horace.unsavedSourceCatalog );
+            Assert.IsNotNull( Horace.sourceCatalog );
             Assert.IsNotNull( Horace.savedSourceCatalog );
-            Assert.AreNotSame( Horace.unsavedSourceCatalog, Horace.savedSourceCatalog );
+            Assert.AreNotSame( Horace.sourceCatalog, Horace.savedSourceCatalog );
         }
 
         [Test]
@@ -112,7 +112,7 @@ namespace swept.Tests
             string someFileName = "some_file.cs";
             SourceFile someFile = new SourceFile(someFileName);
             someFile.AddNewCompletion("007");
-            Horace.unsavedSourceCatalog.Add(someFile);
+            Horace.sourceCatalog.Add(someFile);
 
             FileEventArgs args = new FileEventArgs { Name = someFileName };
             Horace.HearFileSaved(this, args);
@@ -164,7 +164,7 @@ namespace swept.Tests
             Assert.IsTrue( Horace.SourceFileCatalogSaved );
             Assert.IsTrue( Horace.IsSaved );
 
-            Horace.unsavedSourceCatalog.Add( newTestingFile( "some_file.cs" ) );
+            Horace.sourceCatalog.Add( newTestingFile( "some_file.cs" ) );
 
             Assert.IsFalse( Horace.SourceFileCatalogSaved );
             Assert.IsFalse( Horace.IsSaved );
@@ -173,7 +173,7 @@ namespace swept.Tests
         [Test]
         public void When_SaveSolution_fires_Librarian_reports_saved()
         {
-            Horace.unsavedSourceCatalog.Add( newTestingFile( "some_file.cs" ) );
+            Horace.sourceCatalog.Add( newTestingFile( "some_file.cs" ) );
             Assert.IsFalse( Horace.IsSaved );
 
             Horace.HearSolutionSaved( this, new EventArgs() );
@@ -200,7 +200,7 @@ namespace swept.Tests
             Horace.HearChangeAdded(this, new ChangeEventArgs { change = historicalChange });
             SourceFile foo = new SourceFile("foo.cs");
             foo.Language = FileLanguage.CSharp;
-            Horace.unsavedSourceCatalog.Add(foo);
+            Horace.sourceCatalog.Add(foo);
             foo.Completions.Add(new Completion("14"));
 
             Horace.changeCatalog.Remove("14");
@@ -222,7 +222,7 @@ namespace swept.Tests
             Horace.HearChangeAdded(this, new ChangeEventArgs { change = historicalChange });
             SourceFile foo = new SourceFile("foo.cs");
             foo.Language = FileLanguage.CSharp;
-            Horace.unsavedSourceCatalog.Add(foo);
+            Horace.sourceCatalog.Add(foo);
             foo.Completions.Add(new Completion("14"));
 
             Horace.changeCatalog.Remove("14");

@@ -37,7 +37,7 @@ namespace swept.Tests
             changeCat.Add(new Change(indentID, "indentation cleanup", FileLanguage.CSharp));
             librarian.savedChangeCatalog = changeCat.Clone();
 
-            fileCat = librarian.unsavedSourceCatalog;
+            fileCat = librarian.sourceCatalog;
 
             fileName = "bari.cs";
             file = new SourceFile(fileName);
@@ -80,8 +80,6 @@ namespace swept.Tests
         [Test]
         public void WhenChangeAdded_ChangeCatalogPersisted()
         {
-            Assert.IsFalse( librarian.IsSaved );
-            changeWindow.RaiseChangeListUpdated();
             Assert.IsTrue( librarian.IsSaved );
             changeCat.Add(new Change("Inf09", "Change delegates to lambdas", FileLanguage.CSharp));
             Assert.IsFalse(librarian.IsSaved);

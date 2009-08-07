@@ -22,7 +22,7 @@ namespace swept
 
             TaskWindow = new TaskWindow();
             TaskWindow.ChangeCatalog = Librarian.changeCatalog;
-            TaskWindow.FileCatalog = Librarian.unsavedSourceCatalog;
+            TaskWindow.FileCatalog = Librarian.sourceCatalog;
 
             Adapter.taskWindow = TaskWindow;
 
@@ -45,8 +45,8 @@ namespace swept
             Adapter.EventSolutionOpened += Librarian.HearSolutionOpened;
 
             //  Subscribe to the TaskWindow's events
-            TaskWindow.EventTaskWindowToggled += TaskWindow.HearTaskWindowToggled;  //SELF:  This is interesting...
-            TaskWindow.EventTaskCompletionChanged += Librarian.HearTaskCompletionChanged;
+            TaskWindow.EventTaskWindowToggled += TaskWindow.HearTaskWindowToggled;
+            //  A self-subscription.  Odd, possibly poor practice...
 
             //  Subscribe to the ChangeWindow's events
             ChangeWindow.EventChangeAdded += Librarian.HearChangeAdded;

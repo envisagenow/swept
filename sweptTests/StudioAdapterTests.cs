@@ -37,7 +37,7 @@ namespace swept.Tests
             changeCat.Add(new Change(indentID, "indentation cleanup", FileLanguage.CSharp));
             librarian.savedChangeCatalog = changeCat.Clone();
 
-            fileCat = librarian.unsavedSourceCatalog;
+            fileCat = librarian.sourceCatalog;
 
             fileName = "bari.cs";
             file = new SourceFile(fileName);
@@ -259,7 +259,7 @@ namespace swept.Tests
 
         private void AbandonFileChanges(string fileName)
         {
-            SourceFile file = librarian.unsavedSourceCatalog.Fetch( fileName );
+            SourceFile file = librarian.sourceCatalog.Fetch( fileName );
             int startingCompletionsCount = file.Completions.Count;
 
             file.AddNewCompletion( "id_88" );
@@ -314,7 +314,7 @@ namespace swept.Tests
         public void WhenSolutionSaved_DiskCatalogSaved()
         {
             Assert.IsTrue( librarian.IsSaved );
-            librarian.unsavedSourceCatalog.Add( new SourceFile( "moo.cs" ) );
+            librarian.sourceCatalog.Add( new SourceFile( "moo.cs" ) );
             Assert.IsFalse(librarian.IsSaved);
             adapter.RaiseSolutionSaved();
             Assert.IsTrue(librarian.IsSaved);
