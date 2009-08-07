@@ -35,6 +35,7 @@ namespace swept.Tests
             changeCat = librarian.changeCatalog;
             string indentID = "14";
             changeCat.Add(new Change(indentID, "indentation cleanup", FileLanguage.CSharp));
+            librarian.savedChangeCatalog = changeCat.Clone();
 
             fileCat = librarian.unsavedSourceCatalog;
 
@@ -150,12 +151,12 @@ namespace swept.Tests
             fileGadgets.Completions.Add(new Completion("14"));
             fileCat.Add(fileGadgets);
  
-            Assert.IsTrue(librarian.ChangeNeedsPersisting);
+            Assert.IsFalse(librarian.IsSaved);
 
             Assert.IsTrue(TestProbe.IsCompletionSaved(librarian, "bari.cs"));
             adapter.RaiseFileSaved(nameGadgets);
 
-            Assert.IsFalse(librarian.ChangeNeedsPersisting);
+            Assert.IsTrue(librarian.IsSaved);
 
             Assert.IsTrue(TestProbe.IsCompletionSaved(librarian, "bari.cs"));
         }
@@ -286,7 +287,7 @@ namespace swept.Tests
             adapter.RaiseFileDeleted( fileName );
 
             Assert.IsFalse( fileCat.Files.Contains( file ) );
-            Assert.IsFalse(librarian.ChangeNeedsPersisting);
+            Assert.IsTrue(librarian.IsSaved);
             Assert.IsNotNull(librarian.savedSourceCatalog);
         }
         // TODO: !! add a dialog when re-adding, 'keep or discard history for this source file?'
@@ -305,17 +306,18 @@ namespace swept.Tests
             SourceFile nextGreat = fileCat.Fetch(newName);
             Assert.AreEqual(1, nextGreat.Completions.Count);
 
-            Assert.IsFalse(librarian.ChangeNeedsPersisting);
+            Assert.IsTrue(librarian.IsSaved);
             Assert.IsNotNull(librarian.savedSourceCatalog);
         }
 
         [Test]
         public void WhenSolutionSaved_DiskCatalogSaved()
         {
-            librarian.unsavedSourceCatalog.Add(new SourceFile("moo.cs"));
-            Assert.IsTrue(librarian.ChangeNeedsPersisting);
+            Assert.IsTrue( librarian.IsSaved );
+            librarian.unsavedSourceCatalog.Add( new SourceFile( "moo.cs" ) );
+            Assert.IsFalse(librarian.IsSaved);
             adapter.RaiseSolutionSaved();
-            Assert.IsFalse(librarian.ChangeNeedsPersisting);
+            Assert.IsTrue(librarian.IsSaved);
         }
     }
 }

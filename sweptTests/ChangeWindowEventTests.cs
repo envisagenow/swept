@@ -35,6 +35,7 @@ namespace swept.Tests
             changeCat = librarian.changeCatalog;
             string indentID = "14";
             changeCat.Add(new Change(indentID, "indentation cleanup", FileLanguage.CSharp));
+            librarian.savedChangeCatalog = changeCat.Clone();
 
             fileCat = librarian.unsavedSourceCatalog;
 
@@ -79,11 +80,13 @@ namespace swept.Tests
         [Test]
         public void WhenChangeAdded_ChangeCatalogPersisted()
         {
-            Assert.IsFalse(librarian.ChangeNeedsPersisting);
-            changeCat.Add(new Change("Inf09", "Change delegates to lambdas", FileLanguage.CSharp));
-            Assert.IsTrue(librarian.ChangeNeedsPersisting);
+            Assert.IsFalse( librarian.IsSaved );
             changeWindow.RaiseChangeListUpdated();
-            Assert.IsFalse(librarian.ChangeNeedsPersisting);
+            Assert.IsTrue( librarian.IsSaved );
+            changeCat.Add(new Change("Inf09", "Change delegates to lambdas", FileLanguage.CSharp));
+            Assert.IsFalse(librarian.IsSaved);
+            changeWindow.RaiseChangeListUpdated();
+            Assert.IsTrue(librarian.IsSaved);
         }
 
         [Test]

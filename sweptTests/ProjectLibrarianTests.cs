@@ -89,7 +89,7 @@ namespace swept.Tests
         }
 
         [Test]
-        public void CanSetSolutionPath()
+        public void Can_set_SolutionPath()
         {
             Assert.AreEqual( _HerePath, Horace.SolutionPath );
 
@@ -107,7 +107,7 @@ namespace swept.Tests
         }
 
         [Test]
-        public void CanSave()
+        public void SaveFile_persists_file_Completions()
         {
             string someFileName = "some_file.cs";
             SourceFile someFile = new SourceFile(someFileName);
@@ -121,7 +121,7 @@ namespace swept.Tests
         }
 
         [Test]
-        public void Can_Save_catalog_with_Change()
+        public void Persist_saves_ChangeCatalog()
         {
             Horace.changeCatalog.Add(new Change("Uno", "Eliminate profanity from error messages.", FileLanguage.CSharp));
             Horace.Persist();
@@ -139,34 +139,51 @@ namespace swept.Tests
         }
 
         [Test]
-        public void When_SourceFileCatalog_Changed_it_reports_unsaved_Changes()
+        public void When_ChangeCatalog_altered_Librarian_reports_not_saved()
         {
-            string someFileName = "some_file.cs";
-            SourceFile someFile = new SourceFile(someFileName);
-            someFile.AddNewCompletion("007");
+            Assert.IsTrue( Horace.ChangeCatalogSaved );
+            Assert.IsTrue( Horace.IsSaved );
 
-            Assert.IsFalse(Horace.SourceFileCatalogUnsaved);
+            Horace.savedChangeCatalog.Add( new Change( "eek", "A mouse", FileLanguage.CSharp ) );
 
-            Horace.unsavedSourceCatalog.Add(someFile);
-            Assert.IsTrue(Horace.SourceFileCatalogUnsaved);
+            Assert.IsFalse( Horace.ChangeCatalogSaved );
+            Assert.IsFalse( Horace.IsSaved );
         }
 
 
-        [Test]
-        public void When_SourceFileCatalog_Saved_it_reports_no_unsaved_Changes()
+        private static SourceFile newTestingFile( string someFileName )
         {
-            string someFileName = "some_file.cs";
-            SourceFile someFile = new SourceFile(someFileName);
-            someFile.AddNewCompletion("007");
-            
-            Horace.unsavedSourceCatalog.Add(someFile);
-
-            Horace.HearSolutionSaved(this, new EventArgs());
-            Assert.IsFalse(Horace.SourceFileCatalogUnsaved);
+            SourceFile someFile = new SourceFile( someFileName );
+            someFile.AddNewCompletion( "007" );
+            return someFile;
         }
 
         [Test]
-        public void CanAddChange()
+        public void When_SourceFileCatalog_altered_Librarian_reports_not_saved()
+        {
+            Assert.IsTrue( Horace.SourceFileCatalogSaved );
+            Assert.IsTrue( Horace.IsSaved );
+
+            Horace.unsavedSourceCatalog.Add( newTestingFile( "some_file.cs" ) );
+
+            Assert.IsFalse( Horace.SourceFileCatalogSaved );
+            Assert.IsFalse( Horace.IsSaved );
+        }
+
+        [Test]
+        public void When_SaveSolution_fires_Librarian_reports_saved()
+        {
+            Horace.unsavedSourceCatalog.Add( newTestingFile( "some_file.cs" ) );
+            Assert.IsFalse( Horace.IsSaved );
+
+            Horace.HearSolutionSaved( this, new EventArgs() );
+
+            Assert.IsTrue( Horace.SourceFileCatalogSaved );
+            Assert.IsTrue( Horace.IsSaved );
+        }
+
+        [Test]
+        public void Can_AddChange()
         {
             Assert.AreEqual(0, Horace.changeCatalog.changes.Count);
 
@@ -177,7 +194,7 @@ namespace swept.Tests
         }
 
         [Test]
-        public void CanAddChange_AndKeepHistoricalCompletions()
+        public void AddChange_can_keep_historical_Completions()
         {
             Change historicalChange = new Change("14", "here I am", FileLanguage.CSharp);
             Horace.HearChangeAdded(this, new ChangeEventArgs { change = historicalChange });
@@ -199,7 +216,7 @@ namespace swept.Tests
         }
 
         [Test]
-        public void CanAddChange_AndDiscardHistoricalCompletions()
+        public void AddChange_can_discard_historical_Completions()
         {
             Change historicalChange = new Change("14", "here I am", FileLanguage.CSharp);
             Horace.HearChangeAdded(this, new ChangeEventArgs { change = historicalChange });

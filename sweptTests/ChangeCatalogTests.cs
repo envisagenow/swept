@@ -22,7 +22,6 @@ namespace swept.Tests
             cat.Add(new Change("e1", "Fix 'using' statements", FileLanguage.CSharp));
             cat.Add(new Change("e2", "Upgrade to XHTML", FileLanguage.HTML));
             cat.Add(new Change("e3", "Put <title> on all pages", FileLanguage.HTML));
-
         }
 
         [Test]
@@ -49,11 +48,11 @@ namespace swept.Tests
             Assert.AreEqual(0, changes.Count);
         }
 
-        // TODO: Remove, MarkClean
+        // TODO: Add tests for Remove Change from Catalog
 
-        // Equals() tests
+        #region Equals tests
         [Test]
-        public void Can_compare_equality_with_empty_Catalogs()
+        public void Empty_Catalogs_are_Equal()
         {
             ChangeCatalog cat1 = new ChangeCatalog();
             ChangeCatalog cat2 = new ChangeCatalog();
@@ -62,7 +61,7 @@ namespace swept.Tests
         }
 
         [Test]
-        public void Can_compare_equality_with_different_sized_Catalogs()
+        public void Different_sized_Catalogs_are_Inequal()
         {
             ChangeCatalog cat1 = new ChangeCatalog();
             ChangeCatalog cat2 = new ChangeCatalog();
@@ -75,7 +74,7 @@ namespace swept.Tests
         }
 
         [Test]
-        public void Can_compare_equality_with_same_sized_different_content_Catalogs()
+        public void Different_content_Catalogs_are_Inequal()
         {
             ChangeCatalog cat1 = new ChangeCatalog();
             ChangeCatalog cat2 = new ChangeCatalog();
@@ -88,6 +87,24 @@ namespace swept.Tests
 
             Assert.IsFalse( cat1.Equals( cat2 ) );
         }
+
+        [Test]
+        public void Identical_content_Catalogs_are_Equal()
+        {
+            ChangeCatalog cat1 = new ChangeCatalog();
+            ChangeCatalog cat2 = new ChangeCatalog();
+
+            Change change = new Change( "SomeID", "A really groovy change", FileLanguage.CSharp );
+            cat1.Add( change );
+            cat2.Add( change );
+
+            change = new Change( "testId", "Test Change", FileLanguage.CSharp );
+            cat1.Add( change );
+            cat2.Add( change );
+
+            Assert.IsTrue( cat1.Equals( cat2 ) );
+        }
+        #endregion
 
         [Test]
         public void Changes_sort_alphabetically_by_ID()
@@ -115,7 +132,7 @@ namespace swept.Tests
 
 
         [Test, ExpectedException( ExpectedMessage = "An entry with the same key already exists.")]
-        public void Adding_Duplicate_id_failure()
+        public void Duplicate_IDs_not_allowed()
         {
             ChangeCatalog cat = new ChangeCatalog();
 
@@ -124,6 +141,24 @@ namespace swept.Tests
 
             cat.Add( a_17 );
             cat.Add( a_17a );
+        }
+
+        [Test]
+        public void Clone_works_on_empty_Catalog()
+        {
+            ChangeCatalog cat = new ChangeCatalog();
+
+            ChangeCatalog catClone = cat.Clone();
+            Assert.AreNotSame( cat, catClone );
+            Assert.IsEmpty( cat.changes );
+        }
+
+        [Test]
+        public void Clone_works_on_populated_Catalog()
+        {
+            ChangeCatalog catClone = cat.Clone();
+            Assert.AreNotSame( cat, catClone );
+            Assert.AreEqual( 3, catClone.changes.Count );
         }
     }
 }

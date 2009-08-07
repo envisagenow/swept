@@ -16,6 +16,8 @@ namespace swept
 
         //  The Change Catalog holds things the team wants to improve in this solution.
         internal ChangeCatalog changeCatalog;
+        internal ChangeCatalog savedChangeCatalog;
+
 
         //  The Source File Catalog holds all the completions, grouped per file.
         internal SourceFileCatalog savedSourceCatalog;
@@ -35,35 +37,34 @@ namespace swept
         {
             unsavedSourceCatalog = new SourceFileCatalog();
             savedSourceCatalog = new SourceFileCatalog();
+            savedChangeCatalog = new ChangeCatalog();
             changeCatalog = new ChangeCatalog();
             showGUI = new DialogPresenter();
             persister = new LibraryPersister();
         }
 
-        internal bool SourceFileCatalogUnsaved
+        internal bool SourceFileCatalogSaved
         {
             get
             {
-                return !unsavedSourceCatalog.Equals( savedSourceCatalog );
+                return savedSourceCatalog.Equals( unsavedSourceCatalog );
             }
         }
 
-        internal bool ChangeCatalogUnsaved
+        internal bool ChangeCatalogSaved
         {
             get
             {
-                return changeCatalog.IsDirty;
-
-                // TODO: goal code below
-                //return !unsavedChangeImage.Equals( savedChangeImage );
+                return changeCatalog.Equals( savedChangeCatalog );
+                //return changeCatalog.IsDirty;
             }
         }
 
-        internal bool ChangeNeedsPersisting
+        internal bool IsSaved
         {
             get
             {
-                return changeCatalog.IsDirty || SourceFileCatalogUnsaved;
+                return ChangeCatalogSaved && SourceFileCatalogSaved;
             }
         }
 
@@ -77,9 +78,7 @@ namespace swept
 
             changeCatalog = port.ChangeCatalog_FromText( libraryXmlText );
 
-            // TODO: goal below:
-            // unsavedChangeCatalog = SourceFileCatalog.Clone(savedChangeCatalog);
-            // unsavedChangeCatalog = savedChangeCatalog.Clone();
+            savedChangeCatalog = changeCatalog.Clone();
 
             savedSourceCatalog = port.SourceFileCatalog_FromText( libraryXmlText );
             savedSourceCatalog.ChangeCatalog = changeCatalog;
@@ -191,6 +190,7 @@ namespace swept
 
         private void SaveSolution()
         {
+            // TODO: Goal:  savedSourceCatalog = unsavedSourceCatalog.Clone();
             savedSourceCatalog = SourceFileCatalog.Clone(unsavedSourceCatalog);
             Persist();
         }
@@ -259,7 +259,7 @@ namespace swept
 
         internal void Persist()
         {
-            changeCatalog.MarkClean();
+            //changeCatalog.MarkClean();
 
             var port = new XmlPort();
 

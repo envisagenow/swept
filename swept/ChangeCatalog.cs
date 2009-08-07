@@ -11,7 +11,10 @@ namespace swept
 {
     public class ChangeCatalog
     {
-        public bool IsDirty { get; private set; }
+        // TODO: eliminate ChangeCatalog.IsDirty
+        //public bool IsDirty { get; private set; }
+
+        // TODO: Make private
         internal SortedList<string, Change> changes;
 
         public ChangeCatalog()
@@ -19,18 +22,30 @@ namespace swept
             changes = new SortedList<string, Change>();
         }
 
-        public bool Equals(ChangeCatalog cat1)
+        private ChangeCatalog( SortedList<string, Change> changelist ) : this()
+        {
+            foreach (var pair in changelist)
+            {
+                changes[pair.Key] = pair.Value;
+            }
+        }
+
+        public ChangeCatalog Clone()
+        {
+            return new ChangeCatalog( changes );
+        }
+
+        public bool Equals( ChangeCatalog cat1 )
         {
             if (changes.Count != cat1.changes.Count)
             {
                 return false;
             }
 
-            for (int i = 0; i < changes.Count; i++)
+            foreach( string key in changes.Keys ) 
             {
-                // TODO: !!!
-                //if (!changes[i].Equals(cat1.changes[i]))
-                    return false;
+                if (!cat1.changes.Keys.Contains( key )) return false;
+                if (!changes[key].Equals(cat1.changes[key])) return false;
             }
              
             return true;
@@ -49,13 +64,13 @@ namespace swept
 
         public void Add(Change change)
         {
-            IsDirty = true;
+            //IsDirty = true;
             changes.Add( change.ID, change);
         }
 
         public void Remove(string changeID)
         {
-            IsDirty = true;
+            //IsDirty = true;
             changes.Remove( changeID );
         }
 
@@ -67,10 +82,10 @@ namespace swept
             return changeList.FindAll( match );
         }
 
-        public void MarkClean()
-        {
-            IsDirty = false;
-        }
+        //public void MarkClean()
+        //{
+        //    IsDirty = false;
+        //}
 
     }
 }
