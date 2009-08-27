@@ -11,9 +11,6 @@ namespace swept
 {
     public class ChangeCatalog
     {
-        // TODO: eliminate ChangeCatalog.IsDirty
-        //public bool IsDirty { get; private set; }
-
         // TODO: Make private
         internal SortedList<string, Change> changes;
 
@@ -81,11 +78,6 @@ namespace swept
             List<Change> changeList = changes.Values.ToList<Change>();
             return changeList.FindAll( match );
         }
-
-        //public void MarkClean()
-        //{
-        //    IsDirty = false;
-        //}
 
     }
 }

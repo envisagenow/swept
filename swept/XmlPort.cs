@@ -82,7 +82,6 @@ namespace swept
             }
             catch (XmlException xe)
             {
-                // TODO: test
                 throw new Exception(String.Format("Text [{0}] was not valid XML.  Please check its contents.  Details: {1}", xmlText, xe.Message));
             }
         }
@@ -91,7 +90,6 @@ namespace swept
         {
             XmlNode node = doc.SelectSingleNode("SweptProjectData/ChangeCatalog");
 
-            // TODO: test valid xml, not expected format
             if (node == null)
                 throw new Exception("Document must have a <ChangeCatalog> node.  Please supply one.");
 

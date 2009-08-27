@@ -103,8 +103,15 @@ namespace swept.Tests
         {
             SourceFileCatalog cat = get_testing_SourceFileCatalog();
             SourceFile bar_cs = cat.Files[0];
-            Assert.AreEqual(2, bar_cs.Completions.Count);
-            Assert.AreEqual("AB2", bar_cs.Completions[1].ChangeID);
+            Assert.AreEqual( 2, bar_cs.Completions.Count );
+            Assert.AreEqual( "AB2", bar_cs.Completions[1].ChangeID );
+        }
+
+        [Test, Ignore]
+        public void SourceFileCatalog_FromXmlText_gets_IsRemoved()
+        {
+            // TODO: SourceFileCatalog_FromXmlText_gets_IsRemoved()
+            // TODO: IsRemoved_gets_serialized
         }
 
         [Test]
@@ -147,10 +154,22 @@ namespace swept.Tests
         }
 
 
-        [Test, ExpectedException(ExpectedMessage = "Text [asdflkj] was not valid XML.  Please check its contents.  Details: Data at the root level is invalid. Line 1, position 1.")]
-        public void InvalidXMLThrows()
+        [Test, ExpectedException( ExpectedMessage = "Text [asdflkj] was not valid XML.  Please check its contents.  Details: Data at the root level is invalid. Line 1, position 1." )]
+        public void SourceFileCatalog_from_InvalidXML_Throws()
         {
-            port.SourceFileCatalog_FromText("asdflkj");
+            port.SourceFileCatalog_FromText( "asdflkj" );
+        }
+
+        [Test, ExpectedException( ExpectedMessage = "Text [asdflkj] was not valid XML.  Please check its contents.  Details: Data at the root level is invalid. Line 1, position 1." )]
+        public void ChangeCatalog_from_InvalidXML_Throws()
+        {
+            port.ChangeCatalog_FromText( "asdflkj" );
+        }
+
+        [Test, ExpectedException( ExpectedMessage = "Document must have a <ChangeCatalog> node.  Please supply one." )]
+        public void ChangeCatalog_from_IncorrectXML_Throws()
+        {
+            port.ChangeCatalog_FromText( "<x>eek!</x>" );
         }
 
         #endregion
