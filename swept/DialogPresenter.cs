@@ -10,10 +10,16 @@ namespace swept
 {
     public class DialogPresenter : IDialogPresenter
     {
-        public bool KeepHistoricalCompletionsForChange(Change historicalChange)
+        public bool KeepChangeHistory( Change historicalChange )
         {
             //SELF:  Actually bring up dialog box with sane message
-            throw new NotImplementedException("We shouldn't call for a real dialog box yet.");
+            throw new NotImplementedException( "We shouldn't call for a real dialog box yet." );
+        }
+
+        public bool KeepSourceFileHistory( SourceFile historicalFile )
+        {
+            //SELF:  Actually bring up dialog box with sane message
+            throw new NotImplementedException( "We shouldn't call for a real dialog box yet." );
         }
     }
 }

@@ -167,7 +167,7 @@ namespace swept
             List<SourceFile> filesWithHistory = sourceCatalog.Files.FindAll(file => file.Completions.Exists(c => c.ChangeID == change.ID));
             if (filesWithHistory.Count > 0)
             {
-                bool keep = showGUI.KeepHistoricalCompletionsForChange(change);
+                bool keep = showGUI.KeepChangeHistory(change);
 
                 //if discard, sweep them out of the file catalogs.
                 if (!keep)

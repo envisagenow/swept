@@ -14,6 +14,7 @@ namespace swept
         public FileLanguage Language;
         public string Name;
         internal List<Completion> Completions;
+        public bool IsRemoved { get; set; }
 
         public SourceFile( string name )
         {

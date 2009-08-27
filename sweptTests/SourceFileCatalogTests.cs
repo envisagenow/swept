@@ -12,6 +12,7 @@ namespace swept.Tests
     [TestFixture]
     public class SourceFileCatalogTests
     {
+        private SourceFile bariFile;
         private SourceFileCatalog fileCat;
         private ChangeCatalog changeCat;
         private SourceFileCatalog blackCat;
@@ -28,6 +29,70 @@ namespace swept.Tests
             changeCat = new ChangeCatalog();
             fileCat.ChangeCatalog = changeCat;
         }
+
+        [Test]
+        public void can_remove_File()
+        {
+            var foo = fileCat.Fetch( "foo.cs" );
+            Assert.AreEqual( 1, fileCat.Files.Count );
+            Assert.IsFalse( foo.IsRemoved );
+
+            fileCat.Remove( foo );
+            Assert.AreEqual( 1, fileCat.Files.Count );
+            Assert.IsTrue( foo.IsRemoved );
+        }
+
+        // TODO: !! add a dialog when re-adding, 'keep or discard history for this source file?'
+        [Test]
+        public void When_SourceFile_readded_user_can_choose_to_keep_history()
+        {
+            changeCat.Add( new Change( "77", "Update_unit_test_names_to_look_thisaway", FileLanguage.CSharp ) );
+
+            bariFile = new SourceFile( "bari.cs" );
+            fileCat.Add( bariFile );
+            bariFile.AddNewCompletion( "77" );
+            
+            fileCat.Remove( bariFile );
+
+            MockDialogPresenter mockGUI = new MockDialogPresenter();
+            fileCat.showGUI = mockGUI;
+
+            //  When the dialog is presented, the 'user' responds 'keep', for this test
+            mockGUI.KeepHistoricalResponse = true;
+
+            // Bari has kept the completion of Change 77
+            SourceFile savedBari = fileCat.Fetch( "bari.cs" );
+            Assert.IsFalse( savedBari.IsRemoved );
+
+            Assert.AreEqual( 1, savedBari.Completions.Count );
+            Assert.AreEqual( "77", savedBari.Completions[0].ChangeID );
+        }
+
+        [Test]
+        public void When_SourceFile_readded_user_can_choose_to_discard_history()
+        {
+            changeCat.Add( new Change( "77", "Update_unit_test_names_to_look_thisaway", FileLanguage.CSharp ) );
+
+            bariFile = new SourceFile( "bari.cs" );
+            fileCat.Add( bariFile );
+            bariFile.AddNewCompletion( "77" );
+
+            fileCat.Remove( bariFile );
+
+            MockDialogPresenter mockGUI = new MockDialogPresenter();
+            fileCat.showGUI = mockGUI;
+
+            //  When the dialog is presented, the 'user' responds 'keep', for this test
+            mockGUI.KeepHistoricalResponse = false;
+
+            // Bari has kept the completion of Change 77
+            SourceFile savedBari = fileCat.Fetch( "bari.cs" );
+            Assert.IsFalse( savedBari.IsRemoved );
+
+            Assert.AreEqual( 0, savedBari.Completions.Count );
+        }
+
+
 
         [Test]
         public void can_Clone_FileCatalog()

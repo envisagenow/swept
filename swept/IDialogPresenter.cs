@@ -10,6 +10,7 @@ namespace swept
 {
     public interface IDialogPresenter
     {
-        bool KeepHistoricalCompletionsForChange(Change historicalChange);
+        bool KeepChangeHistory( Change historicalChange );
+        bool KeepSourceFileHistory( SourceFile historicalFile );
     }
 }

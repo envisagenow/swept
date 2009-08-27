@@ -12,7 +12,12 @@ namespace swept.Tests
         public bool KeepHistoricalResponse;
         #region IDialogPresenter Members
 
-        public bool KeepHistoricalCompletionsForChange(Change historicalChange)
+        public bool KeepChangeHistory( Change historicalChange )
+        {
+            return KeepHistoricalResponse;
+        }
+
+        public bool KeepSourceFileHistory( SourceFile historicalFile )
         {
             return KeepHistoricalResponse;
         }

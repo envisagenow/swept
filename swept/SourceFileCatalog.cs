@@ -12,6 +12,7 @@ namespace swept
     {
         internal List<SourceFile> Files;
         public ChangeCatalog ChangeCatalog;
+        public IDialogPresenter showGUI;
 
         public SourceFileCatalog()
         {
@@ -42,11 +43,17 @@ namespace swept
             Files.Add(file);
         }
 
+        // TODO: obsolete filecat.delete since it'll kill our history
         public void Delete( string fileName )
         {
             SourceFile file = Find( fileName );
             if( file == null ) return;
             Files.Remove( file );
+        }
+
+        public void Remove( SourceFile file )
+        {
+            file.IsRemoved = true;
         }
 
         public void Rename(string oldName, string newName)
@@ -86,8 +93,20 @@ namespace swept
                 Files.Add( foundFile );
             }
 
+            MaintainHistory( foundFile );
+
             return foundFile;
         }
 
+        private void MaintainHistory( SourceFile foundFile )
+        {
+            if (!foundFile.IsRemoved) return;
+
+            if (!showGUI.KeepSourceFileHistory( foundFile ))
+            {
+                foundFile.Completions.Clear();
+            }
+            foundFile.IsRemoved = false;
+        }
     }
 }
