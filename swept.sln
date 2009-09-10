@@ -5,6 +5,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "swept", "swept\swept.csproj
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sweptTests", "sweptTests\sweptTests.csproj", "{485E504A-C357-463B-9C75-0FAB7ADFB186}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SweptAddin", "SweptAddin\SweptAddin.csproj", "{37C7E668-441B-4E6F-9DA1-1981F18A1861}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -19,6 +21,10 @@ Global
 		{485E504A-C357-463B-9C75-0FAB7ADFB186}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{485E504A-C357-463B-9C75-0FAB7ADFB186}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{485E504A-C357-463B-9C75-0FAB7ADFB186}.Release|Any CPU.Build.0 = Release|Any CPU
+		{37C7E668-441B-4E6F-9DA1-1981F18A1861}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{37C7E668-441B-4E6F-9DA1-1981F18A1861}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{37C7E668-441B-4E6F-9DA1-1981F18A1861}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{37C7E668-441B-4E6F-9DA1-1981F18A1861}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

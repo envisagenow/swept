@@ -84,6 +84,7 @@ namespace swept
 
         private string GetLibraryXmlText()
         {
+            // TODO: all this goes into the persister, and the persister learns to read and write.
             string libraryXmlText = null;
             try
             {

@@ -14,7 +14,7 @@ namespace swept
         public ChangeWindow ChangeWindow { get; set; }
         public TaskWindow TaskWindow { get; set; }
 
-        internal void Start()
+        public void Start()
         {
             Adapter = new StudioAdapter();
             Librarian = new ProjectLibrarian();
@@ -30,8 +30,7 @@ namespace swept
             Adapter.changeWindow = ChangeWindow;
             ChangeWindow.ChangeCatalog = Librarian.changeCatalog;
 
-            //FUTURE:  Subscribe the adapter to the VS IDE events
-
+            // TODO: add underscores after Event and Hear
             //  Subscribe to the StudioAdapter's events
             Adapter.EventNonSourceGotFocus += TaskWindow.HearNonSourceGotFocus;
             Adapter.EventFileGotFocus += TaskWindow.HearFileGotFocus;
