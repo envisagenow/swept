@@ -42,19 +42,12 @@ namespace swept
 
         internal bool SourceFileCatalogSaved
         {
-            get
-            {
-                return savedSourceCatalog.Equals( sourceCatalog );
-            }
+            get { return sourceCatalog.Equals( savedSourceCatalog ); }
         }
 
         internal bool ChangeCatalogSaved
         {
-            get
-            {
-                return changeCatalog.Equals( savedChangeCatalog );
-                //return changeCatalog.IsDirty;
-            }
+            get { return changeCatalog.Equals( savedChangeCatalog ); }
         }
 
         internal bool IsSaved
