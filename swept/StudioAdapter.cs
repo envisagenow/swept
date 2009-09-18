@@ -30,85 +30,85 @@ namespace swept
 
         #region Publish events
 
-        public event EventHandler<FileEventArgs> EventSolutionOpened;
-        public void RaiseSolutionOpened(string solutionPath)
+        public event EventHandler<FileEventArgs> Event_SolutionOpened;
+        public void Raise_SolutionOpened(string solutionPath)
         {
-            if (EventSolutionOpened != null)
-                EventSolutionOpened(this, new FileEventArgs { Name = solutionPath });
+            if (Event_SolutionOpened != null)
+                Event_SolutionOpened(this, new FileEventArgs { Name = solutionPath });
         }
 
-        public event EventHandler<FileEventArgs> EventFileGotFocus;
-        public void RaiseFileGotFocus(string fileName)
+        public event EventHandler<FileEventArgs> Event_FileGotFocus;
+        public void Raise_FileGotFocus(string fileName)
         {
-            if (EventFileGotFocus != null)
-                EventFileGotFocus(this, new FileEventArgs { Name = fileName });
+            if (Event_FileGotFocus != null)
+                Event_FileGotFocus(this, new FileEventArgs { Name = fileName });
         }
 
-        public event EventHandler EventNonSourceGotFocus;
-        public void RaiseNonSourceGetsFocus()
+        public event EventHandler Event_NonSourceGotFocus;
+        public void Raise_NonSourceGetsFocus()
         {
-            if (EventNonSourceGotFocus != null)
-                EventNonSourceGotFocus(this, new EventArgs());
+            if (Event_NonSourceGotFocus != null)
+                Event_NonSourceGotFocus(this, new EventArgs());
         }
 
-        public event EventHandler<FileEventArgs> EventFileSaved;
-        public void RaiseFileSaved(string fileName)
+        public event EventHandler<FileEventArgs> Event_FileSaved;
+        public void Raise_FileSaved(string fileName)
         {
-            if (EventFileSaved != null)
-                EventFileSaved(this, new FileEventArgs { Name = fileName });
+            if (Event_FileSaved != null)
+                Event_FileSaved(this, new FileEventArgs { Name = fileName });
         }
 
-        public event EventHandler<FileEventArgs> EventFilePasted;
-        public void RaiseFilePasted(string fileName)
+        public event EventHandler<FileEventArgs> Event_FilePasted;
+        public void Raise_FilePasted(string fileName)
         {
-            if (EventFilePasted != null)
-                EventFilePasted(this, new FileEventArgs { Name = fileName });
+            if (Event_FilePasted != null)
+                Event_FilePasted(this, new FileEventArgs { Name = fileName });
         }
 
-        public event EventHandler<FileListEventArgs> EventFileSavedAs;
-        public void RaiseFileSavedAs(string oldName, string newName)
+        public event EventHandler<FileListEventArgs> Event_FileSavedAs;
+        public void Raise_FileSavedAs(string oldName, string newName)
         {
-            if (EventFileSavedAs != null)
+            if (Event_FileSavedAs != null)
             {
                 var names = new List<string>();
                 names.Add(oldName);
                 names.Add(newName);
-                EventFileSavedAs(this, new FileListEventArgs { Names = names });
+                Event_FileSavedAs(this, new FileListEventArgs { Names = names });
             }
         }
 
-        public event EventHandler<FileEventArgs> EventFileChangesAbandoned;
-        public void RaiseFileChangesAbandoned(string fileName)
+        public event EventHandler<FileEventArgs> Event_FileChangesAbandoned;
+        public void Raise_FileChangesAbandoned(string fileName)
         {
-            if (EventFileChangesAbandoned != null)
-                EventFileChangesAbandoned(this, new FileEventArgs { Name = fileName });
+            if (Event_FileChangesAbandoned != null)
+                Event_FileChangesAbandoned(this, new FileEventArgs { Name = fileName });
         }
 
-        public event EventHandler<FileEventArgs> EventFileDeleted;
-        public void RaiseFileDeleted(string fileName)
+        public event EventHandler<FileEventArgs> Event_FileDeleted;
+        public void Raise_FileDeleted(string fileName)
         {
-            if (EventFileDeleted != null)
-                EventFileDeleted(this, new FileEventArgs { Name = fileName });
+            if (Event_FileDeleted != null)
+                Event_FileDeleted(this, new FileEventArgs { Name = fileName });
         }
 
 
-        public event EventHandler<FileListEventArgs> EventFileRenamed;
-        public void RaiseFileRenamed(string oldName, string newName)
+        public event EventHandler<FileListEventArgs> Event_FileRenamed;
+        public void Raise_FileRenamed(string oldName, string newName)
         {
-            if (EventFileRenamed != null)
+            if (Event_FileRenamed != null)
             {
                 var names = new List<string>();
                 names.Add(oldName);
                 names.Add(newName);
-                EventFileRenamed(this, new FileListEventArgs { Names = names });
+                Event_FileRenamed(this, new FileListEventArgs { Names = names });
             }
         }
 
-        public event EventHandler EventSolutionSaved;
-        public void RaiseSolutionSaved()
+        public event EventHandler Event_SolutionSaved;
+        public void Raise_SolutionSaved()
         {
-            if (EventSolutionSaved != null)
-                EventSolutionSaved(this, new EventArgs());
+            if (Event_SolutionSaved != null)
+                Event_SolutionSaved(this, new EventArgs());
         }
 
         #endregion

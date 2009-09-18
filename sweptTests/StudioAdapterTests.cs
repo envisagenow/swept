@@ -59,7 +59,7 @@ namespace swept.Tests
         public void WhenFilePasted_VerifyNewFileHasCompletions_OfOriginal()
         {
             string pastedName = "Copy of bari.cs";
-            adapter.RaiseFilePasted(pastedName);
+            adapter.Raise_FilePasted(pastedName);
 
             Assert.IsTrue(TestProbe.IsCompletionSaved(librarian, pastedName));
         }
@@ -68,7 +68,7 @@ namespace swept.Tests
         public void WhenFilePasted_ItGetsNoCompletions_IfItDoesNotDuplicate_AnExistingFile()
         {
             string pastedName = "Copy of weezy.cs";
-            adapter.RaiseFilePasted(pastedName);
+            adapter.Raise_FilePasted(pastedName);
 
             Assert.IsFalse(TestProbe.IsCompletionSaved(librarian, pastedName));
         }
@@ -77,7 +77,7 @@ namespace swept.Tests
         public void WhenFilePasted_ItGetsNoCompletions_IfItIsNotNamed_CopyOfSomething()
         {
             string pastedName = "weezy.cs";
-            adapter.RaiseFilePasted(pastedName);
+            adapter.Raise_FilePasted(pastedName);
 
             Assert.IsFalse(TestProbe.IsCompletionSaved(librarian, pastedName));
         }
@@ -92,7 +92,7 @@ namespace swept.Tests
             fileCat.Files.Add(originalFile);
 
             string newName = "new" + originalName;
-            adapter.RaiseFileSavedAs(originalName, newName);
+            adapter.Raise_FileSavedAs(originalName, newName);
 
             //  "newgadgets" now exists, with the "14" completion saved
             Assert.IsTrue(TestProbe.IsCompletionSaved(librarian, newName));
@@ -108,12 +108,12 @@ namespace swept.Tests
             changeCat.Add(new Change("12", "Replace old MultiSelect control with new one", FileLanguage.CSharp));
             originalFile.Completions.Add(new Completion("12"));
 
-            adapter.RaiseFileSaved(originalName);
+            adapter.Raise_FileSaved(originalName);
             
             originalFile.Completions.Add(new Completion("14"));
 
             string newName = "new" + originalName;
-            adapter.RaiseFileSavedAs(originalName, newName);
+            adapter.Raise_FileSavedAs(originalName, newName);
 
             //  Original file still exists, without pending unsaved change
             //  But it does have all earlier saved changes
@@ -136,7 +136,7 @@ namespace swept.Tests
             fileCat.Files.Add(widgetsFile);
 
             //  User saves gadgets, but not widgets
-            adapter.RaiseFileSaved(gadgetsName);
+            adapter.Raise_FileSaved(gadgetsName);
 
             Assert.IsTrue(TestProbe.IsCompletionSaved(librarian, "bari.cs"));
             Assert.IsTrue(TestProbe.IsCompletionSaved(librarian, gadgetsName));
@@ -154,7 +154,7 @@ namespace swept.Tests
             Assert.IsFalse(librarian.IsSaved);
 
             Assert.IsTrue(TestProbe.IsCompletionSaved(librarian, "bari.cs"));
-            adapter.RaiseFileSaved(nameGadgets);
+            adapter.Raise_FileSaved(nameGadgets);
 
             Assert.IsTrue(librarian.IsSaved);
 
@@ -174,7 +174,7 @@ namespace swept.Tests
             fileUnsaved.Completions.Add( completion );
 
             // save bari
-            adapter.RaiseFileSaved( fileName );
+            adapter.Raise_FileSaved( fileName );
             Assert.IsTrue(TestProbe.IsCompletionSaved(librarian, "bari.cs"));
 
             //check widgets.cs doesn't exist
@@ -184,17 +184,17 @@ namespace swept.Tests
         [Test]
         public void WhenFileGetsFocus_BecomesCurrentFile()
         {
-            adapter.RaiseFileGotFocus( "foo.cs" );
+            adapter.Raise_FileGotFocus( "foo.cs" );
             Assert.AreEqual( "foo.cs", window.CurrentFile.Name );
 
-            adapter.RaiseFileGotFocus( "bar.cs" );
+            adapter.Raise_FileGotFocus( "bar.cs" );
             Assert.AreEqual( "bar.cs", window.CurrentFile.Name );
         }
 
         [Test]
         public void WhenFileGetsFocus_TaskWindowUpdates()
         {
-            adapter.RaiseFileGotFocus( "foo.cs" );
+            adapter.Raise_FileGotFocus( "foo.cs" );
             Assert.AreEqual( "foo.cs", window.CurrentFile.Name );
         }
 
@@ -202,7 +202,7 @@ namespace swept.Tests
         public void FileFocusChange_IncludesUnsavedCompletions()
         {
             librarian.changeCatalog.Add( new Change( "728", "Date Normalization", FileLanguage.CSharp ) );
-            adapter.RaiseFileGotFocus( "party_planning.cs" );
+            adapter.Raise_FileGotFocus( "party_planning.cs" );
 
             Assert.AreEqual( 2, window.Tasks.Count );
             SourceFile partyFile = window.CurrentFile;
@@ -215,7 +215,7 @@ namespace swept.Tests
             Assert.AreEqual(2, partyFile.Completions.Count);
 
             //  User done with party planning--switch to another file
-            adapter.RaiseFileGotFocus( fileName );
+            adapter.Raise_FileGotFocus( fileName );
 
             //  Even though we're working elsewhere, completions are kept correct
             Assert.AreEqual( 2, partyFile.Completions.Count );
@@ -224,11 +224,11 @@ namespace swept.Tests
         [Test]
         public void WhenNonSourceGetsFocus_NoSourceFileInTaskWindow()
         {
-            adapter.RaiseFileGotFocus("foo.cs");
+            adapter.Raise_FileGotFocus("foo.cs");
             Assert.AreEqual("foo.cs", window.Title);
             Assert.AreEqual(1, window.Tasks.Count);
 
-            adapter.RaiseNonSourceGetsFocus();
+            adapter.Raise_NonSourceGetsFocus();
             
             Assert.AreEqual( "No source file", window.Title );
             Assert.AreEqual(0, window.Tasks.Count);
@@ -264,7 +264,7 @@ namespace swept.Tests
 
             file.AddNewCompletion( "id_88" );
             file.AddNewCompletion( "id_99" );
-            adapter.RaiseFileChangesAbandoned( fileName );
+            adapter.Raise_FileChangesAbandoned( fileName );
 
             Assert.AreEqual( startingCompletionsCount, file.Completions.Count );
         }
@@ -274,7 +274,7 @@ namespace swept.Tests
         public void WhenSolutionOpened_LibrarianGetsNewPath()
         {
             string newPath = @"new\location";
-            adapter.RaiseSolutionOpened( newPath );
+            adapter.Raise_SolutionOpened( newPath );
             Assert.AreEqual( newPath, adapter.Librarian.SolutionPath );
         }
 
@@ -284,7 +284,7 @@ namespace swept.Tests
         {
             Assert.IsTrue( fileCat.Files.Contains( file ) );
 
-            adapter.RaiseFileDeleted( fileName );
+            adapter.Raise_FileDeleted( fileName );
 
             Assert.IsFalse( fileCat.Files.Contains( file ) );
             Assert.IsTrue(librarian.IsSaved);
@@ -301,7 +301,7 @@ namespace swept.Tests
             Assert.AreEqual(1, file.Completions.Count);
 
             string newName = "nextgreatname.cs";
-            adapter.RaiseFileRenamed(fileName, newName);
+            adapter.Raise_FileRenamed(fileName, newName);
 
             SourceFile nextGreat = fileCat.Fetch(newName);
             Assert.AreEqual(1, nextGreat.Completions.Count);
@@ -316,7 +316,7 @@ namespace swept.Tests
             Assert.IsTrue( librarian.IsSaved );
             librarian.sourceCatalog.Add( new SourceFile( "moo.cs" ) );
             Assert.IsFalse(librarian.IsSaved);
-            adapter.RaiseSolutionSaved();
+            adapter.Raise_SolutionSaved();
             Assert.IsTrue(librarian.IsSaved);
         }
     }

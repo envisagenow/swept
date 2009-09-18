@@ -187,52 +187,52 @@ namespace swept
         }
 
         #region Event Listeners
-        public void HearSolutionOpened(object sender, FileEventArgs arg)
+        public void Hear_SolutionOpened(object sender, FileEventArgs arg)
         {
             OpenSolution(arg.Name);
         }
 
-        public void HearFileSaved(object sender, FileEventArgs args)
+        public void Hear_FileSaved(object sender, FileEventArgs args)
         {
             SaveFile(args.Name);
         }
 
-        public void HearChangeListUpdated(object sender, EventArgs e)
+        public void Hear_ChangeListUpdated(object sender, EventArgs e)
         {
             Persist();
         }
 
-        public void HearFilePasted(object sender, FileEventArgs args)
+        public void Hear_FilePasted(object sender, FileEventArgs args)
         {
             PasteFile(args.Name);
         }
 
-        public void HearFileSavedAs(object sender, FileListEventArgs args)
+        public void Hear_FileSavedAs(object sender, FileListEventArgs args)
         {
             SaveFileAs(args.Names[0], args.Names[1]);
         }
 
-        public void HearFileChangesAbandoned(object sender, FileEventArgs args)
+        public void Hear_FileChangesAbandoned(object sender, FileEventArgs args)
         {
             AbandonFileChanges(args.Name);
         }
 
-        public void HearFileDeleted(object sender, FileEventArgs args)
+        public void Hear_FileDeleted(object sender, FileEventArgs args)
         {
             DeleteFile(args.Name);
         }
 
-        public void HearFileRenamed(object sender, FileListEventArgs args)
+        public void Hear_FileRenamed(object sender, FileListEventArgs args)
         {
             RenameFile(args.Names[0], args.Names[1]);
         }
 
-        public void HearChangeAdded(object sender, ChangeEventArgs args)
+        public void Hear_ChangeAdded(object sender, ChangeEventArgs args)
         {
             AddChange(args.change);
         }
 
-        public void HearSolutionSaved(object sender, EventArgs args)
+        public void Hear_SolutionSaved(object sender, EventArgs args)
         {
             SaveSolution();
         }

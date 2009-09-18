@@ -57,7 +57,7 @@ namespace swept.Tests
         [Test]
         public void WhenChangeListUpdated_TaskWindow_RefreshesTasks()
         {
-            adapter.RaiseFileGotFocus("foo.cs");
+            adapter.Raise_FileGotFocus("foo.cs");
             int initialChangeCount = taskWindow.Tasks.Count;
             changeCat.Add(new Change("Inf09", "Change delegates to lambdas", FileLanguage.CSharp));
 
@@ -69,7 +69,7 @@ namespace swept.Tests
         [Test]
         public void WhenChangeListUpdated_EmptyTaskWindow_RefreshesItsEmptiness()
         {
-            adapter.RaiseNonSourceGetsFocus();
+            adapter.Raise_NonSourceGetsFocus();
             changeCat.Add(new Change("Inf09", "Change delegates to lambdas", FileLanguage.CSharp));
 
             changeWindow.RaiseChangeListUpdated();
@@ -121,7 +121,7 @@ namespace swept.Tests
             Change change = new Change("14", "indentation cleanup", FileLanguage.CSharp);
             changeWindow.RaiseChangeAdded(change);
 
-            adapter.RaiseFileSaved("bari.cs");
+            adapter.Raise_FileSaved("bari.cs");
 
             // Bari has removed the completion of Change 14
             Assert.IsFalse(TestProbe.IsCompletionSaved(librarian, "bari.cs", "14"));
@@ -130,7 +130,7 @@ namespace swept.Tests
         [Test]
         public void WhenChangeRemoved_TaskWindow_RefreshesTasks()
         {
-            adapter.RaiseFileGotFocus("foo.cs");
+            adapter.Raise_FileGotFocus("foo.cs");
             int initialChangeCount = taskWindow.Tasks.Count;
             changeCat.Remove("14");
 

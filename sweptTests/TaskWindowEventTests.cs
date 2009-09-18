@@ -36,7 +36,7 @@ namespace swept.Tests
         public void when_TaskWindow_toggled_visibility_changed()
         {
             starter.TaskWindow.Visible = false;
-            starter.TaskWindow.RaiseTaskWindowToggled();
+            starter.TaskWindow.Raise_TaskWindowToggled();
 
             Assert.IsTrue(starter.TaskWindow.Visible);
         }

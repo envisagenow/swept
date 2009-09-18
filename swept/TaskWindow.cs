@@ -93,33 +93,33 @@ namespace swept
 
         #region Raise events
 
-        public event EventHandler<EventArgs> EventTaskWindowToggled;
-        public void RaiseTaskWindowToggled()
+        public event EventHandler<EventArgs> Event_TaskWindowToggled;
+        public void Raise_TaskWindowToggled()
         {
-            if (EventTaskWindowToggled != null)
-                EventTaskWindowToggled(this, new EventArgs { });
+            if (Event_TaskWindowToggled != null)
+                Event_TaskWindowToggled(this, new EventArgs { });
         }
 
         #endregion
 
         #region Event listeners
 
-        public void HearFileGotFocus(object sender, FileEventArgs args)
+        public void Hear_FileGotFocus(object sender, FileEventArgs args)
         {
             ShowFile(args.Name);
         }
 
-        public void HearNonSourceGotFocus(object sender, EventArgs args)
+        public void Hear_NonSourceGotFocus(object sender, EventArgs args)
         {
             ShowFile(null, null);
         }
 
-        public void HearChangeListUpdated(object sender, EventArgs args)
+        public void Hear_ChangeListUpdated(object sender, EventArgs args)
         {
             RefreshChangeList();
         }
 
-        public void HearTaskWindowToggled(object sender, EventArgs args)
+        public void Hear_TaskWindowToggled(object sender, EventArgs args)
         {
             ToggleWindowVisibility();
         }

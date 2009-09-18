@@ -30,27 +30,26 @@ namespace swept
             Adapter.changeWindow = ChangeWindow;
             ChangeWindow.ChangeCatalog = Librarian.changeCatalog;
 
-            // TODO: add underscores after Event and Hear
             //  Subscribe to the StudioAdapter's events
-            Adapter.EventNonSourceGotFocus += TaskWindow.HearNonSourceGotFocus;
-            Adapter.EventFileGotFocus += TaskWindow.HearFileGotFocus;
-            Adapter.EventFileSaved += Librarian.HearFileSaved;
-            Adapter.EventFilePasted += Librarian.HearFilePasted;
-            Adapter.EventFileSavedAs += Librarian.HearFileSavedAs;
-            Adapter.EventFileChangesAbandoned += Librarian.HearFileChangesAbandoned;
-            Adapter.EventFileDeleted += Librarian.HearFileDeleted;
-            Adapter.EventFileRenamed += Librarian.HearFileRenamed;
-            Adapter.EventSolutionSaved += Librarian.HearSolutionSaved;
-            Adapter.EventSolutionOpened += Librarian.HearSolutionOpened;
+            Adapter.Event_NonSourceGotFocus += TaskWindow.Hear_NonSourceGotFocus;
+            Adapter.Event_FileGotFocus += TaskWindow.Hear_FileGotFocus;
+            Adapter.Event_FileSaved += Librarian.Hear_FileSaved;
+            Adapter.Event_FilePasted += Librarian.Hear_FilePasted;
+            Adapter.Event_FileSavedAs += Librarian.Hear_FileSavedAs;
+            Adapter.Event_FileChangesAbandoned += Librarian.Hear_FileChangesAbandoned;
+            Adapter.Event_FileDeleted += Librarian.Hear_FileDeleted;
+            Adapter.Event_FileRenamed += Librarian.Hear_FileRenamed;
+            Adapter.Event_SolutionSaved += Librarian.Hear_SolutionSaved;
+            Adapter.Event_SolutionOpened += Librarian.Hear_SolutionOpened;
 
             //  Subscribe to the TaskWindow's events
-            TaskWindow.EventTaskWindowToggled += TaskWindow.HearTaskWindowToggled;
+            TaskWindow.Event_TaskWindowToggled += TaskWindow.Hear_TaskWindowToggled;
             //  A self-subscription.  Odd, possibly poor practice...
 
             //  Subscribe to the ChangeWindow's events
-            ChangeWindow.EventChangeAdded += Librarian.HearChangeAdded;
-            ChangeWindow.EventChangeListUpdated += TaskWindow.HearChangeListUpdated;
-            ChangeWindow.EventChangeListUpdated += Librarian.HearChangeListUpdated;
+            ChangeWindow.EventChangeAdded += Librarian.Hear_ChangeAdded;
+            ChangeWindow.EventChangeListUpdated += TaskWindow.Hear_ChangeListUpdated;
+            ChangeWindow.EventChangeListUpdated += Librarian.Hear_ChangeListUpdated;
         }
     }
 }

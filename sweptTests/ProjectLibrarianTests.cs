@@ -37,7 +37,7 @@ namespace swept.Tests
             Assert.AreEqual(@"f:\over\here.swept.library", Horace.LibraryPath);
             persister.ThrowExceptionWhenLoadingLibrary = true;
 
-            Horace.HearSolutionOpened(this, Get_testfile_FileEventArgs());
+            Horace.Hear_SolutionOpened(this, Get_testfile_FileEventArgs());
             Assert.AreEqual(@"d:\code\CoolProject\mySolution.swept.library", Horace.LibraryPath);
         }
 
@@ -45,7 +45,7 @@ namespace swept.Tests
         public void OpenSolution_finding_Swept_Library_will_load_SourceFiles()
         {
             persister.XmlText = TestProbe.SingleFileLibrary_text;
-            Horace.HearSolutionOpened(this, Get_testfile_FileEventArgs());
+            Horace.Hear_SolutionOpened(this, Get_testfile_FileEventArgs());
 
             SourceFile someFile = Horace.savedSourceCatalog.Fetch("some_file.cs");
 
@@ -56,7 +56,7 @@ namespace swept.Tests
         public void OpenSolution_finding_Swept_Library_will_load_Changes()
         {
             persister.XmlText = TestProbe.SingleChangeLibrary_text;
-            Horace.HearSolutionOpened(this, Get_testfile_FileEventArgs());
+            Horace.Hear_SolutionOpened(this, Get_testfile_FileEventArgs());
 
             Assert.AreEqual(1, Horace.changeCatalog.changes.Count);
             Change change = Horace.changeCatalog.changes["30-Persist"];
@@ -69,7 +69,7 @@ namespace swept.Tests
         {
             persister.ThrowExceptionWhenLoadingLibrary = true; 
             
-            Horace.HearSolutionOpened(this, Get_testfile_FileEventArgs());
+            Horace.Hear_SolutionOpened(this, Get_testfile_FileEventArgs());
 
             Assert.AreEqual(0, Horace.changeCatalog.changes.Count);
             Assert.AreEqual(0, Horace.sourceCatalog.Files.Count);
@@ -83,7 +83,7 @@ namespace swept.Tests
             someFile.AddNewCompletion("007");
             Horace.sourceCatalog.Add(someFile);
 
-            Horace.HearSolutionSaved(this, new EventArgs());            
+            Horace.Hear_SolutionSaved(this, new EventArgs());            
 
             Assert.AreEqual(TestProbe.SingleFileLibrary_text, persister.XmlText);
         }
@@ -115,7 +115,7 @@ namespace swept.Tests
             Horace.sourceCatalog.Add(someFile);
 
             FileEventArgs args = new FileEventArgs { Name = someFileName };
-            Horace.HearFileSaved(this, args);
+            Horace.Hear_FileSaved(this, args);
 
             Assert.AreEqual(TestProbe.SingleFileLibrary_text, persister.XmlText);
         }
@@ -176,7 +176,7 @@ namespace swept.Tests
             Horace.sourceCatalog.Add( newTestingFile( "some_file.cs" ) );
             Assert.IsFalse( Horace.IsSaved );
 
-            Horace.HearSolutionSaved( this, new EventArgs() );
+            Horace.Hear_SolutionSaved( this, new EventArgs() );
 
             Assert.IsTrue( Horace.SourceFileCatalogSaved );
             Assert.IsTrue( Horace.IsSaved );
@@ -188,7 +188,7 @@ namespace swept.Tests
             Assert.AreEqual(0, Horace.changeCatalog.changes.Count);
 
             Change change = new Change("14", "here I am", FileLanguage.CSharp);
-            Horace.HearChangeAdded(this, new ChangeEventArgs { change = change });
+            Horace.Hear_ChangeAdded(this, new ChangeEventArgs { change = change });
 
             Assert.AreEqual(1, Horace.changeCatalog.changes.Count);
         }
@@ -197,7 +197,7 @@ namespace swept.Tests
         public void AddChange_can_keep_historical_Completions()
         {
             Change historicalChange = new Change("14", "here I am", FileLanguage.CSharp);
-            Horace.HearChangeAdded(this, new ChangeEventArgs { change = historicalChange });
+            Horace.Hear_ChangeAdded(this, new ChangeEventArgs { change = historicalChange });
             SourceFile foo = new SourceFile("foo.cs");
             foo.Language = FileLanguage.CSharp;
             Horace.sourceCatalog.Add(foo);
@@ -210,7 +210,7 @@ namespace swept.Tests
             talker.KeepHistoricalResponse = true;
             Horace.showGUI = talker;
 
-            Horace.HearChangeAdded(this, new ChangeEventArgs { change = historicalChange });
+            Horace.Hear_ChangeAdded(this, new ChangeEventArgs { change = historicalChange });
 
             Assert.AreEqual(1, foo.Completions.Count);
         }
@@ -219,7 +219,7 @@ namespace swept.Tests
         public void AddChange_can_discard_historical_Completions()
         {
             Change historicalChange = new Change("14", "here I am", FileLanguage.CSharp);
-            Horace.HearChangeAdded(this, new ChangeEventArgs { change = historicalChange });
+            Horace.Hear_ChangeAdded(this, new ChangeEventArgs { change = historicalChange });
             SourceFile foo = new SourceFile("foo.cs");
             foo.Language = FileLanguage.CSharp;
             Horace.sourceCatalog.Add(foo);
@@ -232,7 +232,7 @@ namespace swept.Tests
             talker.KeepHistoricalResponse = false;
             Horace.showGUI = talker;
 
-            Horace.HearChangeAdded(this, new ChangeEventArgs { change = historicalChange });
+            Horace.Hear_ChangeAdded(this, new ChangeEventArgs { change = historicalChange });
 
             Assert.AreEqual(0, foo.Completions.Count);
         }
