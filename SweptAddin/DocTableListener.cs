@@ -8,7 +8,7 @@ using System.Windows.Forms;
 
 namespace swept.Addin
 {
-    public class DocTableListener : IVsRunningDocTableEvents, IVsRunningDocTableEvents2, IVsRunningDocTableEvents3, IVsRunningDocTableEvents4
+    public class DocTableListener : IVsRunningDocTableEvents
     {
 
 

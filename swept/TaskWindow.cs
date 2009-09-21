@@ -4,6 +4,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System;
+using System.Windows.Forms;
 
 namespace swept
 {
@@ -106,6 +107,8 @@ namespace swept
 
         public void Hear_FileGotFocus(object sender, FileEventArgs args)
         {
+            MessageBox.Show( string.Format( "{0}( {1} )", "TaskWindow.Hear_FileGotFocus", args.Name ) );
+
             ShowFile(args.Name);
         }
 
