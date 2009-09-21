@@ -19,18 +19,18 @@ namespace swept.Tests
         }
 
         // TODO: reimplement as actually changing a task completion, then seeing it report unsaved change
-        //[Test]
-        //public void when_Task_Completion_changed_Library_has_an_unsaved_change()
-        //{
-        //    ProjectLibrarian librarian = starter.Librarian;
-        //    TaskWindow window = starter.TaskWindow;
+        [Test]
+        public void when_Task_Completion_changed_Library_has_an_unsaved_change()
+        {
+            ProjectLibrarian librarian = starter.Librarian;
+            TaskWindow window = starter.TaskWindow;
 
-        //    Assert.IsFalse(librarian.ChangeNeedsPersisting);
+            Assert.IsTrue(librarian.IsSaved);
 
-        //    window.RaiseTaskCompletionChanged();
+            window.ToggleTaskCompletion(0);
 
-        //    Assert.IsTrue(librarian.ChangeNeedsPersisting);
-        //}
+            Assert.IsFalse( librarian.IsSaved );
+        }
 
         [Test]
         public void when_TaskWindow_toggled_visibility_changed()

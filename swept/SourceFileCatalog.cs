@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Xml;
 using System;
+using System.Collections;
 
 namespace swept
 {
@@ -19,23 +20,18 @@ namespace swept
             Files = new List<SourceFile>();
         }
 
-        // TODO: Change this over to an instance 0-arg method.
-        public static SourceFileCatalog Clone( SourceFileCatalog parent )
+        public SourceFileCatalog Clone()
         {
             SourceFileCatalog newCatalog = new SourceFileCatalog();
+            newCatalog.ChangeCatalog = ChangeCatalog;
 
-            newCatalog.ChangeCatalog = parent.ChangeCatalog;
-            foreach (SourceFile file in parent.Files)
-            {
-                SourceFile newSourceFile = new SourceFile(file.Name);
-                newSourceFile.CopyCompletionsFrom(file);
-                newCatalog.Files.Add(newSourceFile);
-            }
+            foreach( SourceFile file in Files )
+                newCatalog.Files.Add( file.Clone() );
 
             return newCatalog;
         }
 
-        public void Add(SourceFile file)
+        public void Add( SourceFile file )
         {
             if (Files.Exists(sf => sf.Name == file.Name))
                 return;

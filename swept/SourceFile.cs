@@ -65,7 +65,16 @@ namespace swept
                 Completions.Add( new Completion( changeID ) );
         }
 
-        //TODO: refactor into SourceFile.Clone( file )
+        public SourceFile Clone()
+        {
+            SourceFile file = new SourceFile( this.Name );
+
+            file.CopyCompletionsFrom( this );
+            
+            return file;
+        }
+
+        //TODO: Candidate: refactor into SourceFile.Clone( file )
         public void CopyCompletionsFrom( SourceFile workingFile )
         {
             Completions.Clear();

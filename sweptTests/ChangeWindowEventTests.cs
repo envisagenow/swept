@@ -46,7 +46,7 @@ namespace swept.Tests
 
             MockLibraryPersister writer = new MockLibraryPersister();
             librarian.persister = writer;
-            librarian.savedSourceCatalog = SourceFileCatalog.Clone(fileCat);
+            librarian.savedSourceCatalog = fileCat.Clone();
             librarian.SolutionPath = "mockpath";
             librarian.Persist();
 

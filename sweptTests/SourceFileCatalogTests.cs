@@ -99,7 +99,7 @@ namespace swept.Tests
         {
             fileCat.Files.Add( new SourceFile( "flubber.cs" ) );
 
-            SourceFileCatalog secondCat = SourceFileCatalog.Clone( fileCat );
+            SourceFileCatalog secondCat = fileCat.Clone();
 
             Assert.AreEqual( fileCat.Files.Count, secondCat.Files.Count );
             Assert.AreEqual( "flubber.cs", secondCat.Files[0].Name );
@@ -114,7 +114,7 @@ namespace swept.Tests
             file.Completions.Add(new Completion("33"));
             fileCat.Files.Add(file);
 
-            SourceFileCatalog clonedCat = SourceFileCatalog.Clone(fileCat);
+            SourceFileCatalog clonedCat = fileCat.Clone();
 
             SourceFile clonedFile = clonedCat.Fetch(fileName);
             Assert.AreEqual(file.Completions.Count, clonedFile.Completions.Count);
@@ -126,7 +126,7 @@ namespace swept.Tests
         [Test]
         public void Clone_does_not_duplicate_ChangeCatalog()
         {
-            SourceFileCatalog secondCat = SourceFileCatalog.Clone( fileCat );
+            SourceFileCatalog secondCat = fileCat.Clone();
             Assert.AreSame( changeCat, secondCat.ChangeCatalog );
         }
 

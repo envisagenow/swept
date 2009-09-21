@@ -72,7 +72,7 @@ namespace swept
 
             savedSourceCatalog = port.SourceFileCatalog_FromText( libraryXmlText );
             savedSourceCatalog.ChangeCatalog = changeCatalog;
-            sourceCatalog = SourceFileCatalog.Clone(savedSourceCatalog);
+            sourceCatalog = savedSourceCatalog.Clone();
         }
 
         private string GetLibraryXmlText()
@@ -181,8 +181,7 @@ namespace swept
 
         private void SaveSolution()
         {
-            // TODO: Goal:  savedSourceCatalog = unsavedSourceCatalog.Clone();
-            savedSourceCatalog = SourceFileCatalog.Clone(sourceCatalog);
+            savedSourceCatalog = sourceCatalog.Clone();
             Persist();
         }
 
@@ -245,6 +244,7 @@ namespace swept
 
             var port = new XmlPort();
 
+            // TODO: the proper expected name
             persister.Save("swept.progress.library", port.ToText( this ));
         }
     }
