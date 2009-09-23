@@ -7,40 +7,60 @@ using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Shell;
+using System.Windows.Forms;
 
 namespace swept.Addin
 {
-    public class StudioEventListener : IVsRunningDocTableEvents
+    public class StudioEventListener : IVsRunningDocTableEvents, IDisposable
     {
         private DTE2 _studio;
         private StudioAdapter _adapter;
         private IVsRunningDocumentTable _runningDocs;
+        private uint _runningDocsCookie;
+
+        //  Class scoped to hold these references for the lifetime of the plugin.
+        private SolutionEvents _solutionEvents;
+        private ProjectItemsEvents _solutionItemsEvents;
+        private DocumentEvents _documentEvents;
 
         public void Subscribe( DTE2 studio, swept.StudioAdapter adapter )
         {
             _studio = studio;
             _adapter = adapter;
+            _solutionEvents = _studio.Events.SolutionEvents;
+            _solutionItemsEvents = _studio.Events.SolutionItemsEvents;
+            _documentEvents = _studio.Events.get_DocumentEvents( null );
 
-            _studio.Events.SolutionEvents.Opened += Hear_SolutionOpened;
-            _studio.Events.SolutionEvents.Renamed += Hear_SolutionRenamed;
+            _solutionEvents.Opened += Hear_SolutionOpened;
+            _solutionEvents.Renamed += Hear_SolutionRenamed;
 
-            _studio.Events.SolutionItemsEvents.ItemRenamed += Hear_ItemRenamed;
+            _solutionItemsEvents.ItemRenamed += Hear_ItemRenamed;
+
+            _documentEvents.DocumentSaved += Hear_DocumentSaved;
 
             //DocTableListener listener = new DocTableListener();
 
+            // TODO: Upgrade from this interface
             _runningDocs = (IVsRunningDocumentTable)
                 Package.GetGlobalService( typeof( SVsRunningDocumentTable ) );
 
-            uint listenerCookie;
-            int returnCode = _runningDocs.AdviseRunningDocTableEvents( this, out listenerCookie );
+            int returnCode = _runningDocs.AdviseRunningDocTableEvents( this, out _runningDocsCookie );
 
             if( returnCode != VSConstants.S_OK )
                 throw new Exception( string.Format( "Got error [{0}] instead of S_OK.", returnCode ) );
 
-            //IVsMonitorSelection ?
-
         }
 
+        void IDisposable.Dispose()
+        {
+            if( _runningDocsCookie == 0 ) return;
+
+            _runningDocs.UnadviseRunningDocTableEvents( _runningDocsCookie );
+            _runningDocsCookie = 0;
+
+            // TODO: unsubscribe from all others, null out the class-level event vars, and ?
+        }
+        
         public void Hear_SolutionOpened()
         {
             _adapter.Raise_SolutionOpened( _studio.Solution.FileName );
@@ -51,7 +71,8 @@ namespace swept.Addin
             _adapter.Raise_SolutionRenamed( oldName, _studio.Solution.FileName );
         }
 
-        public int OnBeforeDocumentWindowShow( uint docCookie, int fFirstShow, IVsWindowFrame pFrame )
+
+        int IVsRunningDocTableEvents.OnBeforeDocumentWindowShow( uint docCookie, int fFirstShow, IVsWindowFrame pFrame )
         {
             string fileName = fileNameFromDocCookie( docCookie );            
             _adapter.Raise_FileGotFocus( fileName );
@@ -73,6 +94,13 @@ namespace swept.Addin
             return fileName;
         }
 
+        private void Hear_DocumentSaved( Document doc )
+        {
+            //MessageBox.Show( string.Format( "{0}( {1}, ... )", "Hear_DocumentSaved", doc.FullName ) );
+            string fileName = doc.FullName;
+            _adapter.Raise_FileSaved( fileName );
+        }
+
 
         //  above here, subscribed
 
@@ -89,11 +117,6 @@ namespace swept.Addin
         private void Hear_NonSourceGetsFocus()
         {
             _adapter.Raise_NonSourceGetsFocus();
-        }
-
-        private void Hear_FileSaved( string fileName )
-        {
-            _adapter.Raise_FileSaved( fileName );
         }
 
         private void Hear_FilePasted( string fileName )

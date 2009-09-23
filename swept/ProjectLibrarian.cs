@@ -6,6 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using System.IO;
+using System.Windows.Forms;
 
 namespace swept
 {
@@ -99,6 +100,8 @@ namespace swept
 
         private void SaveFile(string fileName)
         {
+            MessageBox.Show( String.Format( "Raise_FileSaved( {0} )", fileName ) );
+
             SourceFile workingFile = sourceCatalog.Fetch(fileName);
             SourceFile diskFile = savedSourceCatalog.Fetch(fileName);
             diskFile.CopyCompletionsFrom(workingFile);

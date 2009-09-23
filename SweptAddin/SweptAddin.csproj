@@ -51,7 +51,6 @@
     <Compile Include="Connect.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DocTableListener.cs" />
     <Compile Include="StudioEventListener.cs" />
   </ItemGroup>
   <ItemGroup>
