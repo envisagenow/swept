@@ -4,6 +4,7 @@
 using NUnit.Framework;
 using swept;
 using System;
+using System.Xml;
 
 namespace swept.Tests
 {
@@ -44,7 +45,8 @@ namespace swept.Tests
         [Test]
         public void OpenSolution_finding_Swept_Library_will_load_SourceFiles()
         {
-            persister.XmlText = TestProbe.SingleFileLibrary_text;
+            persister.LibraryDoc = new XmlDocument();
+            persister.LibraryDoc.LoadXml( TestProbe.SingleFileLibrary_text );
             Horace.Hear_SolutionOpened(this, Get_testfile_FileEventArgs());
 
             SourceFile someFile = Horace.savedSourceCatalog.Fetch("some_file.cs");
@@ -55,7 +57,8 @@ namespace swept.Tests
         [Test]
         public void OpenSolution_finding_Swept_Library_will_load_Changes()
         {
-            persister.XmlText = TestProbe.SingleChangeLibrary_text;
+            persister.LibraryDoc = new XmlDocument();
+            persister.LibraryDoc.LoadXml( TestProbe.SingleChangeLibrary_text );
             Horace.Hear_SolutionOpened(this, Get_testfile_FileEventArgs());
 
             Assert.AreEqual(1, Horace.changeCatalog.changes.Count);
@@ -67,12 +70,24 @@ namespace swept.Tests
         [Test]
         public void OpenSolution_with_no_Swept_Library_will_start_smoothly()
         {
-            persister.ThrowExceptionWhenLoadingLibrary = true; 
-            
-            Horace.Hear_SolutionOpened(this, Get_testfile_FileEventArgs());
+            persister.LibraryDoc = new XmlDocument();
+            persister.LibraryDoc.LoadXml( LibraryPersister._emptyCatalogString );
 
-            Assert.AreEqual(0, Horace.changeCatalog.changes.Count);
-            Assert.AreEqual(0, Horace.sourceCatalog.Files.Count);
+            Horace.Hear_SolutionOpened( this, Get_testfile_FileEventArgs() );
+
+            Assert.AreEqual( 0, Horace.changeCatalog.changes.Count );
+            Assert.AreEqual( 0, Horace.sourceCatalog.Files.Count );
+        }
+
+        [Test]
+        public void OpenSolution_with_invalid_xml_will_start_smoothly()
+        {
+            persister.ThrowExceptionWhenLoadingLibrary = true;
+
+            Horace.Hear_SolutionOpened( this, Get_testfile_FileEventArgs() );
+
+            Assert.AreEqual( 0, Horace.changeCatalog.changes.Count );
+            Assert.AreEqual( 0, Horace.sourceCatalog.Files.Count );
         }
 
         [Test]
@@ -85,7 +100,7 @@ namespace swept.Tests
 
             Horace.Hear_SolutionSaved(this, new EventArgs());            
 
-            Assert.AreEqual(TestProbe.SingleFileLibrary_text, persister.XmlText);
+            Assert.AreEqual(TestProbe.SingleFileLibrary_text, persister.LibraryDoc);
         }
 
         [Test]
@@ -117,7 +132,7 @@ namespace swept.Tests
             FileEventArgs args = new FileEventArgs { Name = someFileName };
             Horace.Hear_FileSaved(this, args);
 
-            Assert.AreEqual(TestProbe.SingleFileLibrary_text, persister.XmlText);
+            Assert.AreEqual(TestProbe.SingleFileLibrary_text, persister.LibraryDoc);
         }
 
         [Test]
@@ -135,7 +150,7 @@ namespace swept.Tests
 </SourceFileCatalog>
 </SweptProjectData>";
 
-            Assert.AreEqual(expectedXmlText, persister.XmlText);
+            Assert.AreEqual(expectedXmlText, persister.LibraryDoc);
         }
 
         [Test]

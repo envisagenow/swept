@@ -5,28 +5,29 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.IO;
+using System.Xml;
 
 namespace swept.Tests
 {
     class MockLibraryPersister : ILibraryPersister
     {
         public string FileName { get; set; }
-        public string XmlText { get; set; }
+        public XmlDocument LibraryDoc { get; set; }
+        public bool ThrowExceptionWhenLoadingLibrary;
 
         public void Save(string fileName, string xmlText)
         {
             FileName = fileName;
-            XmlText = xmlText;
+            LibraryDoc = new XmlDocument();
+            LibraryDoc.LoadXml( xmlText );
         }
 
-        public string LoadLibrary(string libraryPath)
+        public XmlDocument LoadLibrary(string libraryPath)
         {
             if (ThrowExceptionWhenLoadingLibrary)
-                throw new FileNotFoundException();
+                throw new XmlException();
 
-            return XmlText;
+            return LibraryDoc;
         }
-
-        public bool ThrowExceptionWhenLoadingLibrary;
     }
 }

@@ -5,12 +5,13 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Collections;
+using System.Xml;
 
 namespace swept
 {
     public interface ILibraryPersister
     {
         void Save( string fileName, string xmlText );
-        string LoadLibrary(string libraryPath);
+        XmlDocument LoadLibrary(string libraryPath);
     }
 }

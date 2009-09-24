@@ -7,21 +7,21 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 using System.Windows.Forms;
+using System.Xml;
 
 namespace swept
 {
-
     public class ProjectLibrarian
     {
         //  There are two major collections per solution:  The Change and Source File catalogs.
 
         //  The Change Catalog holds things the team wants to improve in this solution.
         internal ChangeCatalog changeCatalog;
-        internal ChangeCatalog savedChangeCatalog;  //  For comparison to know when there are unsaved changes.
+        internal ChangeCatalog savedChangeCatalog;  //  For comparison to find unsaved changes.
 
         //  The Source File Catalog tracks which changes have been completed for which files.
         internal SourceFileCatalog sourceCatalog;
-        internal SourceFileCatalog savedSourceCatalog;  //  For comparison to know when there are unsaved changes.
+        internal SourceFileCatalog savedSourceCatalog;  //  For comparison to find unsaved changes.
 
         internal IDialogPresenter showGUI;
         internal ILibraryPersister persister;
@@ -65,37 +65,20 @@ namespace swept
             SolutionPath = solutionPath;
             XmlPort port = new XmlPort();
 
-            string libraryXmlText = GetLibraryXmlText();
+            XmlDocument libraryDoc = GetLibraryDocument();
 
-            changeCatalog = port.ChangeCatalog_FromText( libraryXmlText );
+            changeCatalog = port.ChangeCatalog_FromXmlDocument( libraryDoc );
 
             savedChangeCatalog = changeCatalog.Clone();
 
-            savedSourceCatalog = port.SourceFileCatalog_FromText( libraryXmlText );
-            savedSourceCatalog.ChangeCatalog = changeCatalog;
-            sourceCatalog = savedSourceCatalog.Clone();
+            sourceCatalog = port.SourceFileCatalog_FromXmlDocument( libraryDoc );
+            sourceCatalog.ChangeCatalog = changeCatalog;
+            savedSourceCatalog = sourceCatalog.Clone();
         }
 
-        private string GetLibraryXmlText()
+        private XmlDocument GetLibraryDocument()
         {
-            // TODO: all this goes into the persister, and the persister learns to read and write.
-            string libraryXmlText = null;
-            try
-            {
-                libraryXmlText = persister.LoadLibrary(LibraryPath);
-            }
-            catch
-            {
-                libraryXmlText = 
-@"<SweptProjectData>
-<ChangeCatalog>    
-</ChangeCatalog>
-<SourceFileCatalog>
-</SourceFileCatalog>
-</SweptProjectData>"; 
-            }
-
-            return libraryXmlText;
+            return persister.LoadLibrary( LibraryPath );
         }
 
         private void SaveFile(string fileName)

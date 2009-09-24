@@ -5,12 +5,14 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Collections;
+using System.IO;
+using System.Xml;
 
 namespace swept
 {
     public class LibraryPersister : ILibraryPersister
     {
-        private string _emptyCatalogString = 
+        static internal string _emptyCatalogString = 
 @"<SweptProjectData>
 <ChangeCatalog>
 </ChangeCatalog>
@@ -20,42 +22,39 @@ namespace swept
 
         public void Save(string fileName, string xmlText)
         {
-            throw new NotImplementedException("I can't save to disk yet");
+            //throw new NotImplementedException("I can't save to disk yet");
+
+            //FileInfo fi = new FileInfo( fileName );
+            //TextWriter writer = fi.CreateText();
         }
 
-        public string LoadLibrary( string libraryPath )
+        public XmlDocument LoadLibrary( string libraryPath )
         {
-            throw new NotImplementedException( "I don't load from disk yet" );
+            //throw new NotImplementedException( "I don't load from disk yet" );
 
-            try
+            if (!File.Exists( libraryPath ))
             {
-                // TODO: load file
-                //libraryXmlText = persister.LoadLibrary( LibraryPath );
-            }
-            catch
-            {
-                libraryXmlText =
-emptyCatalogString;
+                XmlDocument emptyDoc = new XmlDocument();
+                emptyDoc.LoadXml( _emptyCatalogString );
+                return emptyDoc;
             }
 
-
-
-
-            /*
-             * Check if file exists
-             * if so, 
-             *      read and return text
-             * If not, 
-             *      return empty catalog text
-             * 
-             * (for the future, perhaps:)
-             * 
-             * if not,
-             *      Dialog "I didn't find one.  Is this new, or do you want to choose a different file location?"
-             *      then either new, or hunt in the other location
-             *
-             */
+            using (XmlTextReader reader = new XmlTextReader( libraryPath ))
+            {
+                try
+                {
+                    XmlDocument doc = new XmlDocument();
+                    doc.Load( reader );
+                    return doc;
+                }
+                catch (XmlException xe)
+                {
+                    string errInvalidXml = "File [{0}] was not valid XML.  Please check its contents.  Details: {1}";
+                    throw new Exception( string.Format( errInvalidXml, libraryPath, xe.Message ) );
+                }
+            }
         }
+        // future:  Pick another location if not found, store that location...somewhere?
 
     }
 }
