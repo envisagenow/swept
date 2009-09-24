@@ -10,15 +10,35 @@ namespace swept
 {
     public class LibraryPersister : ILibraryPersister
     {
+        private string _emptyCatalogString = 
+@"<SweptProjectData>
+<ChangeCatalog>
+</ChangeCatalog>
+<SourceFileCatalog>
+</SourceFileCatalog>
+</SweptProjectData>";
 
         public void Save(string fileName, string xmlText)
         {
             throw new NotImplementedException("I can't save to disk yet");
         }
 
-        public string LoadLibrary(string libraryPath)
+        public string LoadLibrary( string libraryPath )
         {
-            throw new NotImplementedException("I can't save to disk yet");
+            throw new NotImplementedException( "I don't load from disk yet" );
+
+            try
+            {
+                // TODO: load file
+                //libraryXmlText = persister.LoadLibrary( LibraryPath );
+            }
+            catch
+            {
+                libraryXmlText =
+emptyCatalogString;
+            }
+
+
 
 
             /*
