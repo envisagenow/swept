@@ -47,9 +47,10 @@ namespace swept
             //  A self-subscription.  Odd, possibly poor practice...
 
             //  Subscribe to the ChangeWindow's events
-            ChangeWindow.EventChangeAdded += Librarian.Hear_ChangeAdded;
-            ChangeWindow.EventChangeListUpdated += TaskWindow.Hear_ChangeListUpdated;
-            ChangeWindow.EventChangeListUpdated += Librarian.Hear_ChangeListUpdated;
+            ChangeWindow.Event_ChangeAdded += Librarian.Hear_ChangeAdded;
+            ChangeWindow.Event_ChangeListUpdated += TaskWindow.Hear_ChangeListUpdated;
+            ChangeWindow.Event_ChangeListUpdated += Librarian.Hear_ChangeListUpdated;
         }
+
     }
 }

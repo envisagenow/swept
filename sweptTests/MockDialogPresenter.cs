@@ -3,13 +3,21 @@
 //  The MIT License, roughly:  Keep this notice.  Beyond that, do whatever you want with this code.
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace swept.Tests
 {
     class MockDialogPresenter : IDialogPresenter
     {
         public bool KeepHistoricalResponse;
+        public bool StartNewCatalog;
+
+        internal List<string> messages;
+
+        public MockDialogPresenter()
+        {
+            messages = new List<string>();
+        }
+
         #region IDialogPresenter Members
 
         public bool KeepChangeHistory( Change historicalChange )
@@ -21,6 +29,17 @@ namespace swept.Tests
         {
             return KeepHistoricalResponse;
         }
+
+        public bool BadXmlInExpectedLibrary( string libraryPath )
+        {
+            return StartNewCatalog;
+        }
+
+        public void DebugMessage( string message )
+        {
+            messages.Add( message );
+        }
+
         #endregion
     }
 }

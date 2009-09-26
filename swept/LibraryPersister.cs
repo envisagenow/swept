@@ -2,9 +2,6 @@
 //  This software is open source, under the terms of the MIT License.
 //  The MIT License, roughly:  Keep this notice.  Beyond that, do whatever you want with this code.
 using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Collections;
 using System.IO;
 using System.Xml;
 
@@ -12,7 +9,7 @@ namespace swept
 {
     public class LibraryPersister : ILibraryPersister
     {
-        static internal string _emptyCatalogString = 
+        static internal string emptyCatalogText = 
 @"<SweptProjectData>
 <ChangeCatalog>
 </ChangeCatalog>
@@ -20,9 +17,19 @@ namespace swept
 </SourceFileCatalog>
 </SweptProjectData>";
 
+        static internal XmlDocument emptyCatalogDoc
+        {
+            get
+            {
+                var doc = new XmlDocument();
+                doc.LoadXml( emptyCatalogText );
+                return doc;
+            }
+        }
+
         public void Save(string fileName, string xmlText)
         {
-            //throw new NotImplementedException("I can't save to disk yet");
+            throw new NotImplementedException("I can't save to disk yet");
 
             //FileInfo fi = new FileInfo( fileName );
             //TextWriter writer = fi.CreateText();
@@ -30,12 +37,10 @@ namespace swept
 
         public XmlDocument LoadLibrary( string libraryPath )
         {
-            //throw new NotImplementedException( "I don't load from disk yet" );
-
             if (!File.Exists( libraryPath ))
             {
                 XmlDocument emptyDoc = new XmlDocument();
-                emptyDoc.LoadXml( _emptyCatalogString );
+                emptyDoc.LoadXml( emptyCatalogText );
                 return emptyDoc;
             }
 

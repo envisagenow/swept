@@ -2,9 +2,7 @@
 //  This software is open source, under the terms of the MIT License.
 //  The MIT License, roughly:  Keep this notice.  Beyond that, do whatever you want with this code.
 using System.Collections.Generic;
-using System.Text;
 using System;
-using System.Windows.Forms;
 
 namespace swept
 {
@@ -12,6 +10,7 @@ namespace swept
     {
         internal SourceFileCatalog FileCatalog;
         internal ChangeCatalog ChangeCatalog;
+        internal IDialogPresenter _connectGUI;
 
         public String Title
         {
@@ -36,13 +35,16 @@ namespace swept
         }
 
 
-        private List<Task> tasks = new List<Task>();
-        public List<Task> Tasks
+
+        public TaskWindow()
         {
-            get { return tasks; }
+            Tasks = new List<Task>();
+            _connectGUI = new DialogPresenter();
         }
 
+        public List<Task> Tasks { get; private set; }
         public bool Visible { get; set; }
+
         private void ToggleWindowVisibility()
         {
             Visible = !Visible;
@@ -50,7 +52,7 @@ namespace swept
 
         public void ToggleTaskCompletion(int index)
         {
-            Task task = this.tasks[index];
+            Task task = this.Tasks[index];
             task.Completed = !task.Completed;
             CurrentFile.AdjustCompletionFrom(task);
         }
@@ -81,14 +83,14 @@ namespace swept
 
         private void ListTasks(List<Change> changes)
         {
-            tasks.Clear();
+            Tasks.Clear();
             if (changes == null) return;
 
             foreach (Change change in changes)
             {
                 Task entry = Task.FromChange(change);
                 entry.Completed = CurrentFile.Completions.Exists(c => c.ChangeID == entry.ID);
-                tasks.Add(entry);
+                Tasks.Add(entry);
             }
         }
 
@@ -107,7 +109,7 @@ namespace swept
 
         public void Hear_FileGotFocus(object sender, FileEventArgs args)
         {
-            MessageBox.Show( string.Format( "{0}( {1} )", "TaskWindow.Hear_FileGotFocus", args.Name ) );
+            _connectGUI.DebugMessage( string.Format( "{0}( {1} )", "TaskWindow.Hear_FileGotFocus", args.Name ) );
 
             ShowFile(args.Name);
         }

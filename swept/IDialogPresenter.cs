@@ -2,9 +2,6 @@
 //  This software is open source, under the terms of the MIT License.
 //  The MIT License, roughly:  Keep this notice.  Beyond that, do whatever you want with this code.
 using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Collections;
 
 namespace swept
 {
@@ -12,5 +9,7 @@ namespace swept
     {
         bool KeepChangeHistory( Change historicalChange );
         bool KeepSourceFileHistory( SourceFile historicalFile );
+        bool BadXmlInExpectedLibrary( string libraryPath );
+        void DebugMessage( string message );
     }
 }

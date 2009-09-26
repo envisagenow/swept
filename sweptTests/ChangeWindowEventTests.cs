@@ -13,7 +13,7 @@ namespace swept.Tests
     public class ChangeWindowEventTests
     {
         Starter starter;
-        private TaskWindow taskWindow;
+        private TaskWindow _taskWindow;
         private ChangeWindow changeWindow;
         private string fileName;
         private SourceFile file;
@@ -50,7 +50,9 @@ namespace swept.Tests
             librarian.SolutionPath = "mockpath";
             librarian.Persist();
 
-            taskWindow = adapter.taskWindow;
+            _taskWindow = adapter.taskWindow;
+            _taskWindow._connectGUI = new MockDialogPresenter();
+
             changeWindow = adapter.changeWindow;
         }
 
@@ -58,12 +60,12 @@ namespace swept.Tests
         public void WhenChangeListUpdated_TaskWindow_RefreshesTasks()
         {
             adapter.Raise_FileGotFocus("foo.cs");
-            int initialChangeCount = taskWindow.Tasks.Count;
+            int initialChangeCount = _taskWindow.Tasks.Count;
             changeCat.Add(new Change("Inf09", "Change delegates to lambdas", FileLanguage.CSharp));
 
-            changeWindow.RaiseChangeListUpdated();
+            changeWindow.Raise_ChangeListUpdated();
 
-            Assert.AreEqual(initialChangeCount + 1, taskWindow.Tasks.Count);
+            Assert.AreEqual(initialChangeCount + 1, _taskWindow.Tasks.Count);
         }
 
         [Test]
@@ -72,9 +74,9 @@ namespace swept.Tests
             adapter.Raise_NonSourceGetsFocus();
             changeCat.Add(new Change("Inf09", "Change delegates to lambdas", FileLanguage.CSharp));
 
-            changeWindow.RaiseChangeListUpdated();
+            changeWindow.Raise_ChangeListUpdated();
 
-            Assert.AreEqual(0, taskWindow.Tasks.Count);
+            Assert.AreEqual(0, _taskWindow.Tasks.Count);
         }
 
         [Test]
@@ -83,7 +85,7 @@ namespace swept.Tests
             Assert.IsTrue( librarian.IsSaved );
             changeCat.Add(new Change("Inf09", "Change delegates to lambdas", FileLanguage.CSharp));
             Assert.IsFalse(librarian.IsSaved);
-            changeWindow.RaiseChangeListUpdated();
+            changeWindow.Raise_ChangeListUpdated();
             Assert.IsTrue(librarian.IsSaved);
         }
 
@@ -93,13 +95,13 @@ namespace swept.Tests
             changeCat.Remove("14");
 
             MockDialogPresenter mockGUI = new MockDialogPresenter();
-            adapter.Librarian.showGUI = mockGUI;
+            adapter.Librarian._connectGUI = mockGUI;
             //  When the dialog is presented, the 'user' responds 'keep', for this test
             mockGUI.KeepHistoricalResponse = true;
 
             // Add Change 14 back
             Change change = new Change("14", "indentation cleanup", FileLanguage.CSharp);
-            changeWindow.RaiseChangeAdded( change );
+            changeWindow.Raise_ChangeAdded( change );
 
             // Bari has kept the completion of Change 14
             SourceFile savedBari = librarian.savedSourceCatalog.Fetch("bari.cs");
@@ -113,13 +115,13 @@ namespace swept.Tests
             changeCat.Remove("14");
 
             MockDialogPresenter mockGUI = new MockDialogPresenter();
-            adapter.Librarian.showGUI = mockGUI;
+            adapter.Librarian._connectGUI = mockGUI;
             //  When the dialog is presented, the 'user' responds 'remove', for this test
             mockGUI.KeepHistoricalResponse = false;
 
             // Add Change 14 back
             Change change = new Change("14", "indentation cleanup", FileLanguage.CSharp);
-            changeWindow.RaiseChangeAdded(change);
+            changeWindow.Raise_ChangeAdded(change);
 
             adapter.Raise_FileSaved("bari.cs");
 
@@ -131,12 +133,12 @@ namespace swept.Tests
         public void WhenChangeRemoved_TaskWindow_RefreshesTasks()
         {
             adapter.Raise_FileGotFocus("foo.cs");
-            int initialChangeCount = taskWindow.Tasks.Count;
+            int initialChangeCount = _taskWindow.Tasks.Count;
             changeCat.Remove("14");
 
-            changeWindow.RaiseChangeListUpdated();
+            changeWindow.Raise_ChangeListUpdated();
 
-            Assert.AreEqual(initialChangeCount - 1, taskWindow.Tasks.Count);
+            Assert.AreEqual(initialChangeCount - 1, _taskWindow.Tasks.Count);
         }
     }
 }

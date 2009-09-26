@@ -13,19 +13,32 @@ namespace swept.Tests
     {
         public string FileName { get; set; }
         public XmlDocument LibraryDoc { get; set; }
-        public bool ThrowExceptionWhenLoadingLibrary;
+        public bool ThrowBadXmlException;
+
+        public MockLibraryPersister()
+        {
+            setDocFromText( LibraryPersister.emptyCatalogText );
+        }
 
         public void Save(string fileName, string xmlText)
         {
             FileName = fileName;
+            setDocFromText( xmlText );
+        }
+
+        private void setDocFromText( string xmlText )
+        {
             LibraryDoc = new XmlDocument();
             LibraryDoc.LoadXml( xmlText );
         }
-
-        public XmlDocument LoadLibrary(string libraryPath)
+        
+        public XmlDocument LoadLibrary( string libraryPath )
         {
-            if (ThrowExceptionWhenLoadingLibrary)
+            if( ThrowBadXmlException )
+            {
+                ThrowBadXmlException = false;
                 throw new XmlException();
+            }
 
             return LibraryDoc;
         }

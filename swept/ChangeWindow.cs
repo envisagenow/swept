@@ -2,8 +2,6 @@
 //  This software is open source, under the terms of the MIT License.
 //  The MIT License, roughly:  Keep this notice.  Beyond that, do whatever you want with this code.
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace swept
 {
@@ -22,20 +20,20 @@ namespace swept
         }
 
         #region Publish events
-        public event EventHandler<ChangeEventArgs> EventChangeAdded;
-        public void RaiseChangeAdded(Change change)
+        public event EventHandler<ChangeEventArgs> Event_ChangeAdded;
+        public void Raise_ChangeAdded(Change change)
         {
-            if (EventChangeAdded != null)
-                EventChangeAdded(this, new ChangeEventArgs { change = change });
+            if (Event_ChangeAdded != null)
+                Event_ChangeAdded(this, new ChangeEventArgs { change = change });
 
-            RaiseChangeListUpdated();
+            Raise_ChangeListUpdated();
         }
 
-        public event EventHandler EventChangeListUpdated;
-        public void RaiseChangeListUpdated()
+        public event EventHandler Event_ChangeListUpdated;
+        public void Raise_ChangeListUpdated()
         {
-            if (EventChangeListUpdated != null)
-                EventChangeListUpdated(this, new EventArgs());
+            if (Event_ChangeListUpdated != null)
+                Event_ChangeListUpdated(this, new EventArgs());
         }
         #endregion
     }

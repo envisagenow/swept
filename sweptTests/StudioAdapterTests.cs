@@ -28,6 +28,8 @@ namespace swept.Tests
         {
             starter = new Starter();
             starter.Start();
+            var preparer = new TestPreparer();
+            preparer.ShiftStarterToMocks( starter );
             
             librarian = starter.Librarian;
             adapter = starter.Adapter;
@@ -43,9 +45,6 @@ namespace swept.Tests
             file = new SourceFile(fileName);
             file.Completions.Add(new Completion(indentID));
             fileCat.Files.Add(file);
-
-            MockLibraryPersister writer = new MockLibraryPersister();
-            librarian.persister = writer;
 
             librarian.savedSourceCatalog = fileCat.Clone();
             librarian.SolutionPath = "mockpath";

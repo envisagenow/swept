@@ -11,18 +11,20 @@ namespace swept.Tests
     [TestFixture]
     public class ProjectLibrarianTests
     {
-        private string _HerePath;
         private ProjectLibrarian Horace;
-        private MockLibraryPersister persister;
+
+        private string _testingSolutionPath;
+        private MockLibraryPersister _persister;
 
         [SetUp]
         public void Setup()
         {
-            _HerePath = @"f:\over\here.sln";
-            Horace = new ProjectLibrarian { SolutionPath = _HerePath };
+            _testingSolutionPath = @"f:\over\here.sln";
+            Horace = new ProjectLibrarian { SolutionPath = _testingSolutionPath };
 
-            persister = new MockLibraryPersister();
-            Horace.persister = persister;
+            _persister = new MockLibraryPersister();
+            Horace.persister = _persister;
+            Horace._connectGUI = new MockDialogPresenter();
         }
 
         private static FileEventArgs Get_testfile_FileEventArgs()
@@ -35,43 +37,42 @@ namespace swept.Tests
         [Test]
         public void Swept_Library_sought_in_expected_location()
         {
-            Assert.AreEqual(@"f:\over\here.swept.library", Horace.LibraryPath);
-            persister.ThrowExceptionWhenLoadingLibrary = true;
+            Assert.AreEqual( @"f:\over\here.swept.library", Horace.LibraryPath );
 
-            Horace.Hear_SolutionOpened(this, Get_testfile_FileEventArgs());
-            Assert.AreEqual(@"d:\code\CoolProject\mySolution.swept.library", Horace.LibraryPath);
+            Horace.Hear_SolutionOpened( this, Get_testfile_FileEventArgs() );
+            Assert.AreEqual( @"d:\code\CoolProject\mySolution.swept.library", Horace.LibraryPath );
         }
 
         [Test]
         public void OpenSolution_finding_Swept_Library_will_load_SourceFiles()
         {
-            persister.LibraryDoc = new XmlDocument();
-            persister.LibraryDoc.LoadXml( TestProbe.SingleFileLibrary_text );
-            Horace.Hear_SolutionOpened(this, Get_testfile_FileEventArgs());
+            _persister.LibraryDoc = new XmlDocument();
+            _persister.LibraryDoc.LoadXml( TestProbe.SingleFileLibrary_text );
+            Horace.Hear_SolutionOpened( this, Get_testfile_FileEventArgs() );
 
-            SourceFile someFile = Horace.savedSourceCatalog.Fetch("some_file.cs");
+            SourceFile someFile = Horace.savedSourceCatalog.Fetch( "some_file.cs" );
 
-            Assert.AreEqual(1, someFile.Completions.Count);
+            Assert.AreEqual( 1, someFile.Completions.Count );
         }
 
         [Test]
         public void OpenSolution_finding_Swept_Library_will_load_Changes()
         {
-            persister.LibraryDoc = new XmlDocument();
-            persister.LibraryDoc.LoadXml( TestProbe.SingleChangeLibrary_text );
-            Horace.Hear_SolutionOpened(this, Get_testfile_FileEventArgs());
+            _persister.LibraryDoc = new XmlDocument();
+            _persister.LibraryDoc.LoadXml( TestProbe.SingleChangeLibrary_text );
+            Horace.Hear_SolutionOpened( this, Get_testfile_FileEventArgs() );
 
-            Assert.AreEqual(1, Horace.changeCatalog.changes.Count);
+            Assert.AreEqual( 1, Horace.changeCatalog.changes.Count );
             Change change = Horace.changeCatalog.changes["30-Persist"];
             Assert.AreEqual( "Update to use persister", change.Description );
-            Assert.AreEqual(FileLanguage.CSharp, change.Language);
+            Assert.AreEqual( FileLanguage.CSharp, change.Language );
         }
 
         [Test]
         public void OpenSolution_with_no_Swept_Library_will_start_smoothly()
         {
-            persister.LibraryDoc = new XmlDocument();
-            persister.LibraryDoc.LoadXml( LibraryPersister._emptyCatalogString );
+            _persister.LibraryDoc = new XmlDocument();
+            _persister.LibraryDoc.LoadXml( LibraryPersister.emptyCatalogText );
 
             Horace.Hear_SolutionOpened( this, Get_testfile_FileEventArgs() );
 
@@ -80,33 +81,55 @@ namespace swept.Tests
         }
 
         [Test]
-        public void OpenSolution_with_invalid_xml_will_start_smoothly()
+        public void OpenSolution_with_invalid_xml_UserChoice_new_library()
         {
-            persister.ThrowExceptionWhenLoadingLibrary = true;
+            _persister.ThrowBadXmlException = true;
+
+            var mockGui = new MockDialogPresenter();
+            Horace._connectGUI = mockGui;
+            mockGui.StartNewCatalog = true;
 
             Horace.Hear_SolutionOpened( this, Get_testfile_FileEventArgs() );
 
             Assert.AreEqual( 0, Horace.changeCatalog.changes.Count );
             Assert.AreEqual( 0, Horace.sourceCatalog.Files.Count );
+        }
+
+        [Test, ExpectedException]
+        public void OpenSolution_with_invalid_xml_UserChoice_shutdown_swept()
+        {
+            _persister.ThrowBadXmlException = true;
+
+            var mockGui = new MockDialogPresenter();
+            Horace._connectGUI = mockGui;
+            mockGui.StartNewCatalog = false;
+
+            Horace.Hear_SolutionOpened( this, Get_testfile_FileEventArgs() );
         }
 
         [Test]
         public void SaveSolution_will_persist_all_unsaved_SourceFiles()
         {
             string someFileName = "some_file.cs";
-            SourceFile someFile = new SourceFile(someFileName);
-            someFile.AddNewCompletion("007");
-            Horace.sourceCatalog.Add(someFile);
+            SourceFile someFile = new SourceFile( someFileName );
+            someFile.AddNewCompletion( "007" );
+            Horace.sourceCatalog.Add( someFile );
 
-            Horace.Hear_SolutionSaved(this, new EventArgs());            
+            Horace.Hear_SolutionSaved( this, new EventArgs() );
 
-            Assert.AreEqual(TestProbe.SingleFileLibrary_text, persister.LibraryDoc);
+            Assert.AreEqual( toOuterXml( TestProbe.SingleFileLibrary_text ), _persister.LibraryDoc.OuterXml );
+        }
+
+        [Test, Ignore]
+        public void RenameSolution_will_rename_Library_file()
+        {
+            // TODO: RenameSolution_will_rename_Library_file
         }
 
         [Test]
         public void Can_set_SolutionPath()
         {
-            Assert.AreEqual( _HerePath, Horace.SolutionPath );
+            Assert.AreEqual( _testingSolutionPath, Horace.SolutionPath );
 
             string myPath = @"c:\my\project.sln";
             Horace.SolutionPath = myPath;
@@ -125,20 +148,20 @@ namespace swept.Tests
         public void SaveFile_persists_file_Completions()
         {
             string someFileName = "some_file.cs";
-            SourceFile someFile = new SourceFile(someFileName);
-            someFile.AddNewCompletion("007");
-            Horace.sourceCatalog.Add(someFile);
+            SourceFile someFile = new SourceFile( someFileName );
+            someFile.AddNewCompletion( "007" );
+            Horace.sourceCatalog.Add( someFile );
 
             FileEventArgs args = new FileEventArgs { Name = someFileName };
-            Horace.Hear_FileSaved(this, args);
+            Horace.Hear_FileSaved( this, args );
 
-            Assert.AreEqual(TestProbe.SingleFileLibrary_text, persister.LibraryDoc);
+            Assert.AreEqual( toOuterXml( TestProbe.SingleFileLibrary_text ), _persister.LibraryDoc.OuterXml );
         }
 
         [Test]
         public void Persist_saves_ChangeCatalog()
         {
-            Horace.changeCatalog.Add(new Change("Uno", "Eliminate profanity from error messages.", FileLanguage.CSharp));
+            Horace.changeCatalog.Add( new Change( "Uno", "Eliminate profanity from error messages.", FileLanguage.CSharp ) );
             Horace.Persist();
 
             string expectedXmlText =
@@ -150,8 +173,16 @@ namespace swept.Tests
 </SourceFileCatalog>
 </SweptProjectData>";
 
-            Assert.AreEqual(expectedXmlText, persister.LibraryDoc);
+            Assert.AreEqual( toOuterXml( expectedXmlText ), _persister.LibraryDoc.OuterXml );
         }
+
+        private string toOuterXml( string text )
+        {
+            var doc = new XmlDocument();
+            doc.LoadXml( text );
+            return doc.OuterXml;
+        }
+
 
         [Test]
         public void When_ChangeCatalog_altered_Librarian_reports_not_saved()
@@ -200,56 +231,56 @@ namespace swept.Tests
         [Test]
         public void Can_AddChange()
         {
-            Assert.AreEqual(0, Horace.changeCatalog.changes.Count);
+            Assert.AreEqual( 0, Horace.changeCatalog.changes.Count );
 
-            Change change = new Change("14", "here I am", FileLanguage.CSharp);
-            Horace.Hear_ChangeAdded(this, new ChangeEventArgs { change = change });
+            Change change = new Change( "14", "here I am", FileLanguage.CSharp );
+            Horace.Hear_ChangeAdded( this, new ChangeEventArgs { change = change } );
 
-            Assert.AreEqual(1, Horace.changeCatalog.changes.Count);
+            Assert.AreEqual( 1, Horace.changeCatalog.changes.Count );
         }
 
         [Test]
         public void AddChange_can_keep_historical_Completions()
         {
-            Change historicalChange = new Change("14", "here I am", FileLanguage.CSharp);
-            Horace.Hear_ChangeAdded(this, new ChangeEventArgs { change = historicalChange });
-            SourceFile foo = new SourceFile("foo.cs");
+            Change historicalChange = new Change( "14", "here I am", FileLanguage.CSharp );
+            Horace.Hear_ChangeAdded( this, new ChangeEventArgs { change = historicalChange } );
+            SourceFile foo = new SourceFile( "foo.cs" );
             foo.Language = FileLanguage.CSharp;
-            Horace.sourceCatalog.Add(foo);
-            foo.Completions.Add(new Completion("14"));
+            Horace.sourceCatalog.Add( foo );
+            foo.Completions.Add( new Completion( "14" ) );
 
-            Horace.changeCatalog.Remove("14");
+            Horace.changeCatalog.Remove( "14" );
 
             //  In this case, the user chooses to keep history.
             MockDialogPresenter talker = new MockDialogPresenter();
             talker.KeepHistoricalResponse = true;
-            Horace.showGUI = talker;
+            Horace._connectGUI = talker;
 
-            Horace.Hear_ChangeAdded(this, new ChangeEventArgs { change = historicalChange });
+            Horace.Hear_ChangeAdded( this, new ChangeEventArgs { change = historicalChange } );
 
-            Assert.AreEqual(1, foo.Completions.Count);
+            Assert.AreEqual( 1, foo.Completions.Count );
         }
 
         [Test]
         public void AddChange_can_discard_historical_Completions()
         {
-            Change historicalChange = new Change("14", "here I am", FileLanguage.CSharp);
-            Horace.Hear_ChangeAdded(this, new ChangeEventArgs { change = historicalChange });
-            SourceFile foo = new SourceFile("foo.cs");
+            Change historicalChange = new Change( "14", "here I am", FileLanguage.CSharp );
+            Horace.Hear_ChangeAdded( this, new ChangeEventArgs { change = historicalChange } );
+            SourceFile foo = new SourceFile( "foo.cs" );
             foo.Language = FileLanguage.CSharp;
-            Horace.sourceCatalog.Add(foo);
-            foo.Completions.Add(new Completion("14"));
+            Horace.sourceCatalog.Add( foo );
+            foo.Completions.Add( new Completion( "14" ) );
 
-            Horace.changeCatalog.Remove("14");
+            Horace.changeCatalog.Remove( "14" );
 
             //  In this case, the user chooses to discard history.
             MockDialogPresenter talker = new MockDialogPresenter();
             talker.KeepHistoricalResponse = false;
-            Horace.showGUI = talker;
+            Horace._connectGUI = talker;
 
-            Horace.Hear_ChangeAdded(this, new ChangeEventArgs { change = historicalChange });
+            Horace.Hear_ChangeAdded( this, new ChangeEventArgs { change = historicalChange } );
 
-            Assert.AreEqual(0, foo.Completions.Count);
+            Assert.AreEqual( 0, foo.Completions.Count );
         }
 
 

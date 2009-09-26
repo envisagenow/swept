@@ -20,7 +20,7 @@ namespace swept.Tests
 
 
         [SetUp]
-        public void can_create()
+        public void within_the_context_of()
         {
             fileCat = new SourceFileCatalog();
             blackCat = new SourceFileCatalog();
@@ -92,8 +92,6 @@ namespace swept.Tests
             Assert.AreEqual( 0, savedBari.Completions.Count );
         }
 
-
-
         [Test]
         public void can_Clone_FileCatalog()
         {
@@ -131,7 +129,7 @@ namespace swept.Tests
         }
 
         [Test]
-        public void CanCollectSourceFiles()
+        public void Can_collect_SourceFiles()
         {
             SourceFile entry = new SourceFile( "foo.cs" );
             fileCat.Files.Add( entry );

@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 using NUnit.Framework;
 using swept;
 
@@ -18,27 +16,14 @@ namespace swept.Tests
             starter.Start();
         }
 
-        // TODO: reimplement as actually changing a task completion, then seeing it report unsaved change
-        [Test]
-        public void when_Task_Completion_changed_Library_has_an_unsaved_change()
-        {
-            ProjectLibrarian librarian = starter.Librarian;
-            TaskWindow window = starter.TaskWindow;
-
-            Assert.IsTrue(librarian.IsSaved);
-
-            window.ToggleTaskCompletion(0);
-
-            Assert.IsFalse( librarian.IsSaved );
-        }
-
         [Test]
         public void when_TaskWindow_toggled_visibility_changed()
         {
-            starter.TaskWindow.Visible = false;
-            starter.TaskWindow.Raise_TaskWindowToggled();
+            TaskWindow tasks = starter.TaskWindow;
+            tasks.Visible = false;
+            tasks.Raise_TaskWindowToggled();
 
-            Assert.IsTrue(starter.TaskWindow.Visible);
+            Assert.IsTrue( tasks.Visible );
         }
     }
 }

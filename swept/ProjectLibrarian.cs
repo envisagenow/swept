@@ -2,11 +2,8 @@
 //  This software is open source, under the terms of the MIT License.
 //  The MIT License, roughly:  Keep this notice.  Beyond that, do whatever you want with this code.
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Text;
 using System.IO;
-using System.Windows.Forms;
 using System.Xml;
 
 namespace swept
@@ -23,7 +20,7 @@ namespace swept
         internal SourceFileCatalog sourceCatalog;
         internal SourceFileCatalog savedSourceCatalog;  //  For comparison to find unsaved changes.
 
-        internal IDialogPresenter showGUI;
+        internal IDialogPresenter _connectGUI;
         internal ILibraryPersister persister;
         public string SolutionPath { get; internal set; }
         public string LibraryPath
@@ -37,7 +34,7 @@ namespace swept
             savedSourceCatalog = new SourceFileCatalog();
             savedChangeCatalog = new ChangeCatalog();
             changeCatalog = new ChangeCatalog();
-            showGUI = new DialogPresenter();
+            _connectGUI = new DialogPresenter();
             persister = new LibraryPersister();
         }
 
@@ -78,12 +75,31 @@ namespace swept
 
         private XmlDocument GetLibraryDocument()
         {
-            return persister.LoadLibrary( LibraryPath );
+            XmlDocument doc;
+            try
+            {
+                doc = persister.LoadLibrary( LibraryPath );
+            }
+            catch( XmlException )
+            {
+                if( _connectGUI.BadXmlInExpectedLibrary( LibraryPath ) )
+                {
+                    persister.Save( LibraryPath, LibraryPersister.emptyCatalogText );
+                    doc = persister.LoadLibrary( LibraryPath );
+                }
+                else
+                {
+                    throw;
+                    // future: shut down addin
+                }
+            }
+
+            return doc;
         }
 
         private void SaveFile(string fileName)
         {
-            MessageBox.Show( String.Format( "Raise_FileSaved( {0} )", fileName ) );
+            _connectGUI.DebugMessage( string.Format( "Raise_FileSaved( {0} )", fileName ) );
 
             SourceFile workingFile = sourceCatalog.Fetch(fileName);
             SourceFile diskFile = savedSourceCatalog.Fetch(fileName);
@@ -147,7 +163,7 @@ namespace swept
             List<SourceFile> filesWithHistory = sourceCatalog.Files.FindAll(file => file.Completions.Exists(c => c.ChangeID == change.ID));
             if (filesWithHistory.Count > 0)
             {
-                bool keep = showGUI.KeepChangeHistory(change);
+                bool keep = _connectGUI.KeepChangeHistory(change);
 
                 //if discard, sweep them out of the file catalogs.
                 if (!keep)
@@ -171,6 +187,7 @@ namespace swept
             Persist();
         }
 
+        // TODO: remove all sender args from events
         #region Event Listeners
         public void Hear_SolutionOpened(object sender, FileEventArgs arg)
         {
