@@ -3,8 +3,6 @@
 //  The MIT License, roughly:  Keep this notice.  Beyond that, do whatever you want with this code.
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
-using System.Xml;
 using System;
 
 namespace swept

@@ -1,9 +1,4 @@
-using NUnit.Framework;
-using swept;
-using System.Collections.Generic;
-using System.Text;
 using System;
-using System.Xml;
 
 namespace swept.Tests
 {

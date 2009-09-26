@@ -3,10 +3,7 @@
 //  The MIT License, roughly:  Keep this notice.  Beyond that, do whatever you want with this code.
 using NUnit.Framework;
 using swept;
-using System.Collections.Generic;
-using System.Text;
 using System;
-using System.Xml;
 
 namespace swept.Tests
 {
