@@ -8,9 +8,9 @@ namespace swept
 {
     public class TaskWindow
     {
-        internal SourceFileCatalog FileCatalog;
-        internal ChangeCatalog ChangeCatalog;
-        internal IDialogPresenter _connectGUI;
+        internal SourceFileCatalog _fileCatalog;
+        internal ChangeCatalog _changeCatalog;
+        internal IGUIAdapter _GUIAdapter;
 
         public String Title
         {
@@ -39,7 +39,7 @@ namespace swept
         public TaskWindow()
         {
             Tasks = new List<Task>();
-            _connectGUI = new DialogPresenter();
+            _GUIAdapter = new GUIAdapter();
         }
 
         public List<Task> Tasks { get; private set; }
@@ -59,12 +59,12 @@ namespace swept
 
         private void ShowFile(string fileName)
         {
-            ShowFile(FileCatalog.Fetch(fileName));
+            ShowFile(_fileCatalog.Fetch(fileName));
         }
 
         public void ShowFile(SourceFile file)
         {
-            List<Change> changes = ChangeCatalog.GetChangesForFile(file);
+            List<Change> changes = _changeCatalog.GetChangesForFile(file);
             ShowFile(file, changes);
         }
 
@@ -77,7 +77,7 @@ namespace swept
 
         public void RefreshChangeList()
         {
-            List<Change> changes = ChangeCatalog.GetChangesForFile( CurrentFile );
+            List<Change> changes = _changeCatalog.GetChangesForFile( CurrentFile );
             ListTasks(changes);
         }
 
@@ -109,7 +109,7 @@ namespace swept
 
         public void Hear_FileGotFocus(object sender, FileEventArgs args)
         {
-            _connectGUI.DebugMessage( string.Format( "{0}( {1} )", "TaskWindow.Hear_FileGotFocus", args.Name ) );
+            _GUIAdapter.DebugMessage( string.Format( "{0}( {1} )", "TaskWindow.Hear_FileGotFocus", args.Name ) );
 
             ShowFile(args.Name);
         }

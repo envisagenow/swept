@@ -16,8 +16,8 @@ namespace swept
 {0}
 {1}
 </SweptProjectData>",
-                ToText( librarian.changeCatalog ),
-                ToText(librarian.savedSourceCatalog)
+                ToText( librarian._changeCatalog ),
+                ToText(librarian._savedSourceCatalog)
             );
         }
 

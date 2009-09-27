@@ -66,8 +66,9 @@
     <Compile Include="ChangeWindowTests.cs" />
     <Compile Include="EventExperiments.cs" />
     <Compile Include="IntegrationTests.cs" />
-    <Compile Include="MockDialogPresenter.cs" />
-    <Compile Include="MockLibraryPersister.cs" />
+    <Compile Include="MockGUIAdapter.cs" />
+    <Compile Include="MockFSAdapter.cs" />
+    <Compile Include="ProjectLibrarianHistoryTests.cs" />
     <Compile Include="StarterTests.cs" />
     <Compile Include="TaskTests.cs" />
     <Compile Include="ChangeTests.cs" />

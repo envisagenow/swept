@@ -21,14 +21,14 @@ namespace swept
             Adapter.Librarian = Librarian;
 
             TaskWindow = new TaskWindow();
-            TaskWindow.ChangeCatalog = Librarian.changeCatalog;
-            TaskWindow.FileCatalog = Librarian.sourceCatalog;
+            TaskWindow._changeCatalog = Librarian._changeCatalog;
+            TaskWindow._fileCatalog = Librarian._sourceCatalog;
 
             Adapter.taskWindow = TaskWindow;
 
             ChangeWindow = new ChangeWindow();
             Adapter.changeWindow = ChangeWindow;
-            ChangeWindow.ChangeCatalog = Librarian.changeCatalog;
+            ChangeWindow.ChangeCatalog = Librarian._changeCatalog;
 
             //  Subscribe to the StudioAdapter's events
             Adapter.Event_NonSourceGotFocus += TaskWindow.Hear_NonSourceGotFocus;

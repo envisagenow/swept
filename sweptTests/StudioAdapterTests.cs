@@ -31,19 +31,19 @@ namespace swept.Tests
             librarian = starter.Librarian;
             adapter = starter.Adapter;
 
-            changeCat = librarian.changeCatalog;
+            changeCat = librarian._changeCatalog;
             string indentID = "14";
             changeCat.Add(new Change(indentID, "indentation cleanup", FileLanguage.CSharp));
-            librarian.savedChangeCatalog = changeCat.Clone();
+            librarian._savedChangeCatalog = changeCat.Clone();
 
-            fileCat = librarian.sourceCatalog;
+            fileCat = librarian._sourceCatalog;
 
             fileName = "bari.cs";
             file = new SourceFile(fileName);
             file.Completions.Add(new Completion(indentID));
             fileCat.Files.Add(file);
 
-            librarian.savedSourceCatalog = fileCat.Clone();
+            librarian._savedSourceCatalog = fileCat.Clone();
             librarian.SolutionPath = "mockpath";
             librarian.Persist();
 
@@ -174,7 +174,7 @@ namespace swept.Tests
             Assert.IsTrue(TestProbe.IsCompletionSaved(librarian, "bari.cs"));
 
             //check widgets.cs doesn't exist
-            Assert.IsFalse(librarian.savedSourceCatalog.Files.Exists(fi => fi.Name == fileNameUnsaved));
+            Assert.IsFalse(librarian._savedSourceCatalog.Files.Exists(fi => fi.Name == fileNameUnsaved));
         }
 
         [Test]
@@ -197,7 +197,7 @@ namespace swept.Tests
         [Test]
         public void FileFocusChange_IncludesUnsavedCompletions()
         {
-            librarian.changeCatalog.Add( new Change( "728", "Date Normalization", FileLanguage.CSharp ) );
+            librarian._changeCatalog.Add( new Change( "728", "Date Normalization", FileLanguage.CSharp ) );
             adapter.Raise_FileGotFocus( "party_planning.cs" );
 
             Assert.AreEqual( 2, window.Tasks.Count );
@@ -255,7 +255,7 @@ namespace swept.Tests
 
         private void AbandonFileChanges(string fileName)
         {
-            SourceFile file = librarian.sourceCatalog.Fetch( fileName );
+            SourceFile file = librarian._sourceCatalog.Fetch( fileName );
             int startingCompletionsCount = file.Completions.Count;
 
             file.AddNewCompletion( "id_88" );
@@ -284,7 +284,7 @@ namespace swept.Tests
 
             Assert.IsFalse( fileCat.Files.Contains( file ) );
             Assert.IsTrue(librarian.IsSaved);
-            Assert.IsNotNull(librarian.savedSourceCatalog);
+            Assert.IsNotNull(librarian._savedSourceCatalog);
         }
         // TODO: !! add a dialog when re-adding, 'keep or discard history for this source file?'
 
@@ -303,14 +303,14 @@ namespace swept.Tests
             Assert.AreEqual(1, nextGreat.Completions.Count);
 
             Assert.IsTrue(librarian.IsSaved);
-            Assert.IsNotNull(librarian.savedSourceCatalog);
+            Assert.IsNotNull(librarian._savedSourceCatalog);
         }
 
         [Test]
         public void WhenSolutionSaved_DiskCatalogSaved()
         {
             Assert.IsTrue( librarian.IsSaved );
-            librarian.sourceCatalog.Add( new SourceFile( "moo.cs" ) );
+            librarian._sourceCatalog.Add( new SourceFile( "moo.cs" ) );
             Assert.IsFalse(librarian.IsSaved);
             adapter.Raise_SolutionSaved();
             Assert.IsTrue(librarian.IsSaved);

@@ -13,15 +13,15 @@ namespace swept
         //  There are two major collections per solution:  The Change and Source File catalogs.
 
         //  The Change Catalog holds things the team wants to improve in this solution.
-        internal ChangeCatalog changeCatalog;
-        internal ChangeCatalog savedChangeCatalog;  //  For comparison to find unsaved changes.
+        internal ChangeCatalog _changeCatalog;
+        internal ChangeCatalog _savedChangeCatalog;  //  For comparison to find unsaved changes.
 
         //  The Source File Catalog tracks which changes have been completed for which files.
-        internal SourceFileCatalog sourceCatalog;
-        internal SourceFileCatalog savedSourceCatalog;  //  For comparison to find unsaved changes.
+        internal SourceFileCatalog _sourceCatalog;
+        internal SourceFileCatalog _savedSourceCatalog;  //  For comparison to find unsaved changes.
 
-        internal IDialogPresenter _connectGUI;
-        internal ILibraryPersister persister;
+        internal IGUIAdapter _GUIAdapter;
+        internal IFSAdapter _FSAdapter;
         public string SolutionPath { get; internal set; }
         public string LibraryPath
         {
@@ -30,22 +30,22 @@ namespace swept
 
         public ProjectLibrarian()
         {
-            sourceCatalog = new SourceFileCatalog();
-            savedSourceCatalog = new SourceFileCatalog();
-            savedChangeCatalog = new ChangeCatalog();
-            changeCatalog = new ChangeCatalog();
-            _connectGUI = new DialogPresenter();
-            persister = new LibraryPersister();
+            _sourceCatalog = new SourceFileCatalog();
+            _savedSourceCatalog = new SourceFileCatalog();
+            _savedChangeCatalog = new ChangeCatalog();
+            _changeCatalog = new ChangeCatalog();
+            _GUIAdapter = new GUIAdapter();
+            _FSAdapter = new FSAdapter();
         }
 
         internal bool SourceFileCatalogSaved
         {
-            get { return sourceCatalog.Equals( savedSourceCatalog ); }
+            get { return _sourceCatalog.Equals( _savedSourceCatalog ); }
         }
 
         internal bool ChangeCatalogSaved
         {
-            get { return changeCatalog.Equals( savedChangeCatalog ); }
+            get { return _changeCatalog.Equals( _savedChangeCatalog ); }
         }
 
         internal bool IsSaved
@@ -64,13 +64,13 @@ namespace swept
 
             XmlDocument libraryDoc = GetLibraryDocument();
 
-            changeCatalog = port.ChangeCatalog_FromXmlDocument( libraryDoc );
+            _changeCatalog = port.ChangeCatalog_FromXmlDocument( libraryDoc );
 
-            savedChangeCatalog = changeCatalog.Clone();
+            _savedChangeCatalog = _changeCatalog.Clone();
 
-            sourceCatalog = port.SourceFileCatalog_FromXmlDocument( libraryDoc );
-            sourceCatalog.ChangeCatalog = changeCatalog;
-            savedSourceCatalog = sourceCatalog.Clone();
+            _sourceCatalog = port.SourceFileCatalog_FromXmlDocument( libraryDoc );
+            _sourceCatalog.ChangeCatalog = _changeCatalog;
+            _savedSourceCatalog = _sourceCatalog.Clone();
         }
 
         private XmlDocument GetLibraryDocument()
@@ -78,14 +78,14 @@ namespace swept
             XmlDocument doc;
             try
             {
-                doc = persister.LoadLibrary( LibraryPath );
+                doc = _FSAdapter.LoadLibrary( LibraryPath );
             }
             catch( XmlException )
             {
-                if( _connectGUI.BadXmlInExpectedLibrary( LibraryPath ) )
+                if( _GUIAdapter.BadXmlInExpectedLibrary( LibraryPath ) )
                 {
-                    persister.Save( LibraryPath, LibraryPersister.emptyCatalogText );
-                    doc = persister.LoadLibrary( LibraryPath );
+                    _FSAdapter.Save( LibraryPath, FSAdapter.emptyCatalogText );
+                    doc = _FSAdapter.LoadLibrary( LibraryPath );
                 }
                 else
                 {
@@ -99,10 +99,10 @@ namespace swept
 
         private void SaveFile(string fileName)
         {
-            _connectGUI.DebugMessage( string.Format( "Raise_FileSaved( {0} )", fileName ) );
+            _GUIAdapter.DebugMessage( string.Format( "Raise_FileSaved( {0} )", fileName ) );
 
-            SourceFile workingFile = sourceCatalog.Fetch(fileName);
-            SourceFile diskFile = savedSourceCatalog.Fetch(fileName);
+            SourceFile workingFile = _sourceCatalog.Fetch(fileName);
+            SourceFile diskFile = _savedSourceCatalog.Fetch(fileName);
             diskFile.CopyCompletionsFrom(workingFile);
 
             Persist();
@@ -110,14 +110,14 @@ namespace swept
 
         private void PasteFile(string fileName)
         {
-            SourceFile pastedWorkingFile = sourceCatalog.Fetch(fileName);
-            SourceFile pastedDiskFile = savedSourceCatalog.Fetch(fileName);
+            SourceFile pastedWorkingFile = _sourceCatalog.Fetch(fileName);
+            SourceFile pastedDiskFile = _savedSourceCatalog.Fetch(fileName);
 
             string copyPrefix = "Copy of ";
             if (fileName.StartsWith(copyPrefix))
             {
                 string baseFileName = fileName.Substring(copyPrefix.Length);
-                SourceFile baseDiskFile = savedSourceCatalog.Fetch(baseFileName);
+                SourceFile baseDiskFile = _savedSourceCatalog.Fetch(baseFileName);
 
                 pastedDiskFile.CopyCompletionsFrom(baseDiskFile);
             }
@@ -129,10 +129,10 @@ namespace swept
 
         private void SaveFileAs(string oldName, string newName)
         {
-            SourceFile workingOriginalFile = sourceCatalog.Fetch(oldName);
-            SourceFile diskOriginalFile = savedSourceCatalog.Fetch(oldName);
-            SourceFile workingNewFile = sourceCatalog.Fetch(newName);
-            SourceFile diskNewFile = savedSourceCatalog.Fetch(newName);
+            SourceFile workingOriginalFile = _sourceCatalog.Fetch(oldName);
+            SourceFile diskOriginalFile = _savedSourceCatalog.Fetch(oldName);
+            SourceFile workingNewFile = _sourceCatalog.Fetch(newName);
+            SourceFile diskNewFile = _savedSourceCatalog.Fetch(newName);
 
             diskNewFile.CopyCompletionsFrom(workingOriginalFile);
             workingOriginalFile.CopyCompletionsFrom(diskOriginalFile);
@@ -143,27 +143,27 @@ namespace swept
 
         private void AbandonFileChanges(string fileName)
         {
-            SourceFile workingFile = sourceCatalog.Fetch(fileName);
-            SourceFile diskFile = savedSourceCatalog.Fetch(fileName);
+            SourceFile workingFile = _sourceCatalog.Fetch(fileName);
+            SourceFile diskFile = _savedSourceCatalog.Fetch(fileName);
             workingFile.CopyCompletionsFrom(diskFile);
         }
 
         private void DeleteFile(string fileName)
         {
-            sourceCatalog.Delete(fileName);
-            savedSourceCatalog.Delete(fileName);
+            _sourceCatalog.Delete(fileName);
+            _savedSourceCatalog.Delete(fileName);
             Persist();
         }
 
         private void AddChange(Change change)
         {
-            changeCatalog.Add(change);
+            _changeCatalog.Add(change);
 
             //if we have any completions pre-existing for this ID
-            List<SourceFile> filesWithHistory = sourceCatalog.Files.FindAll(file => file.Completions.Exists(c => c.ChangeID == change.ID));
+            List<SourceFile> filesWithHistory = _sourceCatalog.Files.FindAll(file => file.Completions.Exists(c => c.ChangeID == change.ID));
             if (filesWithHistory.Count > 0)
             {
-                bool keep = _connectGUI.KeepChangeHistory(change);
+                bool keep = _GUIAdapter.KeepChangeHistory(change);
 
                 //if discard, sweep them out of the file catalogs.
                 if (!keep)
@@ -175,15 +175,15 @@ namespace swept
 
         private void RenameFile(string oldName, string newName)
         {
-            sourceCatalog.Rename(oldName, newName);
-            savedSourceCatalog.Rename(oldName, newName);
+            _sourceCatalog.Rename(oldName, newName);
+            _savedSourceCatalog.Rename(oldName, newName);
 
             Persist();
         }
 
         private void SaveSolution()
         {
-            savedSourceCatalog = sourceCatalog.Clone();
+            _savedSourceCatalog = _sourceCatalog.Clone();
             Persist();
         }
 
@@ -243,12 +243,12 @@ namespace swept
 
         internal void Persist()
         {
-            savedChangeCatalog = changeCatalog.Clone();
+            _savedChangeCatalog = _changeCatalog.Clone();
 
             var port = new XmlPort();
 
             // TODO: the proper expected name
-            persister.Save("swept.progress.library", port.ToText( this ));
+            _FSAdapter.Save("swept.progress.library", port.ToText( this ));
         }
     }
 }

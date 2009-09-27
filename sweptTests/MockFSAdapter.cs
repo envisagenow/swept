@@ -6,15 +6,15 @@ using System.Xml;
 
 namespace swept.Tests
 {
-    class MockLibraryPersister : ILibraryPersister
+    class MockFSAdapter : IFSAdapter
     {
         public string FileName { get; set; }
         public XmlDocument LibraryDoc { get; set; }
         public bool ThrowBadXmlException;
 
-        public MockLibraryPersister()
+        public MockFSAdapter()
         {
-            setDocFromText( LibraryPersister.emptyCatalogText );
+            setDocFromText( FSAdapter.emptyCatalogText );
         }
 
         public void Save(string fileName, string xmlText)
@@ -31,6 +31,7 @@ namespace swept.Tests
         
         public XmlDocument LoadLibrary( string libraryPath )
         {
+            FileName = libraryPath;
             if( ThrowBadXmlException )
             {
                 ThrowBadXmlException = false;

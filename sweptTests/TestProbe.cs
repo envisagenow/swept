@@ -14,7 +14,7 @@ namespace swept.Tests
 
         public static bool IsCompletionSaved(ProjectLibrarian librarian, string fileName, string changeID)
         {
-            SourceFile file = librarian.savedSourceCatalog.Files.Find(f => f.Name == fileName);
+            SourceFile file = librarian._savedSourceCatalog.Files.Find(f => f.Name == fileName);
             if (file == null) return false;
             return file.Completions.Exists(c => c.ChangeID == changeID);
         }

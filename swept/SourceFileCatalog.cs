@@ -13,7 +13,7 @@ namespace swept
     {
         internal List<SourceFile> Files;
         public ChangeCatalog ChangeCatalog;
-        public IDialogPresenter showGUI;
+        public IGUIAdapter AdaptGUI;
 
         public SourceFileCatalog()
         {
@@ -98,7 +98,7 @@ namespace swept
         {
             if (!foundFile.IsRemoved) return;
 
-            if (!showGUI.KeepSourceFileHistory( foundFile ))
+            if (!AdaptGUI.KeepSourceFileHistory( foundFile ))
             {
                 foundFile.Completions.Clear();
             }

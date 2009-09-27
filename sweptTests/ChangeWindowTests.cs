@@ -30,13 +30,13 @@ namespace swept.Tests
             librarian = starter.Librarian;
             dispatcher = starter.Adapter;
 
-            changeCat = librarian.changeCatalog;
+            changeCat = librarian._changeCatalog;
             string indentID = "14";
             changeCat.Add(new Change(indentID, "indentation cleanup", FileLanguage.CSharp));
 
             bar = new SourceFile("bar.cs");
 
-            fileCat = librarian.sourceCatalog;
+            fileCat = librarian._sourceCatalog;
             fileCat.Files.Add(bar);
 
             taskWindow = dispatcher.taskWindow;

@@ -6,14 +6,14 @@ using System.Collections.Generic;
 
 namespace swept.Tests
 {
-    class MockDialogPresenter : IDialogPresenter
+    class MockGUIAdapter : IGUIAdapter
     {
         public bool KeepHistoricalResponse;
         public bool StartNewCatalog;
 
         internal List<string> messages;
 
-        public MockDialogPresenter()
+        public MockGUIAdapter()
         {
             messages = new List<string>();
         }

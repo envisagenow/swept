@@ -7,7 +7,7 @@ using System.Xml;
 
 namespace swept
 {
-    public class LibraryPersister : ILibraryPersister
+    public class FSAdapter : IFSAdapter
     {
         static internal string emptyCatalogText = 
 @"<SweptProjectData>

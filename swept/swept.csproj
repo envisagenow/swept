@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.21022</ProductVersion>
+    <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{BC619D2C-C72E-4111-9489-E353B858A712}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -61,14 +61,14 @@
     <Compile Include="Change.cs" />
     <Compile Include="ChangeCatalog.cs" />
     <Compile Include="ChangeWindow.cs" />
-    <Compile Include="DialogPresenter.cs" />
+    <Compile Include="GUIAdapter.cs" />
     <Compile Include="StudioAdapter.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="EventArgClasses.cs" />
-    <Compile Include="IDialogPresenter.cs" />
-    <Compile Include="ILibraryPersister.cs" />
-    <Compile Include="LibraryPersister.cs" />
+    <Compile Include="IGUIAdapter.cs" />
+    <Compile Include="IFSAdapter.cs" />
+    <Compile Include="FSAdapter.cs" />
     <Compile Include="Starter.cs" />
     <Compile Include="Task.cs" />
     <Compile Include="Completion.cs" />

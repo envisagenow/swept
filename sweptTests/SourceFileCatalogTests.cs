@@ -52,8 +52,8 @@ namespace swept.Tests
             
             fileCat.Remove( bariFile );
 
-            MockDialogPresenter mockGUI = new MockDialogPresenter();
-            fileCat.showGUI = mockGUI;
+            MockGUIAdapter mockGUI = new MockGUIAdapter();
+            fileCat.AdaptGUI = mockGUI;
 
             //  When the dialog is presented, the 'user' responds 'keep', for this test
             mockGUI.KeepHistoricalResponse = true;
@@ -77,8 +77,8 @@ namespace swept.Tests
 
             fileCat.Remove( bariFile );
 
-            MockDialogPresenter mockGUI = new MockDialogPresenter();
-            fileCat.showGUI = mockGUI;
+            MockGUIAdapter mockGUI = new MockGUIAdapter();
+            fileCat.AdaptGUI = mockGUI;
 
             //  When the dialog is presented, the 'user' responds 'keep', for this test
             mockGUI.KeepHistoricalResponse = false;

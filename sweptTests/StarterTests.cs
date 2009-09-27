@@ -32,7 +32,7 @@ namespace swept.Tests
         {
             ProjectLibrarian lib = starter.Librarian;
             Assert.IsNotNull(lib);
-            Assert.IsNotNull(lib.changeCatalog);
+            Assert.IsNotNull(lib._changeCatalog);
         }
     }
 }
