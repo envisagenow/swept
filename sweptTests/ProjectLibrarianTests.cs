@@ -78,32 +78,32 @@ namespace swept.Tests
             Assert.AreEqual( 0, Horace._sourceCatalog.Files.Count );
         }
 
-        [Test]
-        public void OpenSolution_with_invalid_xml_UserChoice_new_library()
-        {
-            _FSAdapter.ThrowBadXmlException = true;
+        //[Test]
+        //public void OpenSolution_with_invalid_xml_UserChoice_new_library()
+        //{
+        //    _FSAdapter.ThrowBadXmlException = true;
 
-            var mockGui = new MockGUIAdapter();
-            Horace._GUIAdapter = mockGui;
-            mockGui.StartNewCatalog = true;
+        //    var mockGui = new MockGUIAdapter();
+        //    Horace._GUIAdapter = mockGui;
+        //    mockGui.StartNewCatalog = true;
 
-            Horace.Hear_SolutionOpened( this, Get_testfile_FileEventArgs() );
+        //    Horace.Hear_SolutionOpened( this, Get_testfile_FileEventArgs() );
 
-            Assert.AreEqual( 0, Horace._changeCatalog.changes.Count );
-            Assert.AreEqual( 0, Horace._sourceCatalog.Files.Count );
-        }
+        //    Assert.AreEqual( 0, Horace._changeCatalog.changes.Count );
+        //    Assert.AreEqual( 0, Horace._sourceCatalog.Files.Count );
+        //}
 
-        [Test, ExpectedException]
-        public void OpenSolution_with_invalid_xml_UserChoice_shutdown_swept()
-        {
-            _FSAdapter.ThrowBadXmlException = true;
+        //[Test, ExpectedException]
+        //public void OpenSolution_with_invalid_xml_UserChoice_shutdown_swept()
+        //{
+        //    _FSAdapter.ThrowBadXmlException = true;
 
-            var mockGui = new MockGUIAdapter();
-            Horace._GUIAdapter = mockGui;
-            mockGui.StartNewCatalog = false;
+        //    var mockGui = new MockGUIAdapter();
+        //    Horace._GUIAdapter = mockGui;
+        //    mockGui.StartNewCatalog = false;
 
-            Horace.Hear_SolutionOpened( this, Get_testfile_FileEventArgs() );
-        }
+        //    Horace.Hear_SolutionOpened( this, Get_testfile_FileEventArgs() );
+        //}
 
         [Test]
         public void SaveSolution_will_persist_all_unsaved_SourceFiles()

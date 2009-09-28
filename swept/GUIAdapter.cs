@@ -22,13 +22,11 @@ namespace swept
             return (result == DialogResult.Yes);
         }
 
-        public bool BadXmlInExpectedLibrary( string libraryPath )
+        public void BadXmlInExpectedLibrary( string libraryPath )
         {
-            //TODO:  Work out choices
-            DialogResult result = MessageBox.Show(
-                "The XML in the Swept library is invalid.  Eventually this dialog will let you choose an approach to handling that.", 
-                "", MessageBoxButtons.OKCancel );
-            return (result == DialogResult.OK);
+            MessageBox.Show(
+                "The XML in the Swept library is invalid.  Swept will shut down now.", 
+                "", MessageBoxButtons.OK );
         }
 
         public void DebugMessage( string message )

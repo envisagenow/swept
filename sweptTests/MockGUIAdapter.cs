@@ -9,7 +9,6 @@ namespace swept.Tests
     class MockGUIAdapter : IGUIAdapter
     {
         public bool KeepHistoricalResponse;
-        public bool StartNewCatalog;
 
         internal List<string> messages;
 
@@ -30,9 +29,10 @@ namespace swept.Tests
             return KeepHistoricalResponse;
         }
 
-        public bool BadXmlInExpectedLibrary( string libraryPath )
+        public void BadXmlInExpectedLibrary( string libraryPath )
         {
-            return StartNewCatalog;
+            // TODO: throw exception based on switch
+            // ...then write tests that catch that the addin is shut down correctly.
         }
 
         public void DebugMessage( string message )

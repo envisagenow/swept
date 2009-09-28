@@ -59,17 +59,15 @@ namespace swept
 
         public void Add(Change change)
         {
-            //IsDirty = true;
             changes.Add( change.ID, change);
         }
 
         public void Remove(string changeID)
         {
-            //IsDirty = true;
             changes.Remove( changeID );
         }
 
-        // TODO: Edit a Change
+        // Future: Edit a Change
 
         public List<Change> FindAll(Predicate<Change> match)
         {

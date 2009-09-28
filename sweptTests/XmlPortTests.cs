@@ -2,7 +2,9 @@
 //  This software is open source, under the terms of the MIT License.
 //  The MIT License, roughly:  Keep this notice.  Beyond that, do whatever you want with this code.
 using System;
+using System.Xml.Linq;
 using NUnit.Framework;
+using System.Xml;
 
 namespace swept.Tests
 {
@@ -21,10 +23,7 @@ namespace swept.Tests
         public void Completion_ToXmlText()
         {
             Completion comp = new Completion("cr001");
-            string text = port.ToText(comp);
-            
-            string expectedXmlText = "        <Completion ID='cr001' />\r\n";
-            Assert.AreEqual(expectedXmlText, text);
+            Assert.AreEqual("        <Completion ID='cr001' />\r\n", port.ToText(comp));
         }
 
         [Test]
@@ -139,6 +138,11 @@ namespace swept.Tests
             Assert.AreEqual(expectedXml, port.ToText(cat));
         }
 
+        //[Test]
+        //public void ChangeCatalog_from_XML_gets_changes()
+        //{
+        //    
+        //}
 
         #region Exception testing
         [Test, ExpectedException(ExpectedMessage = "Document must have a <SourceFileCatalog> node.  Please supply one.")]
@@ -160,16 +164,12 @@ namespace swept.Tests
             port.SourceFileCatalog_FromText( "asdflkj" );
         }
 
-        [Test, ExpectedException( ExpectedMessage = "Text [asdflkj] was not valid XML.  Please check its contents.  Details: Data at the root level is invalid. Line 1, position 1." )]
-        public void ChangeCatalog_from_InvalidXML_Throws()
-        {
-            port.ChangeCatalog_FromText( "asdflkj" );
-        }
-
         [Test, ExpectedException( ExpectedMessage = "Document must have a <ChangeCatalog> node.  Please supply one." )]
         public void ChangeCatalog_from_IncorrectXML_Throws()
         {
-            port.ChangeCatalog_FromText( "<x>eek!</x>" );
+            XmlDocument xml = new XmlDocument();
+            xml.LoadXml( "<x>eek!</x>" );
+            port.ChangeCatalog_FromXmlDocument( xml );
         }
 
         #endregion

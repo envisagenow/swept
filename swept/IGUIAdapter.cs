@@ -9,7 +9,7 @@ namespace swept
     {
         bool KeepChangeHistory( Change historicalChange );
         bool KeepSourceFileHistory( SourceFile historicalFile );
-        bool BadXmlInExpectedLibrary( string libraryPath );
+        void BadXmlInExpectedLibrary( string libraryPath );
         void DebugMessage( string message );
     }
 }

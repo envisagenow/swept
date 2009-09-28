@@ -82,16 +82,9 @@ namespace swept
             }
             catch( XmlException )
             {
-                if( _GUIAdapter.BadXmlInExpectedLibrary( LibraryPath ) )
-                {
-                    _FSAdapter.Save( LibraryPath, FSAdapter.emptyCatalogText );
-                    doc = _FSAdapter.LoadLibrary( LibraryPath );
-                }
-                else
-                {
-                    throw;
-                    // future: shut down addin
-                }
+                _GUIAdapter.BadXmlInExpectedLibrary( LibraryPath );
+                throw;
+                // Future: shut down addin
             }
 
             return doc;
