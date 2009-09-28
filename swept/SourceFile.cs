@@ -72,7 +72,7 @@ namespace swept
             return file;
         }
 
-        //TODO: Candidate: refactor into SourceFile.Clone( file )
+        //TODO--DC, 0.3: refactor into SourceFile.Clone( file )
         public void CopyCompletionsFrom( SourceFile workingFile )
         {
             Completions.Clear();

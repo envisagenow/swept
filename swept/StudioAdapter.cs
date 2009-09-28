@@ -2,7 +2,6 @@
 //  This software is open source, under the terms of the MIT License.
 //  The MIT License, roughly:  Keep this notice.  Beyond that, do whatever you want with this code.
 using System.Collections.Generic;
-using System.Text;
 using System;
 
 namespace swept
@@ -12,20 +11,6 @@ namespace swept
         internal TaskWindow taskWindow;
         internal ChangeWindow changeWindow;
         public ProjectLibrarian Librarian { get; set; }
-
-        #region Initialization
-
-        // TODO: Convert to event form
-        public void WhenAddinStarted()
-        {
-            // TODO: Scratch up a new everything when the Swept addin is started
-            //Starter starter = new Starter(this);
-
-            // TODO: ? Clear this self-load out?
-            Librarian = new ProjectLibrarian();
-        }
-
-        #endregion
 
 
         #region Publish events
@@ -37,6 +22,7 @@ namespace swept
                 Event_SolutionOpened(this, new FileEventArgs { Name = solutionPath });
         }
 
+        // TODO--DC, 0.2: test Raise_SolutionRenamed
         public event EventHandler<FileListEventArgs> Event_SolutionRenamed;
         public void Raise_SolutionRenamed( string oldName, string newName )
         {
@@ -96,14 +82,14 @@ namespace swept
                 Event_FileChangesAbandoned(this, new FileEventArgs { Name = fileName });
         }
 
+        // TODO--DC, 0.2: test Raise_FileDeleted
         public event EventHandler<FileEventArgs> Event_FileDeleted;
         public void Raise_FileDeleted(string fileName)
         {
             if (Event_FileDeleted != null)
                 Event_FileDeleted(this, new FileEventArgs { Name = fileName });
         }
-
-
+        
         public event EventHandler<FileListEventArgs> Event_FileRenamed;
         public void Raise_FileRenamed(string oldName, string newName)
         {

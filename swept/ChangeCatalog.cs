@@ -9,7 +9,7 @@ namespace swept
 {
     public class ChangeCatalog
     {
-        // TODO: Make private
+        // TODO--DC, 0.3: move back to standard list with sort on output
         internal SortedList<string, Change> changes;
 
         public ChangeCatalog()
@@ -67,7 +67,7 @@ namespace swept
             changes.Remove( changeID );
         }
 
-        // Future: Edit a Change
+        // TODO--DC, 0.3: Edit a Change
 
         public List<Change> FindAll(Predicate<Change> match)
         {

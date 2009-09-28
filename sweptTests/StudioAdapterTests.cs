@@ -231,17 +231,6 @@ namespace swept.Tests
         }
 
         [Test]
-        public void WhenPluginStarted_DispatcherCreatesDiskLibrarian()
-        {
-            ProjectLibrarian incumbent = adapter.Librarian;
-
-            adapter.WhenAddinStarted();
-
-            Assert.IsNotNull( adapter.Librarian );
-            Assert.AreNotSame( incumbent, adapter.Librarian );
-        }
-
-        [Test]
         public void WhenFileChangesAbandoned_PreexistingCompletionsKept()
         {
             AbandonFileChanges( fileName );
@@ -273,21 +262,6 @@ namespace swept.Tests
             adapter.Raise_SolutionOpened( newPath );
             Assert.AreEqual( newPath, adapter.Librarian.SolutionPath );
         }
-
-        // TODO: Change this to not remove file from catalogs
-        [Test]
-        public void WhenFileDeleted_FileRemovedFromCatalogs()
-        {
-            Assert.IsTrue( fileCat.Files.Contains( file ) );
-
-            adapter.Raise_FileDeleted( fileName );
-
-            Assert.IsFalse( fileCat.Files.Contains( file ) );
-            Assert.IsTrue(librarian.IsSaved);
-            Assert.IsNotNull(librarian._savedSourceCatalog);
-        }
-        // TODO: !! add a dialog when re-adding, 'keep or discard history for this source file?'
-
 
         [Test]
         public void WhenSourceFileRenamed_ChangesAreCarriedOver()

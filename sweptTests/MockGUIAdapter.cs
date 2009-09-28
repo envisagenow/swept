@@ -31,7 +31,7 @@ namespace swept.Tests
 
         public void BadXmlInExpectedLibrary( string libraryPath )
         {
-            // TODO: throw exception based on switch
+            // TODO--0.2: throw exception based on switch
             // ...then write tests that catch that the addin is shut down correctly.
         }
 

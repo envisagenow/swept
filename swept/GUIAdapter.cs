@@ -10,14 +10,14 @@ namespace swept
     {
         public bool KeepChangeHistory( Change historicalChange )
         {
-            //TODO:  Better message
+            //TODO--0.3:  Better message
             DialogResult result = MessageBox.Show( "This change existed in the past.  Should I keep its history?" );
             return (result == DialogResult.Yes);
         }
 
         public bool KeepSourceFileHistory( SourceFile historicalFile )
         {
-            //TODO:  Better message
+            //TODO--0.3:  Better message
             DialogResult result = MessageBox.Show( "This source file existed in the past.  Shall I keep its history?" );
             return (result == DialogResult.Yes);
         }

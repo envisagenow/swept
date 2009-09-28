@@ -143,8 +143,8 @@ namespace swept
 
         private void DeleteFile(string fileName)
         {
-            _sourceCatalog.Delete(fileName);
-            _savedSourceCatalog.Delete(fileName);
+            _sourceCatalog.Remove(fileName);
+            _savedSourceCatalog.Remove(fileName);
             Persist();
         }
 
@@ -180,7 +180,7 @@ namespace swept
             Persist();
         }
 
-        // TODO: remove all sender args from events
+        // TODO--trivial: remove all sender args from events
         #region Event Listeners
         public void Hear_SolutionOpened(object sender, FileEventArgs arg)
         {
@@ -240,7 +240,7 @@ namespace swept
 
             var port = new XmlPort();
 
-            // TODO: the proper expected name
+            // TODO--0.1: Save library with the correct filename
             _FSAdapter.Save("swept.progress.library", port.ToText( this ));
         }
     }

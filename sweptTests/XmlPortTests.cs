@@ -2,7 +2,8 @@
 //  This software is open source, under the terms of the MIT License.
 //  The MIT License, roughly:  Keep this notice.  Beyond that, do whatever you want with this code.
 using System;
-using System.Xml.Linq;
+// TODO--DC, 0.3: replace the hand serialization with XElement code
+// using System.Xml.Linq;
 using NUnit.Framework;
 using System.Xml;
 
@@ -106,12 +107,10 @@ namespace swept.Tests
             Assert.AreEqual( "AB2", bar_cs.Completions[1].ChangeID );
         }
 
-        [Test, Ignore]
-        public void SourceFileCatalog_FromXmlText_gets_IsRemoved()
-        {
-            // TODO: SourceFileCatalog_FromXmlText_gets_IsRemoved()
-            // TODO: IsRemoved_gets_serialized
-        }
+        // TODO: public void Removed_Changes_are_saved()
+        // TODO: public void Removed_Changes_are_loaded()
+        // TODO: public void Removed_SourceFiles_are_saved()
+        // TODO: public void Removed_SourceFiles_are_loaded()
 
         [Test]
         public void Can_serialize_Change_ToXml()
@@ -138,11 +137,9 @@ namespace swept.Tests
             Assert.AreEqual(expectedXml, port.ToText(cat));
         }
 
-        //[Test]
-        //public void ChangeCatalog_from_XML_gets_changes()
-        //{
-        //    
-        //}
+        // TODO: public void Changes_are_sorted()
+        // TODO: public void SourceFiles_are_sorted()
+        // TODO: public void Completions_are_sorted()
 
         #region Exception testing
         [Test, ExpectedException(ExpectedMessage = "Document must have a <SourceFileCatalog> node.  Please supply one.")]

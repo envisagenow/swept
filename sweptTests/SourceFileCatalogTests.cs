@@ -40,7 +40,6 @@ namespace swept.Tests
             Assert.IsTrue( foo.IsRemoved );
         }
 
-        // TODO: !! add a dialog when re-adding, 'keep or discard history for this source file?'
         [Test]
         public void When_SourceFile_readded_user_can_choose_to_keep_history()
         {
@@ -80,7 +79,7 @@ namespace swept.Tests
             MockGUIAdapter mockGUI = new MockGUIAdapter();
             fileCat.AdaptGUI = mockGUI;
 
-            //  When the dialog is presented, the 'user' responds 'keep', for this test
+            //  When the dialog is presented, the 'user' responds 'discard', for this test
             mockGUI.KeepHistoricalResponse = false;
 
             // Bari has kept the completion of Change 77
@@ -189,28 +188,32 @@ namespace swept.Tests
             Assert.AreSame( blue, alsoBlue );
         }
 
+        // TODO--DC, 0.2: validate it's going away (#&?)
         [Test]
-        public void CanDelete_ExistingFile()
+        public void CanRemove_ExistingFile()
         {
+            var adapter = new MockGUIAdapter();
+            adapter.KeepHistoricalResponse = false;
+            fileCat.AdaptGUI = adapter;
+
             string blueName = "blue.cs";
             SourceFile blue = fileCat.Fetch(blueName);
 
             blue.Completions.Add(new Completion("id11"));
             Assert.AreEqual(1, fileCat.Files.Count);
 
-            fileCat.Delete(blueName);
+            fileCat.Remove(blueName);
 
             SourceFile alsoBlue = fileCat.Fetch(blueName);
             Assert.AreEqual(0, alsoBlue.Completions.Count);
         }
 
         [Test]
-        public void CanDelete_NonExistingFile()
+        public void CanRemove_NonExistingFile()
         {
-            string blueName = "blue.cs";
             int fileCount = fileCat.Files.Count;
 
-            fileCat.Delete(blueName);
+            fileCat.Remove("blue.cs");
             Assert.AreEqual(fileCount, fileCat.Files.Count);
         }
 

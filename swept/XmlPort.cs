@@ -68,7 +68,6 @@ namespace swept
             return string.Format("        <Completion ID='{0}' />\r\n", comp.ChangeID);
         }
 
-        // TODO future: switch over to XElement
         public ChangeCatalog ChangeCatalog_FromXmlDocument( XmlDocument doc )
         {
             XmlNode node = doc.SelectSingleNode( "SweptProjectData/ChangeCatalog" );

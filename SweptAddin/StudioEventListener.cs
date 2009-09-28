@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using EnvDTE80;
 using EnvDTE;
-using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Shell;
-using System.Windows.Forms;
 
 namespace swept.Addin
 {
@@ -38,9 +34,7 @@ namespace swept.Addin
 
             _documentEvents.DocumentSaved += Hear_DocumentSaved;
 
-            //DocTableListener listener = new DocTableListener();
-
-            // TODO: Upgrade from this interface
+            // TODO--0.3: Upgrade from this interface
             _runningDocs = (IVsRunningDocumentTable)
                 Package.GetGlobalService( typeof( SVsRunningDocumentTable ) );
 
@@ -58,7 +52,7 @@ namespace swept.Addin
             _runningDocs.UnadviseRunningDocTableEvents( _runningDocsCookie );
             _runningDocsCookie = 0;
 
-            // TODO: unsubscribe from all others, null out the class-level event vars, and ?
+            // TODO--0.2: Finish shutdown: unsubscribe from events, dispose of windows, and ?
         }
         
         public void Hear_SolutionOpened()
@@ -76,7 +70,6 @@ namespace swept.Addin
         {
             string fileName = fileNameFromDocCookie( docCookie );            
             _adapter.Raise_FileGotFocus( fileName );
-            //MessageBox.Show( string.Format( "{0}( {1}, ... )", "OnBeforeDocumentWindowShow", docCookie ) );
             return VSConstants.S_OK;
         }
 
@@ -96,44 +89,42 @@ namespace swept.Addin
 
         private void Hear_DocumentSaved( Document doc )
         {
-            //MessageBox.Show( string.Format( "{0}( {1}, ... )", "Hear_DocumentSaved", doc.FullName ) );
             string fileName = doc.FullName;
             _adapter.Raise_FileSaved( fileName );
         }
-
-
-        //  above here, subscribed
 
         private void Hear_ItemRenamed( ProjectItem item, string oldName )
         {
             _adapter.Raise_FileRenamed( oldName, item.Name );
         }
 
-        private void Hear_FileGotFocus( string fileName )
-        {
-            _adapter.Raise_FileGotFocus( fileName );
-        }
+        //  above here, subscribed
 
-        private void Hear_NonSourceGetsFocus()
-        {
-            _adapter.Raise_NonSourceGetsFocus();
-        }
-
-        private void Hear_FilePasted( string fileName )
-        {
-            _adapter.Raise_FilePasted( fileName );
-        }
-
+        // TODO--0.1: Hear_FileSavedAs
         private void Hear_FileSavedAs( string oldName, string newName )
         {
             _adapter.Raise_FileSavedAs( oldName, newName );
         }
 
+        // TODO--0.1: Hear_FilePasted
+        private void Hear_FilePasted( string fileName )
+        {
+            _adapter.Raise_FilePasted( fileName );
+        }
+
+        // TODO--0.1: Hear_FileChangesAbandoned( string fileName )
         private void Hear_FileChangesAbandoned( string fileName )
         {
             _adapter.Raise_FileChangesAbandoned( fileName );
         }
 
+        // TODO--0.2: determine if NonSourceGetsFocus is needed.
+        private void Hear_NonSourceGetsFocus()
+        {
+            _adapter.Raise_NonSourceGetsFocus();
+        }
+
+        // TODO--0.2: Hear_FileDeleted
         private void Hear_FileDeleted( string fileName )
         {
             _adapter.Raise_FileDeleted( fileName );
@@ -174,7 +165,5 @@ namespace swept.Addin
         }
 
         #endregion
-
-
     }
 }
