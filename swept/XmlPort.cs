@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Xml;
+using System.Xml.Linq;
 
 namespace swept
 {
@@ -21,7 +22,6 @@ namespace swept
             );
         }
 
-        //FUTURE: Sort changes when writing them out
         public string ToText(ChangeCatalog changeCatalog)
         {
             string catalogLabel = "ChangeCatalog";
@@ -42,27 +42,23 @@ namespace swept
             );
         }
 
-
-        //FUTURE: Sort SourceFiles when writing them out
         public string ToText(SourceFileCatalog fileCatalog)
         {
             string catalogLabel = "SourceFileCatalog";
             string xmlText = String.Format("<{0}>\r\n", catalogLabel);
-            foreach (SourceFile file in fileCatalog.Files)
-            {
-                xmlText += ToText(file);
-            }
-            xmlText += String.Format("</{0}>", catalogLabel);
+            fileCatalog.Files.Sort( (left, right) => left.Name.CompareTo( right.Name ) );
+            fileCatalog.Files.ForEach( file => xmlText += ToText( file ) );
+            xmlText += String.Format( "</{0}>", catalogLabel );
             return xmlText;
         }
 
-        //FUTURE: Sort Completions when writing them out
         public string ToText(SourceFile file)
         {
             string elementLabel = "SourceFile";
             string xmlText = String.Format("    <{0} Name='{1}'>\r\n", elementLabel, file.Name);
-            file.Completions.ForEach(c => xmlText += ToText(c));
-            xmlText += String.Format("    </{0}>\r\n", elementLabel);
+            file.Completions.Sort( (left, right) => left.ChangeID.CompareTo(right.ChangeID) );
+            file.Completions.ForEach( c => xmlText += ToText( c ) );
+            xmlText += String.Format( "    </{0}>\r\n", elementLabel );
 
             return xmlText;
         }
@@ -72,32 +68,18 @@ namespace swept
             return string.Format("        <Completion ID='{0}' />\r\n", comp.ChangeID);
         }
 
-
-        public ChangeCatalog ChangeCatalog_FromText(string xmlText)
+        // TODO future: switch over to XElement
+        public ChangeCatalog ChangeCatalog_FromXmlDocument( XmlDocument doc )
         {
-            try
-            {
-                XmlDocument doc = new XmlDocument();
-                doc.LoadXml(xmlText);
-                return ChangeCatalog_FromXmlDocument(doc);
-            }
-            catch (XmlException xe)
-            {
-                throw new Exception(String.Format("Text [{0}] was not valid XML.  Please check its contents.  Details: {1}", xmlText, xe.Message));
-            }
+            XmlNode node = doc.SelectSingleNode( "SweptProjectData/ChangeCatalog" );
+
+            if( node == null )
+                throw new Exception( "Document must have a <ChangeCatalog> node.  Please supply one." );
+
+            return ChangeCatalog_FromNode( node );
         }
 
-        public ChangeCatalog ChangeCatalog_FromXmlDocument(XmlDocument doc)
-        {
-            XmlNode node = doc.SelectSingleNode("SweptProjectData/ChangeCatalog");
-
-            if (node == null)
-                throw new Exception("Document must have a <ChangeCatalog> node.  Please supply one.");
-
-            return ChangeCatalog_FromNode(node);
-        }
-
-        public ChangeCatalog ChangeCatalog_FromNode(XmlNode node)
+        public ChangeCatalog ChangeCatalog_FromNode( XmlNode node )
         {
             ChangeCatalog cat = new ChangeCatalog();
 
