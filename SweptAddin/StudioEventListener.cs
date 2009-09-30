@@ -13,7 +13,7 @@ namespace swept.Addin
     {
         private DTE2 _studio;
         private StudioAdapter _adapter;
-        private IVsRunningDocumentTable _runningDocs;
+        //private IVsRunningDocumentTable _runningDocs;
         private uint _runningDocsCookie;
 
         //  Class scoped to hold these references for the lifetime of the addin.
@@ -27,7 +27,30 @@ namespace swept.Addin
 
         private List<string> log = new List<string>();
 
-        public void Subscribe( DTE2 studio, swept.StudioAdapter adapter )
+        public void Disconnect()
+        {
+            _solutionEvents.Opened -= Hear_SolutionOpened;
+            _solutionEvents.Renamed -= Hear_SolutionRenamed;
+
+            _solutionItemsEvents.ItemRenamed -= Hear_ItemRenamed;
+
+            _documentEvents.DocumentClosing -= Hear_DocumentClosing;
+            _documentEvents.DocumentSaved -= Hear_DocumentSaved;
+
+            _solutionEvents = null;
+            _solutionItemsEvents = null;
+            _documentEvents = null;
+
+            _studio = null;
+            _adapter = null;
+
+            _commandEvents.BeforeExecute -= hear_all_CommandEvents_before;
+            _commandEvents.AfterExecute -= hear_all_CommandEvents_after;
+
+            _commandEvents = null;
+        }
+
+        public void Connect( DTE2 studio, swept.StudioAdapter adapter )
         {
             _studio = studio;
             _adapter = adapter;
@@ -68,7 +91,7 @@ namespace swept.Addin
 
         void hear_all_CommandEvents_before( string Guid, int ID, object CustomIn, object CustomOut, ref bool CancelDefault )
         {
-            if( ID == 2200 || ID == 337 ) return;
+            if( ID == 2200 || ID == 337 || ID == 1627 ) return;
 
             Command command = _studio.Commands.Item( Guid, ID );
             if( command == null )
@@ -96,7 +119,7 @@ namespace swept.Addin
 
         private void hear_all_CommandEvents_after( string Guid, int ID, object CustomIn, object CustomOut )
         {
-            if( ID == 2200 || ID == 337 ) return;
+            if( ID == 2200 || ID == 337 || ID == 1627 ) return;
 
             Command command = _studio.Commands.Item( Guid, ID );
             if( command == null ) return;
@@ -127,7 +150,7 @@ namespace swept.Addin
         {
             if( _runningDocsCookie == 0 ) return;
 
-            _runningDocs.UnadviseRunningDocTableEvents( _runningDocsCookie );
+            //_runningDocs.UnadviseRunningDocTableEvents( _runningDocsCookie );
             _runningDocsCookie = 0;
 
             // TODO--0.2: Finish shutdown: unsubscribe from events, dispose of windows, and ?
@@ -146,24 +169,24 @@ namespace swept.Addin
 
         int IVsRunningDocTableEvents.OnBeforeDocumentWindowShow( uint docCookie, int fFirstShow, IVsWindowFrame pFrame )
         {
-            string fileName = fileNameFromDocCookie( docCookie );            
+            string fileName = string.Empty; // fileNameFromDocCookie( docCookie );            
             _adapter.Raise_FileGotFocus( fileName );
             return VSConstants.S_OK;
         }
 
-        private string fileNameFromDocCookie( uint docCookie )
-        {
-            string fileName;
-            uint rdtFlags;
-            uint readLocks;
-            uint editLocks;
-            IVsHierarchy ppHier;
-            uint pitemid;
-            IntPtr ppunkDocData;
-            _runningDocs.GetDocumentInfo( docCookie, out rdtFlags, out readLocks, out editLocks, out fileName,
-                out ppHier, out pitemid, out ppunkDocData );
-            return fileName;
-        }
+        //private string fileNameFromDocCookie( uint docCookie )
+        //{
+        //    string fileName;
+        //    uint rdtFlags;
+        //    uint readLocks;
+        //    uint editLocks;
+        //    IVsHierarchy ppHier;
+        //    uint pitemid;
+        //    IntPtr ppunkDocData;
+        //    _runningDocs.GetDocumentInfo( docCookie, out rdtFlags, out readLocks, out editLocks, out fileName,
+        //        out ppHier, out pitemid, out ppunkDocData );
+        //    return fileName;
+        //}
 
         private void Hear_DocumentSaved( Document doc )
         {

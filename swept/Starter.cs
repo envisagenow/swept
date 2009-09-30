@@ -52,5 +52,34 @@ namespace swept
             ChangeWindow.Event_ChangeListUpdated += Librarian.Hear_ChangeListUpdated;
         }
 
+        public void Stop()
+        {
+            //  Unsubscribe from the ChangeWindow's events
+            ChangeWindow.Event_ChangeAdded -= Librarian.Hear_ChangeAdded;
+            ChangeWindow.Event_ChangeListUpdated -= TaskWindow.Hear_ChangeListUpdated;
+            ChangeWindow.Event_ChangeListUpdated -= Librarian.Hear_ChangeListUpdated;
+
+            //  Unsubscribe from the TaskWindow's events
+            TaskWindow.Event_TaskWindowToggled -= TaskWindow.Hear_TaskWindowToggled;
+            //  A self-subscription.  Odd, possibly poor practice...
+
+            //  Unsubscribe from the StudioAdapter's events
+            Adapter.Event_NonSourceGotFocus -= TaskWindow.Hear_NonSourceGotFocus;
+            Adapter.Event_FileGotFocus -= TaskWindow.Hear_FileGotFocus;
+            Adapter.Event_FileSaved -= Librarian.Hear_FileSaved;
+            Adapter.Event_FilePasted -= Librarian.Hear_FilePasted;
+            Adapter.Event_FileSavedAs -= Librarian.Hear_FileSavedAs;
+            Adapter.Event_FileChangesAbandoned -= Librarian.Hear_FileChangesAbandoned;
+            Adapter.Event_FileDeleted -= Librarian.Hear_FileDeleted;
+            Adapter.Event_FileRenamed -= Librarian.Hear_FileRenamed;
+            Adapter.Event_SolutionSaved -= Librarian.Hear_SolutionSaved;
+            Adapter.Event_SolutionOpened -= Librarian.Hear_SolutionOpened;
+
+            Adapter = null;
+            Librarian = null;
+            TaskWindow = null;
+            ChangeWindow = null;
+        }
+
     }
 }
