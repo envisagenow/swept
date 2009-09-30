@@ -59,7 +59,7 @@ namespace swept.Tests
         [Test]
         public void ShowFile_with_no_changes_makes_empty_TaskList()
         {
-            window.ShowFile( file, null );
+            window.ShowFile( file, new List<Change>() );
             Assert.AreEqual( 0, window.Tasks.Count );
         }
 

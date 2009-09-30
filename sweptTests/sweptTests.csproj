@@ -57,6 +57,7 @@
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Data" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -89,6 +90,10 @@
     <Compile Include="XmlPortTests.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\SweptAddin\SweptAddin.csproj">
+      <Project>{37C7E668-441B-4E6F-9DA1-1981F18A1861}</Project>
+      <Name>SweptAddin</Name>
+    </ProjectReference>
     <ProjectReference Include="..\swept\swept.csproj">
       <Project>{BC619D2C-C72E-4111-9489-E353B858A712}</Project>
       <Name>swept</Name>

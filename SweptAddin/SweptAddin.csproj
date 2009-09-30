@@ -52,10 +52,19 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="StudioEventListener.cs" />
+    <Compile Include="TaskWindow_GUI.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TaskWindow_GUI.Designer.cs">
+      <DependentUpon>TaskWindow_GUI.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="CommandBar.resx">
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TaskWindow_GUI.resx">
+      <DependentUpon>TaskWindow_GUI.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

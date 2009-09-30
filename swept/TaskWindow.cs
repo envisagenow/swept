@@ -12,11 +12,6 @@ namespace swept
         internal ChangeCatalog _changeCatalog;
         internal IGUIAdapter _GUIAdapter;
 
-        public String Title
-        {
-            get { return CurrentFile.Name; }
-        }
-
         private SourceFile _currentFile;
         public SourceFile CurrentFile
         {
@@ -24,14 +19,19 @@ namespace swept
             {
                 //SELF:  Keep an eye on this, it may be too cute.
                 // A lazy-init "Null Object" pattern.  Cleans null checks and branches out of the code.
-                if (_currentFile == null)
-                    _currentFile = new SourceFile("No source file") { Language = FileLanguage.None };
+                if( _currentFile == null )
+                    _currentFile = new SourceFile( "No source file" ) { Language = FileLanguage.None };
                 return _currentFile;
             }
             private set
             {
                 _currentFile = value;
             }
+        }
+
+        public String Title
+        {
+            get { return CurrentFile.Name; }
         }
 
 
@@ -50,48 +50,53 @@ namespace swept
             Visible = !Visible;
         }
 
-        public void ToggleTaskCompletion(int index)
+        public void ToggleTaskCompletion( int index )
         {
-            Task task = this.Tasks[index];
-            task.Completed = !task.Completed;
-            CurrentFile.AdjustCompletionFrom(task);
+            Task task = Tasks[index];
+            SetTaskCompletion( task, !task.Completed );
         }
 
-        private void ShowFile(string fileName)
+        // Smell:  With a name and args like this...
+        private void SetTaskCompletion( Task task, bool completion )
         {
-            ShowFile(_fileCatalog.Fetch(fileName));
+            task.Completed = completion;
+            CurrentFile.AdjustCompletionFrom( task );
         }
 
-        public void ShowFile(SourceFile file)
+        private void ShowFile( string fileName )
         {
-            List<Change> changes = _changeCatalog.GetChangesForFile(file);
-            ShowFile(file, changes);
+            ShowFile( _fileCatalog.Fetch( fileName ) );
         }
 
-
-        internal void ShowFile(SourceFile file, List<Change> changes)
+        public void ShowFile( SourceFile file )
+        {
+            List<Change> changes = _changeCatalog.GetChangesForFile( file );
+            ShowFile( file, changes );
+        }
+        internal void ShowFile( SourceFile file, List<Change> changes )
         {
             CurrentFile = file;
-            ListTasks(changes);
+            ListTasks( changes );
         }
 
         public void RefreshChangeList()
         {
             List<Change> changes = _changeCatalog.GetChangesForFile( CurrentFile );
-            ListTasks(changes);
+            ListTasks( changes );
         }
 
-        private void ListTasks(List<Change> changes)
+        private void ListTasks( List<Change> changes )
         {
             Tasks.Clear();
-            if (changes == null) return;
 
-            foreach (Change change in changes)
+            foreach( Change change in changes )
             {
-                Task entry = Task.FromChange(change);
-                entry.Completed = CurrentFile.Completions.Exists(c => c.ChangeID == entry.ID);
-                Tasks.Add(entry);
+                Task entry = Task.FromChange( change );
+                entry.Completed = CurrentFile.Completions.Exists( c => c.ChangeID == entry.ID );
+                Tasks.Add( entry );
             }
+
+            Raise_TaskListReset();
         }
 
         #region Raise events
@@ -99,36 +104,47 @@ namespace swept
         public event EventHandler<EventArgs> Event_TaskWindowToggled;
         public void Raise_TaskWindowToggled()
         {
-            if (Event_TaskWindowToggled != null)
-                Event_TaskWindowToggled(this, new EventArgs { });
+            if( Event_TaskWindowToggled != null )
+                Event_TaskWindowToggled( this, new EventArgs { } );
+        }
+
+        public event EventHandler<EventArgs> Event_TaskListReset;
+        public void Raise_TaskListReset()
+        {
+            if( Event_TaskListReset != null )
+                Event_TaskListReset( Tasks, new EventArgs { } );
         }
 
         #endregion
 
         #region Event listeners
 
-        public void Hear_FileGotFocus(object sender, FileEventArgs args)
+        public void Hear_FileGotFocus( object sender, FileEventArgs args )
         {
             _GUIAdapter.DebugMessage( string.Format( "{0}( {1} )", "TaskWindow.Hear_FileGotFocus", args.Name ) );
 
-            ShowFile(args.Name);
+            ShowFile( args.Name );
         }
 
-        public void Hear_NonSourceGotFocus(object sender, EventArgs args)
+        public void Hear_NonSourceGotFocus( object sender, EventArgs args )
         {
-            ShowFile(null, null);
+            ShowFile( null, new List<Change>() );
         }
 
-        public void Hear_ChangeListUpdated(object sender, EventArgs args)
+        public void Hear_ChangeListUpdated( object sender, EventArgs args )
         {
             RefreshChangeList();
         }
 
-        public void Hear_TaskWindowToggled(object sender, EventArgs args)
+        public void Hear_TaskWindowToggled( object sender, EventArgs args )
         {
             ToggleWindowVisibility();
         }
 
+        public void Hear_TaskCheck( object sender, TaskEventArgs args )
+        {
+            SetTaskCompletion( args.Task, args.Checked );
+        }
         #endregion
 
     }

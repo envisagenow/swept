@@ -5,6 +5,7 @@ using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Shell;
 using System.Collections.Generic;
+using System.Windows.Forms;
 //using System.Windows.Forms;
 
 namespace swept.Addin
@@ -22,6 +23,7 @@ namespace swept.Addin
         private DocumentEvents _documentEvents;
         private CommandEvents _commandEvents;
 
+        private TaskWindow_GUI _taskWindowForm;
         //  When in the middle of a save-as, this will hold the original name.
         string _saveAsOldName = string.Empty;
 
@@ -50,10 +52,10 @@ namespace swept.Addin
             _commandEvents = null;
         }
 
-        public void Connect( DTE2 studio, swept.StudioAdapter adapter )
+        public void Connect( DTE2 studio, Starter starter )
         {
             _studio = studio;
-            _adapter = adapter;
+            _adapter = starter.Adapter;
             _solutionEvents = _studio.Events.SolutionEvents;
             _solutionItemsEvents = _studio.Events.SolutionItemsEvents;
             _documentEvents = _studio.Events.get_DocumentEvents( null );
@@ -78,8 +80,11 @@ namespace swept.Addin
             #endregion
 
             hook_all_CommandEvents();
+
+            knit_TaskWindow( starter.TaskWindow );
         }
 
+        #region CommandEvents
         private void hook_all_CommandEvents()
         {
             //  get and subscribe to all events prior to execution
@@ -144,7 +149,26 @@ namespace swept.Addin
                 break;
             }
         }
+        #endregion
 
+        TaskWindow _taskWindow;
+        private void knit_TaskWindow( TaskWindow taskWindow )
+        {
+            _taskWindow = taskWindow;
+            _taskWindowForm = new TaskWindow_GUI();
+
+            taskWindow.Event_TaskListReset += _taskWindowForm.Hear_TaskListReset;
+
+            _taskWindowForm.tasks.ItemCheck += Hear_ItemCheck;// taskWindow.Hear_TaskCheck;
+        }
+
+        private void Hear_ItemCheck( object sender, ItemCheckEventArgs e )
+        {
+            TaskEventArgs args = new TaskEventArgs{ 
+                Task = (Task)_taskWindowForm.tasks.Items[e.Index], 
+                Checked = (e.NewValue == CheckState.Checked) };
+            _taskWindow.Hear_TaskCheck( _taskWindowForm, args );
+        }
 
         void IDisposable.Dispose()
         {
@@ -154,6 +178,7 @@ namespace swept.Addin
             _runningDocsCookie = 0;
 
             // TODO--0.2: Finish shutdown: unsubscribe from events, dispose of windows, and ?
+            _taskWindowForm.Dispose();
         }
         
         public void Hear_SolutionOpened()

@@ -23,7 +23,8 @@ namespace swept
 
     public class TaskEventArgs : EventArgs
     {
-        public Task task;
-        public SourceFile file;
+        public Task Task;
+        public SourceFile File;
+        public bool Checked;
     }
 }
