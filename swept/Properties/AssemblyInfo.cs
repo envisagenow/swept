@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration( "" )]
 [assembly: AssemblyCompany( "" )]
 [assembly: AssemblyProduct( "swept" )]
-[assembly: AssemblyCopyright( "Copyright © Envisage Technologies 2008, Open source under MIT License." )]
+[assembly: AssemblyCopyright( "Copyright © Envisage Technologies 2009, Open source under MIT License." )]
 [assembly: AssemblyTrademark( "" )]
 [assembly: AssemblyCulture( "" )]
 [assembly: InternalsVisibleTo( "sweptTests" )]
