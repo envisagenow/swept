@@ -204,6 +204,7 @@ namespace swept
 
         public void Hear_FileSavedAs(object sender, FileListEventArgs args)
         {
+            _GUIAdapter.DebugMessage( string.Format( "SaveFileAs( {0}, {1} )", args.Names[0], args.Names[1] ) );
             SaveFileAs(args.Names[0], args.Names[1]);
         }
 

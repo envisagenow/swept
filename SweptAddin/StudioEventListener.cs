@@ -4,6 +4,8 @@ using EnvDTE;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Shell;
+using System.Collections.Generic;
+//using System.Windows.Forms;
 
 namespace swept.Addin
 {
@@ -14,10 +16,16 @@ namespace swept.Addin
         private IVsRunningDocumentTable _runningDocs;
         private uint _runningDocsCookie;
 
-        //  Class scoped to hold these references for the lifetime of the plugin.
+        //  Class scoped to hold these references for the lifetime of the addin.
         private SolutionEvents _solutionEvents;
         private ProjectItemsEvents _solutionItemsEvents;
         private DocumentEvents _documentEvents;
+        private CommandEvents _commandEvents;
+
+        //  When in the middle of a save-as, this will hold the original name.
+        string _saveAsOldName = string.Empty;
+
+        private List<string> log = new List<string>();
 
         public void Subscribe( DTE2 studio, swept.StudioAdapter adapter )
         {
@@ -32,18 +40,88 @@ namespace swept.Addin
 
             _solutionItemsEvents.ItemRenamed += Hear_ItemRenamed;
 
+            _documentEvents.DocumentClosing += Hear_DocumentClosing;
             _documentEvents.DocumentSaved += Hear_DocumentSaved;
 
+            #region Attach to RunningDocumentTable
             // TODO--0.3: Upgrade from this interface
-            _runningDocs = (IVsRunningDocumentTable)
-                Package.GetGlobalService( typeof( SVsRunningDocumentTable ) );
+            //_runningDocs = (IVsRunningDocumentTable)
+            //    Package.GetGlobalService( typeof( SVsRunningDocumentTable ) );
 
-            int returnCode = _runningDocs.AdviseRunningDocTableEvents( this, out _runningDocsCookie );
+            //int returnCode = _runningDocs.AdviseRunningDocTableEvents( this, out _runningDocsCookie );
 
-            if( returnCode != VSConstants.S_OK )
-                throw new Exception( string.Format( "Got error [{0}] instead of S_OK.", returnCode ) );
+            //if( returnCode != VSConstants.S_OK )
+            //    throw new Exception( string.Format( "Got error [{0}] instead of S_OK.", returnCode ) );
+            #endregion
 
+            hook_all_CommandEvents();
         }
+
+        private void hook_all_CommandEvents()
+        {
+            //  get and subscribe to all events prior to execution
+            _commandEvents = _studio.Events.get_CommandEvents( "{00000000-0000-0000-0000-000000000000}", 0 );
+
+            _commandEvents.BeforeExecute += hear_all_CommandEvents_before;
+            _commandEvents.AfterExecute += hear_all_CommandEvents_after;
+        }
+
+        void hear_all_CommandEvents_before( string Guid, int ID, object CustomIn, object CustomOut, ref bool CancelDefault )
+        {
+            if( ID == 2200 || ID == 337 ) return;
+
+            Command command = _studio.Commands.Item( Guid, ID );
+            if( command == null )
+            {
+                log.Add( string.Format( "ID [{0}] with GUID [{1}] matches no command.", ID, Guid ) );
+                return;
+            }
+
+            string commandName = command.Name;
+            //if( commandName == "" || commandName == "Edit.GoToFindCombo" ) return;
+
+            string message = string.Format( "Before [{0}] has guid [{1}] and id [{2}].", commandName, command.Guid, command.ID );
+
+            switch( commandName )
+            {
+            case "File.SaveSelectedItemsAs":
+                _saveAsOldName = _studio.ActiveDocument.FullName;
+                break;
+
+            default:
+                log.Add( message );
+                break;
+            }
+        }
+
+        private void hear_all_CommandEvents_after( string Guid, int ID, object CustomIn, object CustomOut )
+        {
+            if( ID == 2200 || ID == 337 ) return;
+
+            Command command = _studio.Commands.Item( Guid, ID );
+            if( command == null ) return;
+
+            string commandName = command.Name;
+            //if( commandName == "" || commandName == "Edit.GoToFindCombo" ) return;
+
+            string message = string.Format( "After [{0}] has guid [{1}] and id [{2}].", commandName, command.Guid, command.ID );
+
+            switch( commandName )
+            {
+            case "File.SaveSelectedItemsAs":
+                _saveAsOldName = string.Empty;
+                break;
+
+            case "Edit.LineDown":
+                log.Add( message );
+                break;
+
+            default:
+                log.Add( message );
+                break;
+            }
+        }
+
 
         void IDisposable.Dispose()
         {
@@ -90,7 +168,10 @@ namespace swept.Addin
         private void Hear_DocumentSaved( Document doc )
         {
             string fileName = doc.FullName;
-            _adapter.Raise_FileSaved( fileName );
+            if( _saveAsOldName == string.Empty )
+                _adapter.Raise_FileSaved( fileName );
+            else
+                _adapter.Raise_FileSavedAs( _saveAsOldName, fileName );
         }
 
         private void Hear_ItemRenamed( ProjectItem item, string oldName )
@@ -98,24 +179,18 @@ namespace swept.Addin
             _adapter.Raise_FileRenamed( oldName, item.Name );
         }
 
-        //  above here, subscribed
-
-        // TODO--0.1: Hear_FileSavedAs
-        private void Hear_FileSavedAs( string oldName, string newName )
+        private void Hear_DocumentClosing( Document doc )
         {
-            _adapter.Raise_FileSavedAs( oldName, newName );
+            if( !doc.Saved )
+                _adapter.Raise_FileChangesAbandoned( doc.Name );
         }
 
-        // TODO--0.1: Hear_FilePasted
+        //  above here, subscribed
+
+        // TODO--0.2: Hear_FilePasted
         private void Hear_FilePasted( string fileName )
         {
             _adapter.Raise_FilePasted( fileName );
-        }
-
-        // TODO--0.1: Hear_FileChangesAbandoned( string fileName )
-        private void Hear_FileChangesAbandoned( string fileName )
-        {
-            _adapter.Raise_FileChangesAbandoned( fileName );
         }
 
         // TODO--0.2: determine if NonSourceGetsFocus is needed.
