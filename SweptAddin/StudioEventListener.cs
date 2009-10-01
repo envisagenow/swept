@@ -160,6 +160,8 @@ namespace swept.Addin
             taskWindow.Event_TaskListReset += _taskWindowForm.Hear_TaskListReset;
 
             _taskWindowForm.tasks.ItemCheck += Hear_ItemCheck;// taskWindow.Hear_TaskCheck;
+
+            _taskWindowForm.Show();
         }
 
         private void Hear_ItemCheck( object sender, ItemCheckEventArgs e )

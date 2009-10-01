@@ -71,6 +71,15 @@ namespace swept
             _sourceCatalog = port.SourceFileCatalog_FromXmlDocument( libraryDoc );
             _sourceCatalog.ChangeCatalog = _changeCatalog;
             _savedSourceCatalog = _sourceCatalog.Clone();
+
+            Raise_ChangeListUpdated();
+        }
+
+        public event EventHandler Event_ChangeListUpdated;
+        public void Raise_ChangeListUpdated()
+        {
+            if( Event_ChangeListUpdated != null )
+                Event_ChangeListUpdated( this, new EventArgs() );
         }
 
         private XmlDocument GetLibraryDocument()

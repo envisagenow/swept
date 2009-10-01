@@ -2,8 +2,6 @@
 //  This software is open source, under the terms of the MIT License.
 //  The MIT License, roughly:  Keep this notice.  Beyond that, do whatever you want with this code.
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace swept
 {
@@ -50,10 +48,16 @@ namespace swept
             ChangeWindow.Event_ChangeAdded += Librarian.Hear_ChangeAdded;
             ChangeWindow.Event_ChangeListUpdated += TaskWindow.Hear_ChangeListUpdated;
             ChangeWindow.Event_ChangeListUpdated += Librarian.Hear_ChangeListUpdated;
+
+            //  Subscribe to the Librarian's events
+            Librarian.Event_ChangeListUpdated += TaskWindow.Hear_ChangeListUpdated;
         }
 
         public void Stop()
         {
+            //  Unsubscribe from the Librarian's events
+            Librarian.Event_ChangeListUpdated -= TaskWindow.Hear_ChangeListUpdated;
+
             //  Unsubscribe from the ChangeWindow's events
             ChangeWindow.Event_ChangeAdded -= Librarian.Hear_ChangeAdded;
             ChangeWindow.Event_ChangeListUpdated -= TaskWindow.Hear_ChangeListUpdated;
