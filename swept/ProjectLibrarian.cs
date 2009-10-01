@@ -22,6 +22,7 @@ namespace swept
 
         internal IGUIAdapter _GUIAdapter;
         internal IFSAdapter _FSAdapter;
+
         public string SolutionPath { get; internal set; }
         public string LibraryPath
         {
@@ -93,7 +94,7 @@ namespace swept
             {
                 _GUIAdapter.BadXmlInExpectedLibrary( LibraryPath );
                 throw;
-                // Future: shut down addin
+                // TODO 0.3: Shut down addin cleanly
             }
 
             return doc;
@@ -189,7 +190,6 @@ namespace swept
             Persist();
         }
 
-        // TODO--trivial: remove all sender args from events
         #region Event Listeners
         public void Hear_SolutionOpened(object sender, FileEventArgs arg)
         {
@@ -213,7 +213,6 @@ namespace swept
 
         public void Hear_FileSavedAs(object sender, FileListEventArgs args)
         {
-            _GUIAdapter.DebugMessage( string.Format( "SaveFileAs( {0}, {1} )", args.Names[0], args.Names[1] ) );
             SaveFileAs(args.Names[0], args.Names[1]);
         }
 
@@ -250,8 +249,7 @@ namespace swept
 
             var port = new XmlPort();
 
-            // TODO--0.1: Save library with the correct filename
-            _FSAdapter.Save("swept.progress.library", port.ToText( this ));
+            _FSAdapter.Save( LibraryPath, port.ToText( this ) );
         }
     }
 }
