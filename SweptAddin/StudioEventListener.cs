@@ -87,7 +87,7 @@ namespace swept.Addin
 
         void hear_all_CommandEvents_before( string Guid, int ID, object CustomIn, object CustomOut, ref bool CancelDefault )
         {
-            if( ID == 2200 || ID == 337 || ID == 1627 ) return;
+            if (ID == 2200 || ID == 337 || ID == 1627 || ID == 1936) return;
 
             Command command = _studio.Commands.Item( Guid, ID );
             if( command == null )
@@ -97,8 +97,6 @@ namespace swept.Addin
             }
 
             string commandName = command.Name;
-            //if( commandName == "" || commandName == "Edit.GoToFindCombo" ) return;
-
             string message = string.Format( "Before [{0}] has guid [{1}] and id [{2}].", commandName, command.Guid, command.ID );
 
             switch( commandName )
@@ -115,29 +113,29 @@ namespace swept.Addin
 
         private void hear_all_CommandEvents_after( string Guid, int ID, object CustomIn, object CustomOut )
         {
-            if( ID == 2200 || ID == 337 || ID == 1627 ) return;
+            if( ID == 2200 || ID == 337 || ID == 1627 || ID == 1936 ) return;
 
             Command command = _studio.Commands.Item( Guid, ID );
             if( command == null ) return;
 
             string commandName = command.Name;
-            //if( commandName == "" || commandName == "Edit.GoToFindCombo" ) return;
 
             string message = string.Format( "After [{0}] has guid [{1}] and id [{2}].", commandName, command.Guid, command.ID );
 
-            switch( commandName )
+            switch (commandName)
             {
-            case "File.SaveSelectedItemsAs":
-                _saveAsOldName = string.Empty;
-                break;
+                case "File.SaveSelectedItemsAs":
+                    _saveAsOldName = string.Empty;
+                    break;
 
-            case "Edit.LineDown":
-                log.Add( message );
-                break;
+                case "Edit.LineDown":
+                    log.Add( message );
+                    Clipboard.SetText( string.Join( "\n", log.ToArray() ) );
+                    break;
 
-            default:
-                log.Add( message );
-                break;
+                default:
+                    log.Add( message );
+                    break;
             }
         }
         #endregion

@@ -22,6 +22,8 @@ namespace swept.Tests
             _starter.Start();
 
             _librarian = _starter.Librarian;
+            _librarian.SolutionPath = @"c:\code\path\to.sln";
+            
             _tasks = _starter.TaskWindow;
             _adapter = _starter.Adapter;
             _changes = _starter.ChangeWindow;

@@ -28,6 +28,7 @@ namespace swept.Tests
 
             librarian = starter.Librarian;
             adapter = starter.Adapter;
+            librarian.SolutionPath = @"c:\somewhere\for_the.sln";
 
             changeCat = librarian._changeCatalog;
             string indentID = "14";
@@ -36,6 +37,7 @@ namespace swept.Tests
 
             fileCat = librarian._sourceCatalog;
 
+            fileCat.SolutionPath = @"c:\somewhere\for_the.sln";
             fileName = "bari.cs";
             file = new SourceFile(fileName);
             file.Completions.Add(new Completion(indentID));

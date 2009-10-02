@@ -4,6 +4,7 @@
 using NUnit.Framework;
 using swept;
 using System;
+using NUnit.Framework.SyntaxHelpers;
 
 namespace swept.Tests
 {
@@ -26,6 +27,22 @@ namespace swept.Tests
             
             changeCat = new ChangeCatalog();
             fileCat.ChangeCatalog = changeCat;
+            fileCat.SolutionPath = @"c:\odd\location\for\my.sln";
+        }
+
+        [Test]
+        public void SolutionRelativeName_trims_path_in_common_with_solution()
+        {
+            string newFilePath = @"c:\odd\location\for\project\holding\my.cs";
+            Assert.That( fileCat.SolutionRelativeName( newFilePath ), Is.EqualTo( @"project\holding\my.cs" ) );
+        }
+
+        [Test]
+        public void SolutionRelativeName_does_not_alter_paths_of_external_files()
+        {
+            fileCat.SolutionPath = @"c:\odd\location\for\my.sln";
+            string newFilePath = @"c:\different\odd\location\for\project\holding\my.cs";
+            Assert.That( fileCat.SolutionRelativeName( newFilePath ), Is.EqualTo( newFilePath ) );
         }
 
         [Test]

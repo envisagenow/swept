@@ -23,7 +23,21 @@ namespace swept
         internal IGUIAdapter _GUIAdapter;
         internal IFSAdapter _FSAdapter;
 
-        public string SolutionPath { get; internal set; }
+        private string _solutionPath;
+        public string SolutionPath
+        {
+            get
+            {
+                return _solutionPath;
+            }
+            internal set
+            {
+                _solutionPath = value;
+                _sourceCatalog.SolutionPath = _solutionPath;
+                _savedSourceCatalog.SolutionPath = _solutionPath;
+            }
+        }
+
         public string LibraryPath
         {
             get { return Path.ChangeExtension(SolutionPath, "swept.library"); }
@@ -61,16 +75,17 @@ namespace swept
         private void OpenSolution(string solutionPath)
         {
             SolutionPath = solutionPath;
-            XmlPort port = new XmlPort();
 
             XmlDocument libraryDoc = GetLibraryDocument();
 
+            XmlPort port = new XmlPort();
             _changeCatalog = port.ChangeCatalog_FromXmlDocument( libraryDoc );
 
             _savedChangeCatalog = _changeCatalog.Clone();
 
             _sourceCatalog = port.SourceFileCatalog_FromXmlDocument( libraryDoc );
             _sourceCatalog.ChangeCatalog = _changeCatalog;
+            _sourceCatalog.SolutionPath = SolutionPath;
             _savedSourceCatalog = _sourceCatalog.Clone();
 
             Raise_ChangeListUpdated();

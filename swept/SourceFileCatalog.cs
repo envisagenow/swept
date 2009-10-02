@@ -3,6 +3,7 @@
 //  The MIT License, roughly:  Keep this notice.  Beyond that, do whatever you want with this code.
 using System.Collections.Generic;
 using System;
+using System.IO;
 
 namespace swept
 {
@@ -11,6 +12,8 @@ namespace swept
         internal List<SourceFile> Files;
         public ChangeCatalog ChangeCatalog;
         public IGUIAdapter AdaptGUI;
+
+        public string SolutionPath { get; set; }
 
         public SourceFileCatalog()
         {
@@ -22,6 +25,7 @@ namespace swept
             SourceFileCatalog newCatalog = new SourceFileCatalog { ChangeCatalog = ChangeCatalog };
 
             Files.ForEach( file => newCatalog.Files.Add( file.Clone() ) );
+            newCatalog.SolutionPath = SolutionPath;
 
             return newCatalog;
         }
@@ -75,17 +79,28 @@ namespace swept
 
         internal SourceFile Fetch( string name )
         {
-            SourceFile foundFile = Find( name );
+            string relativeFileName = SolutionRelativeName( name );
+            SourceFile foundFile = Find( relativeFileName );
 
             if( foundFile == null )
             {
-                foundFile = new SourceFile( name );
+                foundFile = new SourceFile( relativeFileName );
                 Files.Add( foundFile );
             }
 
             MaintainHistory( foundFile );
 
             return foundFile;
+        }
+
+        internal string SolutionRelativeName( string name )
+        {
+            string solutionDir = Path.GetDirectoryName( SolutionPath );
+
+            if (name.Length < solutionDir.Length || name.Substring( 0, solutionDir.Length ) != solutionDir)
+                return name;
+
+            return name.Substring( solutionDir.Length + 1 );
         }
 
         private void MaintainHistory( SourceFile foundFile )
