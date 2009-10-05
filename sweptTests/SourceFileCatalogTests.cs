@@ -4,7 +4,7 @@
 using NUnit.Framework;
 using swept;
 using System;
-using NUnit.Framework.SyntaxHelpers;
+//using NUnit.Framework.SyntaxHelpers;
 
 namespace swept.Tests
 {

@@ -17,9 +17,13 @@ namespace swept.Addin
 
         public void Hear_TaskListReset( object objNewTasks, EventArgs e )
         {
-            List<Task> newTasks = (List<Task>)objNewTasks;
+            List<Task> newTasks = (List<Task>)objNewTasks;  //here
             tasks.Items.Clear();
-            newTasks.ForEach( task => tasks.Items.Add( task ) );
+
+            foreach( Task task in newTasks )
+                tasks.Items.Add( task, task.Completed );
+
+            this.Refresh();
         }
 
         private void tasks_SelectedIndexChanged( object sender, EventArgs e )

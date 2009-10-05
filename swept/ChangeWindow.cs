@@ -29,11 +29,11 @@ namespace swept
             Raise_ChangeListUpdated();
         }
 
-        public event EventHandler Event_ChangeListUpdated;
+        public event EventHandler<ChangeCatalogEventArgs> Event_ChangeListUpdated;
         public void Raise_ChangeListUpdated()
         {
             if (Event_ChangeListUpdated != null)
-                Event_ChangeListUpdated(this, new EventArgs());
+                Event_ChangeListUpdated(this, new ChangeCatalogEventArgs{ Catalog = ChangeCatalog } );
         }
         #endregion
     }

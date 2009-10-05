@@ -88,14 +88,22 @@ namespace swept
             _sourceCatalog.SolutionPath = SolutionPath;
             _savedSourceCatalog = _sourceCatalog.Clone();
 
-            Raise_ChangeListUpdated();
+            Raise_ChangeCatalogUpdated();
+            Raise_SourceCatalogUpdated();
         }
 
-        public event EventHandler Event_ChangeListUpdated;
-        public void Raise_ChangeListUpdated()
+        public event EventHandler<ChangeCatalogEventArgs> Event_ChangeCatalogUpdated;
+        public void Raise_ChangeCatalogUpdated()
         {
-            if( Event_ChangeListUpdated != null )
-                Event_ChangeListUpdated( this, new EventArgs() );
+            if( Event_ChangeCatalogUpdated != null )
+                Event_ChangeCatalogUpdated( this, new ChangeCatalogEventArgs { Catalog = _changeCatalog } );
+        }
+
+        public event EventHandler<SourceCatalogEventArgs> Event_SourceCatalogUpdated;
+        public void Raise_SourceCatalogUpdated()
+        {
+            if( Event_SourceCatalogUpdated != null )
+                Event_SourceCatalogUpdated( this, new SourceCatalogEventArgs { Catalog = _sourceCatalog } );
         }
 
         private XmlDocument GetLibraryDocument()

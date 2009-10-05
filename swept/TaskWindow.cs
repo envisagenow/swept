@@ -67,7 +67,6 @@ namespace swept
         {
             ShowFile( _fileCatalog.Fetch( fileName ) );
         }
-
         public void ShowFile( SourceFile file )
         {
             List<Change> changes = _changeCatalog.GetChangesForFile( file );
@@ -76,16 +75,22 @@ namespace swept
         internal void ShowFile( SourceFile file, List<Change> changes )
         {
             CurrentFile = file;
-            ListTasks( changes );
+            SetTasksFromChanges( changes );
         }
 
-        public void RefreshChangeList()
+        public void RefreshChangeCatalog( ChangeCatalog catalog )
         {
+            _changeCatalog = catalog;
             List<Change> changes = _changeCatalog.GetChangesForFile( CurrentFile );
-            ListTasks( changes );
+            SetTasksFromChanges( changes );
         }
 
-        private void ListTasks( List<Change> changes )
+        public void RefreshSourceCatalog( SourceFileCatalog catalog )
+        {
+            _fileCatalog = catalog;
+        }
+
+        private void SetTasksFromChanges( List<Change> changes )
         {
             Tasks.Clear();
 
@@ -112,7 +117,7 @@ namespace swept
         public void Raise_TaskListReset()
         {
             if( Event_TaskListReset != null )
-                Event_TaskListReset( Tasks, new EventArgs { } );
+                Event_TaskListReset( Tasks, null );
         }
 
         #endregion
@@ -131,9 +136,14 @@ namespace swept
             ShowFile( null, new List<Change>() );
         }
 
-        public void Hear_ChangeListUpdated( object sender, EventArgs args )
+        public void Hear_ChangeCatalogUpdated( object sender, ChangeCatalogEventArgs args )
         {
-            RefreshChangeList();
+            RefreshChangeCatalog( args.Catalog );
+        }
+
+        public void Hear_SourceCatalogUpdated( object sender, SourceCatalogEventArgs args )
+        {
+            RefreshSourceCatalog( args.Catalog );
         }
 
         public void Hear_TaskWindowToggled( object sender, EventArgs args )
@@ -146,6 +156,7 @@ namespace swept
             SetTaskCompletion( args.Task, args.Checked );
         }
         #endregion
+
 
     }
 }

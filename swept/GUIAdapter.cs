@@ -31,7 +31,7 @@ namespace swept
 
         public void DebugMessage( string message )
         {
-            MessageBox.Show( message );
+            //MessageBox.Show( message );
         }
     }
 }

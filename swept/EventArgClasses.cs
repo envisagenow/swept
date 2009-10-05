@@ -21,6 +21,16 @@ namespace swept
         public Change change;
     }
 
+    public class ChangeCatalogEventArgs : EventArgs
+    {
+        public ChangeCatalog Catalog;
+    }
+
+    public class SourceCatalogEventArgs : EventArgs
+    {
+        public SourceFileCatalog Catalog;
+    }
+
     public class TaskEventArgs : EventArgs
     {
         public Task Task;

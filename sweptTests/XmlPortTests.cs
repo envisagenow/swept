@@ -87,15 +87,47 @@ namespace swept.Tests
             return port.SourceFileCatalog_FromText(catalogText);
         }
 
-
         [Test]
         public void SourceFileCatalog_FromXmlText_gets_all_Files()
         {
             SourceFileCatalog cat = get_testing_SourceFileCatalog();
-            Assert.AreEqual(2, cat.Files.Count);
+            Assert.AreEqual( 2, cat.Files.Count );
 
             SourceFile bar_cs = cat.Files[0];
-            Assert.AreEqual("bar.cs", bar_cs.Name);
+            Assert.AreEqual( "bar.cs", bar_cs.Name );
+            Assert.That( bar_cs.Completions.Count, Is.EqualTo( 2 ) );
+        }
+
+
+        private SourceFileCatalog get_full_library_SourceFileCatalog()
+        {
+            string catalogText =
+@"<SweptProjectData>
+<ChangeCatalog>
+    <Change ID='007' Description='Bond.  James Bond.' Language='CSharp' />
+    <Change ID='P-01' Description='Possible task' Language='CSharp' />
+    <Change ID='Hard1' Description='This is hard' Language='CSharp' />
+</ChangeCatalog>
+<SourceFileCatalog>
+    <SourceFile Name='SymbolReplacer\Replacer.cs'>
+        <Completion ID='007' />
+    </SourceFile>
+    <SourceFile Name='SymbolReplacerTests\ReplacerTests.cs'>
+        <Completion ID='P-01' />
+    </SourceFile>
+</SourceFileCatalog>
+</SweptProjectData>";
+
+            return port.SourceFileCatalog_FromText( catalogText );
+        }
+        [Test]
+        public void SourceFileCatalog_From_demo_gets_all_Files()
+        {
+            SourceFileCatalog cat = get_full_library_SourceFileCatalog();
+            Assert.AreEqual( 2, cat.Files.Count );
+
+            SourceFile replacer_cs = cat.Files[0];
+            Assert.That( replacer_cs.Completions.Count, Is.EqualTo( 1 ) );
         }
 
         [Test]

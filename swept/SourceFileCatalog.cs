@@ -97,6 +97,9 @@ namespace swept
         {
             string solutionDir = Path.GetDirectoryName( SolutionPath );
 
+            if( string.IsNullOrEmpty( solutionDir ) )
+                return name;
+
             if (name.Length < solutionDir.Length || name.Substring( 0, solutionDir.Length ) != solutionDir)
                 return name;
 

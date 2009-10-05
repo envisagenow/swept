@@ -1,16 +1,12 @@
 ﻿using System;
 using EnvDTE80;
 using EnvDTE;
-using Microsoft.VisualStudio;
-using Microsoft.VisualStudio.Shell.Interop;
-using Microsoft.VisualStudio.Shell;
 using System.Collections.Generic;
 using System.Windows.Forms;
-//using System.Windows.Forms;
 
 namespace swept.Addin
 {
-    public class StudioEventListener : IDisposable
+    internal class StudioEventListener : IDisposable
     {
         private DTE2 _studio;
         private StudioAdapter _adapter;
@@ -153,6 +149,11 @@ namespace swept.Addin
             _taskWindowForm.Show();
         }
 
+        private static void describeException( Exception e )
+        {
+            MessageBox.Show( string.Format( "Caught {0}: {1}", e.Message, e.StackTrace ) );
+        }
+
         private void Hear_ItemCheck( object sender, ItemCheckEventArgs e )
         {
             TaskEventArgs args = new TaskEventArgs{ 
@@ -169,38 +170,84 @@ namespace swept.Addin
         
         public void Hear_SolutionOpened()
         {
-            _adapter.Raise_SolutionOpened( _studio.Solution.FileName );
+            try
+            {
+                _adapter.Raise_SolutionOpened( _studio.Solution.FileName );
+            }
+            catch( Exception e )
+            {
+                describeException( e );
+            }
+
         }
 
         public void Hear_SolutionRenamed( string oldName )
         {
-            _adapter.Raise_SolutionRenamed( oldName, _studio.Solution.FileName );
+            try
+            {
+                _adapter.Raise_SolutionRenamed( oldName, _studio.Solution.FileName );
+            }
+            catch( Exception e )
+            {
+                describeException( e );
+            }
+
         }
 
 
         private void Hear_WindowActivated( Window GotFocus, Window LostFocus )
         {
-            _adapter.Raise_FileGotFocus( GotFocus.Document.FullName );
+            try
+            {
+                if( GotFocus.Document == null ) return;
+                // TODO--0.2: Further checks on nature of document, skip some?
+                _adapter.Raise_FileGotFocus( GotFocus.Document.FullName );
+            }
+            catch( Exception e )
+            {
+                describeException( e );
+            }
         }
 
         private void Hear_DocumentSaved( Document doc )
         {
-            string fileName = doc.FullName;
-            if( _saveAsOldName == string.Empty )
-                _adapter.Raise_FileSaved( fileName );
-            else
-                _adapter.Raise_FileSavedAs( _saveAsOldName, fileName );
+            try
+            {
+                string fileName = doc.FullName;
+                if( _saveAsOldName == string.Empty )
+                    _adapter.Raise_FileSaved( fileName );
+                else
+                    _adapter.Raise_FileSavedAs( _saveAsOldName, fileName );
+            }
+            catch( Exception e )
+            {
+                describeException( e );
+            }
         }
 
         private void Hear_ItemRenamed( ProjectItem item, string oldName )
         {
-            _adapter.Raise_FileRenamed( oldName, item.Name );
+            try
+            {
+                _adapter.Raise_FileRenamed( oldName, item.Name );
+            }
+            catch( Exception e )
+            {
+                describeException( e );
+            }
         }
 
         private void Hear_DocumentClosing( Document doc )
         {
-            if( !doc.Saved )
-                _adapter.Raise_FileChangesAbandoned( doc.Name );
+            try
+            {
+                if( !doc.Saved )
+                    _adapter.Raise_FileChangesAbandoned( doc.Name );
+            }
+            catch( Exception e )
+            {
+                describeException( e );
+            }
         }
 
         //  above here, subscribed

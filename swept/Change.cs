@@ -8,7 +8,7 @@ namespace swept
     public class Change
     {
         protected internal string ID;
-        protected internal string Description;
+        public string Description;
         protected internal FileLanguage Language;
 
         protected internal Change() { }

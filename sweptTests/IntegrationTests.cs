@@ -46,5 +46,25 @@ namespace swept.Tests
             Assert.IsFalse( _librarian.IsSaved );
         }
 
+        [Test]
+        public void When_SolutionOpened_all_source_catalog_references_updated()
+        {
+            SourceFileCatalog oldCatalog = _librarian._sourceCatalog;
+            _adapter.Raise_SolutionOpened( @"c:\different\place\for.sln" );
+            SourceFileCatalog newCatalog = _librarian._sourceCatalog;
+            Assert.That( newCatalog, Is.Not.EqualTo( oldCatalog ) );
+            Assert.That( newCatalog, Is.EqualTo( _tasks._fileCatalog ) );
+        }
+
+        [Test]
+        public void When_SolutionOpened_all_change_catalog_references_updated()
+        {
+            ChangeCatalog oldCatalog = _librarian._changeCatalog;
+            _adapter.Raise_SolutionOpened( @"c:\different\place\for.sln" );
+            ChangeCatalog newCatalog = _librarian._changeCatalog;
+            Assert.That( newCatalog, Is.Not.EqualTo( oldCatalog ) );
+            Assert.That( newCatalog, Is.EqualTo( _tasks._changeCatalog ) );
+        }
+
     }
 }

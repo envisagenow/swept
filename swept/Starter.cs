@@ -46,21 +46,22 @@ namespace swept
 
             //  Subscribe to the ChangeWindow's events
             ChangeWindow.Event_ChangeAdded += Librarian.Hear_ChangeAdded;
-            ChangeWindow.Event_ChangeListUpdated += TaskWindow.Hear_ChangeListUpdated;
+            ChangeWindow.Event_ChangeListUpdated += TaskWindow.Hear_ChangeCatalogUpdated;
             ChangeWindow.Event_ChangeListUpdated += Librarian.Hear_ChangeListUpdated;
 
             //  Subscribe to the Librarian's events
-            Librarian.Event_ChangeListUpdated += TaskWindow.Hear_ChangeListUpdated;
+            Librarian.Event_ChangeCatalogUpdated += TaskWindow.Hear_ChangeCatalogUpdated;
+            Librarian.Event_SourceCatalogUpdated += TaskWindow.Hear_SourceCatalogUpdated;
         }
 
         public void Stop()
         {
             //  Unsubscribe from the Librarian's events
-            Librarian.Event_ChangeListUpdated -= TaskWindow.Hear_ChangeListUpdated;
+            Librarian.Event_ChangeCatalogUpdated -= TaskWindow.Hear_ChangeCatalogUpdated;
 
             //  Unsubscribe from the ChangeWindow's events
             ChangeWindow.Event_ChangeAdded -= Librarian.Hear_ChangeAdded;
-            ChangeWindow.Event_ChangeListUpdated -= TaskWindow.Hear_ChangeListUpdated;
+            ChangeWindow.Event_ChangeListUpdated -= TaskWindow.Hear_ChangeCatalogUpdated;
             ChangeWindow.Event_ChangeListUpdated -= Librarian.Hear_ChangeListUpdated;
 
             //  Unsubscribe from the TaskWindow's events
