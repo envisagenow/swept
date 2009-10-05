@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using NUnit.Framework;
 using swept.Addin;
+using NUnit.Framework.SyntaxHelpers;
 
 namespace swept.Tests
 {

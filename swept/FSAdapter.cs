@@ -29,10 +29,9 @@ namespace swept
 
         public void Save(string fileName, string xmlText)
         {
-            throw new NotImplementedException("I can't save to disk yet");
-
-            //FileInfo fi = new FileInfo( fileName );
-            //TextWriter writer = fi.CreateText();
+            var doc = new XmlDocument();
+            doc.LoadXml( xmlText );
+            doc.Save( fileName );
         }
 
         public XmlDocument LoadLibrary( string libraryPath )

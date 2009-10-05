@@ -191,17 +191,17 @@ namespace swept.Addin
             {
                 describeException( e );
             }
-
         }
-
 
         private void Hear_WindowActivated( Window GotFocus, Window LostFocus )
         {
             try
             {
-                if( GotFocus.Document == null ) return;
                 // TODO--0.2: Further checks on nature of document, skip some?
-                _adapter.Raise_FileGotFocus( GotFocus.Document.FullName );
+                if (GotFocus.Document == null)
+                    _adapter.Raise_NonSourceGetsFocus();
+                else
+                    _adapter.Raise_FileGotFocus( GotFocus.Document.FullName );
             }
             catch( Exception e )
             {
@@ -256,18 +256,6 @@ namespace swept.Addin
         private void Hear_FilePasted( string fileName )
         {
             _adapter.Raise_FilePasted( fileName );
-        }
-
-        // TODO--0.2: determine if NonSourceGetsFocus is needed.
-        private void Hear_NonSourceGetsFocus()
-        {
-            _adapter.Raise_NonSourceGetsFocus();
-        }
-
-        // TODO--0.2: Hear_FileDeleted
-        private void Hear_FileDeleted( string fileName )
-        {
-            _adapter.Raise_FileDeleted( fileName );
         }
 
         //Will this be covered by individual file save events?  _adapter.RaiseSolutionSaved()

@@ -31,10 +31,11 @@ namespace swept.Addin
             // 
             // tasks
             // 
+            this.tasks.CheckOnClick = true;
             this.tasks.FormattingEnabled = true;
-            this.tasks.Location = new System.Drawing.Point( 67, 39 );
+            this.tasks.Location = new System.Drawing.Point( 2, 2 );
             this.tasks.Name = "tasks";
-            this.tasks.Size = new System.Drawing.Size( 582, 274 );
+            this.tasks.Size = new System.Drawing.Size( 678, 364 );
             this.tasks.TabIndex = 0;
             this.tasks.SelectedIndexChanged += new System.EventHandler( this.tasks_SelectedIndexChanged );
             // 
@@ -42,7 +43,7 @@ namespace swept.Addin
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF( 6F, 13F );
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size( 692, 374 );
+            this.ClientSize = new System.Drawing.Size( 682, 369 );
             this.Controls.Add( this.tasks );
             this.Name = "TaskWindow_GUI";
             this.Text = "Swept Tasks";

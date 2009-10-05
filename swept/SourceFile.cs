@@ -81,10 +81,9 @@ namespace swept
 
         public void AdjustCompletionFrom(Task alteredTask)
         {
+            Completions.RemoveAll( c => c.ChangeID == alteredTask.ID );
             if (alteredTask.Completed)
                 Completions.Add(new Completion(alteredTask.ID));
-            else
-                Completions.RemoveAll(c => c.ChangeID == alteredTask.ID);
         }
 
         public void AddNewCompletion( string changeID )
@@ -107,7 +106,6 @@ namespace swept
                     return false;
             }
 
-            //compare completions...
             return true;
         }
     }

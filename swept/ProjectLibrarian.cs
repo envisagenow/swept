@@ -117,7 +117,7 @@ namespace swept
             {
                 _GUIAdapter.BadXmlInExpectedLibrary( LibraryPath );
                 throw;
-                // TODO 0.3: Shut down addin cleanly
+                // TODO--0.3: Shut down addin cleanly on bad library XML
             }
 
             return doc;
