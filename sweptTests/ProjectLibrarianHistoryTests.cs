@@ -10,11 +10,11 @@ namespace swept.Tests
     {
         string _testingSolutionPath;
         ProjectLibrarian Horace;
-        MockFSAdapter _FSAdapter;
+        MockStorageAdapter _storageAdapter;
 
         Change historicalChange;
         SourceFile foo;
-        MockGUIAdapter talker;
+        MockUserAdapter talker;
 
 
         [SetUp]
@@ -23,9 +23,9 @@ namespace swept.Tests
             _testingSolutionPath = @"f:\over\here.sln";
             Horace = new ProjectLibrarian { SolutionPath = _testingSolutionPath };
 
-            _FSAdapter = new MockFSAdapter();
-            Horace._FSAdapter = _FSAdapter;
-            Horace._GUIAdapter = new MockGUIAdapter();
+            _storageAdapter = new MockStorageAdapter();
+            Horace._storageAdapter = _storageAdapter;
+            Horace._userAdapter = new MockUserAdapter();
 
 
             historicalChange = new Change( "14", "here I am", FileLanguage.CSharp );
@@ -36,8 +36,8 @@ namespace swept.Tests
 
             Horace._changeCatalog.Remove( "14" );
 
-            talker = new MockGUIAdapter();
-            Horace._GUIAdapter = talker;
+            talker = new MockUserAdapter();
+            Horace._userAdapter = talker;
 
         }
 

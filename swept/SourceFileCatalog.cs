@@ -11,7 +11,7 @@ namespace swept
     {
         internal List<SourceFile> Files;
         public ChangeCatalog ChangeCatalog;
-        public IGUIAdapter AdaptGUI;
+        public IUserAdapter UserAdapter;
 
         public string SolutionPath { get; set; }
 
@@ -110,7 +110,7 @@ namespace swept
         {
             if( !foundFile.IsRemoved ) return;
 
-            if( !AdaptGUI.KeepSourceFileHistory( foundFile ) )
+            if( !UserAdapter.KeepSourceFileHistory( foundFile ) )
             {
                 foundFile.Completions.Clear();
             }

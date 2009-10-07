@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.21022</ProductVersion>
+    <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{BC619D2C-C72E-4111-9489-E353B858A712}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -64,14 +64,14 @@
     <Compile Include="Change.cs" />
     <Compile Include="ChangeCatalog.cs" />
     <Compile Include="ChangeWindow.cs" />
-    <Compile Include="GUIAdapter.cs" />
+    <Compile Include="UserGUIAdapter.cs" />
     <Compile Include="StudioAdapter.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="EventArgClasses.cs" />
-    <Compile Include="IGUIAdapter.cs" />
-    <Compile Include="IFSAdapter.cs" />
-    <Compile Include="FSAdapter.cs" />
+    <Compile Include="IUserAdapter.cs" />
+    <Compile Include="IStorageAdapter.cs" />
+    <Compile Include="StorageAdapter.cs" />
     <Compile Include="Starter.cs" />
     <Compile Include="Task.cs" />
     <Compile Include="Completion.cs" />
@@ -110,7 +110,8 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <None Include="swept_diagram.cd" />
+    <None Include="diagrams\z_GUI_connection.cd" />
+    <None Include="diagrams\swept_diagram.cd" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

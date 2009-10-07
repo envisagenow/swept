@@ -41,16 +41,16 @@ namespace swept.Tests
             fileName = "bari.cs";
             file = new SourceFile(fileName);
             file.Completions.Add(new Completion(indentID));
-            fileCat.Files.Add(file);
+            fileCat.Add(file);
 
-            MockFSAdapter writer = new MockFSAdapter();
-            librarian._FSAdapter = writer;
+            MockStorageAdapter writer = new MockStorageAdapter();
+            librarian._storageAdapter = writer;
             librarian._savedSourceCatalog = fileCat.Clone();
             librarian.SolutionPath = "mockpath";
             librarian.Persist();
 
             _taskWindow = adapter.taskWindow;
-            _taskWindow._GUIAdapter = new MockGUIAdapter();
+            _taskWindow._GUIAdapter = new MockUserAdapter();
 
             changeWindow = adapter.changeWindow;
         }
@@ -93,8 +93,8 @@ namespace swept.Tests
         {
             changeCat.Remove("14");
 
-            MockGUIAdapter mockGUI = new MockGUIAdapter();
-            adapter.Librarian._GUIAdapter = mockGUI;
+            MockUserAdapter mockGUI = new MockUserAdapter();
+            adapter.Librarian._userAdapter = mockGUI;
             //  When the dialog is presented, the 'user' responds 'keep', for this test
             mockGUI.KeepHistoricalResponse = true;
 
@@ -113,8 +113,8 @@ namespace swept.Tests
         {
             changeCat.Remove("14");
 
-            MockGUIAdapter mockGUI = new MockGUIAdapter();
-            adapter.Librarian._GUIAdapter = mockGUI;
+            MockUserAdapter mockGUI = new MockUserAdapter();
+            adapter.Librarian._userAdapter = mockGUI;
             //  When the dialog is presented, the 'user' responds 'remove', for this test
             mockGUI.KeepHistoricalResponse = false;
 

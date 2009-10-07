@@ -20,8 +20,8 @@ namespace swept
         internal SourceFileCatalog _sourceCatalog;
         internal SourceFileCatalog _savedSourceCatalog;  //  For comparison to find unsaved changes.
 
-        internal IGUIAdapter _GUIAdapter;
-        internal IFSAdapter _FSAdapter;
+        internal IUserAdapter _userAdapter;
+        internal IStorageAdapter _storageAdapter;
 
         private string _solutionPath;
         public string SolutionPath
@@ -49,8 +49,8 @@ namespace swept
             _savedSourceCatalog = new SourceFileCatalog();
             _savedChangeCatalog = new ChangeCatalog();
             _changeCatalog = new ChangeCatalog();
-            _GUIAdapter = new GUIAdapter();
-            _FSAdapter = new FSAdapter();
+            _userAdapter = new UserGUIAdapter();
+            _storageAdapter = new StorageAdapter();
         }
 
         internal bool SourceFileCatalogSaved
@@ -111,11 +111,11 @@ namespace swept
             XmlDocument doc;
             try
             {
-                doc = _FSAdapter.LoadLibrary( LibraryPath );
+                doc = _storageAdapter.LoadLibrary( LibraryPath );
             }
             catch( XmlException )
             {
-                _GUIAdapter.BadXmlInExpectedLibrary( LibraryPath );
+                _userAdapter.BadXmlInExpectedLibrary( LibraryPath );
                 throw;
                 // TODO--0.3: Shut down addin cleanly on bad library XML
             }
@@ -125,7 +125,7 @@ namespace swept
 
         private void SaveFile(string fileName)
         {
-            _GUIAdapter.DebugMessage( string.Format( "Raise_FileSaved( {0} )", fileName ) );
+            _userAdapter.DebugMessage( string.Format( "Raise_FileSaved( {0} )", fileName ) );
 
             SourceFile workingFile = _sourceCatalog.Fetch(fileName);
             SourceFile diskFile = _savedSourceCatalog.Fetch(fileName);
@@ -189,7 +189,7 @@ namespace swept
             List<SourceFile> filesWithHistory = _sourceCatalog.Files.FindAll(file => file.Completions.Exists(c => c.ChangeID == change.ID));
             if (filesWithHistory.Count > 0)
             {
-                bool keep = _GUIAdapter.KeepChangeHistory(change);
+                bool keep = _userAdapter.KeepChangeHistory(change);
 
                 //if discard, sweep them out of the file catalogs.
                 if (!keep)
@@ -272,7 +272,7 @@ namespace swept
 
             var port = new XmlPort();
 
-            _FSAdapter.Save( LibraryPath, port.ToText( this ) );
+            _storageAdapter.Save( LibraryPath, port.ToText( this ) );
         }
     }
 }

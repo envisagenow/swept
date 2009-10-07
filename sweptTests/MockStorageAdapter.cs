@@ -6,15 +6,15 @@ using System.Xml;
 
 namespace swept.Tests
 {
-    class MockFSAdapter : IFSAdapter
+    class MockStorageAdapter : IStorageAdapter
     {
         public string FileName { get; set; }
         public XmlDocument LibraryDoc { get; set; }
         public bool ThrowBadXmlException;
 
-        public MockFSAdapter()
+        public MockStorageAdapter()
         {
-            setDocFromText( FSAdapter.emptyCatalogText );
+            setDocFromText( StorageAdapter.emptyCatalogText );
         }
 
         public void Save(string fileName, string xmlText)

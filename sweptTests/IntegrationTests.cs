@@ -3,7 +3,7 @@
 //  The MIT License, roughly:  Keep this notice.  Beyond that, do whatever you want with this code.
 using System;
 using NUnit.Framework;
-using NUnit.Framework.SyntaxHelpers;
+//using NUnit.Framework.SyntaxHelpers;
 
 namespace swept.Tests
 {

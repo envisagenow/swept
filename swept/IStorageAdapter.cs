@@ -6,7 +6,7 @@ using System.Xml;
 
 namespace swept
 {
-    public interface IFSAdapter
+    public interface IStorageAdapter
     {
         void Save( string fileName, string xmlText );
         XmlDocument LoadLibrary(string libraryPath);

@@ -11,7 +11,7 @@ namespace swept
 
         public int ChangeCount
         {
-            get { return ChangeCatalog.changes.Count; }
+            get { return ChangeCatalog._changes.Count; }
         }
 
         public void AddChange(Change change)

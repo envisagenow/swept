@@ -56,11 +56,11 @@ namespace swept.Tests
         [Test]
         public void ChangeWindow_AddChange_AddsToCatalog()
         {
-            Assert.AreEqual(1, changeCat.changes.Count);
+            Assert.AreEqual(1, changeCat._changes.Count);
 
             changeWindow.AddChange(new Change("99", "More widgets", FileLanguage.HTML));
 
-            Assert.AreEqual(2, changeCat.changes.Count);
+            Assert.AreEqual(2, changeCat._changes.Count);
         }
 
     }

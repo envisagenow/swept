@@ -4,7 +4,6 @@
 using NUnit.Framework;
 using swept;
 using System;
-using NUnit.Framework.SyntaxHelpers;
 //using NUnit.Framework.SyntaxHelpers;
 
 namespace swept.Tests
@@ -69,8 +68,8 @@ namespace swept.Tests
             
             fileCat.Remove( bariFile );
 
-            MockGUIAdapter mockGUI = new MockGUIAdapter();
-            fileCat.AdaptGUI = mockGUI;
+            MockUserAdapter mockGUI = new MockUserAdapter();
+            fileCat.UserAdapter = mockGUI;
 
             //  When the dialog is presented, the 'user' responds 'keep', for this test
             mockGUI.KeepHistoricalResponse = true;
@@ -94,8 +93,8 @@ namespace swept.Tests
 
             fileCat.Remove( bariFile );
 
-            MockGUIAdapter mockGUI = new MockGUIAdapter();
-            fileCat.AdaptGUI = mockGUI;
+            MockUserAdapter mockGUI = new MockUserAdapter();
+            fileCat.UserAdapter = mockGUI;
 
             //  When the dialog is presented, the 'user' responds 'discard', for this test
             mockGUI.KeepHistoricalResponse = false;
@@ -210,9 +209,9 @@ namespace swept.Tests
         [Test]
         public void CanRemove_ExistingFile()
         {
-            var adapter = new MockGUIAdapter();
+            var adapter = new MockUserAdapter();
             adapter.KeepHistoricalResponse = false;
-            fileCat.AdaptGUI = adapter;
+            fileCat.UserAdapter = adapter;
 
             string blueName = "blue.cs";
             SourceFile blue = fileCat.Fetch(blueName);

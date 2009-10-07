@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.Xml;
-using System.Xml.Linq;
 
 namespace swept
 {
@@ -26,7 +25,7 @@ namespace swept
         {
             string catalogLabel = "ChangeCatalog";
             string xmlText = String.Format("<{0}>\r\n", catalogLabel);
-            foreach (KeyValuePair<string, Change> pair in changeCatalog.changes)
+            foreach (KeyValuePair<string, Change> pair in changeCatalog._changes)
             {
                 xmlText += ToText( pair.Value );
             }

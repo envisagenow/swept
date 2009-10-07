@@ -136,11 +136,11 @@ namespace swept.Tests
             cat.Add( a_117 );
             cat.Add( a_18 );
 
-            Assert.AreEqual( 0, cat.changes.IndexOfKey( a_117.ID ) );
-            Assert.AreEqual( 1, cat.changes.IndexOfKey( a_17.ID ) );
-            Assert.AreEqual( 2, cat.changes.IndexOfKey( a_177.ID ) );
-            Assert.AreEqual( 3, cat.changes.IndexOfKey( a_18.ID ) );
-            Assert.AreEqual( 4, cat.changes.IndexOfKey( b_52.ID ) );
+            Assert.AreEqual( 0, cat._changes.IndexOfKey( a_117.ID ) );
+            Assert.AreEqual( 1, cat._changes.IndexOfKey( a_17.ID ) );
+            Assert.AreEqual( 2, cat._changes.IndexOfKey( a_177.ID ) );
+            Assert.AreEqual( 3, cat._changes.IndexOfKey( a_18.ID ) );
+            Assert.AreEqual( 4, cat._changes.IndexOfKey( b_52.ID ) );
         }
 
 
@@ -163,7 +163,7 @@ namespace swept.Tests
 
             ChangeCatalog catClone = cat.Clone();
             Assert.AreNotSame( cat, catClone );
-            Assert.IsEmpty( cat.changes );
+            Assert.IsEmpty( cat._changes );
         }
 
         [Test]
@@ -171,7 +171,7 @@ namespace swept.Tests
         {
             ChangeCatalog catClone = cat.Clone();
             Assert.AreNotSame( cat, catClone );
-            Assert.AreEqual( 3, catClone.changes.Count );
+            Assert.AreEqual( 3, catClone._changes.Count );
         }
     }
 }

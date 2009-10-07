@@ -5,7 +5,7 @@ using System;
 
 namespace swept
 {
-    public interface IGUIAdapter
+    public interface IUserAdapter
     {
         bool KeepChangeHistory( Change historicalChange );
         bool KeepSourceFileHistory( SourceFile historicalFile );

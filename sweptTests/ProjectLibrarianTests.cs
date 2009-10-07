@@ -14,7 +14,7 @@ namespace swept.Tests
         private ProjectLibrarian Horace;
 
         private string _testingSolutionPath;
-        private MockFSAdapter _FSAdapter;
+        private MockStorageAdapter _FSAdapter;
 
         [SetUp]
         public void Setup()
@@ -22,9 +22,9 @@ namespace swept.Tests
             _testingSolutionPath = @"f:\over\here.sln";
             Horace = new ProjectLibrarian { SolutionPath = _testingSolutionPath };
 
-            _FSAdapter = new MockFSAdapter();
-            Horace._FSAdapter = _FSAdapter;
-            Horace._GUIAdapter = new MockGUIAdapter();
+            _FSAdapter = new MockStorageAdapter();
+            Horace._storageAdapter = _FSAdapter;
+            Horace._userAdapter = new MockUserAdapter();
         }
 
         private static FileEventArgs Get_testfile_FileEventArgs()
@@ -60,8 +60,8 @@ namespace swept.Tests
             _FSAdapter.LibraryDoc.LoadXml( TestProbe.SingleChangeLibrary_text );
             Horace.Hear_SolutionOpened( this, Get_testfile_FileEventArgs() );
 
-            Assert.AreEqual( 1, Horace._changeCatalog.changes.Count );
-            Change change = Horace._changeCatalog.changes["30-Persist"];
+            Assert.AreEqual( 1, Horace._changeCatalog._changes.Count );
+            Change change = Horace._changeCatalog._changes["30-Persist"];
             Assert.AreEqual( "Update to use persister", change.Description );
             Assert.AreEqual( FileLanguage.CSharp, change.Language );
         }
@@ -70,11 +70,11 @@ namespace swept.Tests
         public void OpenSolution_with_no_Swept_Library_will_start_smoothly()
         {
             _FSAdapter.LibraryDoc = new XmlDocument();
-            _FSAdapter.LibraryDoc.LoadXml( FSAdapter.emptyCatalogText );
+            _FSAdapter.LibraryDoc.LoadXml( StorageAdapter.emptyCatalogText );
 
             Horace.Hear_SolutionOpened( this, Get_testfile_FileEventArgs() );
 
-            Assert.AreEqual( 0, Horace._changeCatalog.changes.Count );
+            Assert.AreEqual( 0, Horace._changeCatalog._changes.Count );
             Assert.AreEqual( 0, Horace._sourceCatalog.Files.Count );
         }
 
@@ -224,12 +224,12 @@ namespace swept.Tests
         [Test]
         public void Can_AddChange()
         {
-            Assert.AreEqual( 0, Horace._changeCatalog.changes.Count );
+            Assert.AreEqual( 0, Horace._changeCatalog._changes.Count );
 
             Change change = new Change( "14", "here I am", FileLanguage.CSharp );
             Horace.Hear_ChangeAdded( this, new ChangeEventArgs { change = change } );
 
-            Assert.AreEqual( 1, Horace._changeCatalog.changes.Count );
+            Assert.AreEqual( 1, Horace._changeCatalog._changes.Count );
         }
 
     }

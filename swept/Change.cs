@@ -7,9 +7,9 @@ namespace swept
 {
     public class Change
     {
-        protected internal string ID;
-        public string Description;
-        protected internal FileLanguage Language;
+        public string ID { get; internal set; }
+        public string Description { get; internal set; }
+        public FileLanguage Language { get; internal set; }
 
         protected internal Change() { }
         public Change( string id, string description, FileLanguage language )

@@ -6,7 +6,7 @@ using System.Windows.Forms;
 
 namespace swept
 {
-    public class GUIAdapter : IGUIAdapter
+    public class UserGUIAdapter : IUserAdapter
     {
         public bool KeepChangeHistory( Change historicalChange )
         {
@@ -24,8 +24,8 @@ namespace swept
 
         public void BadXmlInExpectedLibrary( string libraryPath )
         {
-            MessageBox.Show(
-                "The XML in the Swept library is invalid.  Swept will shut down now.", 
+            MessageBox.Show( string.Format( 
+                "The XML in the Swept library at {0} is invalid.  Swept will shut down now.", libraryPath ), 
                 "", MessageBoxButtons.OK );
         }
 

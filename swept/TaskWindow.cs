@@ -10,7 +10,7 @@ namespace swept
     {
         internal SourceFileCatalog _fileCatalog;
         internal ChangeCatalog _changeCatalog;
-        internal IGUIAdapter _GUIAdapter;
+        internal IUserAdapter _GUIAdapter;
 
         private SourceFile _currentFile;
         public SourceFile CurrentFile
@@ -39,7 +39,7 @@ namespace swept
         public TaskWindow()
         {
             Tasks = new List<Task>();
-            _GUIAdapter = new GUIAdapter();
+            _GUIAdapter = new UserGUIAdapter();
         }
 
         public List<Task> Tasks { get; private set; }

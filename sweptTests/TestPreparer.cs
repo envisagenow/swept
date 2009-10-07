@@ -7,20 +7,20 @@ namespace swept.Tests
 {
     class TestPreparer
     {
-        public MockGUIAdapter MockGUI;
-        public MockFSAdapter MockFS;
+        public MockUserAdapter MockGUI;
+        public MockStorageAdapter MockFS;
 
         public TestPreparer()
         {
-            MockGUI = new MockGUIAdapter();
-            MockFS = new MockFSAdapter();
+            MockGUI = new MockUserAdapter();
+            MockFS = new MockStorageAdapter();
         }
 
         public void ShiftStarterToMocks( Starter starter )
         {
             starter.TaskWindow._GUIAdapter = MockGUI;
-            starter.Librarian._GUIAdapter = MockGUI;
-            starter.Librarian._FSAdapter = MockFS;
+            starter.Librarian._userAdapter = MockGUI;
+            starter.Librarian._storageAdapter = MockFS;
         }
     }
 }

@@ -23,7 +23,7 @@ namespace swept
             Completions = new List<Completion>();
         }
 
-        private static Dictionary<string, FileLanguage> extensionLanguage = null;
+        private static Dictionary<string, FileLanguage> extensionLanguage;
         private static Dictionary<string, FileLanguage> ExtensionLanguage
         {
             get
@@ -65,7 +65,7 @@ namespace swept
 
         public SourceFile Clone()
         {
-            SourceFile file = new SourceFile( this.Name );
+            SourceFile file = new SourceFile( Name );
 
             file.CopyCompletionsFrom( this );
             

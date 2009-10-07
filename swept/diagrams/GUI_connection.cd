@@ -1,0 +1,95 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Comment CommentText="IUserAdapter:  Provides technically abstract, functionally explicit interface points for Swept to provide a GUI during live addin use, mocks for testing, and possible command-line usage later.">
+    <Position X="9.021" Y="2.136" Height="0.99" Width="2.21" />
+  </Comment>
+  <Class Name="swept.Change" Collapsed="true">
+    <Position X="0.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAACAAggAAAgAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Change.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="swept.ProjectLibrarian">
+    <Position X="2.75" Y="0.5" Width="2.25" />
+    <Members>
+      <Method Name="AbandonFileChanges" Hidden="true" />
+      <Method Name="AddChange" Hidden="true" />
+      <Method Name="DeleteFile" Hidden="true" />
+      <Event Name="Event_ChangeCatalogUpdated" Hidden="true" />
+      <Event Name="Event_SourceCatalogUpdated" Hidden="true" />
+      <Method Name="GetLibraryDocument" Hidden="true" />
+      <Method Name="OpenSolution" Hidden="true" />
+      <Method Name="PasteFile" Hidden="true" />
+      <Method Name="Persist" Hidden="true" />
+      <Method Name="ProjectLibrarian" Hidden="true" />
+      <Method Name="RenameFile" Hidden="true" />
+      <Method Name="SaveFile" Hidden="true" />
+      <Method Name="SaveFileAs" Hidden="true" />
+      <Method Name="SaveSolution" Hidden="true" />
+    </Members>
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Properties" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AEABgcAhAACAAAAAAAKgIAIEAAkAgAhIBIHBkAJQAAA=</HashCode>
+      <FileName>ProjectLibrarian.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="swept.Starter" Collapsed="true">
+    <Position X="0.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAwCAAAAIAAAAEAAAAAAAAAAAAIAAAAAAAAAA=</HashCode>
+      <FileName>Starter.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="swept.StudioAdapter">
+    <Position X="6" Y="0.5" Width="2.25" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AACQAAiARAIBAVIIEgAMAAAQAAABAAAAABASABAAAAI=</HashCode>
+      <FileName>StudioAdapter.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="swept.Task">
+    <Position X="0.5" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAEAIEAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Task.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="swept.TaskWindow">
+    <Position X="2.75" Y="4.25" Width="2.25" />
+    <Members>
+      <Event Name="Event_TaskListReset" Hidden="true" />
+      <Event Name="Event_TaskWindowToggled" Hidden="true" />
+      <Method Name="RefreshChangeCatalog" Hidden="true" />
+      <Method Name="RefreshSourceCatalog" Hidden="true" />
+      <Method Name="SetTaskCompletion" Hidden="true" />
+      <Method Name="SetTasksFromChanges" Hidden="true" />
+      <Method Name="ShowFile" Hidden="true" />
+      <Method Name="TaskWindow" Hidden="true" />
+      <Method Name="ToggleTaskCompletion" Hidden="true" />
+      <Method Name="ToggleWindowVisibility" Hidden="true" />
+    </Members>
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Properties" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>gCAAAEQAAAACAMAgABAQQAAwEAAAAAAIAAQpEAAQAIY=</HashCode>
+      <FileName>TaskWindow.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Interface Name="swept.IUserAdapter">
+    <Position X="9" Y="0.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>ACAAAAAAAAAAgAAACAAAAAAAAAAAIAAAAAAAAAAAAAA=</HashCode>
+      <FileName>IUserAdapter.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Font Name="Tahoma" Size="8.25" />
+</ClassDiagram>

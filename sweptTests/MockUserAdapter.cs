@@ -6,13 +6,13 @@ using System.Collections.Generic;
 
 namespace swept.Tests
 {
-    class MockGUIAdapter : IGUIAdapter
+    class MockUserAdapter : IUserAdapter
     {
         public bool KeepHistoricalResponse;
 
         internal List<string> messages;
 
-        public MockGUIAdapter()
+        public MockUserAdapter()
         {
             messages = new List<string>();
         }
