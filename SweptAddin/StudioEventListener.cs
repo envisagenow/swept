@@ -48,8 +48,9 @@ namespace swept.Addin
             knit_TaskWindow( starter.TaskWindow );
         }
 
-        public void Disconnect()
+        public void Disconnect( Starter starter )
         {
+            unravel_TaskWindow();
             _solutionEvents.Opened -= Hear_SolutionOpened;
             _solutionEvents.Renamed -= Hear_SolutionRenamed;
 
@@ -140,13 +141,25 @@ namespace swept.Addin
         private void knit_TaskWindow( TaskWindow taskWindow )
         {
             _taskWindow = taskWindow;
-            _taskWindowForm = new TaskWindow_GUI();
+
+            if (_taskWindowForm == null)
+            {
+                _taskWindowForm = new TaskWindow_GUI();
+            }
 
             taskWindow.Event_TaskListReset += _taskWindowForm.Hear_TaskListReset;
-
-            _taskWindowForm.tasks.ItemCheck += Hear_ItemCheck;// taskWindow.Hear_TaskCheck;
+            _taskWindowForm.tasks.ItemCheck += Hear_ItemCheck;
 
             _taskWindowForm.Show();
+        }
+
+        private void unravel_TaskWindow()
+        {
+            _taskWindowForm.Hide();
+
+            _taskWindowForm.tasks.ItemCheck -= Hear_ItemCheck;
+            _taskWindow.Event_TaskListReset -= _taskWindowForm.Hear_TaskListReset;
+            _taskWindow = null;
         }
 
         private static void describeException( Exception e )
