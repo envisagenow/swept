@@ -10,23 +10,34 @@ namespace swept.Tests
     [TestFixture]
     public class TaskWindowEventTests
     {
-        private Starter starter;
+        private Starter _starter;
+        private TaskWindow _tasks;
 
         [SetUp]
         public void StartUp()
         {
-            starter = new Starter();
-            starter.Start();
+            _starter = new Starter();
+            _starter.Start();
+            _tasks = _starter.TaskWindow;
         }
 
         [Test]
         public void when_TaskWindow_toggled_visibility_changed()
         {
-            TaskWindow tasks = starter.TaskWindow;
-            tasks.Visible = false;
-            tasks.Raise_TaskWindowToggled();
+            _tasks.Visible = false;
+            _tasks.Raise_TaskWindowToggled();
 
-            Assert.IsTrue( tasks.Visible );
+            Assert.IsTrue( _tasks.Visible );
+        }
+
+        [Test]
+        public void when_TaskChecked_completion_is_set()
+        {
+            _tasks.Tasks.Add( new Task { ID = "x", Description = "I get checked." } );
+            Assert.IsFalse( _tasks.Tasks[0].Completed );
+
+            _tasks.Hear_TaskCheck( )
+            Assert.IsTrue( _tasks.Tasks[0].Completed );
         }
     }
 }

@@ -6,7 +6,7 @@ using System;
 // using System.Xml.Linq;
 using NUnit.Framework;
 using System.Xml;
-//using NUnit.Framework.SyntaxHelpers;
+using NUnit.Framework.SyntaxHelpers;
 
 namespace swept.Tests
 {
