@@ -17,13 +17,108 @@ namespace swept.Tests
             const string newDescription = "Brand new";
             const FileLanguage newLanguage = FileLanguage.CSharp;
 
-            Change chg = new Change( newID, newDescription, newLanguage );
+            Change change = new Change( newID, newDescription, newLanguage );
 
-            Assert.AreEqual( newID, chg.ID );
-            Assert.AreEqual( newDescription, chg.Description );
-            Assert.AreEqual( newLanguage, chg.Language );
+            Assert.AreEqual( newID, change.ID );
+            Assert.AreEqual( newDescription, change.Description );
+            Assert.AreEqual( newLanguage, change.Language );
         }
 
+        [Test]
+        public void language_criterion_passes_all_when_set_to_None()
+        {
+            Change change = new Change
+            {
+                ID = "no language",
+                Description = "Relevant to files of all languages.",
+                Language = FileLanguage.None
+            };
+
+            Assert.IsTrue( change.PassesFilter( new SourceFile( "my.cs" ) ) );
+            Assert.IsTrue( change.PassesFilter( new SourceFile( "my.html" ) ) );
+            Assert.IsTrue( change.PassesFilter( new SourceFile( "my.unknownextension" ) ) );
+        }
+
+        [Test]
+        public void language_criterion_filters_when_set()
+        {
+            Change change = new Change
+            {
+                ID = "set language",
+                Description = "Relevant to C# files.",
+                Language = FileLanguage.CSharp
+            };
+
+            Assert.IsTrue(  change.PassesFilter( new SourceFile( "my.cs" ) ) );
+            Assert.IsFalse( change.PassesFilter( new SourceFile( "my.html" ) ) );
+            Assert.IsFalse( change.PassesFilter( new SourceFile( "my.unknownextension" ) ) );
+        }
+
+        [Test]
+        public void subpath_criterion_passes_all_when_empty()
+        {
+            Change change = new Change
+            {
+                ID = "no subpath",
+                Description = "Relevant to files in all locations.",
+                Subpath = ""
+            };
+
+            Assert.IsTrue( change.PassesFilter( new SourceFile( @"my.cs" ) ) );
+            Assert.IsTrue( change.PassesFilter( new SourceFile( @"specified\subpath\my.cs" ) ) );
+            Assert.IsTrue( change.PassesFilter( new SourceFile( @"specified\subpath\and\deeper\my.cs" ) ) );
+            Assert.IsTrue( change.PassesFilter( new SourceFile( @"another\subpath\my.cs" ) ) );
+        }
+
+        [Test]
+        public void subpath_criterion_filters_when_set()
+        {
+            Change change = new Change
+            {
+                ID = "specified subpath",
+                Description = "Relevant to files in one subtree.",
+                Subpath = @"specified\subpath"
+            };
+
+            Assert.IsFalse( change.PassesFilter( new SourceFile( @"my.cs" ) ) );
+            Assert.IsTrue(  change.PassesFilter( new SourceFile( @"specified\subpath\my.cs" ) ) );
+            Assert.IsTrue(  change.PassesFilter( new SourceFile( @"specified\subpath\and\deeper\my.cs" ) ) );
+            Assert.IsFalse( change.PassesFilter( new SourceFile( @"another\subpath\my.cs" ) ) );
+        }
+
+        [Test]
+        public void name_pattern_criterion_passes_all_when_empty()
+        {
+            Change change = new Change
+            {
+                ID = "no name pattern",
+                Description = "Relevant to files of all names.",
+                NamePattern = ""
+            };
+
+            Assert.IsTrue( change.PassesFilter( new SourceFile( @"myCode.cs" ) ) );
+            Assert.IsTrue( change.PassesFilter( new SourceFile( @"Tests.cs" ) ) );
+            Assert.IsTrue( change.PassesFilter( new SourceFile( @"myTests.cs" ) ) );
+            Assert.IsTrue( change.PassesFilter( new SourceFile( @"my_tests.js" ) ) );
+        }
+
+        [Test]
+        public void name_pattern_criterion_filters_when_set()
+        {
+            Change change = new Change
+            {
+                ID = "no name pattern",
+                Description = "Relevant to files of all names.",
+                NamePattern = "tests"
+            };
+
+            Assert.IsFalse( change.PassesFilter( new SourceFile( @"my.cs" ) ) );
+            Assert.IsTrue( change.PassesFilter( new SourceFile( @"Tests.cs" ) ) );
+            Assert.IsTrue( change.PassesFilter( new SourceFile( @"myTests.cs" ) ) );
+            Assert.IsTrue( change.PassesFilter( new SourceFile( @"my_tests.js" ) ) );
+        }
+
+        #region Equality tests
         [Test]
         public void Can_compare_equality()
         {
@@ -57,5 +152,6 @@ namespace swept.Tests
             Change change1 = new Change();
             Assert.IsFalse( change1.Equals( null ) );
         }
+        #endregion
     }
 }

@@ -110,7 +110,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <None Include="diagrams\z_GUI_connection.cd" />
+    <None Include="diagrams\GUI_connection.cd" />
     <None Include="diagrams\swept_diagram.cd" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

@@ -19,20 +19,31 @@ namespace swept.Tests
         }
 
         [Test]
-        public void EventDispatcher_IsConnected()
+        public void StudioAdapter_is_connected()
         {
-            StudioAdapter ed = starter.Adapter;
+            StudioAdapter studio = starter.Adapter;
 
-            Assert.IsNotNull(ed.taskWindow);
-            Assert.IsNotNull(ed.Librarian);
+            Assert.IsNotNull(studio.taskWindow);
+            Assert.IsNotNull(studio.Librarian);
         }
 
         [Test]
-        public void Librarian_IsConnected()
+        public void Librarian_is_connected()
         {
             ProjectLibrarian lib = starter.Librarian;
             Assert.IsNotNull(lib);
             Assert.IsNotNull(lib._changeCatalog);
+        }
+
+        [Test]
+        public void Stop_clears_major_entities()
+        {
+            starter.Stop();
+
+            Assert.IsNull( starter.Adapter );
+            Assert.IsNull( starter.Librarian );
+            Assert.IsNull( starter.TaskWindow );
+            Assert.IsNull( starter.ChangeWindow );
         }
     }
 }

@@ -17,9 +17,10 @@ namespace swept
             _changes = new SortedList<string, Change>();
         }
 
-        private ChangeCatalog( SortedList<string, Change> changelist ) : this()
+        private ChangeCatalog( SortedList<string, Change> changelist )
+            : this()
         {
-            foreach (var pair in changelist)
+            foreach( var pair in changelist )
             {
                 _changes[pair.Key] = pair.Value;
             }
@@ -32,44 +33,39 @@ namespace swept
 
         public bool Equals( ChangeCatalog cat1 )
         {
-            if (_changes.Count != cat1._changes.Count)
+            if( _changes.Count != cat1._changes.Count )
             {
                 return false;
             }
 
-            foreach( string key in _changes.Keys ) 
+            foreach( string key in _changes.Keys )
             {
-                if (!cat1._changes.Keys.Contains( key )) return false;
-                if (!_changes[key].Equals(cat1._changes[key])) return false;
+                if( !cat1._changes.Keys.Contains( key ) ) return false;
+                if( !_changes[key].Equals( cat1._changes[key] ) ) return false;
             }
-             
+
             return true;
         }
 
-        public List<Change> GetChangesForFile(SourceFile file)
+        public List<Change> GetChangesForFile( SourceFile file )
         {
-            return GetListForLanguage(file.Language);
+            var changes = _changes.Values.ToList<Change>();
+            return changes.FindAll( change => change.PassesFilter( file ) );
         }
 
-        private List<Change> GetListForLanguage( FileLanguage fileLanguage )
+        public void Add( Change change )
         {
-            List<Change> changeList = _changes.Values.ToList<Change>();
-            return changeList.FindAll( change => change.Language == fileLanguage );
+            _changes.Add( change.ID, change );
         }
 
-        public void Add(Change change)
-        {
-            _changes.Add( change.ID, change);
-        }
-
-        public void Remove(string changeID)
+        public void Remove( string changeID )
         {
             _changes.Remove( changeID );
         }
 
         // TODO--DC, 0.3: Edit a Change
 
-        public List<Change> FindAll(Predicate<Change> match)
+        public List<Change> FindAll( Predicate<Change> match )
         {
             List<Change> changeList = _changes.Values.ToList<Change>();
             return changeList.FindAll( match );
