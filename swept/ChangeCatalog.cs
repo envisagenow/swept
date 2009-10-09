@@ -9,7 +9,7 @@ namespace swept
 {
     public class ChangeCatalog
     {
-        // TODO--DC, 0.3: move back to standard list with sort on output
+        // TODO--0.3, DC: move back to standard list with sort on output
         internal SortedList<string, Change> _changes;
 
         public ChangeCatalog()
@@ -63,7 +63,7 @@ namespace swept
             _changes.Remove( changeID );
         }
 
-        // TODO--DC, 0.3: Edit a Change
+        // TODO--0.3, DC: Edit a Change
 
         public List<Change> FindAll( Predicate<Change> match )
         {

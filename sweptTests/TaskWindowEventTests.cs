@@ -33,10 +33,11 @@ namespace swept.Tests
         [Test]
         public void when_TaskChecked_completion_is_set()
         {
-            _tasks.Tasks.Add( new Task { ID = "x", Description = "I get checked." } );
+            Task task = new Task { ID = "x", Description = "I get checked." };
+            _tasks.Tasks.Add( task );
             Assert.IsFalse( _tasks.Tasks[0].Completed );
 
-            _tasks.Hear_TaskCheck( )
+            _tasks.Hear_TaskCheck( this, new TaskEventArgs{ Task = task, Checked = true } );
             Assert.IsTrue( _tasks.Tasks[0].Completed );
         }
     }

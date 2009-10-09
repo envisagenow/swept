@@ -46,7 +46,7 @@ namespace swept.Tests
             Assert.AreEqual(0, changes.Count);
         }
 
-        // TODO--DC, 0.3: Test removing Changes from Catalog
+        // TODO--0.3, DC: Test removing Changes from Catalog
 
         #region Equals tests
         [Test]

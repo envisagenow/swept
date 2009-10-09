@@ -118,7 +118,7 @@ namespace swept.Tests
             Assert.AreEqual( toOuterXml( TestProbe.SingleFileLibrary_text ), _FSAdapter.LibraryDoc.OuterXml );
         }
 
-        // TODO--DC, 0.2: public void RenameSolution_will_rename_Library_file
+        // TODO--0.2, DC: public void RenameSolution_will_rename_Library_file
 
         [Test]
         public void Can_set_SolutionPath()

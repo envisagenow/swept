@@ -22,7 +22,7 @@ namespace swept
                 Event_SolutionOpened(this, new FileEventArgs { Name = solutionPath });
         }
 
-        // TODO--DC, 0.2: test Raise_SolutionRenamed
+        // TODO--0.2, DC: test Raise_SolutionRenamed
         public event EventHandler<FileListEventArgs> Event_SolutionRenamed;
         public void Raise_SolutionRenamed( string oldName, string newName )
         {
@@ -82,7 +82,7 @@ namespace swept
                 Event_FileChangesAbandoned(this, new FileEventArgs { Name = fileName });
         }
 
-        // TODO--DC, 0.2: test Raise_FileDeleted
+        // TODO--0.2, DC: test Raise_FileDeleted
         public event EventHandler<FileEventArgs> Event_FileDeleted;
         public void Raise_FileDeleted(string fileName)
         {

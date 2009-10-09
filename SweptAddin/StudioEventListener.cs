@@ -210,7 +210,7 @@ namespace swept.Addin
         {
             try
             {
-                // TODO--0.2: Further checks on nature of document, skip some?
+                // TODO--0.N: If tasks join Studio Task List, don't hide tasks when it gets focus.
                 if (GotFocus.Document == null)
                     _adapter.Raise_NonSourceGetsFocus();
                 else

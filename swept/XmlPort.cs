@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Xml;
+using System.Text;
 
 namespace swept
 {
@@ -33,12 +34,21 @@ namespace swept
             return xmlText;
         }
 
-        public string ToText(Change change)
+        public string ToText( Change change )
         {
-            return String.Format(
-                "    <Change ID='{0}' Description='{1}' Language='{2}' />" + Environment.NewLine,
-                change.ID, change.Description, change.Language
-            );
+            var sb = new StringBuilder( "    <Change " );
+            sb.AppendFormat( "ID='{0}' Description='{1}' Language='{2}' ",
+                change.ID, change.Description, change.Language );
+
+            if( !string.IsNullOrEmpty( change.Subpath ) )
+                sb.AppendFormat( "Subpath='{0}' ", change.Subpath );
+            
+            if( !string.IsNullOrEmpty( change.NamePattern ) )
+                sb.AppendFormat( "NamePattern='{0}' ", change.NamePattern );
+            
+            sb.AppendLine( "/>" );
+
+            return sb.ToString();
         }
 
         public string ToText(SourceFileCatalog fileCatalog)
@@ -92,13 +102,20 @@ namespace swept
             return cat;
         }
 
-        private static Change Change_FromNode(XmlNode xmlNode)
+        private static Change Change_FromNode( XmlNode xmlNode )
         {
-            FileLanguage lang = (FileLanguage)Enum.Parse(typeof(FileLanguage), xmlNode.Attributes["Language"].Value);
+            FileLanguage language = (FileLanguage)Enum.Parse( typeof( FileLanguage ), xmlNode.Attributes["Language"].Value );
 
-            Change change = new Change(xmlNode.Attributes["ID"].Value, xmlNode.Attributes["Description"].Value, lang);
-
-            return change;
+            string subpath = (xmlNode.Attributes["Subpath"] != null) ? xmlNode.Attributes["Subpath"].Value : string.Empty;
+            string pattern = (xmlNode.Attributes["NamePattern"] != null) ? xmlNode.Attributes["NamePattern"].Value : string.Empty;
+            return new Change
+            {
+                ID = xmlNode.Attributes["ID"].Value,
+                Description = xmlNode.Attributes["Description"].Value,
+                Language = language,
+                Subpath = subpath,
+                NamePattern = pattern,
+            };
         }
 
 

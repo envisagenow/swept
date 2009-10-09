@@ -2,11 +2,11 @@
 //  This software is open source, under the terms of the MIT License.
 //  The MIT License, roughly:  Keep this notice.  Beyond that, do whatever you want with this code.
 using System;
-// TODO--DC, 0.3: replace the hand serialization with XElement code
+// TODO--0.3, DC: replace the hand serialization with XElement code
 // using System.Xml.Linq;
 using NUnit.Framework;
 using System.Xml;
-using NUnit.Framework.SyntaxHelpers;
+//using NUnit.Framework.SyntaxHelpers;
 
 namespace swept.Tests
 {
@@ -146,16 +146,26 @@ namespace swept.Tests
         // TODO: public void Removed_SourceFiles_are_loaded()
 
         [Test]
-        public void Can_serialize_Change_ToXml()
+        public void Can_serialize_full_Change_ToXml()
         {
-            Change change = new Change("Uno", "Eliminate profanity from error messages.", FileLanguage.CSharp);
+            Change change = new Change {
+                ID = "Uno",
+                Description = "Eliminate profanity from error messages.",
+                Language = FileLanguage.CSharp,
+                Subpath = @"utilities\error_handling",
+                NamePattern = "messages",
+            };
 
             string xmlText = port.ToText(change);
 
-            string expectedXml = "    <Change ID='Uno' Description='Eliminate profanity from error messages.' Language='CSharp' />" + Environment.NewLine;
+            string expectedXml = string.Format(
+                "    <Change ID='{0}' Description='{1}' Language='{2}' Subpath='{3}' NamePattern='{4}' />{5}", 
+                change.ID, change.Description, change.Language, change.Subpath, change.NamePattern, 
+                Environment.NewLine
+            );
 
             Assert.AreEqual(expectedXml, xmlText);
-        } 
+        }
 
         [Test]
         public void Can_serialize_ToXml()

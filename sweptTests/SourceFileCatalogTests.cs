@@ -205,7 +205,7 @@ namespace swept.Tests
             Assert.AreSame( blue, alsoBlue );
         }
 
-        // TODO--DC, 0.2: validate it's going away (#&?)
+        // TODO--0.2, DC: validate it's going away (#&?)
         [Test]
         public void CanRemove_ExistingFile()
         {
