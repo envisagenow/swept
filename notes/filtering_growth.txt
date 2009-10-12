@@ -1,0 +1,63 @@
+The history of filtering in Swept:
+
+  One of the first features in Swept started off crude, and remained that way, intentionally, until Swept finally reached 0.1.  As soon as I wanted to start using Swept, I realized that my first candidate Changes only applied to a slice of my files.  Some changes applied to files in some subpath, other changes were related to files with a common element in their names, others...would be more difficult to characterize.
+  Time to test-grow this feature.
+
+  To begin, the feature fit poorly in the ChangeCatalog
+
+    public List<Change> GetChangesForFile(SourceFile file)
+    {
+        return changes.FindAll( change => change.Language == file.Language );
+    }
+
+
+  The main awkwardness is that tests of the new filtering behavior will need to scratch up ChangeCatalogs.  However, the fine grain of this filtering has nothing to do with a catalog--it's a 1:1 relation between a change and a file.
+
+  So we turn the lambda into a real boy, give it a good name, tuck it into Change, leaving the catalog cleaner:
+  
+    public List<Change> GetChangesForFile( SourceFile file )
+    {
+        return changes.FindAll( change => change.PassesFilter( file ) );
+    }
+
+
+  [Footnote:  1:1, Here vs. There]
+  Also, we TDD in a 'disregard language criterion' case.  New forms of filtering approach; it feels natural that we don't always want to use all of them.
+
+    public bool PassesFilter( SourceFile file )
+    {
+        return Language == FileLanguage.None || Language == file.Language;
+    }
+
+
+  New forms of criteria are TDDed in
+
+    public bool PassesFilter( SourceFile file )
+    {
+        bool passesLanguage = Language == FileLanguage.None || Language == file.Language;
+        bool passesSubpath = file.Name.StartsWith( Subpath );
+        bool passesNamePattern = Regex.IsMatch( file.Name, NamePattern, RegexOptions.IgnoreCase );
+        return passesLanguage && passesSubpath && passesNamePattern;
+    }
+
+  This covers my needs for the changes I want to start with in my day-job project.  I can imagine several ways this filtering could continue to grow, which I'll defer until my need pulls the feature out of my future hours.  :D
+
+  Fast-forward past test-growing the storage of the new filters, and commit.
+  
+  
+  Notes
+
+  Some of these changes were 'prefactoring', refactoring that makes the upcoming step more graceful.
+
+  1:1, Here vs. There:
+  I see this case often, two classes equally involved in a behavior which either class could hold without technical barriers.  So why did PassesFilter() go into Change, rather than SourceFile?  I made a judgment call on the semantics:  It felt more cohesive to put the decision logic near the criteria, rather than near the data.  Then, to seal the deal, when I rolled the implementations over my tongue, the first sounded more natural:
+
+  From the Change's perspective:  Does the file's name start with my subpath?
+  vs.
+  From the SourceFile's perspective:  Does my name start with the change's subpath?
+
+  Several ways this filtering could grow:
+  *  FileContentPattern
+  *  More than one filter of each type
+  *  Now that NamePattern exists, the Language and Subpath could be subsumed within it.
+  *  Logical combinations of patterns: FileContent includes 'Using Windows.Forms' and not Subpath in GUI
