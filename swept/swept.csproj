@@ -111,6 +111,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="diagrams\GUI_connection.cd" />
+    <None Include="diagrams\startup_shutdown.cd" />
     <None Include="diagrams\swept_diagram.cd" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

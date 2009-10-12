@@ -44,32 +44,31 @@ namespace swept.Addin
             _windowEvents.WindowActivated += Hear_WindowActivated;
 
             hook_all_CommandEvents();
-
-            knit_TaskWindow( starter.TaskWindow );
+            hook_TaskWindow( starter.TaskWindow );
         }
 
         public void Disconnect( Starter starter )
         {
-            unravel_TaskWindow();
-            _solutionEvents.Opened -= Hear_SolutionOpened;
+            unhook_TaskWindow();
+            unhook_all_CommandEvents();
+
+            _windowEvents.WindowActivated -= Hear_WindowActivated;
+
+            _documentEvents.DocumentSaved -= Hear_DocumentSaved;
+            _documentEvents.DocumentClosing -= Hear_DocumentClosing;
+
             _solutionEvents.Renamed -= Hear_SolutionRenamed;
+            _solutionEvents.Opened -= Hear_SolutionOpened;
 
             _solutionItemsEvents.ItemRenamed -= Hear_ItemRenamed;
 
-            _documentEvents.DocumentClosing -= Hear_DocumentClosing;
-            _documentEvents.DocumentSaved -= Hear_DocumentSaved;
-
-            _solutionEvents = null;
-            _solutionItemsEvents = null;
+            _windowEvents = null;
             _documentEvents = null;
+            _solutionItemsEvents = null;
+            _solutionEvents = null;
 
-            _studio = null;
             _adapter = null;
-
-            _commandEvents.BeforeExecute -= hear_all_CommandEvents_before;
-            _commandEvents.AfterExecute -= hear_all_CommandEvents_after;
-
-            _commandEvents = null;
+            _studio = null;
         }
 
         #region CommandEvents
@@ -80,6 +79,13 @@ namespace swept.Addin
 
             _commandEvents.BeforeExecute += hear_all_CommandEvents_before;
             _commandEvents.AfterExecute += hear_all_CommandEvents_after;
+        }
+
+        private void unhook_all_CommandEvents()
+        {
+            _commandEvents.BeforeExecute -= hear_all_CommandEvents_before;
+            _commandEvents.AfterExecute -= hear_all_CommandEvents_after;
+            _commandEvents = null;
         }
 
         void hear_all_CommandEvents_before( string Guid, int ID, object CustomIn, object CustomOut, ref bool CancelDefault )
@@ -138,7 +144,7 @@ namespace swept.Addin
         #endregion
 
         TaskWindow _taskWindow;
-        private void knit_TaskWindow( TaskWindow taskWindow )
+        private void hook_TaskWindow( TaskWindow taskWindow )
         {
             _taskWindow = taskWindow;
 
@@ -153,7 +159,7 @@ namespace swept.Addin
             _taskWindowForm.Show();
         }
 
-        private void unravel_TaskWindow()
+        private void unhook_TaskWindow()
         {
             _taskWindowForm.Hide();
 
@@ -162,7 +168,7 @@ namespace swept.Addin
             _taskWindow = null;
         }
 
-        private static void describeException( Exception e )
+        internal static void describeException( Exception e )
         {
             MessageBox.Show( string.Format( "Caught {0}: {1}", e.Message, e.StackTrace ) );
         }

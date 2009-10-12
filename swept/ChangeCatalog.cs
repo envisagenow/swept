@@ -1,29 +1,23 @@
-//  Swept:  Software Enhancement Progress Tracking.  Copyright 2009 Envisage Technologies, some rights reserved.
-//  This software is open source, under the terms of the MIT License.
-//  The MIT License, roughly:  Keep this notice.  Beyond that, do whatever you want with this code.
+//  Swept:  Software Enhancement Progress Tracking.  Copyright (c) 2009 Envisage Technologies.
+//  This software is open source.  See the file LICENSE for details.
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace swept
 {
     public class ChangeCatalog
     {
         // TODO--0.3, DC: move back to standard list with sort on output
-        internal SortedList<string, Change> _changes;
+        internal List<Change> _changes;
 
         public ChangeCatalog()
         {
-            _changes = new SortedList<string, Change>();
+            _changes = new List<Change>();
         }
 
-        private ChangeCatalog( SortedList<string, Change> changelist )
-            : this()
+        private ChangeCatalog( List<Change> changes ) : this()
         {
-            foreach( var pair in changelist )
-            {
-                _changes[pair.Key] = pair.Value;
-            }
+            changes.ForEach( change => _changes.Add( change.Clone() ) );
         }
 
         public ChangeCatalog Clone()
@@ -31,44 +25,52 @@ namespace swept
             return new ChangeCatalog( _changes );
         }
 
-        public bool Equals( ChangeCatalog cat1 )
+        public bool Equals( ChangeCatalog other )
         {
-            if( _changes.Count != cat1._changes.Count )
-            {
+            if( _changes.Count != other._changes.Count )
                 return false;
-            }
 
-            foreach( string key in _changes.Keys )
+            Comparison<Change> onIDs = (left, right) => left.ID.CompareTo(right.ID);
+            _changes.Sort( onIDs );
+            other._changes.Sort( onIDs );
+
+            for( int i = 0; i < _changes.Count; i++ )
             {
-                if( !cat1._changes.Keys.Contains( key ) ) return false;
-                if( !_changes[key].Equals( cat1._changes[key] ) ) return false;
+                if( !_changes[i].Equals( other._changes[i] ) )
+                    return false;
             }
 
             return true;
         }
 
+        public List<Change> GetSortedChanges()
+        {
+            _changes.Sort( (left, right) => left.ID.CompareTo(right.ID) );
+            return _changes;
+        }
+
         public List<Change> GetChangesForFile( SourceFile file )
         {
-            var changes = _changes.Values.ToList<Change>();
-            return changes.FindAll( change => change.PassesFilter( file ) );
+            return _changes.FindAll( change => change.PassesFilter( file ) );
         }
 
         public void Add( Change change )
         {
-            _changes.Add( change.ID, change );
+            if( _changes.Exists( c => c.ID == change.ID) )
+                throw new Exception( string.Format( "There is already a change with the ID [{0}].", change.ID ) );
+            _changes.Add( change );
         }
 
         public void Remove( string changeID )
         {
-            _changes.Remove( changeID );
+            _changes.RemoveAll( change => change.ID == changeID );
         }
 
         // TODO--0.3, DC: Edit a Change
 
         public List<Change> FindAll( Predicate<Change> match )
         {
-            List<Change> changeList = _changes.Values.ToList<Change>();
-            return changeList.FindAll( match );
+            return _changes.FindAll( match );
         }
 
     }

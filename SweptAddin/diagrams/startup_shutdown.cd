@@ -1,0 +1,58 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Comment CommentText="Studio calls OnConnection() when the Swept addin is being turned on.  OnConnection() delegates to loadSwept().">
+    <Position X="1.073" Y="4" Height="0.729" Width="2.127" />
+  </Comment>
+  <Comment CommentText="loadSwept creates a swept.Starter and a StudioEventListener and fires them both up.">
+    <Position X="1.062" Y="5" Height="0.75" Width="2.138" />
+  </Comment>
+  <Comment CommentText="Starter.Start()&#xD;&#xA;Initializes the domain.&#xD;&#xA;Librarian, catalogs, and abstract windows are created and subscribed to events.">
+    <Position X="4.01" Y="3.208" Height="0.948" Width="2.138" />
+  </Comment>
+  <Comment CommentText="StudioEventListener.Connect()&#xD;&#xA;Subscribes to the Studio events Swept needs to do its job, and holds references to the Swept domain.">
+    <Position X="7.167" Y="4.844" Height="0.75" Width="2.138" />
+  </Comment>
+  <Comment CommentText="OnDisconnection, unloadSwept()&#xD;&#xA;Tells the StudioEventListener to Disconnect(),&#xD;&#xA;Tells the swept.Starter to Stop().">
+    <Position X="1.073" Y="6.052" Height="0.75" Width="2.138" />
+  </Comment>
+  <Class Name="swept.Addin.Connect">
+    <Position X="1.25" Y="0.75" Width="2" />
+    <Members>
+      <Method Name="Connect" Hidden="true" />
+      <Method Name="Exec" Hidden="true" />
+      <Method Name="OnAddInsUpdate" Hidden="true" />
+      <Method Name="QueryStatus" Hidden="true" />
+    </Members>
+    <TypeIdentifier>
+      <HashCode>gCBAIAAAAAACAABAAAQAAAAAaAAAABAAAACgAABAAAA=</HashCode>
+      <FileName>Connect.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="swept.Addin.StudioEventListener">
+    <Position X="7.25" Y="0.75" Width="2" />
+    <Members>
+      <Method Name="describeException" Hidden="true" />
+      <Method Name="hear_all_CommandEvents_after" Hidden="true" />
+      <Method Name="hear_all_CommandEvents_before" Hidden="true" />
+      <Method Name="Hear_DocumentClosing" Hidden="true" />
+      <Method Name="Hear_DocumentSaved" Hidden="true" />
+      <Method Name="Hear_FilePasted" Hidden="true" />
+      <Method Name="Hear_ItemCheck" Hidden="true" />
+      <Method Name="Hear_ItemRenamed" Hidden="true" />
+      <Method Name="Hear_SolutionOpened" Hidden="true" />
+      <Method Name="Hear_SolutionRenamed" Hidden="true" />
+      <Method Name="Hear_WindowActivated" Hidden="true" />
+    </Members>
+    <TypeIdentifier>
+      <HashCode>AEUAAAAEBAAAAEAABABICIAQIAQQgAAMACHBQEQAARA=</HashCode>
+      <FileName>StudioEventListener.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="swept.Starter">
+    <Position X="4.25" Y="0.75" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Font Name="Tahoma" Size="8.25" />
+</ClassDiagram>

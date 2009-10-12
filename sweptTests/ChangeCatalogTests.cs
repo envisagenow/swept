@@ -136,15 +136,16 @@ namespace swept.Tests
             cat.Add( a_117 );
             cat.Add( a_18 );
 
-            Assert.AreEqual( 0, cat._changes.IndexOfKey( a_117.ID ) );
-            Assert.AreEqual( 1, cat._changes.IndexOfKey( a_17.ID ) );
-            Assert.AreEqual( 2, cat._changes.IndexOfKey( a_177.ID ) );
-            Assert.AreEqual( 3, cat._changes.IndexOfKey( a_18.ID ) );
-            Assert.AreEqual( 4, cat._changes.IndexOfKey( b_52.ID ) );
+            var changes = cat.GetSortedChanges();
+            Assert.That( changes[0].ID, Is.EqualTo( a_117.ID ) );
+            Assert.That( changes[1].ID, Is.EqualTo( a_17.ID ) );
+            Assert.That( changes[2].ID, Is.EqualTo( a_177.ID ) );
+            Assert.That( changes[3].ID, Is.EqualTo( a_18.ID ) );
+            Assert.That( changes[4].ID, Is.EqualTo( b_52.ID ) );
         }
 
 
-        [Test, ExpectedException( ExpectedMessage = "An entry with the same key already exists.")]
+        [Test, ExpectedException( ExpectedMessage = "There is already a change with the ID [a_17]." )]
         public void Duplicate_IDs_not_allowed()
         {
             ChangeCatalog cat = new ChangeCatalog();

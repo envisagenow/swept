@@ -61,7 +61,7 @@ namespace swept.Tests
             Horace.Hear_SolutionOpened( this, Get_testfile_FileEventArgs() );
 
             Assert.AreEqual( 1, Horace._changeCatalog._changes.Count );
-            Change change = Horace._changeCatalog._changes["30-Persist"];
+            Change change = Horace._changeCatalog._changes[0];
             Assert.AreEqual( "Update to use persister", change.Description );
             Assert.AreEqual( FileLanguage.CSharp, change.Language );
         }

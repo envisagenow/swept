@@ -26,9 +26,9 @@ namespace swept
         {
             string catalogLabel = "ChangeCatalog";
             string xmlText = String.Format("<{0}>\r\n", catalogLabel);
-            foreach (KeyValuePair<string, Change> pair in changeCatalog._changes)
+            foreach ( Change change in changeCatalog._changes)
             {
-                xmlText += ToText( pair.Value );
+                xmlText += ToText( change );
             }
             xmlText += String.Format("</{0}>", catalogLabel);
             return xmlText;

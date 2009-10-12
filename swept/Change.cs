@@ -48,6 +48,18 @@ namespace swept
 
             return true;
         }
+
+        public Change Clone()
+        {
+            return new Change
+            {
+                ID = this.ID,
+                Description = this.Description,
+                Language = this.Language,
+                Subpath = this.Subpath,
+                NamePattern = this.NamePattern
+            };
+        }
     }
 
     public enum FileLanguage
