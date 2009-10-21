@@ -112,7 +112,7 @@ namespace swept.Addin
                 break;
 
             default:
-                log.Add( message );
+                //log.Add( message );
                 break;
             }
         }
@@ -135,12 +135,12 @@ namespace swept.Addin
                     break;
 
                 case "Edit.LineDown":
-                    log.Add( message );
-                    Clipboard.SetText( string.Join( "\n", log.ToArray() ) );
+                    //log.Add( message );
+                    //Clipboard.SetText( string.Join( "\n", log.ToArray() ) );
                     break;
 
                 default:
-                    log.Add( message );
+                    //log.Add( message );
                     break;
             }
         }
