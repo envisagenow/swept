@@ -64,6 +64,7 @@
     <Compile Include="Change.cs" />
     <Compile Include="ChangeCatalog.cs" />
     <Compile Include="ChangeWindow.cs" />
+    <Compile Include="CompoundFilter.cs" />
     <Compile Include="UserGUIAdapter.cs" />
     <Compile Include="StudioAdapter.cs">
       <SubType>Code</SubType>
@@ -111,7 +112,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="diagrams\GUI_connection.cd" />
-    <None Include="diagrams\startup_shutdown.cd" />
     <None Include="diagrams\swept_diagram.cd" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

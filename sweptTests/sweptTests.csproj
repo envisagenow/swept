@@ -68,7 +68,9 @@
     <Compile Include="ChangeCatalogTests.cs" />
     <Compile Include="ChangeWindowEventTests.cs" />
     <Compile Include="ChangeWindowTests.cs" />
+    <Compile Include="CompoundFilterTests.cs" />
     <Compile Include="EventExperiments.cs" />
+    <Compile Include="FileContentFilterTests.cs" />
     <Compile Include="IntegrationTests.cs" />
     <Compile Include="MockUserAdapter.cs" />
     <Compile Include="MockStorageAdapter.cs" />
@@ -87,7 +89,6 @@
     <Compile Include="SourceFileTests.cs" />
     <Compile Include="TestPreparer.cs" />
     <Compile Include="TestProbe.cs" />
-    <Compile Include="UnitTestQualityAttributes.cs" />
     <Compile Include="XmlPortTests.cs" />
   </ItemGroup>
   <ItemGroup>

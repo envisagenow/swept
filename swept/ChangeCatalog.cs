@@ -1,5 +1,6 @@
-//  Swept:  Software Enhancement Progress Tracking.  Copyright (c) 2009 Envisage Technologies.
-//  This software is open source.  See the file LICENSE for details.
+//  Swept:  Software Enhancement Progress Tracking.
+//  Copyright (c) 2009 Jason Cole and Envisage Technologies Corp.
+//  This software is open source, MIT license.  See the file LICENSE for details.
 using System;
 using System.Collections.Generic;
 
@@ -51,7 +52,7 @@ namespace swept
 
         public List<Change> GetChangesForFile( SourceFile file )
         {
-            return _changes.FindAll( change => change.PassesFilter( file ) );
+            return _changes.FindAll( change => change.Matches( file ) );
         }
 
         public void Add( Change change )
@@ -67,11 +68,6 @@ namespace swept
         }
 
         // TODO--0.3, DC: Edit a Change
-
-        public List<Change> FindAll( Predicate<Change> match )
-        {
-            return _changes.FindAll( match );
-        }
 
     }
 }

@@ -15,7 +15,7 @@ at ...StudioEventListener.Hear_WindowActivated...
 
   This brings up memories of when I had to rescue a legacy VB6 project from sudden performance death.  Learning that in that environment, I needed to manually wrestle errors, with boilerplate code, at every location of consequence.
 
-  Yes, Visual Studio 2008, so-called modern technology, silently catches and vanishes any exception that makes it back from an event it fires.  In particular, inclding the top-level methods in the Connect class OnConnection() and OnDisconnection().  How many lost developer hours are due to this design choice?  Let me pitch my own 2:30 into the kitty.
+  Yes, Visual Studio 2008 silently catches and vanishes any exception that makes it back from an event it fires.  In particular, inclding the top-level methods in the Connect class OnConnection() and OnDisconnection().  How many lost developer hours are due to this design choice?  Let me pitch my own 2:30 into the kitty.
   See, the sad thing here is that I'd encountered this problem _earlier_, when it was generating much more baffling behavior in my app, and when I finally (after about 2:15 of freaking out) recognized the issue, I wrapped all my Studio event listener method bodies in try/catch{show exception} boilerplate.  The exception message that started all this off is from one of those.  I say I wrapped them all, but I didn't.  I forgot about the very top level IDTExtensibility2 object, starting and stopping my addin as a whole.
   Well, fool me twice, I'm a monkey's barber.
 
@@ -27,19 +27,31 @@ at ...StudioEventListener.Hear_WindowActivated...
   *  I tried to shut one thing down twice, which was the cause of the exception that skipped the remainder of the shutdown code.
   *  After cleaning that up, there was still one category of event I'd forgot to unsubscribe from.
 
-  Now, Sun Tzu tells us we want to code so that we never encounter these errors again.  Failing that, the next most excellent path is to learn of them immediately.  Let us see how far we can walk towards excellence.
+  Now, Sun Tzu tells us we want to code so that we never encounter these errors again.  Failing that, the next most excellent path is to learn immediately when they occur.  Let us see how far we can walk towards excellence.
 
-  For the second error I had my normal approach in place, that I nulled my reference after I'd unsubscribed from it all around.  This isn't an absolute technical need, but it documents my contempt for the variable, declaring that I want nothing more to do with it.  More, it causes any later use to toss ObRef--and I instantly learn of the issue.  Not bad, I don't see a way to do better with that.
-  Sadly, here, the first problem defeated that practice.  The exception rose up to Studio, and wasn't seen from again.  It's like Nethack, but that's a different article.
+  For the second error I had my normal approach in place, that I nulled my reference after I'd unsubscribed from it all around.  This isn't an absolute technical need, but it documents my contempt for the variable, declaring that I want nothing more to do with it.  More, it causes any later use to toss ObRef Not Set--and I instantly learn of the issue.  Not bad, I don't see a way to do better with that.
+  Sadly, here, the first problem defeated that practice.  The exception rose up to Studio, and wasn't seen from again.  It's like Nethack--but that's a different article.
 
-  Examining the first one, then, I failed to exterminate all sources of the problem when I encountered it.  I only dealt with the event bodies in my domain behavior event listener class.  How can I improve my habit of eliminating all cases of an issue when it occurs?  I hope this lesson helps with that.
+  Examining the first one, then, I failed to exterminate all sources of the problem when I encountered it.  I only dealt with the event bodies in my domain behavior event listener class.  How can I improve my habit of eliminating all cases of an issue when it occurs?  I hope this lesson helps with that.  That one largely comes down to a matter of practice and tuning behavior.
   
-  So then, the last issue.  How do I get automatic notification of a missing unsubscribe?  My first two tools are my app and my tests.  I'm not sure how to write a worthwhile test for this.  I have two notions so far, both verminous maintenance nightmares.  I can mock many things, but I don't know how to mock subs/unsubs.
-  Aside from an iron discipline, which I confess I don't have, how do I test for that?  Write a mock object which allows me to check that, when I think I've unsubscribed, every event is in fact unsubscribed?  How in the Sam Hill do I pull that off?  Can I somehow monitor subscribe/unsubscribes?
+  So then, the last issue.  How do I get automatic notification of a missing unsubscribe?  My first two tools are my app and my tests.  I'm not sure how to write a worthwhile test for this.  I have two notions so far, both verminous maintenance deleria. [*]  I can mock many things, but I don't know how to mock subs/unsubs.
+  
+  So how can I reshape my use of events to eliminate the problem to begin with?
+  
+
+Footnote, "Verminous Maintenance Deleria":
+
+Two ways I could write tests for subscriptions, that would be, I think, more bug-ridden and sweaty than the code they mean to strengthen:
+
+#1:
+  Set up mock event sources and listeners
+  Subscribe them
+  Send off all of the mock source's events
+  Check that the listener heard everything
+  Unsubscribe them
+  Send off one each of the mock source's events
+  Assert the listener heard nothing
+
+Pretty straightforward at the conceptual level.  Let's pull back the covers.
 
 
-  *  Well, let's see.  If I fail to add to my mock an event I'm subscribing to, I'll get a test bonk.
-  *  Provided that I'm not using a mocking technology so potent that it automatically implements everything behind an interface.
-  *  Uh.  That implies, if there's an interface, that I'll need to implement all the methods, anyhow.
-  *  Implement methods, yes!  But those implementations can still throw NotImplementedException() when I'm not expecting to see the call crop up... but that means that...
-  *  I can set the expectations on the full mock to expect calls?  But with subscriptions and unsubscriptions, how do I pull that off?  This is worth a checkup  Probably
