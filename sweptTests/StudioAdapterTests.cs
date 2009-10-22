@@ -44,10 +44,19 @@ namespace swept.Tests
             fileCat.Files.Add(file);
 
             librarian._savedSourceCatalog = fileCat.Clone();
-            librarian.SolutionPath = "mockpath";
+            librarian.SolutionPath = @"d:\old_stuff\old.sln";
             librarian.Persist();
 
             window = adapter.taskWindow;
+        }
+
+
+        [Test]
+        public void when_solution_renamed_swept_library_renamed()
+        {
+            adapter.Raise_SolutionRenamed( @"d:\old_stuff\old.sln", @"c:\stuff\new.sln" );
+
+            Assert.That( librarian.LibraryPath, Is.EqualTo( @"c:\stuff\new.swept.library" ) );
         }
 
         

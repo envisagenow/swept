@@ -40,5 +40,13 @@ namespace swept.Tests
 
             return LibraryDoc;
         }
+
+        public string renamedOldLibraryPath;
+        public string renamedNewLibraryPath;
+        public void RenameLibrary( string oldPath, string newPath )
+        {
+            renamedNewLibraryPath = newPath;
+            renamedOldLibraryPath = oldPath;
+        }
     }
 }

@@ -12,27 +12,78 @@ namespace swept.Tests
     [TestFixture]
     public class CompoundFilterTests
     {
+        // current representation   
+        //<Change ID="Persistence 1" Description="Move persistence code into persisters" Language="CSharp" />
+
+        /*  Goal representation:
+
+<Change ID="Persistence 1" Description="Move persistence code into persisters">
+
+    <When ID="C#" Language="CSharp" />
+    
+    <AndNot ID="Permitted_Files">
+        <When NamesContaining="(Persister|Service)" />
+        <Or NamesContaining="XADR" />
+    </AndNot>
+    
+    <And ID="Uses_Persistence_Directly">
+        <When FileContaining="XADR" />
+        <Or FileContaining="Hibernate" />
+        <Or FileContaining="Oracle" />
+    </And>
+
+</Change>
+        */
 
         #region Compound matching
         [Test]
-        public void Filter_passes_dependent_on_internal_filters()
+        public void Chilren_get_matched()
         {
-            CompoundFilter child = new CompoundFilter
-            {
-                ID = "no name pattern",
-                Description = "Relevant to files of all names.",
-                NamePattern = "tests"
-            };
+            var child1 = new CompoundFilter { Language = FileLanguage.CSharp };
+            var child2 = new CompoundFilter { NamePattern = "blue" };
 
-            CompoundFilter filter = new CompoundFilter
-            {
-                Children = new List<CompoundFilter> { child }
-            };
+            var filter = new CompoundFilter { };
+            filter.Children.Add( child1 );
+            filter.Children.Add( child2 );
 
-            Assert.IsFalse( filter.Matches( new SourceFile( @"my_test.cs" ) ) );
-            Assert.IsTrue( filter.Matches( new SourceFile( @"Tests.cs" ) ) );
-            
+            Assert.IsFalse( filter.Matches( new SourceFile( "my.cs" ) ) );
+            Assert.IsFalse( filter.Matches( new SourceFile( "blue.html" ) ) );
+            Assert.IsTrue( filter.Matches( new SourceFile( "blue.cs" ) ) );
         }
+
+        [Test]
+        public void Or_filter()
+        {
+            var child1 = new CompoundFilter { Language = FileLanguage.CSharp };
+            var child2 = new CompoundFilter { NamePattern = "blue", Operator = FilterOperator.Or };
+
+            var filter = new CompoundFilter { };
+            filter.Children.Add( child1 );
+            filter.Children.Add( child2 );
+
+            Assert.IsTrue( filter.Matches( new SourceFile( "my.cs" ) ) );
+            Assert.IsTrue( filter.Matches( new SourceFile( "blue.html" ) ) );
+            Assert.IsTrue( filter.Matches( new SourceFile( "blue.cs" ) ) );
+            Assert.IsFalse( filter.Matches( new SourceFile( "bluuue.css" ) ) );
+        }
+
+
+        [Test]
+        public void Not_language_filter_passes_MISmatches_only()
+        {
+            var filter = new CompoundFilter
+            {
+                ID = "Not language",
+                Description = "Relevant to everything except C# files.",
+                Language = FileLanguage.CSharp,
+                Operator = FilterOperator.Not,
+            };
+
+            Assert.IsFalse( filter.Matches( new SourceFile( "my.cs" ) ) );
+            Assert.IsTrue( filter.Matches( new SourceFile( "my.html" ) ) );
+            Assert.IsTrue( filter.Matches( new SourceFile( "my.unknownextension" ) ) );
+        }
+        
         #endregion
 
         #region Simple filter functionality
@@ -144,25 +195,6 @@ namespace swept.Tests
         #region File Content Criteria
         #endregion
 
-        /*  Goal representation:
-
-<Change ID="Persistence 1" Description="Move persistence code into persisters">
-
-    <When ID="C#" Language="CSharp" />
-    
-    <AndNot ID="Permitted_Files">
-        <When NamesContaining="(Persister|Service)" />
-        <Or NamesContaining="XADR" />
-    </AndNot>
-    
-    <And ID="Uses_Persistence_Directly">
-        <When FileContaining="XADR" />
-        <Or FileContaining="Hibernate" />
-        <Or FileContaining="Oracle" />
-    </And>
-
-</Change>
-        */
 
     }
 

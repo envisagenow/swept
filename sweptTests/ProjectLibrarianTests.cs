@@ -5,6 +5,7 @@ using NUnit.Framework;
 using swept;
 using System;
 using System.Xml;
+using System.Collections.Generic;
 
 namespace swept.Tests
 {
@@ -33,12 +34,33 @@ namespace swept.Tests
         }
 
         [Test]
-        public void Swept_Library_sought_in_expected_location()
+        public void Swept_Library_opened_sought_in_expected_location()
         {
             Assert.AreEqual( @"f:\over\here.swept.library", Horace.LibraryPath );
 
             Horace.Hear_SolutionOpened( this, Get_testfile_FileEventArgs() );
             Assert.AreEqual( @"d:\code\CoolProject\mySolution.swept.library", Horace.LibraryPath );
+        }
+
+        [Test]
+        public void Swept_Library_renamed_sought_in_expected_location()
+        {
+            FileListEventArgs renameArgs = new FileListEventArgs { Names = new List<string> { @"d:\code\old.sln", @"c:\newplace\new.sln" } };
+            Horace.Hear_SolutionRenamed( this, renameArgs );
+
+            Assert.AreEqual( @"c:\newplace\new.swept.library", Horace.LibraryPath );
+        }
+
+        [Test]
+        public void Swept_Library_renamed_renames_the_library_on_disk()
+        {
+            string oldSln = @"f:\over\here.sln";
+            string newSln = @"c:\newplace\new.sln";
+            FileListEventArgs renameArgs = new FileListEventArgs { Names = new List<string> { oldSln, newSln } };
+            Horace.Hear_SolutionRenamed( this, renameArgs );
+
+            Assert.That( _FSAdapter.renamedOldLibraryPath, Is.EqualTo( @"f:\over\here.swept.library" ) );
+            Assert.That( _FSAdapter.renamedNewLibraryPath, Is.EqualTo( @"c:\newplace\new.swept.library" ) );
         }
 
         [Test]
@@ -117,8 +139,6 @@ namespace swept.Tests
 
             Assert.AreEqual( toOuterXml( TestProbe.SingleFileLibrary_text ), _FSAdapter.LibraryDoc.OuterXml );
         }
-
-        // TODO--0.2, DC: public void RenameSolution_will_rename_Library_file
 
         [Test]
         public void Can_set_SolutionPath()

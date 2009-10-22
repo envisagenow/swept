@@ -10,5 +10,6 @@ namespace swept
     {
         void Save( string fileName, string xmlText );
         XmlDocument LoadLibrary(string libraryPath);
+        void RenameLibrary( string oldPath, string newPath );
     }
 }

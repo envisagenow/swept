@@ -22,7 +22,6 @@ namespace swept
                 Event_SolutionOpened(this, new FileEventArgs { Name = solutionPath });
         }
 
-        // TODO--0.2, DC: test Raise_SolutionRenamed
         public event EventHandler<FileListEventArgs> Event_SolutionRenamed;
         public void Raise_SolutionRenamed( string oldName, string newName )
         {

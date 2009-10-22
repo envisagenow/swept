@@ -60,5 +60,10 @@ namespace swept
         }
         // future:  Pick another location if not found, store that location...somewhere?
 
+        public void RenameLibrary( string oldPath, string newPath )
+        {
+            throw new NotImplementedException();
+        }
+
     }
 }

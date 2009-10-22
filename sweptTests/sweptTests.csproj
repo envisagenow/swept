@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.30729</ProductVersion>
+    <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{485E504A-C357-463B-9C75-0FAB7ADFB186}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -64,12 +64,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AttributeExperiments.cs" />
     <Compile Include="ChangeCatalogTests.cs" />
     <Compile Include="ChangeWindowEventTests.cs" />
     <Compile Include="ChangeWindowTests.cs" />
     <Compile Include="CompoundFilterTests.cs" />
-    <Compile Include="EventExperiments.cs" />
     <Compile Include="FileContentFilterTests.cs" />
     <Compile Include="IntegrationTests.cs" />
     <Compile Include="MockUserAdapter.cs" />

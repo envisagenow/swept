@@ -39,6 +39,7 @@ namespace swept
             Adapter.Event_FileRenamed += Librarian.Hear_FileRenamed;
             Adapter.Event_SolutionSaved += Librarian.Hear_SolutionSaved;
             Adapter.Event_SolutionOpened += Librarian.Hear_SolutionOpened;
+            Adapter.Event_SolutionRenamed += Librarian.Hear_SolutionRenamed;
 
             //  Subscribe to the TaskWindow's events
             TaskWindow.Event_TaskWindowToggled += TaskWindow.Hear_TaskWindowToggled;

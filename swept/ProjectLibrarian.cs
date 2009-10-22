@@ -207,6 +207,13 @@ namespace swept
             Persist();
         }
 
+        private void RenameSolution( string oldSolutionPath, string newSolutionPath )
+        {
+            string oldLibraryPath = LibraryPath;
+            SolutionPath = newSolutionPath;
+            _storageAdapter.RenameLibrary( oldLibraryPath, LibraryPath );
+        }
+
         private void SaveSolution()
         {
             _savedSourceCatalog = _sourceCatalog.Clone();
@@ -214,6 +221,11 @@ namespace swept
         }
 
         #region Event Listeners
+        public void Hear_SolutionRenamed( object sender, swept.FileListEventArgs e )
+        {
+            RenameSolution( e.Names[0], e.Names[1] );
+        }
+
         public void Hear_SolutionOpened(object sender, FileEventArgs arg)
         {
             OpenSolution(arg.Name);

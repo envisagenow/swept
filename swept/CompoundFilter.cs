@@ -7,6 +7,13 @@ using System.Collections.Generic;
 
 namespace swept
 {
+    public enum FilterOperator
+    {
+		And,
+        Not,
+        Or
+    }
+
     public class CompoundFilter
     {
         public string ID { get; internal set; }
@@ -15,15 +22,19 @@ namespace swept
         public string Subpath { get; internal set; }
         public string NamePattern { get; internal set; }
 
+        public FilterOperator Operator { get; internal set; }
+
         public List<CompoundFilter> Children { get; set; }
         public CompoundFilter()
         {
             Subpath = string.Empty;
             NamePattern = string.Empty;
             Children = new List<CompoundFilter>();
+            Operator = FilterOperator.And;
         }
 
-        public CompoundFilter( string id, string description, FileLanguage language ) : this()
+        public CompoundFilter( string id, string description, FileLanguage language )
+            : this()
         {
             ID = id;
             Description = description;
@@ -36,11 +47,25 @@ namespace swept
             matches = matches && Language == FileLanguage.None || Language == file.Language;
             matches = matches && file.Name.StartsWith( Subpath );
             matches = matches && Regex.IsMatch( file.Name, NamePattern, RegexOptions.IgnoreCase );
-            if( matches )
-                foreach( CompoundFilter child in Children )
-                    matches = matches && child.Matches( file );
+            matches = matches && MatchesChildren( file );
+
+            if (Operator == FilterOperator.Not) matches = !matches;
+
+            return matches;
+        }
+
+        public virtual bool MatchesChildren( SourceFile file )
+        {
+            bool matches = true;
+            foreach (CompoundFilter child in Children)
+            {
+                if (child.Operator == FilterOperator.Or)
+                { matches = matches || child.Matches( file ); }
+                else
+                { matches = matches && child.Matches( file ); }
+            }
+
             return matches;
         }
     }
-
 }

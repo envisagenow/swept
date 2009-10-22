@@ -8,7 +8,6 @@ namespace swept
 {
     public class ChangeCatalog
     {
-        // TODO--0.3, DC: move back to standard list with sort on output
         internal List<Change> _changes;
 
         public ChangeCatalog()
