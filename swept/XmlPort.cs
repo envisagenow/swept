@@ -2,7 +2,6 @@
 //  Copyright (c) 2009 Jason Cole and Envisage Technologies Corp.
 //  This software is open source, MIT license.  See the file LICENSE for details.
 using System;
-using System.Collections.Generic;
 using System.Xml;
 using System.Text;
 
@@ -10,7 +9,7 @@ namespace swept
 {
     internal class XmlPort
     {
-        public string ToText(ProjectLibrarian librarian)
+        public string ToText( ProjectLibrarian librarian )
         {
             return string.Format(
 @"<SweptProjectData>
@@ -18,19 +17,19 @@ namespace swept
 {1}
 </SweptProjectData>",
                 ToText( librarian._changeCatalog ),
-                ToText(librarian._savedSourceCatalog)
+                ToText( librarian._savedSourceCatalog )
             );
         }
 
-        public string ToText(ChangeCatalog changeCatalog)
+        public string ToText( ChangeCatalog changeCatalog )
         {
             string catalogLabel = "ChangeCatalog";
-            string xmlText = String.Format("<{0}>\r\n", catalogLabel);
-            foreach ( Change change in changeCatalog._changes)
+            string xmlText = String.Format( "<{0}>\r\n", catalogLabel );
+            foreach (Change change in changeCatalog._changes)
             {
                 xmlText += ToText( change );
             }
-            xmlText += String.Format("</{0}>", catalogLabel);
+            xmlText += String.Format( "</{0}>", catalogLabel );
             return xmlText;
         }
 
@@ -40,48 +39,71 @@ namespace swept
             sb.AppendFormat( "ID='{0}' Description='{1}' Language='{2}' ",
                 change.ID, change.Description, change.Language );
 
-            if( !string.IsNullOrEmpty( change.Subpath ) )
+            if (!string.IsNullOrEmpty( change.Subpath ))
                 sb.AppendFormat( "Subpath='{0}' ", change.Subpath );
-            
-            if( !string.IsNullOrEmpty( change.NamePattern ) )
+
+            if (!string.IsNullOrEmpty( change.NamePattern ))
                 sb.AppendFormat( "NamePattern='{0}' ", change.NamePattern );
-            
+
             sb.AppendLine( "/>" );
 
             return sb.ToString();
         }
 
-        public string ToText(SourceFileCatalog fileCatalog)
+        public string ToText( SourceFileCatalog fileCatalog )
         {
             string catalogLabel = "SourceFileCatalog";
-            string xmlText = String.Format("<{0}>\r\n", catalogLabel);
-            fileCatalog.Files.Sort( (left, right) => left.Name.CompareTo( right.Name ) );
+            string xmlText = String.Format( "<{0}>\r\n", catalogLabel );
+            fileCatalog.Files.Sort( ( left, right ) => left.Name.CompareTo( right.Name ) );
             fileCatalog.Files.ForEach( file => xmlText += ToText( file ) );
             xmlText += String.Format( "</{0}>", catalogLabel );
             return xmlText;
         }
 
-        public string ToText(SourceFile file)
+        public string ToText( SourceFile file )
         {
             string elementLabel = "SourceFile";
-            string xmlText = String.Format("    <{0} Name='{1}'>\r\n", elementLabel, file.Name);
-            file.Completions.Sort( (left, right) => left.ChangeID.CompareTo(right.ChangeID) );
+            string xmlText = String.Format( "    <{0} Name='{1}'>\r\n", elementLabel, file.Name );
+            file.Completions.Sort( ( left, right ) => left.ChangeID.CompareTo( right.ChangeID ) );
             file.Completions.ForEach( c => xmlText += ToText( c ) );
             xmlText += String.Format( "    </{0}>\r\n", elementLabel );
 
             return xmlText;
         }
 
-        public string ToText(Completion comp)
+        public string ToText( Completion comp )
         {
-            return string.Format("        <Completion ID='{0}' />\r\n", comp.ChangeID);
+            return string.Format( "        <Completion ID='{0}' />\r\n", comp.ChangeID );
         }
+
+        public string ToText( CompoundFilter filter )
+        {
+            StringBuilder sb = new StringBuilder();
+            IntoStringBuilder( filter, sb, 1 );
+            return sb.ToString();
+        }
+
+        private void IntoStringBuilder( CompoundFilter filter, StringBuilder sb, int depth )
+        {
+            string idAttr = string.IsNullOrEmpty( filter.ID ) ? string.Empty : " ID='" + filter.ID + "'";
+            string descAttr = string.IsNullOrEmpty( filter.Description ) ? string.Empty : " Description='" + filter.Description + "'";
+
+            string indentFormat = "{0," + 4 * depth + "}";
+            string indent = string.Format( indentFormat, string.Empty );
+            
+            string filterName = filter.Operator.ToString();
+
+            sb.AppendFormat( "{0}<{1}{2}{3}>{4}", indent, filterName, idAttr, descAttr, Environment.NewLine );
+            filter.Children.ForEach( child => IntoStringBuilder( child, sb, depth + 1 ) );
+            sb.AppendFormat( "{0}</{1}>{2}", indent, filterName, Environment.NewLine );
+        }
+
 
         public ChangeCatalog ChangeCatalog_FromXmlDocument( XmlDocument doc )
         {
             XmlNode node = doc.SelectSingleNode( "SweptProjectData/ChangeCatalog" );
 
-            if( node == null )
+            if (node == null)
                 throw new Exception( "Document must have a <ChangeCatalog> node.  Please supply one." );
 
             return ChangeCatalog_FromNode( node );
@@ -91,12 +113,12 @@ namespace swept
         {
             ChangeCatalog cat = new ChangeCatalog();
 
-            XmlNodeList changes = node.SelectNodes("Change");
+            XmlNodeList changes = node.SelectNodes( "Change" );
             foreach (XmlNode changeNode in changes)
             {
-                Change change = Change_FromNode(changeNode);
+                Change change = Change_FromNode( changeNode );
 
-                cat.Add(change);
+                cat.Add( change );
             }
 
             return cat;
@@ -119,63 +141,62 @@ namespace swept
         }
 
 
-        public SourceFileCatalog SourceFileCatalog_FromText(string xmlText)
+        public SourceFileCatalog SourceFileCatalog_FromText( string xmlText )
         {
             try
             {
                 XmlDocument doc = new XmlDocument();
-                doc.LoadXml(xmlText);
-                return SourceFileCatalog_FromXmlDocument(doc);
+                doc.LoadXml( xmlText );
+                return SourceFileCatalog_FromXmlDocument( doc );
             }
             catch (XmlException xe)
             {
-                throw new Exception(String.Format("Text [{0}] was not valid XML.  Please check its contents.  Details: {1}", xmlText, xe.Message));
+                throw new Exception( String.Format( "Text [{0}] was not valid XML.  Please check its contents.  Details: {1}", xmlText, xe.Message ) );
             }
         }
 
-        public SourceFileCatalog SourceFileCatalog_FromXmlDocument(XmlDocument doc)
+        public SourceFileCatalog SourceFileCatalog_FromXmlDocument( XmlDocument doc )
         {
-            XmlNode node = doc.SelectSingleNode("SweptProjectData/SourceFileCatalog");
+            XmlNode node = doc.SelectSingleNode( "SweptProjectData/SourceFileCatalog" );
             if (node == null)
-                throw new Exception("Document must have a <SourceFileCatalog> node.  Please supply one.");
+                throw new Exception( "Document must have a <SourceFileCatalog> node.  Please supply one." );
 
-            return SourceFileCatalog_FromNode(node);
+            return SourceFileCatalog_FromNode( node );
         }
 
 
-        public SourceFileCatalog SourceFileCatalog_FromNode(XmlNode node)
+        public SourceFileCatalog SourceFileCatalog_FromNode( XmlNode node )
         {
             SourceFileCatalog cat = new SourceFileCatalog();
 
-            XmlNodeList files = node.SelectNodes("SourceFile");
+            XmlNodeList files = node.SelectNodes( "SourceFile" );
             foreach (XmlNode fileNode in files)
             {
-                cat.Files.Add(SourceFile_FromNode(fileNode));
+                cat.Files.Add( SourceFile_FromNode( fileNode ) );
             }
 
             return cat;
-        } 
+        }
 
-        private SourceFile SourceFile_FromNode(XmlNode xmlNode)
+        private SourceFile SourceFile_FromNode( XmlNode xmlNode )
         {
             if (xmlNode.Attributes["Name"] == null)
-                throw new Exception("A SourceFile node must have a Name attribute.  Please add one.");
+                throw new Exception( "A SourceFile node must have a Name attribute.  Please add one." );
 
-            SourceFile file = new SourceFile(xmlNode.Attributes["Name"].Value);
-            foreach (XmlNode completionNode in xmlNode.SelectNodes("Completion"))
+            SourceFile file = new SourceFile( xmlNode.Attributes["Name"].Value );
+            foreach (XmlNode completionNode in xmlNode.SelectNodes( "Completion" ))
             {
-                Completion comp = Completion_FromNode(completionNode);
-                file.Completions.Add(comp);
+                Completion comp = Completion_FromNode( completionNode );
+                file.Completions.Add( comp );
             }
             return file;
         }
 
-        public Completion Completion_FromNode(XmlNode completion)
+        public Completion Completion_FromNode( XmlNode completion )
         {
             string changeID = completion.Attributes["ID"].Value;
-            Completion fileChange = new Completion(changeID);
+            Completion fileChange = new Completion( changeID );
             return fileChange;
         }
-
     }
 }

@@ -83,7 +83,74 @@ namespace swept.Tests
             Assert.IsTrue( filter.Matches( new SourceFile( "my.html" ) ) );
             Assert.IsTrue( filter.Matches( new SourceFile( "my.unknownextension" ) ) );
         }
-        
+
+        #region wed tests
+        [Test]
+        public void NotFilter_inverts_decision()
+        {
+            CompoundFilter filter = new CompoundFilter
+            {
+                ID = "no_tests",
+                Description = "Skip the test files",
+                NamePattern = "tests",
+                Operator = FilterOperator.Not
+            };
+
+            Assert.IsTrue( filter.Matches( new SourceFile( @"my_test.cs" ) ) );
+            Assert.IsFalse( filter.Matches( new SourceFile( @"Tests.cs" ) ) );
+        }
+
+        [Test]
+        public void Filter_passes_depending_on_internal_filters()
+        {
+            CompoundFilter child = new CompoundFilter
+            {
+                ID = "Tests",
+                Description = "Give me just the unit tests.",
+                NamePattern = "tests"
+            };
+
+            CompoundFilter filter = new CompoundFilter
+            {
+                Children = new List<CompoundFilter> { child }
+            };
+
+            Assert.IsFalse( filter.Matches( new SourceFile( @"my_test.cs" ) ) );
+            Assert.IsTrue( filter.Matches( new SourceFile( @"Tests.cs" ) ) );
+        }
+
+
+
+        [Test]
+        public void either_of_or_filter_passing_passes()
+        {
+            CompoundFilter one = new CompoundFilter
+            {
+                ID = "one",
+                Description = "files named one",
+                NamePattern = "one"
+            };
+
+            CompoundFilter two = new CompoundFilter
+            {
+                ID = "two",
+                Description = "files named two",
+                NamePattern = "two",
+                Operator = FilterOperator.Or,
+            };
+
+            CompoundFilter filter = new CompoundFilter
+            {
+                Children = new List<CompoundFilter> { one, two }
+            };
+
+            Assert.IsTrue( filter.Matches( new SourceFile( @"my_one.cs" ) ) );
+            Assert.IsTrue( filter.Matches( new SourceFile( @"my_two.cs" ) ) );
+            Assert.IsFalse( filter.Matches( new SourceFile( @"my_three.cs" ) ) );
+            Assert.IsTrue( filter.Matches( new SourceFile( @"my_one_two.cs" ) ) );
+        }
+#endregion
+
         #endregion
 
         #region Simple filter functionality

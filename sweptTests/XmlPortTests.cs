@@ -6,7 +6,6 @@ using System;
 // using System.Xml.Linq;
 using NUnit.Framework;
 using System.Xml;
-//using NUnit.Framework.SyntaxHelpers;
 
 namespace swept.Tests
 {
@@ -50,6 +49,19 @@ namespace swept.Tests
     </SourceFile>
 ";
             Assert.AreEqual(expectedFile, serializedFile);
+        }
+
+        [Test]
+        public void CompoundFilter_ToXmlText()
+        {
+            CompoundFilter filter = new CompoundFilter();
+
+            string serializedFilter = port.ToText( filter );
+            string expectedFilter =
+@"    <Filter>
+    </Filter>
+";
+            Assert.AreEqual( expectedFilter, serializedFilter );
         }
 
         [Test]
