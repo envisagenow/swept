@@ -141,7 +141,13 @@ namespace swept
         }
 
 
-        public SourceFileCatalog SourceFileCatalog_FromText( string xmlText )
+        public CompoundFilter CompoundFilter_FromText( string filter_text )
+        {
+            return new CompoundFilter();
+        }
+
+
+        public SourceFileCatalog SourceFileCatalog_FromText(string xmlText)
         {
             try
             {

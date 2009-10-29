@@ -15,7 +15,7 @@ namespace swept.Tests
         private XmlPort port;
 
         [SetUp]
-        public void CanCreate()
+        public void given_a_port()
         {
             port = new XmlPort();
         }
@@ -154,8 +154,6 @@ namespace swept.Tests
 
         // TODO: public void Removed_Changes_are_saved()
         // TODO: public void Removed_Changes_are_loaded()
-        // TODO: public void Removed_SourceFiles_are_saved()
-        // TODO: public void Removed_SourceFiles_are_loaded()
 
         [Test]
         public void Can_serialize_full_Change_ToXml()
@@ -195,6 +193,24 @@ namespace swept.Tests
         // TODO: public void Changes_are_sorted()
         // TODO: public void SourceFiles_are_sorted()
         // TODO: public void Completions_are_sorted()
+
+        #region Compound filters from XML
+        [Test]
+        public void basic_nested()
+        {
+            string filter_text =
+@"<Filter ID='parent'>
+    <Filter ID='child'>
+    </Filter>
+</Filter>
+";
+            CompoundFilter filter = port.CompoundFilter_FromText( filter_text );
+            Assert.That( filter.ID, Is.EqualTo( "parent" ) );
+            Assert.That( filter.Children.Count, Is.EqualTo( 1 ) );
+            Assert.That( filter.Children.Count, Is.EqualTo( 1 ) );
+        }
+        #endregion
+
 
         #region Exception testing
         [Test, ExpectedException(ExpectedMessage = "Document must have a <SourceFileCatalog> node.  Please supply one.")]
