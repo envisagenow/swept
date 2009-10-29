@@ -34,17 +34,16 @@ at ...StudioEventListener.Hear_WindowActivated...
 
   Examining the first one, then, I failed to exterminate all sources of the problem when I encountered it.  I only dealt with the event bodies in my domain behavior event listener class.  How can I improve my habit of eliminating all cases of an issue when it occurs?  I hope this lesson helps with that.  That one largely comes down to a matter of practice and tuning behavior.
   
-  So then, the last issue.  How do I get automatic notification of a missing unsubscribe?  My first two tools are my app and my tests.  I'm not sure how to write a worthwhile test for this.  I have two notions so far, both verminous maintenance deleria. [*]  I can mock many things, but I don't know how to mock subs/unsubs.
+  So then, the last issue.  How do I get automatic notification of a missing unsubscribe?  My first two tools are my app and my tests.  I'm not sure how to write a worthwhile test for this.  I have one notion so far, a verminous maintenance delerium. [*]  I can mock many things, but I don't know how to mock subs/unsubs.
   
-  So how can I reshape my use of events to eliminate the problem to begin with?
+  So can I reshape my use of events to eliminate the problem to begin with?
   
 
-Footnote, "Verminous Maintenance Deleria":
+Footnote, "Verminous Maintenance Delerium":
 
-Two ways I could write tests for subscriptions, that would be, I think, more bug-ridden and sweaty than the code they mean to strengthen:
+I could write tests for subscriptions like this, but it may wind up more bug-ridden and sweaty than the code I mean to strengthen:
 
-#1:
-  Set up mock event sources and listeners
+  Create mock event sources and listeners
   Subscribe them
   Send off all of the mock source's events
   Check that the listener heard everything
@@ -52,6 +51,23 @@ Two ways I could write tests for subscriptions, that would be, I think, more bug
   Send off one each of the mock source's events
   Assert the listener heard nothing
 
-Pretty straightforward at the conceptual level.  Let's pull back the covers.
+Pretty straightforward, if tedious, at first look.  Let's look closer, and refine the picture.
 
+ * The VS Extensibility model sets me up with a number of event sources, using several event-delivery structures.
+ * We'll want to check that each event winds up in the right spot.
 
+  For each event source
+    Create a mock source and a mock listener
+      (Remember the code under test:  subscription/cancellation.)
+    Run source and listener through the subscriber
+    For each event
+      Send through the mock source
+      Check that it showed up at the mock listener
+    Run source and listener through the unsubscriber
+    For each event
+      Send through the mock source
+      Check that it did not show up at the mock listener
+
+ * The subscribers/cancellers are in several different forms.  Some may be difficult to mock.
+
+ 

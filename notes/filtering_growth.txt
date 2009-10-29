@@ -40,23 +40,27 @@ The history of filtering in Swept:
         return passesLanguage && passesSubpath && passesNamePattern;
     }
 
-  This covers my needs for the changes I want to start with in my day-job project.  I can imagine several ways this filtering could continue to grow, which I'll defer until my need pulls the feature out of my future hours.  :D
+  This covers my needs for the changes I want to start with in my day-job project.  I can imagine several ways this filtering could continue to grow, [Footnote:  Several ways filtering could grow] which I'll defer until my need pulls the feature out of my future hours.  :D
 
   Fast-forward past test-growing the storage of the new filters, and commit.
-  
+
+---  
   
   Notes
 
-  Some of these changes were 'prefactoring', refactoring that makes the upcoming step more graceful.
+  Some of these changes were 'prefactoring', refactoring to make the upcoming steps more graceful.
 
-  1:1, Here vs. There:
+  Footnote:  1:1, Here vs. There:
   I see this case often, two classes equally involved in a behavior which either class could hold without technical barriers.  So why did PassesFilter() go into Change, rather than SourceFile?  I made a judgment call on the semantics:  It felt more cohesive to put the decision logic near the criteria, rather than near the data.  Then, to seal the deal, when I rolled the implementations over my tongue, the first sounded more natural:
 
   From the Change's perspective:  Does the file's name start with my subpath?
   vs.
   From the SourceFile's perspective:  Does my name start with the change's subpath?
 
-  Several ways this filtering could grow:
+---
+  
+  Footnote:  Several ways filtering could grow
+
   *  FileContentPattern
   *  More than one filter of each type
   *  Now that NamePattern exists, the Language and Subpath could be subsumed within it.
