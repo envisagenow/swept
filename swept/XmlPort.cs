@@ -141,9 +141,17 @@ namespace swept
         }
 
 
-        public CompoundFilter CompoundFilter_FromText( string filter_text )
+        public CompoundFilter CompoundFilter_FromNode( XmlNode filterNode )
         {
-            return new CompoundFilter();
+            CompoundFilter filter = new CompoundFilter();
+            filter.ID = filterNode.Attributes["ID"].Value;
+
+            foreach (XmlNode childNode in filterNode.ChildNodes)
+            {
+                filter.Children.Add( CompoundFilter_FromNode( childNode ) );
+            }
+
+            return filter;
         }
 
 

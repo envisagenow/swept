@@ -11,7 +11,8 @@ namespace swept
     {
 		And,
         Not,
-        Or
+        Or,
+        NotAnd
     }
 
     public class CompoundFilter
@@ -22,6 +23,7 @@ namespace swept
         public string Subpath { get; internal set; }
         public string NamePattern { get; internal set; }
 
+        public string ContentPattern { get; set; }
         public FilterOperator Operator { get; internal set; }
 
         public List<CompoundFilter> Children { get; set; }

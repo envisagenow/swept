@@ -196,7 +196,7 @@ namespace swept.Tests
 
         #region Compound filters from XML
         [Test]
-        public void basic_nested()
+        public void basic_nested_original()
         {
             string filter_text =
 @"<Filter ID='parent'>
@@ -204,11 +204,81 @@ namespace swept.Tests
     </Filter>
 </Filter>
 ";
-            CompoundFilter filter = port.CompoundFilter_FromText( filter_text );
+            var node = Node_FromText( filter_text );
+
+            CompoundFilter filter = port.CompoundFilter_FromNode( node );
             Assert.That( filter.ID, Is.EqualTo( "parent" ) );
             Assert.That( filter.Children.Count, Is.EqualTo( 1 ) );
-            Assert.That( filter.Children.Count, Is.EqualTo( 1 ) );
+            Assert.That( filter.Children[0].ID, Is.EqualTo( "child" ) );
         }
+
+
+        
+        [Test]
+        public void basic_nested()
+        {
+            string filter_text =
+@"<Filter ID='parent'>
+    <Filter ID='child'>
+    </Filter>
+    <Filter ID='second child'>
+    </Filter>
+</Filter>
+";
+            var node = Node_FromText( filter_text );
+
+            CompoundFilter filter = port.CompoundFilter_FromNode( node );
+            Assert.That( filter.ID, Is.EqualTo( "parent" ) );
+            Assert.That( filter.Children.Count, Is.EqualTo( 2 ) );
+            Assert.That( filter.Children[0].ID, Is.EqualTo( "child" ) );
+            Assert.That( filter.Children[1].ID, Is.EqualTo( "second child" ) );
+        }
+
+        [Test]
+        public void multi_generation_nested()
+        {
+            string filter_text =
+@"<Filter ID='parent'>
+    <Filter ID='child'>
+        <Filter ID='grandchild' />
+        <Filter ID='second grandchild'>
+            <Filter ID='first great-grandchild' />
+        </Filter>
+    </Filter>
+    <Filter ID='second child'>
+    </Filter>
+</Filter>
+";
+            var node = Node_FromText( filter_text );
+
+            CompoundFilter filter = port.CompoundFilter_FromNode( node );
+            Assert.That( filter.ID, Is.EqualTo( "parent" ) );
+            Assert.That( filter.Children.Count, Is.EqualTo( 2 ) );
+            Assert.That( filter.Children[0].Children[1].Children[0].ID, Is.EqualTo( "first great-grandchild" ) );
+        }
+
+        [Test]
+        public void basic_simple()
+        {
+            string filter_text =
+@"<Filter ID='single'>
+</Filter>
+";
+            var node = Node_FromText( filter_text );
+
+            CompoundFilter filter = port.CompoundFilter_FromNode( node );
+            Assert.That( filter.ID, Is.EqualTo( "single" ) );
+            Assert.That( filter.Children.Count, Is.EqualTo( 0 ) );
+        }
+
+        public XmlNode Node_FromText( string text )
+        {
+            XmlDocument doc = new XmlDocument();
+            doc.LoadXml( text );
+            return doc.ChildNodes[0];
+        }
+
+
         #endregion
 
 
