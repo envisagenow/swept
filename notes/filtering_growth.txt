@@ -1,6 +1,6 @@
 The history of filtering in Swept:
 
-  One of the first features in Swept started off crude, and remained that way, intentionally, until Swept finally reached 0.1.  As soon as I wanted to start using Swept, I realized that my first candidate Changes only applied to a slice of my files.  Some changes applied to files in some subpath, other changes were related to files with a common element in their names, others...would be more difficult to characterize.
+  One of the first features in Swept started off crude, and remained that way, intentionally, until Swept reached 0.1.  [Footnote:  Swept version roadmap]  As soon as I wanted to start using Swept, I realized that my first candidate Changes only applied to a slice of my files.  Some changes applied to files in some subpath, other changes were related to files with a common element in their names, others...would be more difficult to characterize.
   Time to test-grow this feature.
 
   To begin, the feature fit poorly in the ChangeCatalog
@@ -49,6 +49,13 @@ The history of filtering in Swept:
   Notes
 
   Some of these changes were 'prefactoring', refactoring to make the upcoming steps more graceful.
+  
+  Footnote:  Swept version roadmap
+  0.1:  Hooks into Studio, so we can attempt to use it and find out how grossly unsuited it is for any use.
+  0.2:  The worst lacks are addressed, we have actually used it to our benefit, it gets released to a public repository
+  0.3:  ?  The most desired features at that time.
+  0.N:  Et cetera.
+  
 
   Footnote:  1:1, Here vs. There:
   I see this case often, two classes equally involved in a behavior which either class could hold without technical barriers.  So why did PassesFilter() go into Change, rather than SourceFile?  I made a judgment call on the semantics:  It felt more cohesive to put the decision logic near the criteria, rather than near the data.  Then, to seal the deal, when I rolled the implementations over my tongue, the first sounded more natural:
