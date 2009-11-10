@@ -60,7 +60,7 @@ namespace swept.Tests
         [Test]
         public void When_SourceFile_readded_user_can_choose_to_keep_history()
         {
-            changeCat.Add( new Change( "77", "Update_unit_test_names_to_look_thisaway", FileLanguage.CSharp ) );
+            changeCat.Add( new Change { ID = "77" } );
 
             bariFile = new SourceFile( "bari.cs" );
             fileCat.Add( bariFile );
@@ -85,7 +85,7 @@ namespace swept.Tests
         [Test]
         public void When_SourceFile_readded_user_can_choose_to_discard_history()
         {
-            changeCat.Add( new Change( "77", "Update_unit_test_names_to_look_thisaway", FileLanguage.CSharp ) );
+            changeCat.Add( new Change { ID = "77" } );
 
             bariFile = new SourceFile( "bari.cs" );
             fileCat.Add( bariFile );

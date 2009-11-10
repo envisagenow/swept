@@ -25,29 +25,12 @@ namespace swept
         {
             string catalogLabel = "ChangeCatalog";
             string xmlText = String.Format( "<{0}>\r\n", catalogLabel );
-            foreach (Change change in changeCatalog._changes)
+            foreach( Change change in changeCatalog._changes )
             {
                 xmlText += ToText( change );
             }
             xmlText += String.Format( "</{0}>", catalogLabel );
             return xmlText;
-        }
-
-        public string ToText( Change change )
-        {
-            var sb = new StringBuilder( "    <Change " );
-            sb.AppendFormat( "ID='{0}' Description='{1}' Language='{2}' ",
-                change.ID, change.Description, change.Language );
-
-            if (!string.IsNullOrEmpty( change.Subpath ))
-                sb.AppendFormat( "Subpath='{0}' ", change.Subpath );
-
-            if (!string.IsNullOrEmpty( change.NamePattern ))
-                sb.AppendFormat( "NamePattern='{0}' ", change.NamePattern );
-
-            sb.AppendLine( "/>" );
-
-            return sb.ToString();
         }
 
         public string ToText( SourceFileCatalog fileCatalog )
@@ -78,6 +61,7 @@ namespace swept
 
         public string ToText( CompoundFilter filter )
         {
+            filter.markFirstChildren();
             StringBuilder sb = new StringBuilder();
             IntoStringBuilder( filter, sb, 1 );
             return sb.ToString();
@@ -85,38 +69,63 @@ namespace swept
 
         private void IntoStringBuilder( CompoundFilter filter, StringBuilder sb, int depth )
         {
-            string idAttr = string.IsNullOrEmpty( filter.ID ) ? string.Empty : " ID='" + filter.ID + "'";
-            string descAttr = string.IsNullOrEmpty( filter.Description ) ? string.Empty : " Description='" + filter.Description + "'";
 
             string indentFormat = "{0," + 4 * depth + "}";
             string indent = string.Format( indentFormat, string.Empty );
-            
-            string filterName = filter.Operator.ToString();
 
-            sb.AppendFormat( "{0}<{1}{2}{3}>{4}", indent, filterName, idAttr, descAttr, Environment.NewLine );
-            filter.Children.ForEach( child => IntoStringBuilder( child, sb, depth + 1 ) );
-            sb.AppendFormat( "{0}</{1}>{2}", indent, filterName, Environment.NewLine );
+            sb.AppendFormat( "{0}<{1}", indent, filter.Name );
+
+            if( !string.IsNullOrEmpty( filter.ID ) )
+                sb.AppendFormat( " ID='{0}'", filter.ID );
+
+            if( !string.IsNullOrEmpty( filter.Description ) )
+                sb.AppendFormat( " Description='{0}'", filter.Description );
+
+            if( !string.IsNullOrEmpty( filter.ContentPattern ) )
+                sb.AppendFormat( " ContentPattern='{0}'", filter.ContentPattern );
+
+            if( !string.IsNullOrEmpty( filter.Subpath ) )
+                sb.AppendFormat( " FilePath='{0}'", filter.Subpath );
+
+            if( !string.IsNullOrEmpty( filter.NamePattern ) )
+                sb.AppendFormat( " NamePattern='{0}'", filter.NamePattern );
+
+            if( filter.Language != FileLanguage.None )
+                sb.AppendFormat( " Language='{0}'", filter.Language );
+
+            bool hasChildren = filter.Children.Count > 0;
+
+            if( !hasChildren )
+                sb.Append( " /" );
+
+            sb.AppendFormat( ">{0}", Environment.NewLine );
+
+            if( hasChildren )
+            {
+                filter.Children.ForEach( child => IntoStringBuilder( child, sb, depth + 1 ) );
+                sb.AppendFormat( "{0}</{1}>{2}", indent, filter.Name, Environment.NewLine );
+            }
         }
-
 
         public ChangeCatalog ChangeCatalog_FromXmlDocument( XmlDocument doc )
         {
             XmlNode node = doc.SelectSingleNode( "SweptProjectData/ChangeCatalog" );
 
-            if (node == null)
+            if( node == null )
                 throw new Exception( "Document must have a <ChangeCatalog> node.  Please supply one." );
 
             return ChangeCatalog_FromNode( node );
         }
+
 
         public ChangeCatalog ChangeCatalog_FromNode( XmlNode node )
         {
             ChangeCatalog cat = new ChangeCatalog();
 
             XmlNodeList changes = node.SelectNodes( "Change" );
-            foreach (XmlNode changeNode in changes)
+            foreach( XmlNode changeNode in changes )
             {
-                Change change = Change_FromNode( changeNode );
+                Change change = (Change)CompoundFilter_FromNode( changeNode );
 
                 cat.Add( change );
             }
@@ -124,35 +133,49 @@ namespace swept
             return cat;
         }
 
-        private static Change Change_FromNode( XmlNode xmlNode )
-        {
-            FileLanguage language = (FileLanguage)Enum.Parse( typeof( FileLanguage ), xmlNode.Attributes["Language"].Value );
-
-            string subpath = (xmlNode.Attributes["Subpath"] != null) ? xmlNode.Attributes["Subpath"].Value : string.Empty;
-            string pattern = (xmlNode.Attributes["NamePattern"] != null) ? xmlNode.Attributes["NamePattern"].Value : string.Empty;
-            return new Change
-            {
-                ID = xmlNode.Attributes["ID"].Value,
-                Description = xmlNode.Attributes["Description"].Value,
-                Language = language,
-                Subpath = subpath,
-                NamePattern = pattern,
-            };
-        }
-
-
         public CompoundFilter CompoundFilter_FromNode( XmlNode filterNode )
         {
-            CompoundFilter filter = new CompoundFilter();
-            filter.ID = filterNode.Attributes["ID"].Value;
+            bool isTopLevel = filterNode.LocalName == "Change";
+            CompoundFilter filter = isTopLevel ? new Change() : new CompoundFilter();
 
-            foreach (XmlNode childNode in filterNode.ChildNodes)
+            if( filterNode.Attributes["ID"] != null )
+                filter.ID = filterNode.Attributes["ID"].Value;
+            else if( isTopLevel )
+                throw new Exception( "Changes must have IDs at their top level." );
+
+            if( filterNode.Attributes["Description"] != null )
+                filter.Description = filterNode.Attributes["Description"].Value;
+
+            if( filterNode.Attributes["ContentPattern"] != null )
+                filter.ContentPattern = filterNode.Attributes["ContentPattern"].Value;
+
+            if( filterNode.Attributes["FilePattern"] != null )
+                filter.NamePattern = filterNode.Attributes["FilePattern"].Value;
+
+            if( filterNode.Attributes["Subpath"] != null )
+                filter.Subpath = filterNode.Attributes["Subpath"].Value;
+
+            if( filterNode.Attributes["Language"] != null )
+            {
+                string languageText = filterNode.Attributes["Language"].Value;
+                try
+                {
+                    filter.Language = (FileLanguage)Enum.Parse( typeof( FileLanguage ), languageText );
+                }
+                catch
+                {
+                    throw new Exception( string.Format( "Don't understand a file of language [{0}].", languageText ) );
+                }
+            }
+
+            foreach( XmlNode childNode in filterNode.ChildNodes )
             {
                 filter.Children.Add( CompoundFilter_FromNode( childNode ) );
             }
 
             return filter;
         }
+        // TODO: cleanup: Align the domain values with the xml attributes.
 
 
         public SourceFileCatalog SourceFileCatalog_FromText(string xmlText)

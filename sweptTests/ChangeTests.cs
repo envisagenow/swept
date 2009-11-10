@@ -10,14 +10,24 @@ namespace swept.Tests
     [TestFixture]
     public class ChangeTests
     {
+        // TODO: figure out how to keep ChangeTests up to date as attributes are added...
         [Test]
         public void CanCreateChange()
         {
             const string newID = "NEW";
             const string newDescription = "Brand new";
+
+            const string path = @"somewhere";
+            const string namePattern = "problematic.code();";
             const FileLanguage newLanguage = FileLanguage.CSharp;
 
-            Change change = new Change( newID, newDescription, newLanguage );
+            const string problematicContent = "problematic.code();";
+
+            Change change = new Change { 
+                ID = newID, Description = newDescription, 
+                Language = newLanguage, Subpath = path, NamePattern = namePattern,
+                ContentPattern = problematicContent
+            };
 
             Assert.AreEqual( newID, change.ID );
             Assert.AreEqual( newDescription, change.Description );
@@ -35,11 +45,12 @@ namespace swept.Tests
             Assert.IsTrue(change1.Equals( change2 ));
         }
 
+        // TODO: relocate, expand attributes being compared
         [Test]
         public void Can_compare_inequal_objects()
         {
-            Change change1 = new Change( "101-443", "Remove all dinguses", FileLanguage.CSharp );
-            Change change2 = new Change( "5987515", "Frob all wobbishes", FileLanguage.CSS );
+            Change change1 = new Change { ID = "101-443", Description = "Remove all dinguses", Language = FileLanguage.CSharp };
+            Change change2 = new Change { ID = "5987515", Description = "Frob all wobbishes", Language = FileLanguage.CSS };
 
             Assert.IsFalse( change1.Equals( change2 ) );
 

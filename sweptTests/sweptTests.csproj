@@ -68,7 +68,7 @@
     <Compile Include="ChangeWindowEventTests.cs" />
     <Compile Include="ChangeWindowTests.cs" />
     <Compile Include="CompoundFilterTests.cs" />
-    <Compile Include="CompoundFilter_XmlPort_Tests.cs" />
+    <Compile Include="XmlPort_CompoundFilter_Tests.cs" />
     <Compile Include="FileContentFilterTests.cs" />
     <Compile Include="IntegrationTests.cs" />
     <Compile Include="MockUserAdapter.cs" />

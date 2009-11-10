@@ -13,13 +13,17 @@ namespace swept.Tests
     {
         private ChangeCatalog cat;
         [SetUp]
-        public void CanCreate()
+        public void given_a_catalog_with_several_changes()
         {
             cat = new ChangeCatalog();
 
-            cat.Add(new Change("e1", "Fix 'using' statements", FileLanguage.CSharp));
-            cat.Add(new Change("e2", "Upgrade to XHTML", FileLanguage.HTML));
-            cat.Add(new Change("e3", "Put <title> on all pages", FileLanguage.HTML));
+            Change avoidAliasUsing = new Change { ID = "e1", Description = "Don't use 'using' to alias.", Language = FileLanguage.CSharp };
+            // TODO: figure out contentPattern for avoidAliasUsing.
+            cat.Add( avoidAliasUsing );
+
+            cat.Add( new Change { ID = "e2", Description = "Upgrade to XHTML", Language = FileLanguage.HTML } );
+            // TODO: answer structural question about manually-checked vs. auto-cleared
+            cat.Add( new Change { ID = "e3", Description = "Put <title> on all pages", Language = FileLanguage.HTML } );
         }
 
         //[Test]
@@ -64,7 +68,7 @@ namespace swept.Tests
             ChangeCatalog cat1 = new ChangeCatalog();
             ChangeCatalog cat2 = new ChangeCatalog();
 
-            Change change = new Change( "testId", "Test CHange", FileLanguage.CSharp );
+            Change change = new Change { ID = "testId" };
             cat2.Add( change );
 
 
@@ -77,10 +81,10 @@ namespace swept.Tests
             ChangeCatalog cat1 = new ChangeCatalog();
             ChangeCatalog cat2 = new ChangeCatalog();
 
-            Change change = new Change("SomeID", "A really groovy change", FileLanguage.CSharp);
+            Change change = new Change { ID = "SomeID", Description = "A really groovy change"  };
             cat1.Add(change);
 
-            change = new Change("testId", "Test Change", FileLanguage.CSharp);
+            change = new Change { ID = "testId", Description = "Test Change" };
             cat2.Add(change);
 
             Assert.IsFalse(cat1.Equals(cat2));
@@ -92,10 +96,10 @@ namespace swept.Tests
             ChangeCatalog cat1 = new ChangeCatalog();
             ChangeCatalog cat2 = new ChangeCatalog();
 
-            Change change = new Change("SomeID", "A really groovy change", FileLanguage.CSharp);
-            cat1.Add(change);
+            Change change = new Change { ID = "SomeID", Description = "A really groovy change" };
+            cat1.Add( change );
 
-            change = new Change("SomeID", "Test Change", FileLanguage.CSharp);
+            change = new Change { ID = "SomeID", Description = "Test Change" };
             cat2.Add(change);
 
             Assert.IsFalse(cat1.Equals(cat2));
@@ -107,11 +111,11 @@ namespace swept.Tests
             ChangeCatalog cat1 = new ChangeCatalog();
             ChangeCatalog cat2 = new ChangeCatalog();
 
-            Change change = new Change( "SomeID", "A really groovy change", FileLanguage.CSharp );
+            Change change = new Change { ID = "SomeID", Description = "A really groovy change", Language = FileLanguage.CSharp };
             cat1.Add( change );
             cat2.Add( change );
 
-            change = new Change( "testId", "Test Change", FileLanguage.CSharp );
+            change = new Change { ID = "testId", Description = "Test Change", Language = FileLanguage.CSharp };
             cat1.Add( change );
             cat2.Add( change );
 
@@ -122,11 +126,11 @@ namespace swept.Tests
         [Test]
         public void Changes_sort_alphabetically_by_ID()
         {
-            Change a_17 = new Change( "a_17", "Do this thing", FileLanguage.CSharp );
-            Change a_18 = new Change( "a_18", "Do this thing", FileLanguage.CSharp );
-            Change a_117 = new Change( "a_117", "Do this thing", FileLanguage.CSharp );
-            Change a_177 = new Change( "a_177", "Do this thing", FileLanguage.CSharp );
-            Change b_52 = new Change( "b_52", "Do this, too", FileLanguage.CSharp );
+            Change a_17 = new Change{ID= "a_17", };
+            Change a_18 = new Change{ID= "a_18", };
+            Change a_117 = new Change{ID= "a_117", };
+            Change a_177 = new Change{ID= "a_177", };
+            Change b_52 = new Change { ID = "b_52", };
 
             ChangeCatalog cat = new ChangeCatalog();
 
@@ -150,11 +154,11 @@ namespace swept.Tests
         {
             ChangeCatalog cat = new ChangeCatalog();
 
-            Change a_17 = new Change( "a_17", "Do this thing", FileLanguage.CSharp );
-            Change a_17a = new Change( "a_17", "Do this thing", FileLanguage.CSharp );
+            Change a_17a = new Change { ID = "a_17" };
+            Change a_17b = new Change { ID = "a_17" };
 
-            cat.Add( a_17 );
             cat.Add( a_17a );
+            cat.Add( a_17b );
         }
 
         [Test]

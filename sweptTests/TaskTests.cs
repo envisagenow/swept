@@ -12,12 +12,11 @@ namespace swept.Tests
         [Test]
         public void CanCreateFromChange()
         {
-            Change change = new Change( "id1", "this change", FileLanguage.CSharp );
+            Change change = new Change{ ID = "id1", Description = "this change", Language = FileLanguage.CSharp };
             Task entry = Task.FromChange( change );
 
             Assert.AreEqual( change.ID, entry.ID );
             Assert.AreEqual( change.Description, entry.Description );
-            Assert.AreEqual( change.Language, entry.Language );
             Assert.IsFalse( entry.Completed );
         }
     }

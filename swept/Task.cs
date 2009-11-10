@@ -14,7 +14,6 @@ namespace swept
             return new Task { 
                 ID = change.ID, 
                 Description = change.Description, 
-                Language = change.Language, 
                 Completed = false 
             };
         }

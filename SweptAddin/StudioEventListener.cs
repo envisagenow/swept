@@ -219,11 +219,19 @@ namespace swept.Addin
         {
             try
             {
-                // TODO--0.N: If tasks join Studio Task List, don't hide tasks when it gets focus.
-                if (GotFocus.Document == null)
+                // TODO--0.N: If tasks later join the Studio Task List window,
+                //   don't hide our tasks when the Task List window gets the focus.
+                if( GotFocus.Document == null )
                     _adapter.Raise_NonSourceGetsFocus();
                 else
-                    _adapter.Raise_FileGotFocus( GotFocus.Document.FullName );
+                {
+                    var textDoc = GotFocus.Document.Object("TextDocument") as TextDocument;
+                    if( textDoc != null )
+                    {
+                        string content = textDoc.StartPoint.CreateEditPoint().GetText( textDoc.EndPoint );
+                        _adapter.Raise_FileGotFocus( GotFocus.Document.FullName, content );
+                    }
+                }
             }
             catch( Exception e )
             {

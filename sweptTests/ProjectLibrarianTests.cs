@@ -175,7 +175,7 @@ namespace swept.Tests
         [Test]
         public void Persist_saves_ChangeCatalog()
         {
-            Horace._changeCatalog.Add( new Change( "Uno", "Eliminate profanity from error messages.", FileLanguage.CSharp ) );
+            Horace._changeCatalog.Add( new Change { ID = "Uno", Description = "Eliminate profanity from error messages.", Language = FileLanguage.CSharp } );
             Horace.Persist();
 
             string expectedXmlText =
@@ -204,7 +204,7 @@ namespace swept.Tests
             Assert.IsTrue( Horace.ChangeCatalogSaved );
             Assert.IsTrue( Horace.IsSaved );
 
-            Horace._savedChangeCatalog.Add( new Change( "eek", "A mouse", FileLanguage.CSharp ) );
+            Horace._savedChangeCatalog.Add( new Change { ID = "eek" } );
 
             Assert.IsFalse( Horace.ChangeCatalogSaved );
             Assert.IsFalse( Horace.IsSaved );
@@ -246,7 +246,7 @@ namespace swept.Tests
         {
             Assert.AreEqual( 0, Horace._changeCatalog._changes.Count );
 
-            Change change = new Change( "14", "here I am", FileLanguage.CSharp );
+            Change change = new Change { ID = "14" };
             Horace.Hear_ChangeAdded( this, new ChangeEventArgs { change = change } );
 
             Assert.AreEqual( 1, Horace._changeCatalog._changes.Count );

@@ -9,6 +9,7 @@ namespace swept
     public class FileEventArgs : EventArgs
     {
         public string Name;
+        public string Content;
     }
 
     public class FileListEventArgs : EventArgs

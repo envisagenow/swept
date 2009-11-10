@@ -52,19 +52,6 @@ namespace swept.Tests
         }
 
         [Test]
-        public void CompoundFilter_ToXmlText()
-        {
-            CompoundFilter filter = new CompoundFilter();
-
-            string serializedFilter = port.ToText( filter );
-            string expectedFilter =
-@"    <Filter>
-    </Filter>
-";
-            Assert.AreEqual( expectedFilter, serializedFilter );
-        }
-
-        [Test]
         public void SourceFileCatalog_ToXMLText()
         {
             SourceFileCatalog fileCat = new SourceFileCatalog();
@@ -161,125 +148,40 @@ namespace swept.Tests
             Change change = new Change {
                 ID = "Uno",
                 Description = "Eliminate profanity from error messages.",
-                Language = FileLanguage.CSharp,
+                ContentPattern = "contains this",
                 Subpath = @"utilities\error_handling",
                 NamePattern = "messages",
+                Language = FileLanguage.CSharp,
+                Operator = FilterOperator.Or, // note that the operator isn't expressed at the top level.
             };
 
             string xmlText = port.ToText(change);
 
             string expectedXml = string.Format(
-                "    <Change ID='{0}' Description='{1}' Language='{2}' Subpath='{3}' NamePattern='{4}' />{5}", 
-                change.ID, change.Description, change.Language, change.Subpath, change.NamePattern, 
+                "    <Change ID='{0}' Description='{1}' ContentPattern='{2}' FilePath='{3}' NamePattern='{4}' Language='{5}' />{6}", 
+                change.ID, change.Description, change.ContentPattern, change.Subpath, change.NamePattern, change.Language,
                 Environment.NewLine
             );
 
             Assert.AreEqual(expectedXml, xmlText);
         }
 
+        // TODO: "Note that a 'Not' operator on a top level change won't do what you want.  Make an enclosed 'Not' filter instead."
+
         [Test]
-        public void Can_serialize_ToXml()
+        public void basic_ChangeCatalog_ToXml()
         {
             ChangeCatalog cat = new ChangeCatalog();
-            cat.Add(new Change("1", "Desc", FileLanguage.CSharp));
-            string expectedXml =
+            cat.Add( new Change { ID = "1", Description = "Desc", Language = FileLanguage.CSharp } );
+            Assert.That( port.ToText( cat ), Is.EqualTo( 
 @"<ChangeCatalog>
     <Change ID='1' Description='Desc' Language='CSharp' />
-</ChangeCatalog>";
-
-            Assert.AreEqual(expectedXml, port.ToText(cat));
+</ChangeCatalog>" ) );
         }
 
         // TODO: public void Changes_are_sorted()
         // TODO: public void SourceFiles_are_sorted()
         // TODO: public void Completions_are_sorted()
-
-        #region Compound filters from XML
-        [Test]
-        public void basic_nested_original()
-        {
-            string filter_text =
-@"<Filter ID='parent'>
-    <Filter ID='child'>
-    </Filter>
-</Filter>
-";
-            var node = Node_FromText( filter_text );
-
-            CompoundFilter filter = port.CompoundFilter_FromNode( node );
-            Assert.That( filter.ID, Is.EqualTo( "parent" ) );
-            Assert.That( filter.Children.Count, Is.EqualTo( 1 ) );
-            Assert.That( filter.Children[0].ID, Is.EqualTo( "child" ) );
-        }
-
-
-        
-        [Test]
-        public void basic_nested()
-        {
-            string filter_text =
-@"<Filter ID='parent'>
-    <Filter ID='child'>
-    </Filter>
-    <Filter ID='second child'>
-    </Filter>
-</Filter>
-";
-            var node = Node_FromText( filter_text );
-
-            CompoundFilter filter = port.CompoundFilter_FromNode( node );
-            Assert.That( filter.ID, Is.EqualTo( "parent" ) );
-            Assert.That( filter.Children.Count, Is.EqualTo( 2 ) );
-            Assert.That( filter.Children[0].ID, Is.EqualTo( "child" ) );
-            Assert.That( filter.Children[1].ID, Is.EqualTo( "second child" ) );
-        }
-
-        [Test]
-        public void multi_generation_nested()
-        {
-            string filter_text =
-@"<Filter ID='parent'>
-    <Filter ID='child'>
-        <Filter ID='grandchild' />
-        <Filter ID='second grandchild'>
-            <Filter ID='first great-grandchild' />
-        </Filter>
-    </Filter>
-    <Filter ID='second child'>
-    </Filter>
-</Filter>
-";
-            var node = Node_FromText( filter_text );
-
-            CompoundFilter filter = port.CompoundFilter_FromNode( node );
-            Assert.That( filter.ID, Is.EqualTo( "parent" ) );
-            Assert.That( filter.Children.Count, Is.EqualTo( 2 ) );
-            Assert.That( filter.Children[0].Children[1].Children[0].ID, Is.EqualTo( "first great-grandchild" ) );
-        }
-
-        [Test]
-        public void basic_simple()
-        {
-            string filter_text =
-@"<Filter ID='single'>
-</Filter>
-";
-            var node = Node_FromText( filter_text );
-
-            CompoundFilter filter = port.CompoundFilter_FromNode( node );
-            Assert.That( filter.ID, Is.EqualTo( "single" ) );
-            Assert.That( filter.Children.Count, Is.EqualTo( 0 ) );
-        }
-
-        public XmlNode Node_FromText( string text )
-        {
-            XmlDocument doc = new XmlDocument();
-            doc.LoadXml( text );
-            return doc.ChildNodes[0];
-        }
-
-
-        #endregion
 
 
         #region Exception testing

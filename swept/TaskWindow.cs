@@ -63,12 +63,13 @@ namespace swept
             CurrentFile.AdjustCompletionFrom( task );
         }
 
-        private void ShowFile( string fileName )
+        private void ShowFile( string fileName, string content )
         {
-            ShowFile( _fileCatalog.Fetch( fileName ) );
+            ShowFile( _fileCatalog.Fetch( fileName ), content );
         }
-        public void ShowFile( SourceFile file )
+        public void ShowFile( SourceFile file, string content )
         {
+            file.Content = content;
             List<Change> changes = _changeCatalog.GetChangesForFile( file );
             ShowFile( file, changes );
         }
@@ -128,7 +129,7 @@ namespace swept
         {
             _GUIAdapter.DebugMessage( string.Format( "{0}( {1} )", "TaskWindow.Hear_FileGotFocus", args.Name ) );
 
-            ShowFile( args.Name );
+            ShowFile( args.Name, args.Content );
         }
 
         public void Hear_NonSourceGotFocus( object sender, EventArgs args )

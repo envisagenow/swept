@@ -36,8 +36,8 @@ namespace swept.Tests
         [Test]
         public void when_Task_Completion_changed_Library_has_an_unsaved_change()
         {
-            _changes.Raise_ChangeAdded( new Change( "100", "test change", FileLanguage.CSharp ) );
-            _adapter.Raise_FileGotFocus( "foo.cs" );
+            _changes.Raise_ChangeAdded( new Change { ID = "100", Description = "test change", Language = FileLanguage.CSharp } );
+            _adapter.Raise_FileGotFocus( "foo.cs", "using System;" );
             _adapter.Raise_SolutionSaved();
 
             Assert.IsTrue( _librarian.IsSaved );

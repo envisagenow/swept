@@ -11,12 +11,14 @@ namespace swept
     {
         public FileLanguage Language;
         public string Name;
+        public string Content;
         internal List<Completion> Completions;
         public bool IsRemoved { get; set; }
 
         public SourceFile( string name )
         {
             Name = name;
+            Content = string.Empty;
 
             string fileExt = Path.GetExtension( name );
             Language = SourceFile.FileLanguageFromExtension( fileExt );

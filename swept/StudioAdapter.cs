@@ -35,10 +35,10 @@ namespace swept
         }
 
         public event EventHandler<FileEventArgs> Event_FileGotFocus;
-        public void Raise_FileGotFocus(string fileName)
+        public void Raise_FileGotFocus(string fileName, string content)
         {
             if (Event_FileGotFocus != null)
-                Event_FileGotFocus(this, new FileEventArgs { Name = fileName });
+                Event_FileGotFocus(this, new FileEventArgs { Name = fileName, Content = content });
         }
 
         public event EventHandler Event_NonSourceGotFocus;
@@ -79,14 +79,6 @@ namespace swept
         {
             if (Event_FileChangesAbandoned != null)
                 Event_FileChangesAbandoned(this, new FileEventArgs { Name = fileName });
-        }
-
-        // TODO--0.2, DC: test Raise_FileDeleted
-        public event EventHandler<FileEventArgs> Event_FileDeleted;
-        public void Raise_FileDeleted(string fileName)
-        {
-            if (Event_FileDeleted != null)
-                Event_FileDeleted(this, new FileEventArgs { Name = fileName });
         }
         
         public event EventHandler<FileListEventArgs> Event_FileRenamed;

@@ -33,7 +33,7 @@ namespace swept.Tests
 
             changeCat = librarian._changeCatalog;
             string indentID = "14";
-            changeCat.Add(new Change(indentID, "indentation cleanup", FileLanguage.CSharp));
+            changeCat.Add( new Change { ID = indentID, Description = "indentation cleanup", Language = FileLanguage.CSharp } );
             librarian._savedChangeCatalog = changeCat.Clone();
 
             fileCat = librarian._sourceCatalog;
@@ -110,7 +110,7 @@ namespace swept.Tests
             SourceFile originalFile = new SourceFile(originalName);
             fileCat.Files.Add(originalFile);
 
-            changeCat.Add(new Change("12", "Replace old MultiSelect control with new one", FileLanguage.CSharp));
+            changeCat.Add( new Change { ID = "12", Description = "Replace old MultiSelect control with new one", Language = FileLanguage.CSharp } );
             originalFile.Completions.Add(new Completion("12"));
 
             adapter.Raise_FileSaved(originalName);
@@ -187,27 +187,37 @@ namespace swept.Tests
         }
 
         [Test]
-        public void WhenFileGetsFocus_BecomesCurrentFile()
+        public void When_file_gets_focus_it_becomes_CurrentFile()
         {
-            adapter.Raise_FileGotFocus( "foo.cs" );
+            adapter.Raise_FileGotFocus( "foo.cs", "using System;" );
             Assert.AreEqual( "foo.cs", window.CurrentFile.Name );
 
-            adapter.Raise_FileGotFocus( "bar.cs" );
+            adapter.Raise_FileGotFocus( "bar.cs", "using System;" );
             Assert.AreEqual( "bar.cs", window.CurrentFile.Name );
         }
 
         [Test]
-        public void WhenFileGetsFocus_TaskWindowUpdates()
+        public void When_file_gets_focus_SourceFile_gets_content()
         {
-            adapter.Raise_FileGotFocus( "foo.cs" );
+            adapter.Raise_FileGotFocus( "foo.cs", "using System;" );
+            Assert.That( window.CurrentFile.Content, Is.EqualTo( "using System;" ) );
+
+            adapter.Raise_FileGotFocus( "foo.cs", "using Chaos;" );
+            Assert.That( window.CurrentFile.Content, Is.EqualTo( "using Chaos;" ) );
+        }
+
+        [Test]
+        public void When_file_gets_focus_TaskWindow_updates()
+        {
+            adapter.Raise_FileGotFocus( "foo.cs", "using System;" );
             Assert.AreEqual( "foo.cs", window.CurrentFile.Name );
         }
 
         [Test]
         public void FileFocusChange_IncludesUnsavedCompletions()
         {
-            librarian._changeCatalog.Add( new Change( "728", "Date Normalization", FileLanguage.CSharp ) );
-            adapter.Raise_FileGotFocus( "party_planning.cs" );
+            librarian._changeCatalog.Add( new Change { ID = "728", Description = "Date Normalization", Language = FileLanguage.CSharp } );
+            adapter.Raise_FileGotFocus( "party_planning.cs", "using System;" );
 
             Assert.AreEqual( 2, window.Tasks.Count );
             SourceFile partyFile = window.CurrentFile;
@@ -220,7 +230,7 @@ namespace swept.Tests
             Assert.AreEqual(2, partyFile.Completions.Count);
 
             //  User done with party planning--switch to another file
-            adapter.Raise_FileGotFocus( fileName );
+            adapter.Raise_FileGotFocus( fileName, "using System;" );
 
             //  Even though we're working elsewhere, completions are kept correct
             Assert.AreEqual( 2, partyFile.Completions.Count );
@@ -229,7 +239,7 @@ namespace swept.Tests
         [Test]
         public void WhenNonSourceGetsFocus_NoSourceFileInTaskWindow()
         {
-            adapter.Raise_FileGotFocus("foo.cs");
+            adapter.Raise_FileGotFocus( "foo.cs", "using System;" );
             Assert.AreEqual("foo.cs", window.Title);
             Assert.AreEqual(1, window.Tasks.Count);
 

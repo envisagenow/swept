@@ -174,13 +174,6 @@ namespace swept
             workingFile.CopyCompletionsFrom(diskFile);
         }
 
-        private void DeleteFile(string fileName)
-        {
-            _sourceCatalog.Remove(fileName);
-            _savedSourceCatalog.Remove(fileName);
-            Persist();
-        }
-
         private void AddChange(Change change)
         {
             _changeCatalog.Add(change);
@@ -254,11 +247,6 @@ namespace swept
         public void Hear_FileChangesAbandoned(object sender, FileEventArgs args)
         {
             AbandonFileChanges(args.Name);
-        }
-
-        public void Hear_FileDeleted(object sender, FileEventArgs args)
-        {
-            DeleteFile(args.Name);
         }
 
         public void Hear_FileRenamed(object sender, FileListEventArgs args)

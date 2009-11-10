@@ -32,7 +32,7 @@ namespace swept.Tests
 
             changeCat = librarian._changeCatalog;
             string indentID = "14";
-            changeCat.Add(new Change(indentID, "indentation cleanup", FileLanguage.CSharp));
+            changeCat.Add( new Change { ID = indentID, Description = "indentation cleanup", Language = FileLanguage.CSharp } );
             librarian._savedChangeCatalog = changeCat.Clone();
 
             fileCat = librarian._sourceCatalog;
@@ -58,9 +58,9 @@ namespace swept.Tests
         [Test]
         public void WhenChangeListUpdated_TaskWindow_RefreshesTasks()
         {
-            adapter.Raise_FileGotFocus("foo.cs");
+            adapter.Raise_FileGotFocus( "foo.cs", "using System;" );
             int initialChangeCount = _taskWindow.Tasks.Count;
-            changeCat.Add(new Change("Inf09", "Change delegates to lambdas", FileLanguage.CSharp));
+            changeCat.Add( new Change { ID = "Inf09", Language = FileLanguage.CSharp } );
 
             changeWindow.Raise_ChangeListUpdated();
 
@@ -71,7 +71,7 @@ namespace swept.Tests
         public void WhenChangeListUpdated_EmptyTaskWindow_RefreshesItsEmptiness()
         {
             adapter.Raise_NonSourceGetsFocus();
-            changeCat.Add(new Change("Inf09", "Change delegates to lambdas", FileLanguage.CSharp));
+            changeCat.Add( new Change { ID = "Inf09", Description = "Change delegates to lambdas", Language = FileLanguage.CSharp } );
 
             changeWindow.Raise_ChangeListUpdated();
 
@@ -82,7 +82,7 @@ namespace swept.Tests
         public void WhenChangeAdded_ChangeCatalogPersisted()
         {
             Assert.IsTrue( librarian.IsSaved );
-            changeCat.Add(new Change("Inf09", "Change delegates to lambdas", FileLanguage.CSharp));
+            changeCat.Add( new Change { ID = "Inf09" } );
             Assert.IsFalse(librarian.IsSaved);
             changeWindow.Raise_ChangeListUpdated();
             Assert.IsTrue(librarian.IsSaved);
@@ -99,7 +99,7 @@ namespace swept.Tests
             mockGUI.KeepHistoricalResponse = true;
 
             // Add Change 14 back
-            Change change = new Change("14", "indentation cleanup", FileLanguage.CSharp);
+            Change change = new Change { ID = "14" };
             changeWindow.Raise_ChangeAdded( change );
 
             // Bari has kept the completion of Change 14
@@ -119,8 +119,8 @@ namespace swept.Tests
             mockGUI.KeepHistoricalResponse = false;
 
             // Add Change 14 back
-            Change change = new Change("14", "indentation cleanup", FileLanguage.CSharp);
-            changeWindow.Raise_ChangeAdded(change);
+            Change change = new Change { ID = "14" };
+            changeWindow.Raise_ChangeAdded( change );
 
             adapter.Raise_FileSaved("bari.cs");
 
@@ -131,7 +131,7 @@ namespace swept.Tests
         [Test]
         public void WhenChangeRemoved_TaskWindow_RefreshesTasks()
         {
-            adapter.Raise_FileGotFocus("foo.cs");
+            adapter.Raise_FileGotFocus("foo.cs", "using System;");
             int initialChangeCount = _taskWindow.Tasks.Count;
             changeCat.Remove("14");
 

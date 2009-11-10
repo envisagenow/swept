@@ -4,7 +4,6 @@
 using NUnit.Framework;
 using swept;
 using System;
-using System.Xml;
 
 namespace swept.Tests
 {
@@ -31,7 +30,7 @@ namespace swept.Tests
             Horace._userAdapter = new MockUserAdapter();
 
 
-            historicalChange = new Change( "14", "here I am", FileLanguage.CSharp );
+            historicalChange = new Change { ID = "14" };
             Horace.Hear_ChangeAdded( this, new ChangeEventArgs { change = historicalChange } );
             foo = new SourceFile( "foo.cs" ) { Language = FileLanguage.CSharp };
             Horace._sourceCatalog.Add( foo );
@@ -41,9 +40,7 @@ namespace swept.Tests
 
             talker = new MockUserAdapter();
             Horace._userAdapter = talker;
-
         }
-
 
         [Test]
         public void AddChange_can_keep_historical_Completions()

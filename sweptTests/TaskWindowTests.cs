@@ -22,8 +22,8 @@ namespace swept.Tests
             window = new TaskWindow();
 
             changes = new List<Change>();
-            changes.Add( new Change( "id1", "sticky", FileLanguage.CSharp ) );
-            changes.Add( new Change( "id2", "mop-up", FileLanguage.CSharp ) );
+            changes.Add( new Change{ ID = "id1", Description = "sticky", Language = FileLanguage.CSharp } );
+            changes.Add( new Change { ID = "id2", Description = "mop-up", Language = FileLanguage.CSharp } );
 
             file = new SourceFile( "glue.cs" );
             file.Completions.Add( new Completion( "id1" ) );

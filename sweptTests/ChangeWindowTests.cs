@@ -32,7 +32,7 @@ namespace swept.Tests
 
             changeCat = librarian._changeCatalog;
             string indentID = "14";
-            changeCat.Add(new Change(indentID, "indentation cleanup", FileLanguage.CSharp));
+            changeCat.Add( new Change { ID = indentID, Description = "indentation cleanup", Language = FileLanguage.CSharp } );
 
             bar = new SourceFile("bar.cs");
 
@@ -48,7 +48,7 @@ namespace swept.Tests
         {
             Assert.AreEqual(1, changeWindow.ChangeCount);
 
-            changeCat.Add(new Change("32", "Copyright block", FileLanguage.CSharp));
+            changeCat.Add( new Change { ID = "32", Description = "Copyright block", Language = FileLanguage.CSharp } );
 
             Assert.AreEqual(2, changeWindow.ChangeCount);
         }
@@ -58,7 +58,7 @@ namespace swept.Tests
         {
             Assert.AreEqual(1, changeCat._changes.Count);
 
-            changeWindow.AddChange(new Change("99", "More widgets", FileLanguage.HTML));
+            changeWindow.AddChange(new Change{ ID = "99", Description = "More widgets", Language = FileLanguage.HTML});
 
             Assert.AreEqual(2, changeCat._changes.Count);
         }

@@ -12,9 +12,6 @@ namespace swept.Tests
     [TestFixture]
     public class CompoundFilterTests
     {
-        // current representation   
-        //<Change ID="Persistence 1" Description="Move persistence code into persisters" Language="CSharp" />
-
         /*  Goal representation:
 
 <Change ID="Persistence 1" Description="Move persistence code into persisters">
@@ -33,11 +30,11 @@ namespace swept.Tests
     </And>
 
 </Change>
-        */
+        */ 
 
         #region Compound matching
         [Test]
-        public void Chilren_get_matched()
+        public void Children_get_matched()
         {
             var child1 = new CompoundFilter { Language = FileLanguage.CSharp };
             var child2 = new CompoundFilter { NamePattern = "blue" };
@@ -119,8 +116,6 @@ namespace swept.Tests
             Assert.IsTrue( filter.Matches( new SourceFile( @"Tests.cs" ) ) );
         }
 
-
-
         [Test]
         public void either_of_or_filter_passing_passes()
         {
@@ -149,7 +144,7 @@ namespace swept.Tests
             Assert.IsFalse( filter.Matches( new SourceFile( @"my_three.cs" ) ) );
             Assert.IsTrue( filter.Matches( new SourceFile( @"my_one_two.cs" ) ) );
         }
-#endregion
+        #endregion
 
         #endregion
 
@@ -260,8 +255,114 @@ namespace swept.Tests
         #endregion
 
         #region File Content Criteria
+
+        [Test]
+        public void content_pattern_misses_file_lacking_regex_match()
+        {
+            var filter = new CompoundFilter { ContentPattern = "(foo|bar)" };
+            var file = new SourceFile( "foo.cs" );
+            file.Content = "using System;";
+            Assert.That( filter.Matches( file ), Is.False );
+        }
+
+        [Test]
+        public void content_pattern_matches_file_containing_regex_match()
+        {
+            var filter = new CompoundFilter { ContentPattern = "(foo|bar)" };
+            var file = new SourceFile( "foo.cs" );
+            file.Content = "using System.foo;";
+            Assert.That( filter.Matches( file ), Is.True );
+        }
+
         #endregion
 
+        #region Name reporting
+        [Test]
+        public void default_name_is_And()
+        {
+            CompoundFilter filter = new CompoundFilter();
+            Assert.That( filter.Name, Is.EqualTo( "And" ) );
+        }
+
+        [Test]
+        public void eldest_name_is_Change()
+        {
+            CompoundFilter filter = new CompoundFilter();
+            filter.Eldest = true;
+            Assert.That( filter.Name, Is.EqualTo( "Change" ) );
+        }
+
+        [Test]
+        public void name_generally_matches_operator()
+        {
+            CompoundFilter filter = new CompoundFilter();
+
+            filter.Operator = FilterOperator.And;
+            Assert.That( filter.Name, Is.EqualTo( "And" ) );
+            filter.Operator = FilterOperator.Not;
+            Assert.That( filter.Name, Is.EqualTo( "AndNot" ) );
+            filter.Operator = FilterOperator.Or;
+            Assert.That( filter.Name, Is.EqualTo( "Or" ) );
+        }
+
+        [Test]
+        public void first_child_name_is_different()
+        {
+            CompoundFilter filter = new CompoundFilter();
+            filter.FirstChild = true;
+
+            filter.Operator = FilterOperator.And;
+            Assert.That( filter.Name, Is.EqualTo( "When" ) );
+            filter.Operator = FilterOperator.Not;
+            Assert.That( filter.Name, Is.EqualTo( "Not" ) );
+            filter.Operator = FilterOperator.Or;
+            Assert.That( filter.Name, Is.EqualTo( "Either" ) );
+        }
+
+        [Test, ExpectedException( ExpectedMessage = "Can't get Name for Operator [-1]." )]
+        public void operator_out_of_range_is_caught()
+        {
+            CompoundFilter filter = new CompoundFilter { Operator = (FilterOperator)(-1) };
+            string never_seen = filter.Name;
+        }
+
+        [Test]
+        public void can_mark_all_first_children()
+        {
+            CompoundFilter filter = new CompoundFilter();
+            filter.Children.Add( new CompoundFilter() );
+            filter.Children.Add( new CompoundFilter() );
+            filter.Children.Add( new CompoundFilter() );
+            filter.Children[1].Children.Add( new CompoundFilter() );
+            filter.Children[1].Children.Add( new CompoundFilter() );
+            filter.markFirstChildren();
+
+            Assert_first_children_correct( filter );
+
+            interregnum_pretendership( filter );
+            filter.markFirstChildren();
+
+            Assert_first_children_correct( filter );
+        }
+
+        private static void Assert_first_children_correct( CompoundFilter filter )
+        {
+            Assert.True( filter.FirstChild );
+
+            Assert.True( filter.Children[0].FirstChild );
+            Assert.False( filter.Children[1].FirstChild );
+            Assert.False( filter.Children[2].FirstChild );
+
+            Assert.True( filter.Children[1].Children[0].FirstChild );
+            Assert.False( filter.Children[1].Children[1].FirstChild );
+        }
+
+        private void interregnum_pretendership( CompoundFilter filter )
+        {
+            filter.FirstChild = true;
+            filter.Children.ForEach( child => interregnum_pretendership( child ) );
+        }
+        #endregion
 
     }
 

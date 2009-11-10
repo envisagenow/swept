@@ -35,7 +35,6 @@ namespace swept
             Adapter.Event_FilePasted += Librarian.Hear_FilePasted;
             Adapter.Event_FileSavedAs += Librarian.Hear_FileSavedAs;
             Adapter.Event_FileChangesAbandoned += Librarian.Hear_FileChangesAbandoned;
-            Adapter.Event_FileDeleted += Librarian.Hear_FileDeleted;
             Adapter.Event_FileRenamed += Librarian.Hear_FileRenamed;
             Adapter.Event_SolutionSaved += Librarian.Hear_SolutionSaved;
             Adapter.Event_SolutionOpened += Librarian.Hear_SolutionOpened;
@@ -76,7 +75,6 @@ namespace swept
             Adapter.Event_FilePasted -= Librarian.Hear_FilePasted;
             Adapter.Event_FileSavedAs -= Librarian.Hear_FileSavedAs;
             Adapter.Event_FileChangesAbandoned -= Librarian.Hear_FileChangesAbandoned;
-            Adapter.Event_FileDeleted -= Librarian.Hear_FileDeleted;
             Adapter.Event_FileRenamed -= Librarian.Hear_FileRenamed;
             Adapter.Event_SolutionSaved -= Librarian.Hear_SolutionSaved;
             Adapter.Event_SolutionOpened -= Librarian.Hear_SolutionOpened;
