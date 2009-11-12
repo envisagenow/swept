@@ -4,6 +4,8 @@
 using System;
 using System.Xml;
 using System.Text;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace swept
 {
@@ -93,6 +95,9 @@ namespace swept
             if( filter.Language != FileLanguage.None )
                 sb.AppendFormat( " Language='{0}'", filter.Language );
 
+            if (filter.ManualCompletion)
+                sb.AppendFormat( " ManualCompletion='{0}'", filter.ManualCompletion ? "Allowed" : string.Empty );
+
             bool hasChildren = filter.Children.Count > 0;
 
             if( !hasChildren )
@@ -133,10 +138,27 @@ namespace swept
             return cat;
         }
 
+        private static string[] GetInvalidAttributes( XmlNode filterNode )
+        {
+            var knownAttributes = new List<string>() { "ID", "Description", "ContentPattern", "FilePattern", "Subpath", "Language", "ManualCompletion" };
+            var invalidAttributes = new List<string>();
+            foreach (XmlAttribute att in filterNode.Attributes)
+            {
+                if (!knownAttributes.Contains( att.Name ))
+                    invalidAttributes.Add( att.Name );
+            }
+
+            return invalidAttributes.ToArray();
+        }
+
         public CompoundFilter CompoundFilter_FromNode( XmlNode filterNode )
         {
             bool isTopLevel = filterNode.LocalName == "Change";
             CompoundFilter filter = isTopLevel ? new Change() : new CompoundFilter();
+            
+            var invalidAttributes = GetInvalidAttributes( filterNode );
+            if (invalidAttributes.Length > 0)
+                throw new Exception( string.Format( "Filters do not have the following attributes: '{0}'.", string.Join( "', '", invalidAttributes ) ) );
 
             if( filterNode.Attributes["ID"] != null )
                 filter.ID = filterNode.Attributes["ID"].Value;
@@ -167,6 +189,14 @@ namespace swept
                     throw new Exception( string.Format( "Don't understand a file of language [{0}].", languageText ) );
                 }
             }
+
+            if (filterNode.Attributes["ManualCompletion"] != null)
+            {
+                if (filterNode.Attributes["ManualCompletion"].Value != "Allowed")
+                    throw new Exception(String.Format("Don't understand the manual completion permission '{0}'.", filterNode.Attributes["ManualCompletion"].Value));
+                filter.ManualCompletion = true;
+            }
+
 
             foreach( XmlNode childNode in filterNode.ChildNodes )
             {

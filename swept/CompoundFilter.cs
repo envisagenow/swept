@@ -33,6 +33,7 @@ namespace swept
             ContentPattern = string.Empty;
             Children = new List<CompoundFilter>();
             Operator = FilterOperator.And;
+            ManualCompletion = false;
         }
 
         //public CompoundFilter( string id, string description, FileLanguage language )
@@ -66,6 +67,7 @@ namespace swept
             }
             // TODO: CompoundFilter.Name.set{};
         }
+        public bool ManualCompletion { get; set; }
         public bool FirstChild { get; set; }
         public bool Eldest { get; set; }
         public List<CompoundFilter> Children { get; set; }
@@ -118,7 +120,7 @@ namespace swept
             );
         }
 
-        public bool Equals( Change other )
+        public bool Equals( CompoundFilter other )
         {
             if( other == null ) return false;
 

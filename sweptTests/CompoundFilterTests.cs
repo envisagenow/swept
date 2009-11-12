@@ -12,26 +12,6 @@ namespace swept.Tests
     [TestFixture]
     public class CompoundFilterTests
     {
-        /*  Goal representation:
-
-<Change ID="Persistence 1" Description="Move persistence code into persisters">
-
-    <When ID="C#" Language="CSharp" />
-    
-    <AndNot ID="Permitted_Files">
-        <When NamesContaining="(Persister|Service)" />
-        <Or NamesContaining="XADR" />
-    </AndNot>
-    
-    <And ID="Uses_Persistence_Directly">
-        <When FileContaining="XADR" />
-        <Or FileContaining="Hibernate" />
-        <Or FileContaining="Oracle" />
-    </And>
-
-</Change>
-        */ 
-
         #region Compound matching
         [Test]
         public void Children_get_matched()
@@ -81,7 +61,6 @@ namespace swept.Tests
             Assert.IsTrue( filter.Matches( new SourceFile( "my.unknownextension" ) ) );
         }
 
-        #region wed tests
         [Test]
         public void NotFilter_inverts_decision()
         {
@@ -144,7 +123,6 @@ namespace swept.Tests
             Assert.IsFalse( filter.Matches( new SourceFile( @"my_three.cs" ) ) );
             Assert.IsTrue( filter.Matches( new SourceFile( @"my_one_two.cs" ) ) );
         }
-        #endregion
 
         #endregion
 
@@ -364,6 +342,63 @@ namespace swept.Tests
         }
         #endregion
 
+        #region Equality
+        [Test]
+        public void Can_compare_equality()
+        {
+            CompoundFilter filter1 = new Change();
+            CompoundFilter filter2 = new Change();
+
+            Assert.IsTrue( filter1.Equals( filter2 ) );
+        }
+
+        // TODO: relocate, expand attributes being compared
+        [Test]
+        public void Can_compare_inequal_objects()
+        {
+            CompoundFilter filter1 = new CompoundFilter { 
+                ID = "101-443", Description = "Remove all dinguses", Operator = FilterOperator.And,
+                Subpath = @"\here\", NamePattern = "this", Language = FileLanguage.CSharp,
+                ContentPattern = "old_technology"
+            };
+            CompoundFilter filter2 = new CompoundFilter { 
+                ID = "5987515", Description = "Frob all wobbishes", Operator = FilterOperator.Not,
+                Subpath = @"\there\", NamePattern = "that", Language = FileLanguage.CSS,
+                ContentPattern = "old_technique"
+            };
+
+            Assert.IsFalse( filter1.Equals( filter2 ) );
+
+            filter1.ID = filter2.ID;
+            Assert.IsFalse( filter1.Equals( filter2 ) );
+
+            filter1.Description = filter2.Description;
+            Assert.IsFalse( filter1.Equals( filter2 ) );
+
+            filter1.Operator = filter2.Operator;
+            Assert.IsFalse( filter1.Equals( filter2 ) );
+
+            filter1.Subpath = filter2.Subpath;
+            Assert.IsFalse( filter1.Equals( filter2 ) );
+
+            filter1.NamePattern = filter2.NamePattern;
+            Assert.IsFalse( filter1.Equals( filter2 ) );
+
+            filter1.Language = filter2.Language;
+            Assert.IsFalse( filter1.Equals( filter2 ) );
+
+            filter1.ContentPattern = filter2.ContentPattern;
+            Assert.IsTrue( filter1.Equals( filter2 ) );
+
+        }
+
+        [Test]
+        public void Can_compare_to_null()
+        {
+            Change change1 = new Change();
+            Assert.IsFalse( change1.Equals( null ) );
+        }
+        #endregion
     }
 
 }

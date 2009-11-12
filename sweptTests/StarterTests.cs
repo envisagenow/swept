@@ -1,4 +1,4 @@
-﻿//  Swept:  Software Enhancement Progress Tracking.
+//  Swept:  Software Enhancement Progress Tracking.
 //  Copyright (c) 2009 Jason Cole and Envisage Technologies Corp.
 //  This software is open source, MIT license.  See the file LICENSE for details.
 using System;
@@ -45,5 +45,7 @@ namespace swept.Tests
             Assert.IsNull( starter.TaskWindow );
             Assert.IsNull( starter.ChangeWindow );
         }
+        
+        //TODO: load the appropriate library if Swept started with a solution already loaded
     }
 }

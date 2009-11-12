@@ -69,17 +69,35 @@ namespace swept.Tests
         }
 
         [Test]
+        public void shows_manual_completion_when_allowed()
+        {
+            Change change = new Change { ID = "permitted", ManualCompletion = true };
+            string serializedFilter = port.ToText( change );
+
+            string expectedText = @"    <Change ID='permitted' ManualCompletion='Allowed' />
+";
+            Assert.That( serializedFilter, Is.EqualTo( expectedText ) );
+
+            change.ManualCompletion = false;
+            serializedFilter = port.ToText( change );
+
+            expectedText = @"    <Change ID='permitted' />
+";
+            Assert.That( serializedFilter, Is.EqualTo( expectedText ) );
+        }
+
+        [Test]
         public void use_persisters_instead_of_direct_db_access()
         {
             CompoundFilter use_persisters = new CompoundFilter
             {
                 ID = "Pers_1",
-                Description = "Use persisters instead of direct DB access"
+                Description = "Use persisters instead of direct DB access",
             };
 
             use_persisters.Children.Add( new CompoundFilter { ContentPattern = "(XADR|Oracle|NHibernate)" } );
             use_persisters.Children.Add( new CompoundFilter { NamePattern = "(Persister|Service)", Operator = FilterOperator.Not } );
-            use_persisters.Children.Add( new CompoundFilter { Subpath = "(XADR|Hibernate)", Operator = FilterOperator.Not } );
+            use_persisters.Children.Add( new CompoundFilter { Subpath = "(Xadr|TestXadr)", Operator = FilterOperator.Not } );
 
             CompoundFilter special_cases = new CompoundFilter { Operator = FilterOperator.Or, ID = "Special cases" };
             special_cases.Children.Add( new CompoundFilter { NamePattern = "this.cs" } );
@@ -94,7 +112,7 @@ namespace swept.Tests
 @"    <Change ID='Pers_1' Description='Use persisters instead of direct DB access'>
         <When ContentPattern='(XADR|Oracle|NHibernate)' />
         <AndNot NamePattern='(Persister|Service)' />
-        <AndNot FilePath='(XADR|Hibernate)' />
+        <AndNot FilePath='(Xadr|TestXadr)' />
         <Or ID='Special cases'>
             <When NamePattern='this.cs' />
             <Or NamePattern='that.cs' />
@@ -122,6 +140,24 @@ namespace swept.Tests
 
             CompoundFilter filter = port.CompoundFilter_FromNode( node );
             Assert.That( filter.Children.Count, Is.EqualTo( 0 ) );
+        }
+
+        [Test, ExpectedException( ExpectedMessage = "Filters do not have the following attributes: 'Author'." )]
+        public void FromNode_warns_about_unknown_attribute_author()
+        {
+            string filter_text = @"<Change ID='misattributed' Author='Shakespeare'/>";
+            var node = Node_FromText( filter_text );
+
+            CompoundFilter filter = port.CompoundFilter_FromNode( node );
+        }
+
+        [Test, ExpectedException( ExpectedMessage = "Filters do not have the following attributes: 'Author', 'Version'." )]
+        public void FromNode_warns_about_multiple_unknown_attributes()
+        {
+            string filter_text = @"<Change ID='misattributed' Author='Bob' Version='0.1'/>";
+            var node = Node_FromText( filter_text );
+
+            CompoundFilter filter = port.CompoundFilter_FromNode( node );
         }
 
         [Test]
@@ -161,6 +197,29 @@ namespace swept.Tests
             Assert.That( filter.ID, Is.EqualTo( "single" ) );
             Assert.That( filter.Children.Count, Is.EqualTo( 1 ) );
         }
+
+        [Test]
+        public void FromNode_sets_manual_completion_permission()
+        {
+            string filter_text =
+@"<Change ID='single' ManualCompletion='Allowed' />
+";
+            var node = Node_FromText( filter_text );
+
+            CompoundFilter filter = port.CompoundFilter_FromNode( node );
+            Assert.IsTrue( filter.ManualCompletion );
+        }
+
+        [Test, ExpectedException( ExpectedMessage = "Don't understand the manual completion permission 'Allwoed'." )]
+        public void FromNode_throws_on_manual_completion_typo()
+        {
+            string filter_text =
+@"<Change ID='typo' ManualCompletion='Allwoed' />";
+            var node = Node_FromText( filter_text );
+
+            CompoundFilter filter = port.CompoundFilter_FromNode( node );
+        }
+
 
         [Test]
         public void FromNode_retrieves_attributes()

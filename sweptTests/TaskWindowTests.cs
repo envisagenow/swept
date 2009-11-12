@@ -31,6 +31,7 @@ namespace swept.Tests
             //  Using this entry point is handy for testing--lets us skip building a ChangeCatalog
             window.ShowFile( file, changes );
         }
+        // TODO: 0.2 Have "Manually Uncheckable" in the check box list.  Intercept the click event?
 
         [Test]
         public void ShowFile_sets_CurrentFile_and_Title()

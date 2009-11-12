@@ -3,14 +3,14 @@
   <Class Name="swept.Change">
     <Position X="5.75" Y="3.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAACAAggAAAgAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Change.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="swept.ChangeCatalog">
     <Position X="5.75" Y="0.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAIAAAAAAAAAAAAAgAAYBAAAEAAABAAAAAAAAAAAABA=</HashCode>
+      <HashCode>IBIAAAAAAAAAAAAAgAAABAAAEAAAAAAAAAAAAAAAABA=</HashCode>
       <FileName>ChangeCatalog.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -21,19 +21,19 @@
       <FileName>Completion.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="swept.FSAdapter" Collapsed="true" BaseTypeListCollapsed="true">
+  <Class Name="swept.StorageAdapter" Collapsed="true" BaseTypeListCollapsed="true">
     <Position X="7.75" Y="1.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQBAAQAA=</HashCode>
-      <FileName>FSAdapter.cs</FileName>
+      <HashCode>AAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAABAQBAAQAA=</HashCode>
+      <FileName>StorageAdapter.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
-  <Class Name="swept.GUIAdapter" Collapsed="true" BaseTypeListCollapsed="true">
+  <Class Name="swept.UserGUIAdapter" Collapsed="true" BaseTypeListCollapsed="true">
     <Position X="9.5" Y="1.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>ACAAAAAAAAAAgAAACAAAAAAAAAAAIAAAAAAAAAAAAAA=</HashCode>
-      <FileName>GUIAdapter.cs</FileName>
+      <FileName>UserGUIAdapter.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
@@ -43,21 +43,21 @@
       <Compartment Name="Fields" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>AEAAgUAhAgCAAAAACAKgIAIEAAkAgAhIBAHBkAJAAAA=</HashCode>
+      <HashCode>AEABgcAgAACAAAgAJAKgAAIGAAkAgAhIBIHBgAJQAAA=</HashCode>
       <FileName>ProjectLibrarian.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="swept.SourceFile">
     <Position X="0.5" Y="0.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAQAAAAACAACAACAgEEAAQQCAAAAAAAAAAAgAAQAABA=</HashCode>
+      <HashCode>AAQAAAAACgACAACAgEEAAQQCAAAAAAAAAAAgAAQAABA=</HashCode>
       <FileName>SourceFile.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="swept.SourceFileCatalog">
     <Position X="2.25" Y="0.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAIAAAAAAAAAAAAAgAEgBAAAABAIIAAAAAABAAIAgJA=</HashCode>
+      <HashCode>AAIAAAAAAAAAAAAAgIEgBAAAABAIAAAAAAABAAIAgJA=</HashCode>
       <FileName>SourceFileCatalog.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -69,48 +69,48 @@
     </TypeIdentifier>
   </Class>
   <Class Name="swept.StudioAdapter">
-    <Position X="10" Y="3.25" Width="1.5" />
+    <Position X="10" Y="4" Width="1.5" />
     <Compartments>
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>AACQAAiARAIBAVIIEgAMAAAQAAABAAAAABASABAAAAI=</HashCode>
+      <HashCode>AACQAAiARAIBAVIAEgAMAAAQAAABAAAAABASABAAAAI=</HashCode>
       <FileName>StudioAdapter.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="swept.Task">
     <Position X="5.75" Y="5.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAEAIAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAEAIEAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Task.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="swept.TaskWindow">
     <Position X="7.75" Y="3" Width="2" />
     <TypeIdentifier>
-      <HashCode>gAAAAEQAAAAAAMAgABAQAAAwUAgAAAAIAAQpEAAQAIY=</HashCode>
+      <HashCode>gCAAAEQAAAACAMAgABAQQAAwEAAAAAAIAAQpEAAQAIY=</HashCode>
       <FileName>TaskWindow.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="swept.XmlPort" Collapsed="true">
     <Position X="7.75" Y="2.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAABEAAGAQAAAAAAIAAAAABAAACAAAAIA=</HashCode>
+      <HashCode>AAAAAAAAAAAgABAAAGAQAAAAAAIAAAAABAAACgAAAIA=</HashCode>
       <FileName>XmlPort.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Interface Name="swept.IFSAdapter" Collapsed="true">
+  <Interface Name="swept.IStorageAdapter" Collapsed="true">
     <Position X="7.75" Y="0.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAA=</HashCode>
-      <FileName>IFSAdapter.cs</FileName>
+      <HashCode>AAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAABAQAAAAAA=</HashCode>
+      <FileName>IStorageAdapter.cs</FileName>
     </TypeIdentifier>
   </Interface>
-  <Interface Name="swept.IGUIAdapter" Collapsed="true">
+  <Interface Name="swept.IUserAdapter" Collapsed="true">
     <Position X="9.5" Y="0.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>ACAAAAAAAAAAgAAACAAAAAAAAAAAIAAAAAAAAAAAAAA=</HashCode>
-      <FileName>IGUIAdapter.cs</FileName>
+      <FileName>IUserAdapter.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Font Name="Tahoma" Size="8.25" />
