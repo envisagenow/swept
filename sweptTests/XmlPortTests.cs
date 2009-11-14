@@ -153,13 +153,16 @@ namespace swept.Tests
                 NamePattern = "messages",
                 Language = FileLanguage.CSharp,
                 Operator = FilterOperator.Or, // note that the operator isn't expressed at the top level.
+                ManualCompletion = true,
             };
 
             string xmlText = port.ToText(change);
 
             string expectedXml = string.Format(
-                "    <Change ID='{0}' Description='{1}' ContentPattern='{2}' FilePath='{3}' NamePattern='{4}' Language='{5}' />{6}", 
-                change.ID, change.Description, change.ContentPattern, change.Subpath, change.NamePattern, change.Language,
+                "    <Change ID='{0}' Description='{1}' ManualCompletion='{2}' Subpath='{3}' NamePattern='{4}' Language='{5}' ContentPattern='{6}' />{7}", 
+                change.ID, change.Description, change.ManualCompletionString,
+                change.Subpath, change.NamePattern, change.Language,
+                change.ContentPattern, 
                 Environment.NewLine
             );
 

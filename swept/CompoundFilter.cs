@@ -1,4 +1,5 @@
-﻿//  Swept:  Software Enhancement Progress Tracking.
+﻿using System.Text;
+//  Swept:  Software Enhancement Progress Tracking.
 //  Copyright (c) 2009 Jason Cole and Envisage Technologies Corp.
 //  This software is open source, MIT license.  See the file LICENSE for details.
 using System;
@@ -20,6 +21,10 @@ namespace swept
         public string Description       { get; internal set; }
         public FilterOperator Operator  { get; internal set; }
         public FileLanguage Language    { get; internal set; }
+        public string LanguageString
+        {
+            get { return Language == FileLanguage.None ? string.Empty : Language.ToString(); }
+        }
         public string Subpath           { get; internal set; }
         public string NamePattern       { get; internal set; }
         public string ContentPattern    { get; internal set; }
@@ -68,6 +73,13 @@ namespace swept
             // TODO: CompoundFilter.Name.set{};
         }
         public bool ManualCompletion { get; set; }
+        public string ManualCompletionString
+        {
+            get
+            {
+                return ManualCompletion ? "Allowed" : string.Empty;
+            }
+        }
         public bool FirstChild { get; set; }
         public bool Eldest { get; set; }
         public List<CompoundFilter> Children { get; set; }
@@ -148,6 +160,7 @@ namespace swept
             return true;
         }
 
+        // TODO: expand clone CompoundFilter
         public Change Clone()
         {
             return new Change

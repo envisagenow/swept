@@ -61,6 +61,15 @@ namespace swept
             return string.Format( "        <Completion ID='{0}' />\r\n", comp.ChangeID );
         }
 
+        #region Compound Filters
+        private const string cfa_ID = "ID";
+        private const string cfa_Description = "Description";
+        private const string cfa_ManualCompletion = "ManualCompletion";
+        private const string cfa_Subpath = "Subpath";
+        private const string cfa_NamePattern = "NamePattern";
+        private const string cfa_Language = "Language";
+        private const string cfa_ContentPattern = "ContentPattern";
+        
         public string ToText( CompoundFilter filter )
         {
             filter.markFirstChildren();
@@ -69,48 +78,40 @@ namespace swept
             return sb.ToString();
         }
 
+        private static void AppendAttributeIfExists( StringBuilder sb, string name, string value )
+        {
+            if (string.IsNullOrEmpty( value )) return;
+            sb.AppendFormat( " {0}='{1}'", name, value );
+        }
         private void IntoStringBuilder( CompoundFilter filter, StringBuilder sb, int depth )
         {
-
             string indentFormat = "{0," + 4 * depth + "}";
             string indent = string.Format( indentFormat, string.Empty );
 
             sb.AppendFormat( "{0}<{1}", indent, filter.Name );
 
-            if( !string.IsNullOrEmpty( filter.ID ) )
-                sb.AppendFormat( " ID='{0}'", filter.ID );
-
-            if( !string.IsNullOrEmpty( filter.Description ) )
-                sb.AppendFormat( " Description='{0}'", filter.Description );
-
-            if( !string.IsNullOrEmpty( filter.ContentPattern ) )
-                sb.AppendFormat( " ContentPattern='{0}'", filter.ContentPattern );
-
-            if( !string.IsNullOrEmpty( filter.Subpath ) )
-                sb.AppendFormat( " FilePath='{0}'", filter.Subpath );
-
-            if( !string.IsNullOrEmpty( filter.NamePattern ) )
-                sb.AppendFormat( " NamePattern='{0}'", filter.NamePattern );
-
-            if( filter.Language != FileLanguage.None )
-                sb.AppendFormat( " Language='{0}'", filter.Language );
-
-            if (filter.ManualCompletion)
-                sb.AppendFormat( " ManualCompletion='{0}'", filter.ManualCompletion ? "Allowed" : string.Empty );
+            AppendAttributeIfExists( sb, cfa_ID, filter.ID );
+            AppendAttributeIfExists( sb, cfa_Description,        filter.Description );
+            AppendAttributeIfExists( sb, cfa_ManualCompletion, filter.ManualCompletionString );
+            AppendAttributeIfExists( sb, cfa_Subpath,            filter.Subpath );
+            AppendAttributeIfExists( sb, cfa_NamePattern,        filter.NamePattern );
+            AppendAttributeIfExists( sb, cfa_Language,           filter.LanguageString );
+            AppendAttributeIfExists( sb, cfa_ContentPattern,     filter.ContentPattern );
 
             bool hasChildren = filter.Children.Count > 0;
 
-            if( !hasChildren )
+            if (!hasChildren)
                 sb.Append( " /" );
 
             sb.AppendFormat( ">{0}", Environment.NewLine );
 
-            if( hasChildren )
+            if (hasChildren)
             {
                 filter.Children.ForEach( child => IntoStringBuilder( child, sb, depth + 1 ) );
                 sb.AppendFormat( "{0}</{1}>{2}", indent, filter.Name, Environment.NewLine );
             }
         }
+        #endregion
 
         public ChangeCatalog ChangeCatalog_FromXmlDocument( XmlDocument doc )
         {
@@ -138,17 +139,17 @@ namespace swept
             return cat;
         }
 
-        private static string[] GetInvalidAttributes( XmlNode filterNode )
+        private static string[] UnknownAttributesIn( XmlNode filterNode )
         {
-            var knownAttributes = new List<string>() { "ID", "Description", "ContentPattern", "FilePattern", "Subpath", "Language", "ManualCompletion" };
-            var invalidAttributes = new List<string>();
-            foreach (XmlAttribute att in filterNode.Attributes)
+            var known = new List<string>() { cfa_ID, cfa_Description, cfa_ManualCompletion, cfa_Subpath, cfa_NamePattern, cfa_Language, cfa_ContentPattern };
+            var unknown = new List<string>();
+            foreach (XmlAttribute attribute in filterNode.Attributes)
             {
-                if (!knownAttributes.Contains( att.Name ))
-                    invalidAttributes.Add( att.Name );
+                if (!known.Contains( attribute.Name ))
+                    unknown.Add( attribute.Name );
             }
 
-            return invalidAttributes.ToArray();
+            return unknown.ToArray();
         }
 
         public CompoundFilter CompoundFilter_FromNode( XmlNode filterNode )
@@ -156,30 +157,34 @@ namespace swept
             bool isTopLevel = filterNode.LocalName == "Change";
             CompoundFilter filter = isTopLevel ? new Change() : new CompoundFilter();
             
-            var invalidAttributes = GetInvalidAttributes( filterNode );
+            var invalidAttributes = UnknownAttributesIn( filterNode );
             if (invalidAttributes.Length > 0)
                 throw new Exception( string.Format( "Filters do not have the following attributes: '{0}'.", string.Join( "', '", invalidAttributes ) ) );
 
-            if( filterNode.Attributes["ID"] != null )
-                filter.ID = filterNode.Attributes["ID"].Value;
+            if( filterNode.Attributes[cfa_ID] != null )
+                filter.ID = filterNode.Attributes[cfa_ID].Value;
             else if( isTopLevel )
                 throw new Exception( "Changes must have IDs at their top level." );
 
-            if( filterNode.Attributes["Description"] != null )
-                filter.Description = filterNode.Attributes["Description"].Value;
+            if( filterNode.Attributes[cfa_Description] != null )
+                filter.Description = filterNode.Attributes[cfa_Description].Value;
 
-            if( filterNode.Attributes["ContentPattern"] != null )
-                filter.ContentPattern = filterNode.Attributes["ContentPattern"].Value;
-
-            if( filterNode.Attributes["FilePattern"] != null )
-                filter.NamePattern = filterNode.Attributes["FilePattern"].Value;
-
-            if( filterNode.Attributes["Subpath"] != null )
-                filter.Subpath = filterNode.Attributes["Subpath"].Value;
-
-            if( filterNode.Attributes["Language"] != null )
+            if (filterNode.Attributes[cfa_ManualCompletion] != null)
             {
-                string languageText = filterNode.Attributes["Language"].Value;
+                if (filterNode.Attributes[cfa_ManualCompletion].Value != "Allowed")
+                    throw new Exception( String.Format( "Don't understand the manual completion permission '{0}'.", filterNode.Attributes[cfa_ManualCompletion].Value ) );
+                filter.ManualCompletion = true;
+            }
+
+            if (filterNode.Attributes[cfa_Subpath] != null)
+                filter.Subpath = filterNode.Attributes[cfa_Subpath].Value;
+
+            if (filterNode.Attributes[cfa_NamePattern] != null)
+                filter.NamePattern = filterNode.Attributes[cfa_NamePattern].Value;
+
+            if( filterNode.Attributes[cfa_Language] != null )
+            {
+                string languageText = filterNode.Attributes[cfa_Language].Value;
                 try
                 {
                     filter.Language = (FileLanguage)Enum.Parse( typeof( FileLanguage ), languageText );
@@ -190,13 +195,8 @@ namespace swept
                 }
             }
 
-            if (filterNode.Attributes["ManualCompletion"] != null)
-            {
-                if (filterNode.Attributes["ManualCompletion"].Value != "Allowed")
-                    throw new Exception(String.Format("Don't understand the manual completion permission '{0}'.", filterNode.Attributes["ManualCompletion"].Value));
-                filter.ManualCompletion = true;
-            }
-
+            if (filterNode.Attributes[cfa_ContentPattern] != null)
+                filter.ContentPattern = filterNode.Attributes[cfa_ContentPattern].Value;
 
             foreach( XmlNode childNode in filterNode.ChildNodes )
             {
@@ -261,7 +261,7 @@ namespace swept
 
         public Completion Completion_FromNode( XmlNode completion )
         {
-            string changeID = completion.Attributes["ID"].Value;
+            string changeID = completion.Attributes[cfa_ID].Value;
             Completion fileChange = new Completion( changeID );
             return fileChange;
         }

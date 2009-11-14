@@ -43,7 +43,7 @@ namespace swept.Tests
 
             string serializedFilter = port.ToText( filter );
             string expectedFilter =
-@"    <Change ID='thing' Description='for my test' ContentPattern='bad code' FilePath='down\\(here|there)' NamePattern='(affected|relevant)_file' Language='CSharp' />
+@"    <Change ID='thing' Description='for my test' Subpath='down\\(here|there)' NamePattern='(affected|relevant)_file' Language='CSharp' ContentPattern='bad code' />
 ";
             Assert.AreEqual( expectedFilter, serializedFilter );
         }
@@ -112,7 +112,7 @@ namespace swept.Tests
 @"    <Change ID='Pers_1' Description='Use persisters instead of direct DB access'>
         <When ContentPattern='(XADR|Oracle|NHibernate)' />
         <AndNot NamePattern='(Persister|Service)' />
-        <AndNot FilePath='(Xadr|TestXadr)' />
+        <AndNot Subpath='(Xadr|TestXadr)' />
         <Or ID='Special cases'>
             <When NamePattern='this.cs' />
             <Or NamePattern='that.cs' />
@@ -226,7 +226,7 @@ namespace swept.Tests
         {
             string filter_text =
 @"<Change ID='1212' Description='Through and through'>
-    <When Subpath='swords' FilePattern='vorpal.cs' Language='CSharp' ContentPattern='using System.Snicker.Snack;' />
+    <When Subpath='swords' NamePattern='vorpal.cs' Language='CSharp' ContentPattern='using System.Snicker.Snack;' />
 </Change>
 ";
             var node = Node_FromText( filter_text );
