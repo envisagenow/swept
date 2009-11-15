@@ -161,6 +161,28 @@ namespace swept
             if (invalidAttributes.Length > 0)
                 throw new Exception( string.Format( "Filters do not have the following attributes: '{0}'.", string.Join( "', '", invalidAttributes ) ) );
 
+            switch (filterNode.Name)
+            {
+            case "Either":
+            case "Or":
+                filter.Operator = FilterOperator.Or;
+                break;
+
+            case "And":
+            case "When":
+            case "Change":
+                filter.Operator = FilterOperator.And;
+                break;
+
+            case "Not":
+            case "AndNot":
+                filter.Operator = FilterOperator.Not;
+                break;
+
+            default:
+                throw new Exception( string.Format( "Swept does not know how to create a '{0}' filter.", filterNode.Name ) );
+            }
+
             if( filterNode.Attributes[cfa_ID] != null )
                 filter.ID = filterNode.Attributes[cfa_ID].Value;
             else if( isTopLevel )

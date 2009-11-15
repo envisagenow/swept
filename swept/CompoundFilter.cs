@@ -10,7 +10,7 @@ namespace swept
 {
     public enum FilterOperator
     {
-		And,
+        And,
         Not,
         Or,
     }
@@ -41,20 +41,10 @@ namespace swept
             ManualCompletion = false;
         }
 
-        //public CompoundFilter( string id, string description, FileLanguage language )
-        //    : this()
-        //{
-        //    ID = id;
-        //    Description = description;
-        //    Language = language;
-        //}
-
-        public string Name
+        public virtual string Name
         {
             get
             {
-                if( Eldest ) return "Change";
-
                 switch( Operator )
                 {
                 case FilterOperator.And:
@@ -81,11 +71,11 @@ namespace swept
             }
         }
         public bool FirstChild { get; set; }
-        public bool Eldest { get; set; }
         public List<CompoundFilter> Children { get; set; }
 
         public virtual bool Matches( SourceFile file )
         {
+            //  breakpoint for tracing how a change matches a file.
             bool matches = true;
             matches = matches && Language == FileLanguage.None || Language == file.Language;
             matches = matches && file.Name.StartsWith( Subpath );
@@ -115,12 +105,10 @@ namespace swept
         internal void markFirstChildren()
         {
             markGeneration( this, true );
-            Eldest = true;
         }
 
         private void markGeneration( CompoundFilter filter, bool isFirstChild )
         {
-            filter.Eldest = false;
             filter.FirstChild = isFirstChild;
 
             bool first = true;

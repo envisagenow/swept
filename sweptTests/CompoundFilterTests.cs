@@ -263,14 +263,6 @@ namespace swept.Tests
         }
 
         [Test]
-        public void eldest_name_is_Change()
-        {
-            CompoundFilter filter = new CompoundFilter();
-            filter.Eldest = true;
-            Assert.That( filter.Name, Is.EqualTo( "Change" ) );
-        }
-
-        [Test]
         public void name_generally_matches_operator()
         {
             CompoundFilter filter = new CompoundFilter();

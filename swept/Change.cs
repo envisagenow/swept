@@ -20,8 +20,10 @@ namespace swept
     public class Change : CompoundFilter
     {
         public Change() : base() { }
-        //public Change( string id, string description, FileLanguage language ) 
-        //    : base( id, description, language )
-        //    { }
+
+        public override string Name
+        {
+            get { return "Change"; }
+        }
     }
 }
