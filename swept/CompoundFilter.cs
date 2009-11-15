@@ -60,7 +60,6 @@ namespace swept
                     throw new Exception( string.Format( "Can't get Name for Operator [{0}].", Operator.ToString() ) );
                 }
             }
-            // TODO: CompoundFilter.Name.set{};
         }
         public bool ManualCompletion { get; set; }
         public string ManualCompletionString
@@ -120,6 +119,7 @@ namespace swept
             );
         }
 
+        // TODO--0.2, DC: CompoundFilter.Equals( object )
         public bool Equals( CompoundFilter other )
         {
             if( other == null ) return false;
@@ -141,25 +141,8 @@ namespace swept
             if( ContentPattern != other.ContentPattern )
                 return false;
 
-            // TODO: Tests, then code CompoundFilter extended attributes equality
-            // TODO: Tests, then code CompoundFilter children equality
-            // TODO: Tests, then code Change object type equality
-
+            // TODO--0.2: Test, then code CompoundFilter children equality
             return true;
         }
-
-        // TODO: expand clone CompoundFilter
-        public Change Clone()
-        {
-            return new Change
-            {
-                ID = this.ID,
-                Description = this.Description,
-                Subpath = this.Subpath,
-                NamePattern = this.NamePattern,
-                Language = this.Language,
-            };
-        }
-
     }
 }
