@@ -9,15 +9,34 @@ namespace swept.Tests
     [TestFixture]
     public class TaskTests
     {
-        [Test]
-        public void CanCreateFromChange()
-        {
-            Change change = new Change{ ID = "id1", Description = "this change", Language = FileLanguage.CSharp };
-            Task entry = Task.FromChange( change );
+        private const string _Description = "this change";
+        Change _change;
+        Task _task;
 
-            Assert.AreEqual( change.ID, entry.ID );
-            Assert.AreEqual( change.Description, entry.Description );
-            Assert.IsFalse( entry.Completed );
+        [SetUp]
+        public void given_a_Task_created_from_a_Change()
+        {
+            _change = new Change { ID = "id1", Description = _Description, Language = FileLanguage.CSharp };
+            _task = Task.FromChange( _change );
+        }
+
+        [Test]
+        public void attributes_filled_from_Change()
+        {
+            Assert.AreEqual( _change.ID, _task.ID );
+            Assert.AreEqual( _change.Description, _task.Description );
+        }
+
+        [Test]
+        public void Task_incomplete_by_default()
+        {
+            Assert.IsFalse( _task.Completed );
+        }
+
+        [Test]
+        public void ToString_shows_description_for_GUI()
+        {
+            Assert.That( _task.ToString(), Is.EqualTo( _Description ) );
         }
     }
 }

@@ -136,7 +136,7 @@ namespace swept.Tests
             Assert.AreEqual( "AB2", bar_cs.Completions[1].ChangeID );
         }
 
-        // TODO: public void Removed_SourceFiles_are_saved()
-        // TODO: public void Removed_SourceFiles_are_loaded()
+        // TODO--0.N: public void Removed_SourceFiles_are_loaded()
+        // TODO--0.N: public void Removed_SourceFiles_are_retained_in_catalog()
     }
 }

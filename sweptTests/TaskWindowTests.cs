@@ -31,7 +31,7 @@ namespace swept.Tests
             //  Using this entry point is handy for testing--lets us skip building a ChangeCatalog
             window.ShowFile( file, changes );
         }
-        // TODO: 0.2 Have "Manually Uncheckable" in the check box list.  Intercept the click event?
+        // TODO--0.2: Have "Manually Uncheckable" in the check box list.  Intercept the click event?
 
         [Test]
         public void ShowFile_sets_CurrentFile_and_Title()
@@ -62,6 +62,23 @@ namespace swept.Tests
         {
             window.ShowFile( file, new List<Change>() );
             Assert.AreEqual( 0, window.Tasks.Count );
+        }
+
+        [Test]
+        public void ShowFile_raises_TaskListReset_to_notify_TaskForm()
+        {
+            window.Event_TaskListReset += Hear_TaskListReset;
+
+            _taskList_reset = false;
+            window.ShowFile( file, new List<Change>() );
+
+            Assert.That( _taskList_reset );
+        }
+
+        private bool _taskList_reset;
+        private void Hear_TaskListReset( object objNewTasks, EventArgs e )
+        {
+            _taskList_reset = true;
         }
 
         [Test]

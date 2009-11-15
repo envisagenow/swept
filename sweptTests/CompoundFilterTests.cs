@@ -344,7 +344,6 @@ namespace swept.Tests
             Assert.IsTrue( filter1.Equals( filter2 ) );
         }
 
-        // TODO: relocate, expand attributes being compared
         [Test]
         public void Can_compare_inequal_objects()
         {
@@ -381,7 +380,12 @@ namespace swept.Tests
 
             filter1.ContentPattern = filter2.ContentPattern;
             Assert.IsTrue( filter1.Equals( filter2 ) );
+        }
 
+        [Test]
+        public void CompoundFilter_Equals_considers_child_filters()
+        {
+            // TODO--0.2: CompoundFilter_Equals_considers_child_filters (wait on sorting)
         }
 
         [Test]

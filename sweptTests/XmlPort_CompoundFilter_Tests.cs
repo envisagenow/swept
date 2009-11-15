@@ -192,7 +192,7 @@ namespace swept.Tests
             Assert.That( filter.Children.Count, Is.EqualTo( 1 ) );
         }
 
-        // TODO: finish feature: manual completion (UI checkbox)
+        // TODO--0.2: finish feature: manual completion (UI checkbox)
         //  Manual completion:  Some filters may show false-positive, and we may want to give
         //  the developer a chance to manually mark a file as okay.  (Currently this is always on.)
         [Test]

@@ -227,8 +227,6 @@ namespace swept
 
             return filter;
         }
-        // TODO: cleanup: Align the domain values with the xml attributes.
-
 
         public SourceFileCatalog SourceFileCatalog_FromText(string xmlText)
         {

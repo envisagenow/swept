@@ -10,7 +10,7 @@ namespace swept.Tests
     [TestFixture]
     public class ChangeTests
     {
-        // TODO: figure out how to keep ChangeTests up to date as attributes are added...
+        // TODO--0.N: figure out how to keep ChangeTests up to date as attributes are added...
         [Test]
         public void CanCreateChange()
         {

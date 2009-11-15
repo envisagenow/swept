@@ -139,8 +139,8 @@ namespace swept.Tests
             Assert.AreEqual( "AB2", bar_cs.Completions[1].ChangeID );
         }
 
-        // TODO: public void Removed_Changes_are_saved()
-        // TODO: public void Removed_Changes_are_loaded()
+        // TODO, 0.N: public void Removed_Changes_are_saved()
+        // TODO, 0.N: public void Removed_Changes_are_loaded()
 
         [Test]
         public void Can_serialize_full_Change_ToXml()
@@ -169,7 +169,7 @@ namespace swept.Tests
             Assert.AreEqual(expectedXml, xmlText);
         }
 
-        // TODO: "Note that a 'Not' operator on a top level change won't do what you want.  Make an enclosed 'Not' filter instead."
+        // TODO--0.N: "Note that a 'Not' operator on a top level change won't do what you want.  Make an enclosed 'Not' filter instead."
 
         [Test]
         public void basic_ChangeCatalog_ToXml()
@@ -182,9 +182,9 @@ namespace swept.Tests
 </ChangeCatalog>" ) );
         }
 
-        // TODO: public void Changes_are_sorted()
-        // TODO: public void SourceFiles_are_sorted()
-        // TODO: public void Completions_are_sorted()
+        // TODO--0.2, DC: public void saved_Changes_are_sorted_on_ID()
+        // TODO--0.2, DC: public void saved_SourceFiles_are_sorted_on_file_fqName()
+        // TODO--0.2, DC: public void saved_Completions_are_sorted_on_ID()
 
 
         #region Exception testing

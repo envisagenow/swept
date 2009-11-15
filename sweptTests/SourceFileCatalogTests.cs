@@ -205,7 +205,7 @@ namespace swept.Tests
             Assert.AreSame( blue, alsoBlue );
         }
 
-        // TODO--0.2, DC: validate it's going away (#&?)
+        // TODO--0.3: Reexamine whether file removal is a sensible notion in Swept's idiom
         [Test]
         public void CanRemove_ExistingFile()
         {
