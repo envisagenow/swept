@@ -91,12 +91,17 @@ namespace swept.Addin
             _commandEvents = null;
         }
 
+        private bool ignoreCommandEvent( int ID )
+        {
+            return (ID == 337 || ID == 1627 || ID == 1936 || ID == 2200);
+        }
+
         void hear_all_CommandEvents_before( string Guid, int ID, object CustomIn, object CustomOut, ref bool CancelDefault )
         {
-            if (ID == 2200 || ID == 337 || ID == 1627 || ID == 1936) return;
+            if (ignoreCommandEvent( ID )) return;
 
             Command command = _studio.Commands.Item( Guid, ID );
-            if( command == null )
+            if (command == null)
             {
                 log.Add( string.Format( "ID [{0}] with GUID [{1}] matches no command.", ID, Guid ) );
                 return;
@@ -105,7 +110,7 @@ namespace swept.Addin
             string commandName = command.Name;
             string message = string.Format( "Before [{0}] has guid [{1}] and id [{2}].", commandName, command.Guid, command.ID );
 
-            switch( commandName )
+            switch (commandName)
             {
             case "File.SaveSelectedItemsAs":
                 _saveAsOldName = _studio.ActiveDocument.FullName;
@@ -119,10 +124,10 @@ namespace swept.Addin
 
         private void hear_all_CommandEvents_after( string Guid, int ID, object CustomIn, object CustomOut )
         {
-            if( ID == 2200 || ID == 337 || ID == 1627 || ID == 1936 ) return;
+            if (ignoreCommandEvent( ID )) return;
 
             Command command = _studio.Commands.Item( Guid, ID );
-            if( command == null ) return;
+            if (command == null) return;
 
             string commandName = command.Name;
 
@@ -130,18 +135,18 @@ namespace swept.Addin
 
             switch (commandName)
             {
-                case "File.SaveSelectedItemsAs":
-                    _saveAsOldName = string.Empty;
-                    break;
+            case "File.SaveSelectedItemsAs":
+                _saveAsOldName = string.Empty;
+                break;
 
-                case "Edit.LineDown":
-                    //log.Add( message );
-                    //Clipboard.SetText( string.Join( "\n", log.ToArray() ) );
-                    break;
+            case "Edit.LineDown":
+                //log.Add( message );
+                //Clipboard.SetText( string.Join( "\n", log.ToArray() ) );
+                break;
 
-                default:
-                    //log.Add( message );
-                    break;
+            default:
+                //log.Add( message );
+                break;
             }
         }
         #endregion
@@ -173,30 +178,43 @@ namespace swept.Addin
 
         internal static void describeException( Exception e )
         {
-            MessageBox.Show( string.Format( "Caught {0}: {1}", e.Message, e.StackTrace ) );
+            string exceptionText = string.Format(
+                "{0}:\n{1}\n",
+                e.Message, e.StackTrace );
+            string message = string.Format( "{0}\n{1}\n{2}",
+                "Swept caught exception:",
+                exceptionText,
+                "Shall I paste this exception text to your clipboard?"
+            );
+
+            var choice = MessageBox.Show( message, "Exception caught by Swept Addin", MessageBoxButtons.YesNo );
+
+            if (choice == DialogResult.Yes)
+                Clipboard.SetText( exceptionText );
         }
 
         private void Hear_ItemCheck( object sender, ItemCheckEventArgs e )
         {
-            TaskEventArgs args = new TaskEventArgs{ 
-                Task = (Task)_taskWindowForm.tasks.Items[e.Index], 
-                Checked = (e.NewValue == CheckState.Checked) };
+            TaskEventArgs args = new TaskEventArgs
+            {
+                Task = (Task)_taskWindowForm.tasks.Items[e.Index],
+                Checked = (e.NewValue == CheckState.Checked)
+            };
             _taskWindow.Hear_TaskCheck( _taskWindowForm, args );
         }
 
         void IDisposable.Dispose()
         {
-            // TODO--0.2: Finish shutdown: unsubscribe from events, dispose of windows, and ?
             _taskWindowForm.Dispose();
         }
-        
+
         public void Hear_SolutionOpened()
         {
             try
             {
                 _adapter.Raise_SolutionOpened( _studio.Solution.FileName );
             }
-            catch( Exception e )
+            catch (Exception e)
             {
                 describeException( e );
             }
@@ -209,7 +227,7 @@ namespace swept.Addin
             {
                 _adapter.Raise_SolutionRenamed( oldName, _studio.Solution.FileName );
             }
-            catch( Exception e )
+            catch (Exception e)
             {
                 describeException( e );
             }
@@ -221,19 +239,19 @@ namespace swept.Addin
             {
                 // TODO--0.N: If tasks later join the Studio Task List window,
                 //   don't hide our tasks when the Task List window gets the focus.
-                if( GotFocus.Document == null )
+                if (GotFocus.Document == null)
                     _adapter.Raise_NonSourceGetsFocus();
                 else
                 {
-                    var textDoc = GotFocus.Document.Object("TextDocument") as TextDocument;
-                    if( textDoc != null )
+                    var textDoc = GotFocus.Document.Object( "TextDocument" ) as TextDocument;
+                    if (textDoc != null)
                     {
                         string content = textDoc.StartPoint.CreateEditPoint().GetText( textDoc.EndPoint );
                         _adapter.Raise_FileGotFocus( GotFocus.Document.FullName, content );
                     }
                 }
             }
-            catch( Exception e )
+            catch (Exception e)
             {
                 describeException( e );
             }
@@ -244,12 +262,12 @@ namespace swept.Addin
             try
             {
                 string fileName = doc.FullName;
-                if( _saveAsOldName == string.Empty )
+                if (_saveAsOldName == string.Empty)
                     _adapter.Raise_FileSaved( fileName );
                 else
                     _adapter.Raise_FileSavedAs( _saveAsOldName, fileName );
             }
-            catch( Exception e )
+            catch (Exception e)
             {
                 describeException( e );
             }
@@ -261,7 +279,7 @@ namespace swept.Addin
             {
                 _adapter.Raise_FileRenamed( oldName, item.Name );
             }
-            catch( Exception e )
+            catch (Exception e)
             {
                 describeException( e );
             }
@@ -271,10 +289,10 @@ namespace swept.Addin
         {
             try
             {
-                if( !doc.Saved )
+                if (!doc.Saved)
                     _adapter.Raise_FileChangesAbandoned( doc.Name );
             }
-            catch( Exception e )
+            catch (Exception e)
             {
                 describeException( e );
             }
