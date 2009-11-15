@@ -3,11 +3,13 @@
 //  This software is open source, MIT license.  See the file LICENSE for details.
 using System;
 using System.Collections.Generic;
+using System.Xml;
 
 namespace swept.Tests
 {
     class MockUserAdapter : IUserAdapter
     {
+        public bool SentBadLibraryMessage;
         public bool KeepHistoricalResponse;
 
         internal List<string> messages;
@@ -29,10 +31,10 @@ namespace swept.Tests
             return KeepHistoricalResponse;
         }
 
-        public void BadXmlInExpectedLibrary( string libraryPath )
+        public void BadXmlInExpectedLibrary( string libraryPath, XmlException exception )
         {
-            // TODO--0.2: throw exception based on switch
-            // ...then write tests that catch that the addin is shut down correctly.
+            SentBadLibraryMessage = true;
+            // TODO--0.3: shut down swept addin smoothly when Library XML is bad.
         }
 
         public void DebugMessage( string message )

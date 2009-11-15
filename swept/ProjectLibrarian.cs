@@ -113,10 +113,10 @@ namespace swept
             {
                 doc = _storageAdapter.LoadLibrary( LibraryPath );
             }
-            catch( XmlException )
+            catch( XmlException exception )
             {
-                _userAdapter.BadXmlInExpectedLibrary( LibraryPath );
-                throw;
+                _userAdapter.BadXmlInExpectedLibrary( LibraryPath, exception );
+                doc = StorageAdapter.emptyCatalogDoc;
                 // TODO--0.3: Shut down addin cleanly on bad library XML
             }
 

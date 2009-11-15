@@ -15,7 +15,8 @@ namespace swept.Tests
         private ProjectLibrarian Horace;
 
         private string _testingSolutionPath;
-        private MockStorageAdapter _FSAdapter;
+        private MockStorageAdapter _storageAdapter;
+        private MockUserAdapter _userAdapter;
 
         [SetUp]
         public void Setup()
@@ -23,9 +24,10 @@ namespace swept.Tests
             _testingSolutionPath = @"f:\over\here.sln";
             Horace = new ProjectLibrarian { SolutionPath = _testingSolutionPath };
 
-            _FSAdapter = new MockStorageAdapter();
-            Horace._storageAdapter = _FSAdapter;
-            Horace._userAdapter = new MockUserAdapter();
+            _storageAdapter = new MockStorageAdapter();
+            Horace._storageAdapter = _storageAdapter;
+            _userAdapter = new MockUserAdapter();
+            Horace._userAdapter = _userAdapter;
         }
 
         private static FileEventArgs Get_testfile_FileEventArgs()
@@ -59,15 +61,15 @@ namespace swept.Tests
             FileListEventArgs renameArgs = new FileListEventArgs { Names = new List<string> { oldSln, newSln } };
             Horace.Hear_SolutionRenamed( this, renameArgs );
 
-            Assert.That( _FSAdapter.renamedOldLibraryPath, Is.EqualTo( @"f:\over\here.swept.library" ) );
-            Assert.That( _FSAdapter.renamedNewLibraryPath, Is.EqualTo( @"c:\newplace\new.swept.library" ) );
+            Assert.That( _storageAdapter.renamedOldLibraryPath, Is.EqualTo( @"f:\over\here.swept.library" ) );
+            Assert.That( _storageAdapter.renamedNewLibraryPath, Is.EqualTo( @"c:\newplace\new.swept.library" ) );
         }
 
         [Test]
         public void OpenSolution_finding_Swept_Library_will_load_SourceFiles()
         {
-            _FSAdapter.LibraryDoc = new XmlDocument();
-            _FSAdapter.LibraryDoc.LoadXml( TestProbe.SingleFileLibrary_text );
+            _storageAdapter.LibraryDoc = new XmlDocument();
+            _storageAdapter.LibraryDoc.LoadXml( TestProbe.SingleFileLibrary_text );
             Horace.Hear_SolutionOpened( this, Get_testfile_FileEventArgs() );
 
             SourceFile someFile = Horace._savedSourceCatalog.Fetch( "some_file.cs" );
@@ -78,8 +80,8 @@ namespace swept.Tests
         [Test]
         public void OpenSolution_finding_Swept_Library_will_load_Changes()
         {
-            _FSAdapter.LibraryDoc = new XmlDocument();
-            _FSAdapter.LibraryDoc.LoadXml( TestProbe.SingleChangeLibrary_text );
+            _storageAdapter.LibraryDoc = new XmlDocument();
+            _storageAdapter.LibraryDoc.LoadXml( TestProbe.SingleChangeLibrary_text );
             Horace.Hear_SolutionOpened( this, Get_testfile_FileEventArgs() );
 
             Assert.AreEqual( 1, Horace._changeCatalog._changes.Count );
@@ -91,8 +93,8 @@ namespace swept.Tests
         [Test]
         public void OpenSolution_with_no_Swept_Library_will_start_smoothly()
         {
-            _FSAdapter.LibraryDoc = new XmlDocument();
-            _FSAdapter.LibraryDoc.LoadXml( StorageAdapter.emptyCatalogText );
+            _storageAdapter.LibraryDoc = new XmlDocument();
+            _storageAdapter.LibraryDoc.LoadXml( StorageAdapter.emptyCatalogText );
 
             Horace.Hear_SolutionOpened( this, Get_testfile_FileEventArgs() );
 
@@ -100,32 +102,24 @@ namespace swept.Tests
             Assert.AreEqual( 0, Horace._sourceCatalog.Files.Count );
         }
 
-        //[Test]
-        //public void OpenSolution_with_invalid_xml_UserChoice_new_library()
-        //{
-        //    _FSAdapter.ThrowBadXmlException = true;
+        [Test]
+        public void OpenSolution_with_invalid_xml_makes_empty_library()
+        {
+            _storageAdapter.ThrowBadXmlException = true;
+            Horace.Hear_SolutionOpened( this, Get_testfile_FileEventArgs() );
 
-        //    var mockGui = new MockGUIAdapter();
-        //    Horace._GUIAdapter = mockGui;
-        //    mockGui.StartNewCatalog = true;
+            Assert.AreEqual( 0, Horace._changeCatalog._changes.Count );
+            Assert.AreEqual( 0, Horace._sourceCatalog.Files.Count );
+        }
 
-        //    Horace.Hear_SolutionOpened( this, Get_testfile_FileEventArgs() );
+        [Test]
+        public void OpenSolution_with_invalid_xml_sends_bad_library_message()
+        {
+            _storageAdapter.ThrowBadXmlException = true;
+            Horace.Hear_SolutionOpened( this, Get_testfile_FileEventArgs() );
 
-        //    Assert.AreEqual( 0, Horace._changeCatalog.changes.Count );
-        //    Assert.AreEqual( 0, Horace._sourceCatalog.Files.Count );
-        //}
-
-        //[Test, ExpectedException]
-        //public void OpenSolution_with_invalid_xml_UserChoice_shutdown_swept()
-        //{
-        //    _FSAdapter.ThrowBadXmlException = true;
-
-        //    var mockGui = new MockGUIAdapter();
-        //    Horace._GUIAdapter = mockGui;
-        //    mockGui.StartNewCatalog = false;
-
-        //    Horace.Hear_SolutionOpened( this, Get_testfile_FileEventArgs() );
-        //}
+            Assert.That( _userAdapter.SentBadLibraryMessage );
+        }
 
         [Test]
         public void SaveSolution_will_persist_all_unsaved_SourceFiles()
@@ -137,7 +131,7 @@ namespace swept.Tests
 
             Horace.Hear_SolutionSaved( this, new EventArgs() );
 
-            Assert.AreEqual( toOuterXml( TestProbe.SingleFileLibrary_text ), _FSAdapter.LibraryDoc.OuterXml );
+            Assert.AreEqual( toOuterXml( TestProbe.SingleFileLibrary_text ), _storageAdapter.LibraryDoc.OuterXml );
         }
 
         [Test]
@@ -151,7 +145,7 @@ namespace swept.Tests
         }
 
         [Test]
-        public void SeparateCatalogs_CreatedBy_SolutionPathChange()
+        public void separate_Catalogs_created_by_solution_path_difference()
         {
             Assert.IsNotNull( Horace._sourceCatalog );
             Assert.IsNotNull( Horace._savedSourceCatalog );
@@ -169,11 +163,11 @@ namespace swept.Tests
             FileEventArgs args = new FileEventArgs { Name = someFileName };
             Horace.Hear_FileSaved( this, args );
 
-            Assert.AreEqual( toOuterXml( TestProbe.SingleFileLibrary_text ), _FSAdapter.LibraryDoc.OuterXml );
+            Assert.AreEqual( toOuterXml( TestProbe.SingleFileLibrary_text ), _storageAdapter.LibraryDoc.OuterXml );
         }
 
         [Test]
-        public void Persist_saves_ChangeCatalog()
+        public void persist_saves_ChangeCatalog()
         {
             Horace._changeCatalog.Add( new Change { ID = "Uno", Description = "Eliminate profanity from error messages.", Language = FileLanguage.CSharp } );
             Horace.Persist();
@@ -187,7 +181,7 @@ namespace swept.Tests
 </SourceFileCatalog>
 </SweptProjectData>";
 
-            Assert.AreEqual( toOuterXml( expectedXmlText ), _FSAdapter.LibraryDoc.OuterXml );
+            Assert.AreEqual( toOuterXml( expectedXmlText ), _storageAdapter.LibraryDoc.OuterXml );
         }
 
         private string toOuterXml( string text )
@@ -199,7 +193,7 @@ namespace swept.Tests
 
 
         [Test]
-        public void When_ChangeCatalog_altered_Librarian_reports_not_saved()
+        public void when_ChangeCatalog_altered_Librarian_reports_not_saved()
         {
             Assert.IsTrue( Horace.ChangeCatalogSaved );
             Assert.IsTrue( Horace.IsSaved );
