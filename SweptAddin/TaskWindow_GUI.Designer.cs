@@ -32,10 +32,11 @@ namespace swept.Addin
             // tasks
             // 
             this.tasks.CheckOnClick = true;
+            this.tasks.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tasks.FormattingEnabled = true;
-            this.tasks.Location = new System.Drawing.Point( 2, 2 );
+            this.tasks.Location = new System.Drawing.Point( 0, 0 );
             this.tasks.Name = "tasks";
-            this.tasks.Size = new System.Drawing.Size( 678, 364 );
+            this.tasks.Size = new System.Drawing.Size( 682, 364 );
             this.tasks.TabIndex = 0;
             this.tasks.SelectedIndexChanged += new System.EventHandler( this.tasks_SelectedIndexChanged );
             // 
