@@ -48,6 +48,12 @@ namespace swept.Addin
 
             hook_all_CommandEvents();
             hook_TaskWindow( starter.TaskWindow );
+
+            if (_studio.Solution != null)
+            {
+                Hear_SolutionOpened();
+                Hear_WindowActivated( _studio.ActiveWindow, null );
+            }
         }
 
         public void Disconnect( Starter starter )
@@ -217,6 +223,8 @@ namespace swept.Addin
             catch (Exception e)
             {
                 describeException( e );
+                Disconnect( null );
+                // TODO!: convince the add-in manager that I'm outta here.
             }
 
         }

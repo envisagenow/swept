@@ -53,7 +53,7 @@ namespace swept
                 }
                 catch (XmlException xe)
                 {
-                    string errInvalidXml = "File [{0}] was not valid XML.  Please check its contents.  Details: {1}";
+                    string errInvalidXml = "File [{0}] was not valid XML.  Please check its contents.\n  Details: {1}";
                     throw new Exception( string.Format( errInvalidXml, libraryPath, xe.Message ) );
                 }
             }
