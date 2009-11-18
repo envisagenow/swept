@@ -27,10 +27,14 @@ namespace swept
         {
             string catalogLabel = "ChangeCatalog";
             string xmlText = String.Format( "<{0}>\r\n", catalogLabel );
-            foreach( Change change in changeCatalog._changes )
+
+            changeCatalog._changes.Sort( ( a, b ) => a.ID.CompareTo(b.ID) );
+
+            foreach (Change change in changeCatalog._changes)
             {
                 xmlText += ToText( change );
             }
+
             xmlText += String.Format( "</{0}>", catalogLabel );
             return xmlText;
         }
@@ -90,9 +94,9 @@ namespace swept
 
             sb.AppendFormat( "{0}<{1}", indent, filter.Name );
 
-            AppendAttributeIfExists( sb, cfa_ID, filter.ID );
+            AppendAttributeIfExists( sb, cfa_ID,                 filter.ID );
             AppendAttributeIfExists( sb, cfa_Description,        filter.Description );
-            AppendAttributeIfExists( sb, cfa_ManualCompletion, filter.ManualCompletionString );
+            AppendAttributeIfExists( sb, cfa_ManualCompletion,   filter.ManualCompletionString );
             AppendAttributeIfExists( sb, cfa_Subpath,            filter.Subpath );
             AppendAttributeIfExists( sb, cfa_NamePattern,        filter.NamePattern );
             AppendAttributeIfExists( sb, cfa_Language,           filter.LanguageString );
@@ -111,6 +115,24 @@ namespace swept
                 sb.AppendFormat( "{0}</{1}>{2}", indent, filter.Name, Environment.NewLine );
             }
         }
+
+        public string ToText( SeeAlso seeAlso )
+        {
+            var sb = new StringBuilder();
+            sb.Append( "        <SeeAlso" );
+
+            AppendAttributeIfExists( sb, "Description", seeAlso.Description );
+            AppendAttributeIfExists( sb, "URL", seeAlso.URL );
+            AppendAttributeIfExists( sb, "ProjectFile", seeAlso.ProjectFile );
+            AppendAttributeIfExists( sb, "SVN", seeAlso.SVN );
+            AppendAttributeIfExists( sb, "Commit", seeAlso.Commit );
+            
+            sb.AppendFormat( " />{0}", Environment.NewLine );
+            return sb.ToString();
+        }
+
+
+
         #endregion
 
         public ChangeCatalog ChangeCatalog_FromXmlDocument( XmlDocument doc )

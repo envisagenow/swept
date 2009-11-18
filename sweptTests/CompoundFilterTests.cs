@@ -385,9 +385,40 @@ namespace swept.Tests
         [Test]
         public void CompoundFilter_Equals_considers_child_filters()
         {
-            // TODO--0.2: CompoundFilter_Equals_considers_child_filters (wait on sorting)
+
+            CompoundFilter filter1 = new CompoundFilter
+            {
+                ID = "near duplicate",
+                Children = new List<CompoundFilter> { new CompoundFilter { ID = "Thing 1" }, new CompoundFilter { ID = "Thing 2" }, }
+            };
+
+            CompoundFilter filter2 = new CompoundFilter
+            {
+                ID = "near duplicate",
+                Children = new List<CompoundFilter> { new CompoundFilter { ID = "Thing 1" }, new CompoundFilter { ID = "Thing 3" }, }
+            };
+
+            Assert.That( filter1.Equals( filter2 ), Is.False );
         }
 
+        [Test]
+        public void CompoundFilter_Equals_considers_child_filters_count()
+        {
+
+            CompoundFilter filter1 = new CompoundFilter
+            {
+                ID = "near duplicate",
+                Children = new List<CompoundFilter> { new CompoundFilter { ID = "Thing 1" } }
+            };
+
+            CompoundFilter filter2 = new CompoundFilter
+            {
+                ID = "near duplicate",
+                Children = new List<CompoundFilter> { new CompoundFilter { ID = "Thing 1" }, new CompoundFilter { ID = "Thing 2" }, new CompoundFilter { ID = "Thing 3" } }
+            };
+
+            Assert.That( filter1.Equals( filter2 ), Is.False );
+        }
         [Test]
         public void Can_compare_to_null()
         {

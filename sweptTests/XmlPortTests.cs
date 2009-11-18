@@ -52,7 +52,7 @@ namespace swept.Tests
         }
 
         [Test]
-        public void SourceFileCatalog_ToXMLText()
+        public void SourceFileCatalog_ToText()
         {
             SourceFileCatalog fileCat = new SourceFileCatalog();
             SourceFile blue_cs = fileCat.Fetch("blue.cs");
@@ -182,9 +182,107 @@ namespace swept.Tests
 </ChangeCatalog>" ) );
         }
 
-        // TODO--0.2, DC: public void saved_Changes_are_sorted_on_ID()
-        // TODO--0.2, DC: public void saved_SourceFiles_are_sorted_on_file_fqName()
+        [Test]
+        public void saved_Changes_are_sorted_by_ID()
+        {
+            ChangeCatalog cat = new ChangeCatalog();
+            cat.Add( new Change { ID = "003", Description = "A", Language = FileLanguage.CSharp } );
+            cat.Add( new Change { ID = "002", Description = "B", Language = FileLanguage.CSS } );
+            cat.Add( new Change { ID = "004", Description = "C", Language = FileLanguage.HTML } );
+            cat.Add( new Change { ID = "001", Description = "D", Language = FileLanguage.JavaScript } );
+            Assert.That( port.ToText( cat ), Is.EqualTo(
+@"<ChangeCatalog>
+    <Change ID='001' Description='D' Language='JavaScript' />
+    <Change ID='002' Description='B' Language='CSS' />
+    <Change ID='003' Description='A' Language='CSharp' />
+    <Change ID='004' Description='C' Language='HTML' />
+</ChangeCatalog>" ) );
+        }
+
+
+        [Test]
+        public void saved_SourceFiles_are_sorted_on_file_fqName()
+        {
+            SourceFileCatalog cat = new SourceFileCatalog();
+            cat.Add( new SourceFile( "a.cs" ) );
+            cat.Add( new SourceFile( "d.cs" ) );
+            cat.Add( new SourceFile( "b.cs" ) );
+            cat.Add( new SourceFile( "c.cs" ) );
+
+            Assert.That( port.ToText( cat ), Is.EqualTo(
+@"<SourceFileCatalog>
+    <SourceFile Name='a.cs'>
+    </SourceFile>
+    <SourceFile Name='b.cs'>
+    </SourceFile>
+    <SourceFile Name='c.cs'>
+    </SourceFile>
+    <SourceFile Name='d.cs'>
+    </SourceFile>
+</SourceFileCatalog>" ) );
+        }
+
         // TODO--0.2, DC: public void saved_Completions_are_sorted_on_ID()
+        [Test]
+        public void saved_Completions_are_sorted_on_ID()
+        {
+            var sourceFile = new SourceFile( "a.cs" );
+            sourceFile.AddNewCompletion( "003" );
+            sourceFile.AddNewCompletion( "002" );
+            sourceFile.AddNewCompletion( "004" );
+            sourceFile.AddNewCompletion( "001" );
+            SourceFileCatalog cat = new SourceFileCatalog();
+            cat.Add( sourceFile );
+
+            Assert.That( port.ToText( cat ), Is.EqualTo(
+@"<SourceFileCatalog>
+    <SourceFile Name='a.cs'>
+        <Completion ID='001' />
+        <Completion ID='002' />
+        <Completion ID='003' />
+        <Completion ID='004' />
+    </SourceFile>
+</SourceFileCatalog>" ) );
+        }
+
+        [Test]
+        public void SeeAlso_empty_ToXml()
+        {
+            var seeAlso = new SeeAlso();
+            string expectedText = "        <SeeAlso />\r\n";
+            string actualText = port.ToText( seeAlso );
+            Assert.That( actualText, Is.EqualTo( expectedText ) );
+        }
+
+        [Test]
+        public void SeeAlso_URL_ToXml()
+        {
+            var seeAlso = new SeeAlso { Description = "simple", URL = "helloworld.com" };
+            string expectedText = "        <SeeAlso Description='simple' URL='helloworld.com' />\r\n";
+            string actualText = port.ToText( seeAlso );
+            Assert.That( actualText, Is.EqualTo( expectedText ) );
+        }
+
+        [Test]
+        public void full_SeeAlso_SVN_ToXml()
+        {
+            var seeAlso = new SeeAlso();
+            seeAlso.SVN = "TextOutputAdapter.cs";
+            seeAlso.Commit = "3427";
+            string expectedText = "        <SeeAlso SVN='TextOutputAdapter.cs' Commit='3427' />\r\n";
+            string actualText = port.ToText( seeAlso );
+            Assert.That( actualText, Is.EqualTo( expectedText ) );
+        }
+
+        [Test]
+        public void full_SeeAlso_ProjectFile_ToXml()
+        {
+            var seeAlso = new SeeAlso();
+            seeAlso.ProjectFile="utility\\MegaToString.cs";
+            string expectedText = "        <SeeAlso ProjectFile='utility\\MegaToString.cs' />\r\n";
+            string actualText = port.ToText( seeAlso );
+            Assert.That( actualText, Is.EqualTo( expectedText ) );
+        }
 
 
         #region Exception testing

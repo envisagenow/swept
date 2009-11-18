@@ -141,7 +141,15 @@ namespace swept
             if( ContentPattern != other.ContentPattern )
                 return false;
 
-            // TODO--0.2: Test, then code CompoundFilter children equality
+            if (Children.Count != other.Children.Count)
+                return false;
+
+            for (int i = 0; i < Children.Count; i++)
+            {
+                if (!Children[i].Equals( other.Children[i] ))
+                    return false;
+            }
+
             return true;
         }
     }
