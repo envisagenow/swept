@@ -81,8 +81,9 @@ namespace swept.Tests
         [Test]
         public void WhenChangeAdded_ChangeCatalogPersisted()
         {
+            changeCat = librarian._changeCatalog;
             Assert.IsTrue( librarian.IsSaved );
-            changeCat.Add( new Change { ID = "Inf09" } );
+            changeCat.Add( new Change { ID = "Inf09_altered" } );
             Assert.IsFalse( librarian.IsSaved );
             changeWindow.Raise_ChangeListUpdated();
             Assert.IsTrue( librarian.IsSaved );

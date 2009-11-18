@@ -26,7 +26,7 @@ namespace swept
             get { return "Change"; }
         }
 
-        public Change Clone()
+        public new Change Clone()
         {
             return (Change)base.CloneInto( new Change() );
         }

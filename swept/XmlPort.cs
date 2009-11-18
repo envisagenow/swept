@@ -307,5 +307,31 @@ namespace swept
             Completion fileChange = new Completion( changeID );
             return fileChange;
         }
+
+        public SeeAlso SeeAlso_FromNode( XmlNode node )
+        {
+            SeeAlso seeAlso = new SeeAlso();
+            if (node.Attributes["Description"] != null)
+            {
+                seeAlso.Description = node.Attributes["Description"].Value;
+            }
+
+            if (node.Attributes["SVN"] != null)
+            {
+                seeAlso.SVN = node.Attributes["SVN"].Value;
+            }
+
+            if (node.Attributes["Commit"] != null)
+            {
+                seeAlso.Commit = node.Attributes["Commit"].Value;
+            }
+
+            if (node.Attributes["URL"] != null)
+            {
+                seeAlso.URL = node.Attributes["URL"].Value;
+            }
+
+            return seeAlso;
+        }
     }
 }

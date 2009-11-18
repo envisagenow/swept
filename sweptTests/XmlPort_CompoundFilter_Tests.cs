@@ -257,6 +257,40 @@ namespace swept.Tests
             return doc.ChildNodes[0];
         }
 
+        [Test]
+        public void SeeAlso_FromNode()
+        {
+            var node = Node_FromText( @"<SeeAlso Description='basic FromNode.' />" );
+            var seeAlso = port.SeeAlso_FromNode( node );
+            Assert.That( seeAlso.Description, Is.EqualTo( "basic FromNode." ) );
+        }
+
+        [Test]
+        public void SeeAlso_FromNode_empty()
+        {
+            var node = Node_FromText( @"<SeeAlso />" );
+            var seeAlso = port.SeeAlso_FromNode( node );
+            Assert.That( string.IsNullOrEmpty( seeAlso.Description ) );
+        }
+
+        [Test]
+        public void SeeAlso_FromNode_SVN()
+        {
+            var node = Node_FromText( @"<SeeAlso SVN='myrepo/myfile.cs' Commit='7890' Description='SVN' />" );
+            var seeAlso = port.SeeAlso_FromNode( node );
+            Assert.That( seeAlso.SVN, Is.EqualTo( "myrepo/myfile.cs" ) );
+            Assert.That( seeAlso.Commit, Is.EqualTo( "7890" ) );
+            Assert.That( seeAlso.Description, Is.EqualTo( "SVN" ) );
+        }
+
+        [Test]
+        public void SeeAlso_FromNode_URL()
+        {
+            var node = Node_FromText( @"<SeeAlso URL='site/page.htm' Description='URL' />" );
+            var seeAlso = port.SeeAlso_FromNode( node );
+            Assert.That( seeAlso.URL, Is.EqualTo( "site/page.htm" ) );
+            Assert.That( seeAlso.Description, Is.EqualTo( "URL" ) );
+        }
         #endregion
 
         #region Integration round-trips

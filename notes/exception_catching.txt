@@ -41,7 +41,7 @@ at ...StudioEventListener.Hear_WindowActivated...
 
 Footnote, "Verminous Maintenance Delerium":
 
-I could write tests for subscriptions like this, but it may wind up more bug-ridden and sweaty than the code I mean to strengthen:
+I could write tests for subscriptions like this, but seems to be a road more bug-ridden and sweaty than the code I mean to strengthen:
 
   Create mock event sources and listeners
   Subscribe them
@@ -70,4 +70,3 @@ Pretty straightforward, if tedious, at first look.  Let's look closer, and refin
 
  * The subscribers/cancellers are in several different forms.  Some may be difficult to mock.
 
- 

@@ -158,7 +158,7 @@ namespace swept
             return CloneInto( new CompoundFilter() );
         }
 
-        protected virtual CompoundFilter CloneInto( CompoundFilter newFilter )
+        protected CompoundFilter CloneInto( CompoundFilter newFilter )
         {
             newFilter.ID = ID;
             newFilter.Description = Description;
