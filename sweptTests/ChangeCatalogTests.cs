@@ -177,5 +177,25 @@ namespace swept.Tests
             Assert.AreNotSame( cat, catClone );
             Assert.AreEqual( 3, catClone._changes.Count );
         }
+
+        [Test]
+        public void Clone_brings_across_CompoundFilters()
+        {
+            Change change = new Change {
+                ID = "This",
+                Children = new List<CompoundFilter> {
+                    new CompoundFilter {
+                        ID = "Child",
+                        Subpath = "hidden"
+                    }
+                }
+            };
+            cat.Add( change );
+            ChangeCatalog catClone = cat.Clone();
+            Assert.AreNotSame( cat, catClone );
+            Assert.AreEqual( 4, catClone._changes.Count );
+            // TODO: !!
+            //var thisChangeClone = catClone.` ._changes. ["This"];
+        }
     }
 }

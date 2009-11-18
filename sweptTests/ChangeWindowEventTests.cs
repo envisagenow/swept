@@ -39,9 +39,9 @@ namespace swept.Tests
 
             fileCat.SolutionPath = @"c:\somewhere\for_the.sln";
             fileName = "bari.cs";
-            file = new SourceFile(fileName);
-            file.Completions.Add(new Completion(indentID));
-            fileCat.Add(file);
+            file = new SourceFile( fileName );
+            file.Completions.Add( new Completion( indentID ) );
+            fileCat.Add( file );
 
             MockStorageAdapter writer = new MockStorageAdapter();
             librarian._storageAdapter = writer;
@@ -64,7 +64,7 @@ namespace swept.Tests
 
             changeWindow.Raise_ChangeListUpdated();
 
-            Assert.AreEqual(initialChangeCount + 1, _taskWindow.Tasks.Count);
+            Assert.AreEqual( initialChangeCount + 1, _taskWindow.Tasks.Count );
         }
 
         [Test]
@@ -75,7 +75,7 @@ namespace swept.Tests
 
             changeWindow.Raise_ChangeListUpdated();
 
-            Assert.AreEqual(0, _taskWindow.Tasks.Count);
+            Assert.AreEqual( 0, _taskWindow.Tasks.Count );
         }
 
         [Test]
@@ -83,15 +83,15 @@ namespace swept.Tests
         {
             Assert.IsTrue( librarian.IsSaved );
             changeCat.Add( new Change { ID = "Inf09" } );
-            Assert.IsFalse(librarian.IsSaved);
+            Assert.IsFalse( librarian.IsSaved );
             changeWindow.Raise_ChangeListUpdated();
-            Assert.IsTrue(librarian.IsSaved);
+            Assert.IsTrue( librarian.IsSaved );
         }
 
         [Test]
         public void WhenChangeAdded_IfChangeExistedPreviously_UserCanKeepHistory()
         {
-            changeCat.Remove("14");
+            changeCat.Remove( "14" );
 
             MockUserAdapter mockGUI = new MockUserAdapter();
             adapter.Librarian._userAdapter = mockGUI;
@@ -103,15 +103,15 @@ namespace swept.Tests
             changeWindow.Raise_ChangeAdded( change );
 
             // Bari has kept the completion of Change 14
-            SourceFile savedBari = librarian._savedSourceCatalog.Fetch("bari.cs");
-            Assert.AreEqual(1, savedBari.Completions.Count);
-            Assert.AreEqual("14", savedBari.Completions[0].ChangeID);
+            SourceFile savedBari = librarian._savedSourceCatalog.Fetch( "bari.cs" );
+            Assert.AreEqual( 1, savedBari.Completions.Count );
+            Assert.AreEqual( "14", savedBari.Completions[0].ChangeID );
         }
 
         [Test]
         public void WhenChangeAdded_IfChangeExistedPreviously_UserCanRemoveHistory()
         {
-            changeCat.Remove("14");
+            changeCat.Remove( "14" );
 
             MockUserAdapter mockGUI = new MockUserAdapter();
             adapter.Librarian._userAdapter = mockGUI;
@@ -122,22 +122,22 @@ namespace swept.Tests
             Change change = new Change { ID = "14" };
             changeWindow.Raise_ChangeAdded( change );
 
-            adapter.Raise_FileSaved("bari.cs");
+            adapter.Raise_FileSaved( "bari.cs" );
 
             // Bari has removed the completion of Change 14
-            Assert.IsFalse(TestProbe.IsCompletionSaved(librarian, "bari.cs", "14"));
+            Assert.IsFalse( TestProbe.IsCompletionSaved( librarian, "bari.cs", "14" ) );
         }
 
         [Test]
         public void WhenChangeRemoved_TaskWindow_RefreshesTasks()
         {
-            adapter.Raise_FileGotFocus("foo.cs", "using System;");
+            adapter.Raise_FileGotFocus( "foo.cs", "using System;" );
             int initialChangeCount = _taskWindow.Tasks.Count;
-            changeCat.Remove("14");
+            changeCat.Remove( "14" );
 
             changeWindow.Raise_ChangeListUpdated();
 
-            Assert.AreEqual(initialChangeCount - 1, _taskWindow.Tasks.Count);
+            Assert.AreEqual( initialChangeCount - 1, _taskWindow.Tasks.Count );
         }
     }
 }

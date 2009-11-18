@@ -191,7 +191,7 @@ namespace swept.Tests
         [Test]
         public void when_FileGotFocus_unsaved_completions_included()
         {
-            librarian._changeCatalog.Add( new Change { ID = "728", Description = "Date Normalization", Language = FileLanguage.CSharp } );
+            changeCat.Add( new Change { ID = "728", Description = "Date Normalization", Language = FileLanguage.CSharp } );
             adapter.Raise_FileGotFocus( "party_planning.cs", "using System;" );
 
             Assert.AreEqual( 2, window.Tasks.Count );

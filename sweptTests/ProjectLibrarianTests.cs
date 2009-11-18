@@ -167,22 +167,49 @@ namespace swept.Tests
         }
 
         [Test]
-        public void persist_saves_ChangeCatalog()
+        public void persisting_Completions_does_not_overwrite_updated_Changes()
         {
-            Horace._changeCatalog.Add( new Change { ID = "Uno", Description = "Eliminate profanity from error messages.", Language = FileLanguage.CSharp } );
-            Horace.Persist();
+            string someFileName = "some_file.cs";
+            SourceFile someFile = new SourceFile( someFileName );
+            someFile.AddNewCompletion( "007" );
+            Horace._sourceCatalog.Add( someFile );
 
-            string expectedXmlText =
-@"<SweptProjectData>
-<ChangeCatalog>
-    <Change ID='Uno' Description='Eliminate profanity from error messages.' Language='CSharp' />
-</ChangeCatalog>
-<SourceFileCatalog>
-</SourceFileCatalog>
-</SweptProjectData>";
+            // to start with, no changes apply.
+            List<Change> changes = Horace._changeCatalog.GetChangesForFile( someFile );
+            Assert.That( changes.Count, Is.EqualTo( 0 ) );
 
-            Assert.AreEqual( toOuterXml( expectedXmlText ), _storageAdapter.LibraryDoc.OuterXml );
+            // our developer adds a change in some text editor, saves it to disk
+            XmlDocument updatedChanges = new XmlDocument();
+            updatedChanges.LoadXml( TestProbe.SingleChangeLibrary_text );
+            _storageAdapter.LibraryDoc = updatedChanges;
+
+            // then saves a file in the IDE
+            FileEventArgs args = new FileEventArgs { Name = someFileName };
+            Horace.Hear_FileSaved( this, args );
+
+            // during save of completions, the updated change was loaded.
+            changes = Horace._changeCatalog.GetChangesForFile( someFile );
+            Assert.That( changes.Count, Is.EqualTo( 1 ) );
         }
+
+        // TODO: Determine if there's any sensible future to saving changes from this end.
+//        [Test]
+//        public void persist_saves_ChangeCatalog()
+//        {
+//            Horace._changeCatalog.Add( new Change { ID = "Uno", Description = "Eliminate profanity from error messages.", Language = FileLanguage.CSharp } );
+//            Horace.Persist();
+
+//            string expectedXmlText =
+//@"<SweptProjectData>
+//<ChangeCatalog>
+//    <Change ID='Uno' Description='Eliminate profanity from error messages.' Language='CSharp' />
+//</ChangeCatalog>
+//<SourceFileCatalog>
+//</SourceFileCatalog>
+//</SweptProjectData>";
+
+//            Assert.AreEqual( toOuterXml( expectedXmlText ), _storageAdapter.LibraryDoc.OuterXml );
+//        }
 
         private string toOuterXml( string text )
         {

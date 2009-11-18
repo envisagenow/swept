@@ -426,6 +426,37 @@ namespace swept.Tests
             Assert.IsFalse( change1.Equals( null ) );
         }
         #endregion
+
+        #region Cloning
+        [Test]
+        public void Clone_copies_core_attributes()
+        {
+            CompoundFilter filter = new CompoundFilter {
+                ID = "A",
+                Description = "B",
+                Operator = FilterOperator.Not,
+
+                Subpath = @"D:\",
+                NamePattern = "E",
+                Language = FileLanguage.CSharp,
+
+                ContentPattern = "F"
+            };
+
+            CompoundFilter clone = filter.Clone();
+            
+            Assert.That( clone.ID, Is.EqualTo( "A" ) );
+            Assert.That( clone.Description, Is.EqualTo( "B" ) );
+            Assert.That( clone.Operator, Is.EqualTo( FilterOperator.Not ) );
+            
+            Assert.That( clone.Subpath, Is.EqualTo( @"D:\" ) );
+            Assert.That( clone.NamePattern, Is.EqualTo( "E" ) );
+            Assert.That( clone.Language, Is.EqualTo( FileLanguage.CSharp ) );
+
+            Assert.That( clone.ID, Is.EqualTo( "A" ) );
+        }
+        #endregion
+
     }
 
 }

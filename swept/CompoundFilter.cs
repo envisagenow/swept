@@ -152,5 +152,32 @@ namespace swept
 
             return true;
         }
+
+        public CompoundFilter Clone()
+        {
+            return CloneInto( new CompoundFilter() );
+        }
+
+        protected virtual CompoundFilter CloneInto( CompoundFilter newFilter )
+        {
+            newFilter.ID = ID;
+            newFilter.Description = Description;
+            newFilter.Operator = Operator;
+
+            newFilter.Subpath = Subpath;
+            newFilter.NamePattern = NamePattern;
+            newFilter.Language = Language;
+
+            newFilter.ContentPattern = ContentPattern;
+            newFilter.ManualCompletion = ManualCompletion;
+
+            foreach (CompoundFilter child in Children)
+            {
+                newFilter.Children.Add( child.Clone() );
+            }
+
+            return newFilter;
+        }
+
     }
 }

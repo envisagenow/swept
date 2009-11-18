@@ -271,7 +271,9 @@ namespace swept
             _savedChangeCatalog = _changeCatalog.Clone();
 
             var port = new XmlPort();
-
+            var library = _storageAdapter.LoadLibrary( LibraryPath );
+            _savedChangeCatalog = port.ChangeCatalog_FromXmlDocument( library );
+            _changeCatalog = _savedChangeCatalog.Clone();
             _storageAdapter.Save( LibraryPath, port.ToText( this ) );
         }
     }

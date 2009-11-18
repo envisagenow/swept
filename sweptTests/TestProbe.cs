@@ -21,7 +21,6 @@ namespace swept.Tests
             return file.Completions.Exists(c => c.ChangeID == changeID);
         }
 
-
         public static string SingleFileLibrary_text
         {
             get

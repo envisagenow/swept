@@ -26,22 +26,9 @@ namespace swept
             get { return "Change"; }
         }
 
-        // TODO--0.N, DC:  Clone and inheritance?
         public Change Clone()
         {
-            return new Change
-            {
-                ID = this.ID,
-                Description = this.Description,
-                Operator = this.Operator,
-
-                Subpath = this.Subpath,
-                NamePattern = this.NamePattern,
-                Language = this.Language,
-
-                ContentPattern = this.ContentPattern,
-                ManualCompletion = this.ManualCompletion,
-            };
+            return (Change)base.CloneInto( new Change() );
         }
     }
 }
