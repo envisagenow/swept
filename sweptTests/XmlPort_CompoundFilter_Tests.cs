@@ -87,6 +87,21 @@ namespace swept.Tests
             Assert.That( serializedFilter, Is.EqualTo( expectedText ) );
         }
 
+        [Test]
+        public void shows_SeeAlsos()
+        {
+            Change change = new Change { ID = "references" };
+            change.SeeAlsos.Add( new SeeAlso { Description = "Google is your friend.", URL = "http://www.google.com" } );
+            string serializedFilter = port.ToText( change );
+
+            string expectedText = 
+@"    <Change ID='references' />
+        <SeeAlso Description='Google is your friend.' URL='http://www.google.com' />
+    </Change>
+";
+            Assert.That( serializedFilter, Is.EqualTo( expectedText ) );
+        }
+
         #endregion
 
         #region From XML

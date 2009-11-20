@@ -12,5 +12,6 @@ namespace swept
         bool KeepSourceFileHistory( SourceFile historicalFile );
         void BadXmlInExpectedLibrary( string libraryPath, XmlException exception );
         void DebugMessage( string message );
+        void ShowSeeAlso( SeeAlso seeAlso );
     }
 }

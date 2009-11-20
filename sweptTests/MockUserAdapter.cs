@@ -42,6 +42,12 @@ namespace swept.Tests
             messages.Add( message );
         }
 
+        public SeeAlso SentSeeAlso = null;
+        public void ShowSeeAlso( SeeAlso seeAlso )
+        {
+            SentSeeAlso = seeAlso;
+        }
+
         #endregion
     }
 }

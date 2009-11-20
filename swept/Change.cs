@@ -2,6 +2,7 @@
 //  Copyright (c) 2009 Jason Cole and Envisage Technologies Corp.
 //  This software is open source, MIT license.  See the file LICENSE for details.
 using System;
+using System.Collections.Generic;
 
 namespace swept
 {
@@ -19,7 +20,11 @@ namespace swept
 
     public class Change : CompoundFilter
     {
-        public Change() : base() { }
+        public List<SeeAlso> SeeAlsos { get; set; }
+        public Change() : base() 
+        {
+            SeeAlsos = new List<SeeAlso>();
+        }
 
         public override string Name
         {

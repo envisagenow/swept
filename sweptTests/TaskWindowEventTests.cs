@@ -40,5 +40,13 @@ namespace swept.Tests
             _tasks.Hear_TaskCheck( this, new TaskEventArgs{ Task = task, Checked = true } );
             Assert.IsTrue( _tasks.Tasks[0].Completed );
         }
+
+        [Test]
+        public void when_SeeAlsoChosen_GUI_shows_it()
+        {
+            Task task = new Task { ID = "1", Description = "First things first.", /*SeeAlsos*/ };
+            _tasks.Tasks.Add( task );
+
+        }
     }
 }

@@ -4,34 +4,22 @@
 using NUnit.Framework;
 using swept;
 using System;
+using System.Collections.Generic;
 
 namespace swept.Tests
 {
     [TestFixture]
     public class ChangeTests
     {
-        // TODO--0.N: figure out how to keep ChangeTests up to date as attributes are added...
         [Test]
-        public void CanCreateChange()
+        public void collects_SeeAlsos()
         {
-            const string newID = "NEW";
-            const string newDescription = "Brand new";
+            Change change = new Change();
 
-            const string path = @"somewhere";
-            const string namePattern = "problematic.code();";
-            const FileLanguage newLanguage = FileLanguage.CSharp;
-
-            const string problematicContent = "problematic.code();";
-
-            Change change = new Change { 
-                ID = newID, Description = newDescription, 
-                Language = newLanguage, Subpath = path, NamePattern = namePattern,
-                ContentPattern = problematicContent
-            };
-
-            Assert.AreEqual( newID, change.ID );
-            Assert.AreEqual( newDescription, change.Description );
-            Assert.AreEqual( newLanguage, change.Language );
+            change.SeeAlsos = new List<SeeAlso>();
+            // TODO--! Not done here: 
+            //change.
+            
         }
     }
 }

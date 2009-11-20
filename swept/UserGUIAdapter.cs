@@ -35,5 +35,13 @@ namespace swept
         {
             //MessageBox.Show( message );
         }
+
+        public void ShowSeeAlso( SeeAlso seeAlso )
+        {
+            throw new Exception( String.Format( "See also not implemented:  [{0}].", seeAlso.Description ) );
+            //if (! string.IsNullOrEmpty(seeAlso.URL))
+            //    System.Diagnostics.Process.Start( seeAlso.URL );
+        }
+
     }
 }

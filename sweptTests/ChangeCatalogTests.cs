@@ -194,8 +194,9 @@ namespace swept.Tests
             ChangeCatalog catClone = cat.Clone();
             Assert.AreNotSame( cat, catClone );
             Assert.AreEqual( 4, catClone._changes.Count );
-            // TODO: !!
-            //var thisChangeClone = catClone.` ._changes. ["This"];
+            var hiddenChild = catClone._changes[3].Children[0];
+            Assert.That( hiddenChild.ID, Is.EqualTo( "Child" ) );
+            Assert.That( hiddenChild.Subpath, Is.EqualTo( "hidden" ) );
         }
     }
 }

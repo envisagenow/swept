@@ -222,7 +222,6 @@ namespace swept.Tests
 </SourceFileCatalog>" ) );
         }
 
-        // TODO--0.2, DC: public void saved_Completions_are_sorted_on_ID()
         [Test]
         public void saved_Completions_are_sorted_on_ID()
         {
