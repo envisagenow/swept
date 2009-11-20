@@ -102,18 +102,23 @@ namespace swept
             AppendAttributeIfExists( sb, cfa_Language,           filter.LanguageString );
             AppendAttributeIfExists( sb, cfa_ContentPattern,     filter.ContentPattern );
 
+            var change = filter as Change;
+            bool hasSeeAlsos = change != null && change.SeeAlsos.Count > 0;
             bool hasChildren = filter.Children.Count > 0;
 
-            if (!hasChildren)
+            bool isSelfClosing = !hasChildren && !hasSeeAlsos;
+            if (isSelfClosing)
                 sb.Append( " /" );
 
             sb.AppendFormat( ">{0}", Environment.NewLine );
 
-            if (hasChildren)
-            {
-                filter.Children.ForEach( child => IntoStringBuilder( child, sb, depth + 1 ) );
+            filter.Children.ForEach( child => IntoStringBuilder( child, sb, depth + 1 ) );
+
+            if (hasSeeAlsos)
+                change.SeeAlsos.ForEach( seeAlso => sb.Append( ToText( seeAlso ) ) );
+
+            if (!isSelfClosing)
                 sb.AppendFormat( "{0}</{1}>{2}", indent, filter.Name, Environment.NewLine );
-            }
         }
 
         public string ToText( SeeAlso seeAlso )
@@ -244,7 +249,17 @@ namespace swept
 
             foreach( XmlNode childNode in filterNode.ChildNodes )
             {
-                filter.Children.Add( CompoundFilter_FromNode( childNode ) );
+                switch (childNode.Name)
+                {
+                    case "SeeAlso":
+                        ((Change)filter).SeeAlsos.Add( SeeAlso_FromNode( childNode ) );
+                        break;
+
+                    // TODO: become comfortable with this, or change it.
+                    default:
+                        filter.Children.Add( CompoundFilter_FromNode( childNode ) );
+                        break;
+                }
             }
 
             return filter;

@@ -95,7 +95,7 @@ namespace swept.Tests
             string serializedFilter = port.ToText( change );
 
             string expectedText = 
-@"    <Change ID='references' />
+@"    <Change ID='references'>
         <SeeAlso Description='Google is your friend.' URL='http://www.google.com' />
     </Change>
 ";
@@ -256,6 +256,24 @@ namespace swept.Tests
             Assert.That( child.Language, Is.EqualTo( FileLanguage.CSharp ) );
 
             Assert.That( child.ContentPattern, Is.EqualTo( "using System.Snicker.Snack;" ) );
+        }
+
+        [Test]
+        public void FromNode_gets_SeeAlsos()
+        {
+            string filter_text =
+@"<Change ID='1212' Description='Through and through'>
+        <SeeAlso Description='Always remember, Google says do not do evil.' URL='http://www.google.com' />
+</Change>
+";
+            var node = Node_FromText( filter_text );
+
+            Change change = (Change)port.CompoundFilter_FromNode( node );
+            Assert.That( change.SeeAlsos.Count, Is.EqualTo( 1 ) );
+            SeeAlso seeAlso = change.SeeAlsos[0];
+
+            Assert.That( seeAlso.Description, Is.EqualTo( "Always remember, Google says do not do evil." ) );
+            Assert.That( seeAlso.URL, Is.EqualTo( "http://www.google.com" ) );
         }
 
         [Test, ExpectedException( ExpectedMessage = "Don't understand a file of language [Jabberwocky]." )]
