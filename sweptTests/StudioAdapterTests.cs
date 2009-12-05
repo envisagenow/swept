@@ -26,7 +26,7 @@ namespace swept.Tests
             starter = new Starter();
             starter.Start();
             var preparer = new TestPreparer();
-            preparer.ShiftStarterToMocks( starter );
+            preparer.ShiftSweptToMocks( starter );
 
             librarian = starter.Librarian;
             adapter = starter.Adapter;

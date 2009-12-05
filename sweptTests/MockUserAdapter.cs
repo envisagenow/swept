@@ -19,7 +19,7 @@ namespace swept.Tests
             messages = new List<string>();
         }
 
-        #region IDialogPresenter Members
+        #region IUserAdapter Members
 
         public bool KeepChangeHistory( Change historicalChange )
         {

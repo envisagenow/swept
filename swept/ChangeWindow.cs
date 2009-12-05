@@ -24,7 +24,7 @@ namespace swept
         public void Raise_ChangeAdded(Change change)
         {
             if (Event_ChangeAdded != null)
-                Event_ChangeAdded(this, new ChangeEventArgs { change = change });
+                Event_ChangeAdded(this, new ChangeEventArgs { Change = change });
 
             Raise_ChangeListUpdated();
         }

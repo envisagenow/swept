@@ -168,7 +168,8 @@ namespace swept.Addin
             }
 
             taskWindow.Event_TaskListReset += _taskWindowForm.Hear_TaskListReset;
-            _taskWindowForm.tasks.ItemCheck += Hear_ItemCheck;
+            // TODO--Grid: get 'checkbox altered' events from the GridView, somewhat as below
+            //_taskWindowForm._taskGridView.CheckBoxColumn.Event_ItemCheck += Hear_ItemCheck;
 
             _taskWindowForm.Show();
         }
@@ -177,7 +178,8 @@ namespace swept.Addin
         {
             _taskWindowForm.Hide();
 
-            _taskWindowForm.tasks.ItemCheck -= Hear_ItemCheck;
+            // TODO--Grid: stop getting 'checkbox altered' events, somewhat as below
+            //_taskWindowForm._taskGridView.CheckBoxColumn.Event_ItemCheck -= Hear_ItemCheck;
             _taskWindow.Event_TaskListReset -= _taskWindowForm.Hear_TaskListReset;
             _taskWindow = null;
         }
@@ -203,7 +205,8 @@ namespace swept.Addin
         {
             TaskEventArgs args = new TaskEventArgs
             {
-                Task = (Task)_taskWindowForm.tasks.Items[e.Index],
+                // TODO--Grid:  deduce the task and checked state from the event
+                //Task = (Task)_taskWindowForm.tasks.Items[e.Index],
                 Checked = (e.NewValue == CheckState.Checked)
             };
             _taskWindow.Hear_TaskCheck( _taskWindowForm, args );
@@ -308,7 +311,7 @@ namespace swept.Addin
 
         //  above here, subscribed
 
-        // TODO--0.2: Hear_FilePasted
+        // TODO--0.3: Hear_FilePasted
         private void Hear_FilePasted( string fileName )
         {
             _adapter.Raise_FilePasted( fileName );

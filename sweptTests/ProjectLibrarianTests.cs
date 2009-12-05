@@ -268,7 +268,7 @@ namespace swept.Tests
             Assert.AreEqual( 0, Horace._changeCatalog._changes.Count );
 
             Change change = new Change { ID = "14" };
-            Horace.Hear_ChangeAdded( this, new ChangeEventArgs { change = change } );
+            Horace.Hear_ChangeAdded( this, new ChangeEventArgs { Change = change } );
 
             Assert.AreEqual( 1, Horace._changeCatalog._changes.Count );
         }

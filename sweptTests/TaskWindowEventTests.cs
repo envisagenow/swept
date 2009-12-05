@@ -2,6 +2,7 @@
 //  Copyright (c) 2009 Jason Cole and Envisage Technologies Corp.
 //  This software is open source, MIT license.  See the file LICENSE for details.
 using System;
+using System.Collections.Generic;
 using NUnit.Framework;
 using swept;
 
@@ -10,43 +11,51 @@ namespace swept.Tests
     [TestFixture]
     public class TaskWindowEventTests
     {
+        private TestPreparer _preparer;
         private Starter _starter;
-        private TaskWindow _tasks;
+        private TaskWindow _window;
 
         [SetUp]
         public void StartUp()
         {
             _starter = new Starter();
+
+            _preparer = new TestPreparer();
+
             _starter.Start();
-            _tasks = _starter.TaskWindow;
+            _window = _starter.TaskWindow;
         }
 
         [Test]
         public void when_TaskWindow_toggled_visibility_changed()
         {
-            _tasks.Visible = false;
-            _tasks.Raise_TaskWindowToggled();
+            _window.Visible = false;
+            _window.Raise_TaskWindowToggled();
 
-            Assert.IsTrue( _tasks.Visible );
+            Assert.IsTrue( _window.Visible );
         }
 
         [Test]
         public void when_TaskChecked_completion_is_set()
         {
             Task task = new Task { ID = "x", Description = "I get checked." };
-            _tasks.Tasks.Add( task );
-            Assert.IsFalse( _tasks.Tasks[0].Completed );
+            _window.Tasks.Add( task );
+            Assert.IsFalse( _window.Tasks[0].Completed );
 
-            _tasks.Hear_TaskCheck( this, new TaskEventArgs{ Task = task, Checked = true } );
-            Assert.IsTrue( _tasks.Tasks[0].Completed );
+            _window.Hear_TaskCheck( this, new TaskEventArgs{ Task = task, Checked = true } );
+            Assert.IsTrue( _window.Tasks[0].Completed );
         }
 
         [Test]
-        public void when_SeeAlsoChosen_GUI_shows_it()
+        public void when_SeeAlsoFollowed_GUI_shows_it()
         {
-            Task task = new Task { ID = "1", Description = "First things first.", /*SeeAlsos*/ };
-            _tasks.Tasks.Add( task );
+            _preparer.ShiftSweptToMocks( _starter );
 
+            SeeAlso search = new SeeAlso { Description = "Search", Target = "www.google.com", TargetType = TargetType.URL };
+
+            _window.Follow( search );
+
+            Assert.That( _preparer.MockGUI.SentSeeAlso, Is.SameAs( search ) );
         }
     }
 }

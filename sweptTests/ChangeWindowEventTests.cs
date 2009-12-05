@@ -50,7 +50,7 @@ namespace swept.Tests
             librarian.Persist();
 
             _taskWindow = adapter.taskWindow;
-            _taskWindow._GUIAdapter = new MockUserAdapter();
+            _taskWindow._UserAdapter = new MockUserAdapter();
 
             changeWindow = adapter.changeWindow;
         }

@@ -19,12 +19,17 @@ namespace swept
 
     public class ChangeEventArgs : EventArgs
     {
-        public Change change;
+        public Change Change;
     }
 
     public class ChangeCatalogEventArgs : EventArgs
     {
         public ChangeCatalog Catalog;
+    }
+
+    public class SeeAlsoEventArgs : EventArgs
+    {
+        public SeeAlso SeeAlso;
     }
 
     public class SourceCatalogEventArgs : EventArgs

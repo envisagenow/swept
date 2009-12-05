@@ -18,7 +18,7 @@ namespace swept.Tests
             cat = new ChangeCatalog();
 
             Change avoidAliasUsing = new Change { ID = "e1", Description = "Don't use 'using' to alias.", Language = FileLanguage.CSharp };
-            // TODO--0.2: figure out contentPattern for avoidAliasUsing.
+            // TODO--0.3: figure out contentPattern for avoidAliasUsing.
             cat.Add( avoidAliasUsing );
 
             cat.Add( new Change { ID = "e2", Description = "Upgrade to XHTML", Language = FileLanguage.HTML, ManualCompletion = true } );

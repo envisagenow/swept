@@ -16,9 +16,9 @@ namespace swept.Tests
             MockFS = new MockStorageAdapter();
         }
 
-        public void ShiftStarterToMocks( Starter starter )
+        public void ShiftSweptToMocks( Starter starter )
         {
-            starter.TaskWindow._GUIAdapter = MockGUI;
+            starter.TaskWindow._UserAdapter = MockGUI;
             starter.Librarian._userAdapter = MockGUI;
             starter.Librarian._storageAdapter = MockFS;
         }

@@ -4,6 +4,7 @@
 using System;
 using System.Windows.Forms;
 using System.Xml;
+using System.Diagnostics;
 
 namespace swept
 {
@@ -38,9 +39,23 @@ namespace swept
 
         public void ShowSeeAlso( SeeAlso seeAlso )
         {
-            throw new Exception( String.Format( "See also not implemented:  [{0}].", seeAlso.Description ) );
-            //if (! string.IsNullOrEmpty(seeAlso.URL))
-            //    System.Diagnostics.Process.Start( seeAlso.URL );
+            switch (seeAlso.TargetType)
+            {
+            case TargetType.URL:
+                Process.Start( seeAlso.Target );
+                break;
+
+            case TargetType.SVN:
+                // TODO: Show SeeAlso SVN:  bring back two local files into temp directory, fire up svndiff...
+                break;
+
+            case TargetType.File:
+                // TODO: Show SeeAlso File:  switch VS IDE to display chosen file at line number
+                break;
+
+            default:
+                throw new Exception( string.Format( "Don't know how to show a SeeAlso Target of type [{0}].", seeAlso.TargetType ) );
+            }
         }
 
     }

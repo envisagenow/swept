@@ -139,8 +139,8 @@ namespace swept.Tests
             Assert.AreEqual( "AB2", bar_cs.Completions[1].ChangeID );
         }
 
-        // TODO, 0.N: public void Removed_Changes_are_saved()
-        // TODO, 0.N: public void Removed_Changes_are_loaded()
+        // TODO--0.N: public void Removed_Changes_are_saved()
+        // TODO--0.N: public void Removed_Changes_are_loaded()
 
         [Test]
         public void Can_serialize_full_Change_ToXml()
@@ -244,11 +244,12 @@ namespace swept.Tests
 </SourceFileCatalog>" ) );
         }
 
+        #region SeeAlso
         [Test]
         public void SeeAlso_empty_ToXml()
         {
             var seeAlso = new SeeAlso();
-            string expectedText = "        <SeeAlso />\r\n";
+            string expectedText = "        <SeeAlso TargetType='URL' />\r\n";
             string actualText = port.ToText( seeAlso );
             Assert.That( actualText, Is.EqualTo( expectedText ) );
         }
@@ -256,8 +257,12 @@ namespace swept.Tests
         [Test]
         public void SeeAlso_URL_ToXml()
         {
-            var seeAlso = new SeeAlso { Description = "simple", URL = "helloworld.com" };
-            string expectedText = "        <SeeAlso Description='simple' URL='helloworld.com' />\r\n";
+            var seeAlso = new SeeAlso { 
+                Description = "simple", 
+                Target = "helloworld.com", 
+                TargetType = TargetType.URL 
+            };
+            string expectedText = "        <SeeAlso Description='simple' Target='helloworld.com' TargetType='URL' />\r\n";
             string actualText = port.ToText( seeAlso );
             Assert.That( actualText, Is.EqualTo( expectedText ) );
         }
@@ -265,10 +270,12 @@ namespace swept.Tests
         [Test]
         public void full_SeeAlso_SVN_ToXml()
         {
-            var seeAlso = new SeeAlso();
-            seeAlso.SVN = "TextOutputAdapter.cs";
-            seeAlso.Commit = "3427";
-            string expectedText = "        <SeeAlso SVN='TextOutputAdapter.cs' Commit='3427' />\r\n";
+            var seeAlso = new SeeAlso { 
+                Target = "TextOutputAdapter.cs", 
+                Commit = "3427",
+                TargetType = TargetType.SVN
+            };
+            string expectedText = "        <SeeAlso Target='TextOutputAdapter.cs' Commit='3427' TargetType='SVN' />\r\n";
             string actualText = port.ToText( seeAlso );
             Assert.That( actualText, Is.EqualTo( expectedText ) );
         }
@@ -277,12 +284,13 @@ namespace swept.Tests
         public void full_SeeAlso_ProjectFile_ToXml()
         {
             var seeAlso = new SeeAlso();
-            seeAlso.ProjectFile="utility\\MegaToString.cs";
-            string expectedText = "        <SeeAlso ProjectFile='utility\\MegaToString.cs' />\r\n";
+            seeAlso.Target = "utility\\MegaToString.cs";
+            seeAlso.TargetType = TargetType.File;
+            string expectedText = "        <SeeAlso Target='utility\\MegaToString.cs' TargetType='File' />\r\n";
             string actualText = port.ToText( seeAlso );
             Assert.That( actualText, Is.EqualTo( expectedText ) );
         }
-
+        #endregion
 
         #region Exception testing
         [Test, ExpectedException(ExpectedMessage = "Document must have a <SourceFileCatalog> node.  Please supply one.")]

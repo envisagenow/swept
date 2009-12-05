@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using System.ComponentModel;
 
 namespace swept.Addin
 {
@@ -17,22 +18,44 @@ namespace swept.Addin
         public void Hear_TaskListReset( object objNewTasks, EventArgs e )
         {
             List<Task> newTasks = (List<Task>)objNewTasks;  //here
-            tasks.Items.Clear();
 
-            foreach( Task task in newTasks )
-                tasks.Items.Add( task, task.Completed );
+            _taskGridView.Rows.Clear();
 
-            this.Refresh();
+            foreach (Task task in newTasks)
+            {
+                int i = _taskGridView.Rows.Add();
+                var row = _taskGridView.Rows[i];
+
+                var menu = new ContextMenuStrip();
+                foreach (var seeAlso in task.SeeAlsos)
+                {
+                    var taskAction = new ToolStripMenuItem( seeAlso.Description );
+                    taskAction.Click += when_ContextItemClicked;
+                    menu.Items.Add( taskAction );
+                }
+
+                row.ContextMenuStrip = menu;
+
+                row.Cells["Description"].Value = task.Description;
+                row.Cells["Complete"].Value = task.Completed;
+                // TODO:  Populate Line number column
+            }
+
+            Refresh();
         }
 
-        private void tasks_SelectedIndexChanged( object sender, EventArgs e )
+
+        private void when_ContextItemClicked( object sender, EventArgs args )
         {
-
+            //seek also
         }
+
+        //private void tasks_SelectedIndexChanged( object sender, EventArgs e )
+        //{
+        //}
 
         private void TaskWindow_GUI_Load( object sender, EventArgs e )
         {
-
         }
     }
 }

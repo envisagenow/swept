@@ -256,7 +256,7 @@ namespace swept
 
         public void Hear_ChangeAdded(object sender, ChangeEventArgs args)
         {
-            AddChange(args.change);
+            AddChange(args.Change);
         }
 
         public void Hear_SolutionSaved(object sender, EventArgs args)
@@ -274,7 +274,7 @@ namespace swept
             var library = _storageAdapter.LoadLibrary( LibraryPath );
             _savedChangeCatalog = port.ChangeCatalog_FromXmlDocument( library );
             _changeCatalog = _savedChangeCatalog.Clone();
-            _storageAdapter.Save( LibraryPath, port.ToText( this ) );
+            _storageAdapter.Save( LibraryPath, port.ToText( this._changeCatalog, this._sourceCatalog ) );
         }
     }
 }

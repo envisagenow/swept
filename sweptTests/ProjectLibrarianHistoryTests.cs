@@ -31,7 +31,7 @@ namespace swept.Tests
 
 
             historicalChange = new Change { ID = "14" };
-            Horace.Hear_ChangeAdded( this, new ChangeEventArgs { change = historicalChange } );
+            Horace.Hear_ChangeAdded( this, new ChangeEventArgs { Change = historicalChange } );
             foo = new SourceFile( "foo.cs" ) { Language = FileLanguage.CSharp };
             Horace._sourceCatalog.Add( foo );
             foo.Completions.Add( new Completion( "14" ) );
@@ -48,7 +48,7 @@ namespace swept.Tests
             //  In this case, the user chooses to keep history.
             talker.KeepHistoricalResponse = true;
 
-            Horace.Hear_ChangeAdded( this, new ChangeEventArgs { change = historicalChange } );
+            Horace.Hear_ChangeAdded( this, new ChangeEventArgs { Change = historicalChange } );
 
             Assert.AreEqual( 1, foo.Completions.Count );
         }
@@ -59,7 +59,7 @@ namespace swept.Tests
             //  In this case, the user chooses to discard history.
             talker.KeepHistoricalResponse = false;
 
-            Horace.Hear_ChangeAdded( this, new ChangeEventArgs { change = historicalChange } );
+            Horace.Hear_ChangeAdded( this, new ChangeEventArgs { Change = historicalChange } );
 
             Assert.AreEqual( 0, foo.Completions.Count );
         }

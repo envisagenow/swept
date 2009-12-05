@@ -8,9 +8,13 @@ namespace swept
 {
     public class TaskWindow
     {
+        #region properties
         internal SourceFileCatalog _fileCatalog;
         internal ChangeCatalog _changeCatalog;
-        internal IUserAdapter _GUIAdapter;
+        internal IUserAdapter _UserAdapter;
+
+        public List<Task> Tasks { get; private set; }
+        public bool Visible { get; set; }
 
         private SourceFile _currentFile;
         public SourceFile CurrentFile
@@ -34,16 +38,18 @@ namespace swept
             get { return CurrentFile.Name; }
         }
 
-
+        #endregion
 
         public TaskWindow()
         {
             Tasks = new List<Task>();
-            _GUIAdapter = new UserGUIAdapter();
+            _UserAdapter = new UserGUIAdapter();
         }
 
-        public List<Task> Tasks { get; private set; }
-        public bool Visible { get; set; }
+        public void Follow( SeeAlso seeAlso )
+        {
+            _UserAdapter.ShowSeeAlso( seeAlso );
+        }
 
         private void ToggleWindowVisibility()
         {
@@ -127,7 +133,7 @@ namespace swept
 
         public void Hear_FileGotFocus( object sender, FileEventArgs args )
         {
-            _GUIAdapter.DebugMessage( string.Format( "{0}( {1} )", "TaskWindow.Hear_FileGotFocus", args.Name ) );
+            _UserAdapter.DebugMessage( string.Format( "{0}( {1} )", "TaskWindow.Hear_FileGotFocus", args.Name ) );
 
             ShowFile( args.Name, args.Content );
         }

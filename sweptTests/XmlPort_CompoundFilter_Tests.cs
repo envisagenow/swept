@@ -91,12 +91,17 @@ namespace swept.Tests
         public void shows_SeeAlsos()
         {
             Change change = new Change { ID = "references" };
-            change.SeeAlsos.Add( new SeeAlso { Description = "Google is your friend.", URL = "http://www.google.com" } );
+            var newSeeAlso = new SeeAlso { 
+                Description = "Google is your friend.", 
+                Target = "http://www.google.com",
+                TargetType = TargetType.URL
+            };
+            change.SeeAlsos.Add( newSeeAlso );
             string serializedFilter = port.ToText( change );
 
             string expectedText = 
 @"    <Change ID='references'>
-        <SeeAlso Description='Google is your friend.' URL='http://www.google.com' />
+        <SeeAlso Description='Google is your friend.' Target='http://www.google.com' TargetType='URL' />
     </Change>
 ";
             Assert.That( serializedFilter, Is.EqualTo( expectedText ) );
@@ -207,7 +212,7 @@ namespace swept.Tests
             Assert.That( filter.Children.Count, Is.EqualTo( 1 ) );
         }
 
-        // TODO--0.2: finish feature: manual completion (UI checkbox)
+        // TODO--0.3: finish feature: manual completion (UI checkbox)
         //  Manual completion:  Some filters may show false-positive, and we may want to give
         //  the developer a chance to manually mark a file as okay.  (Currently this is always on.)
         [Test]
@@ -262,8 +267,8 @@ namespace swept.Tests
         public void FromNode_gets_SeeAlsos()
         {
             string filter_text =
-@"<Change ID='1212' Description='Through and through'>
-        <SeeAlso Description='Always remember, Google says do not do evil.' URL='http://www.google.com' />
+@"<Change ID='1' Description='URL reference'>
+    <SeeAlso Description='Always remember, Google says do not do evil.' Target='http://www.google.com' />
 </Change>
 ";
             var node = Node_FromText( filter_text );
@@ -273,7 +278,7 @@ namespace swept.Tests
             SeeAlso seeAlso = change.SeeAlsos[0];
 
             Assert.That( seeAlso.Description, Is.EqualTo( "Always remember, Google says do not do evil." ) );
-            Assert.That( seeAlso.URL, Is.EqualTo( "http://www.google.com" ) );
+            Assert.That( seeAlso.Target, Is.EqualTo( "http://www.google.com" ) );
         }
 
         [Test, ExpectedException( ExpectedMessage = "Don't understand a file of language [Jabberwocky]." )]
@@ -291,14 +296,6 @@ namespace swept.Tests
         }
 
         [Test]
-        public void SeeAlso_FromNode()
-        {
-            var node = Node_FromText( @"<SeeAlso Description='basic FromNode.' />" );
-            var seeAlso = port.SeeAlso_FromNode( node );
-            Assert.That( seeAlso.Description, Is.EqualTo( "basic FromNode." ) );
-        }
-
-        [Test]
         public void SeeAlso_FromNode_empty()
         {
             var node = Node_FromText( @"<SeeAlso />" );
@@ -307,21 +304,29 @@ namespace swept.Tests
         }
 
         [Test]
+        public void SeeAlso_FromNode()
+        {
+            var node = Node_FromText( @"<SeeAlso Description='basic FromNode.' />" );
+            var seeAlso = port.SeeAlso_FromNode( node );
+            Assert.That( seeAlso.Description, Is.EqualTo( "basic FromNode." ) );
+        }
+
+        [Test]
         public void SeeAlso_FromNode_SVN()
         {
-            var node = Node_FromText( @"<SeeAlso SVN='myrepo/myfile.cs' Commit='7890' Description='SVN' />" );
+            var node = Node_FromText( @"<SeeAlso Target='myrepo/myfile.cs' Commit='7890' Description='This is how we do it.' TargetType='SVN' />" );
             var seeAlso = port.SeeAlso_FromNode( node );
-            Assert.That( seeAlso.SVN, Is.EqualTo( "myrepo/myfile.cs" ) );
+            Assert.That( seeAlso.Target, Is.EqualTo( "myrepo/myfile.cs" ) );
             Assert.That( seeAlso.Commit, Is.EqualTo( "7890" ) );
-            Assert.That( seeAlso.Description, Is.EqualTo( "SVN" ) );
+            Assert.That( seeAlso.Description, Is.EqualTo( "This is how we do it." ) );
         }
 
         [Test]
         public void SeeAlso_FromNode_URL()
         {
-            var node = Node_FromText( @"<SeeAlso URL='site/page.htm' Description='URL' />" );
+            var node = Node_FromText( @"<SeeAlso Target='site/page.htm' Description='URL' TargetType='URL' />" );
             var seeAlso = port.SeeAlso_FromNode( node );
-            Assert.That( seeAlso.URL, Is.EqualTo( "site/page.htm" ) );
+            Assert.That( seeAlso.Target, Is.EqualTo( "site/page.htm" ) );
             Assert.That( seeAlso.Description, Is.EqualTo( "URL" ) );
         }
         #endregion

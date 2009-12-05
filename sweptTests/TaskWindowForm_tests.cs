@@ -7,7 +7,6 @@ using System.Linq;
 using System.Text;
 using NUnit.Framework;
 using swept.Addin;
-//using NUnit.Framework.SyntaxHelpers;
 
 namespace swept.Tests
 {
@@ -30,19 +29,19 @@ namespace swept.Tests
         [Test]
         public void task_list_begins_empty()
         {
-            Assert.That( _form.tasks.Items.Count, Is.EqualTo( 0 ) );
+            Assert.That( _form._taskGridView.RowCount, Is.EqualTo( 0 ) );
         }
 
         [Test]
         public void form_list_updated_on_Reset_events()
         {
-            List<swept.Task> tasks = new List<Task> { new Task { ID="1", Description="short" } };
+            List<swept.Task> tasks = new List<Task> { new Task { ID = "1", Description = "short" } };
             _form.Hear_TaskListReset( tasks, null );
-            Assert.That( _form.tasks.Items.Count, Is.EqualTo( 1 ) );
+            Assert.That( _form._taskGridView.RowCount, Is.EqualTo( 1 ) );
 
             tasks.Clear();
             _form.Hear_TaskListReset( tasks, null );
-            Assert.That( _form.tasks.Items.Count, Is.EqualTo( 0 ) );
+            Assert.That( _form._taskGridView.RowCount, Is.EqualTo( 0 ) );
         }
     }
 }

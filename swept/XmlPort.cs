@@ -11,15 +11,15 @@ namespace swept
 {
     internal class XmlPort
     {
-        public string ToText( ProjectLibrarian librarian )
+        public string ToText( ChangeCatalog changeCatalog, SourceFileCatalog sourceCatalog )
         {
             return string.Format(
 @"<SweptProjectData>
 {0}
 {1}
 </SweptProjectData>",
-                ToText( librarian._changeCatalog ),
-                ToText( librarian._savedSourceCatalog )
+                ToText( changeCatalog ),
+                ToText( sourceCatalog )
             );
         }
 
@@ -87,6 +87,7 @@ namespace swept
             if (string.IsNullOrEmpty( value )) return;
             sb.AppendFormat( " {0}='{1}'", name, value );
         }
+
         private void IntoStringBuilder( CompoundFilter filter, StringBuilder sb, int depth )
         {
             string indentFormat = "{0," + 4 * depth + "}";
@@ -127,11 +128,11 @@ namespace swept
             sb.Append( "        <SeeAlso" );
 
             AppendAttributeIfExists( sb, "Description", seeAlso.Description );
-            AppendAttributeIfExists( sb, "URL", seeAlso.URL );
-            AppendAttributeIfExists( sb, "ProjectFile", seeAlso.ProjectFile );
-            AppendAttributeIfExists( sb, "SVN", seeAlso.SVN );
+            AppendAttributeIfExists( sb, "Target", seeAlso.Target );
             AppendAttributeIfExists( sb, "Commit", seeAlso.Commit );
-            
+
+            sb.AppendFormat( " {0}='{1}'", "TargetType", seeAlso.TargetType );
+
             sb.AppendFormat( " />{0}", Environment.NewLine );
             return sb.ToString();
         }
@@ -331,19 +332,20 @@ namespace swept
                 seeAlso.Description = node.Attributes["Description"].Value;
             }
 
-            if (node.Attributes["SVN"] != null)
+            if (node.Attributes["Target"] != null)
             {
-                seeAlso.SVN = node.Attributes["SVN"].Value;
+                seeAlso.Target = node.Attributes["Target"].Value;
+            }
+
+            if (node.Attributes["TargetType"] != null)
+            {
+                string typeString = node.Attributes["TargetType"].Value;
+                seeAlso.TargetType = (TargetType)Enum.Parse( typeof( TargetType ), typeString );
             }
 
             if (node.Attributes["Commit"] != null)
             {
                 seeAlso.Commit = node.Attributes["Commit"].Value;
-            }
-
-            if (node.Attributes["URL"] != null)
-            {
-                seeAlso.URL = node.Attributes["URL"].Value;
             }
 
             return seeAlso;

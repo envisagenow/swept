@@ -30,7 +30,7 @@ namespace swept.Tests
             _changes = _starter.ChangeWindow;
 
             TestPreparer preparer = new TestPreparer();
-            preparer.ShiftStarterToMocks( _starter );
+            preparer.ShiftSweptToMocks( _starter );
         }
 
         [Test]
