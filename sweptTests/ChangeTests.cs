@@ -17,9 +17,8 @@ namespace swept.Tests
             Change change = new Change();
 
             change.SeeAlsos = new List<SeeAlso>();
-            // TODO--! Not done here: 
-            //change.
-            
+            change.SeeAlsos.Add( new SeeAlso { Description = "Go here", Target = "here.com", TargetType = TargetType.URL } );
+
         }
     }
 }

@@ -119,7 +119,7 @@ namespace swept
             );
         }
 
-        // TODO--0.2, DC: CompoundFilter.Equals( object )
+        // TODO--0.3, DC: CompoundFilter.Equals( object )
         public bool Equals( CompoundFilter other )
         {
             if( other == null ) return false;

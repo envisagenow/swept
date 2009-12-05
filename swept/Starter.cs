@@ -8,6 +8,7 @@ namespace swept
     public class Starter
     {
         public ProjectLibrarian Librarian { get; private set; }
+
         public StudioAdapter Adapter { get; set; }
         public ChangeWindow ChangeWindow { get; set; }
         public TaskWindow TaskWindow { get; set; }
@@ -41,8 +42,9 @@ namespace swept
             Adapter.Event_SolutionRenamed += Librarian.Hear_SolutionRenamed;
 
             //  Subscribe to the TaskWindow's events
-            TaskWindow.Event_TaskWindowToggled += TaskWindow.Hear_TaskWindowToggled;
             //  A self-subscription.  Odd, possibly poor practice...
+            TaskWindow.Event_TaskWindowToggled += TaskWindow.Hear_TaskWindowToggled;
+
 
             //  Subscribe to the ChangeWindow's events
             ChangeWindow.Event_ChangeAdded += Librarian.Hear_ChangeAdded;
