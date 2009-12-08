@@ -148,6 +148,11 @@ namespace swept
             RefreshChangeCatalog( args.Catalog );
         }
 
+        public void Hear_SeeAlsoFollowed( object sender, SeeAlsoEventArgs args )
+        {
+            Follow( args.SeeAlso );
+        }
+
         public void Hear_SourceCatalogUpdated( object sender, SourceCatalogEventArgs args )
         {
             RefreshSourceCatalog( args.Catalog );

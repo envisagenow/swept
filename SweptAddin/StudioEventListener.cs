@@ -168,9 +168,12 @@ namespace swept.Addin
             }
 
             taskWindow.Event_TaskListReset += _taskWindowForm.Hear_TaskListReset;
-            // TODO--Grid: get 'checkbox altered' events from the GridView, somewhat as below
+            // TODO--0.3, Grid: get 'checkbox altered' events from the GridView, somewhat as below
             //_taskWindowForm._taskGridView.CheckBoxColumn.Event_ItemCheck += Hear_ItemCheck;
 
+            // TODO---subscribe to seeAlso_Followed
+            _taskWindowForm.Event_SeeAlsoFollowed += taskWindow.Hear_SeeAlsoFollowed;
+            
             _taskWindowForm.Show();
         }
 
@@ -178,7 +181,8 @@ namespace swept.Addin
         {
             _taskWindowForm.Hide();
 
-            // TODO--Grid: stop getting 'checkbox altered' events, somewhat as below
+            // TODO---unsubscribe from seeAlso_Followed
+            // TODO--0.3, Grid: stop getting 'checkbox altered' events, somewhat as below
             //_taskWindowForm._taskGridView.CheckBoxColumn.Event_ItemCheck -= Hear_ItemCheck;
             _taskWindow.Event_TaskListReset -= _taskWindowForm.Hear_TaskListReset;
             _taskWindow = null;
@@ -205,7 +209,7 @@ namespace swept.Addin
         {
             TaskEventArgs args = new TaskEventArgs
             {
-                // TODO--Grid:  deduce the task and checked state from the event
+                // TODO--0.3, Grid:  deduce the task and checked state from the event
                 //Task = (Task)_taskWindowForm.tasks.Items[e.Index],
                 Checked = (e.NewValue == CheckState.Checked)
             };
@@ -227,7 +231,7 @@ namespace swept.Addin
             {
                 describeException( e );
                 Disconnect( null );
-                // TODO!: convince the add-in manager that I'm outta here.
+                // TODO--0.2: convince the add-in manager that I'm outta here.
             }
 
         }

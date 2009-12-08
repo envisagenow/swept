@@ -12,11 +12,14 @@ namespace swept.Tests
         private const string _Description = "this change";
         Change _change;
         Task _task;
+        SeeAlso _see;
 
         [SetUp]
         public void given_a_Task_created_from_a_Change()
         {
             _change = new Change { ID = "id1", Description = _Description, Language = FileLanguage.CSharp };
+            _see = new SeeAlso { Description = "Look here", Target = "here.com", TargetType = TargetType.URL };
+            _change.SeeAlsos.Add( _see );
             _task = Task.FromChange( _change );
         }
 
@@ -37,6 +40,14 @@ namespace swept.Tests
         public void ToString_shows_description_for_GUI()
         {
             Assert.That( _task.ToString(), Is.EqualTo( _Description ) );
+        }
+
+        [Test]
+        public void SeeAlsos_are_copied()
+        {
+            Assert.That( _task.SeeAlsos.Count, Is.EqualTo( 1 ) );
+            var see = _task.SeeAlsos[0];
+            Assert.That( see, Is.EqualTo( _see ) );
         }
     }
 }

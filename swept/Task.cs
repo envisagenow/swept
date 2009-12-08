@@ -11,11 +11,19 @@ namespace swept
 
         public static Task FromChange( Change change )
         {
-            return new Task { 
-                ID = change.ID, 
-                Description = change.Description, 
-                Completed = false 
+            Task task = new Task
+            {
+                ID = change.ID,
+                Description = change.Description,
+                Completed = false,
             };
+
+            foreach (var seeAlso in change.SeeAlsos)
+            {
+                task.SeeAlsos.Add( seeAlso.Clone() );
+            }
+
+            return task;
         }
 
         public override string ToString()

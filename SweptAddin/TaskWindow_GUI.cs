@@ -29,7 +29,8 @@ namespace swept.Addin
                 var menu = new ContextMenuStrip();
                 foreach (var seeAlso in task.SeeAlsos)
                 {
-                    var taskAction = new ToolStripMenuItem( seeAlso.Description );
+                    string label = string.Format( "See also: {0}", seeAlso.Description );
+                    var taskAction = new ToolStripMenuItem{ Text = label, Tag = seeAlso };
                     taskAction.Click += when_ContextItemClicked;
                     menu.Items.Add( taskAction );
                 }
@@ -38,17 +39,30 @@ namespace swept.Addin
 
                 row.Cells["Description"].Value = task.Description;
                 row.Cells["Complete"].Value = task.Completed;
-                // TODO:  Populate Line number column
+                // TODO--0.3:  Populate Line number column
             }
 
             Refresh();
         }
 
-
         private void when_ContextItemClicked( object sender, EventArgs args )
         {
-            //seek also
+            ToolStripMenuItem item = (ToolStripMenuItem)sender;
+            MessageBox.Show( sender.ToString() );
+            SeeAlso seeAlso = (SeeAlso)item.Tag;
+            Raise_SeeAlsoFollowed( seeAlso );
         }
+
+        // TODO---subscribe to get this SeeAlso to the UserAdapter.ShowSeeAlso
+        public event EventHandler<SeeAlsoEventArgs> Event_SeeAlsoFollowed;
+        public void Raise_SeeAlsoFollowed( SeeAlso seeAlso )
+        {
+            if (Event_SeeAlsoFollowed != null)
+                Event_SeeAlsoFollowed( this, new SeeAlsoEventArgs { SeeAlso = seeAlso } );
+        }
+
+
+
 
         //private void tasks_SelectedIndexChanged( object sender, EventArgs e )
         //{
