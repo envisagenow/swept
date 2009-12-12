@@ -38,7 +38,7 @@ namespace swept.Addin
                 row.ContextMenuStrip = menu;
 
                 row.Cells["Description"].Value = task.Description;
-                row.Cells["Complete"].Value = task.Completed;
+                row.Cells["Done"].Value = task.Completed;
                 // TODO--0.3:  Populate Line number column
             }
 
@@ -53,7 +53,6 @@ namespace swept.Addin
             Raise_SeeAlsoFollowed( seeAlso );
         }
 
-        // TODO---subscribe to get this SeeAlso to the UserAdapter.ShowSeeAlso
         public event EventHandler<SeeAlsoEventArgs> Event_SeeAlsoFollowed;
         public void Raise_SeeAlsoFollowed( SeeAlso seeAlso )
         {
