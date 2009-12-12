@@ -171,7 +171,6 @@ namespace swept.Addin
             // TODO--0.3, Grid: get 'checkbox altered' events from the GridView, somewhat as below
             //_taskWindowForm._taskGridView.CheckBoxColumn.Event_ItemCheck += Hear_ItemCheck;
 
-            // TODO---subscribe to seeAlso_Followed
             _taskWindowForm.Event_SeeAlsoFollowed += taskWindow.Hear_SeeAlsoFollowed;
             
             _taskWindowForm.Show();
@@ -181,7 +180,8 @@ namespace swept.Addin
         {
             _taskWindowForm.Hide();
 
-            // TODO---unsubscribe from seeAlso_Followed
+            _taskWindowForm.Event_SeeAlsoFollowed -= _taskWindow.Hear_SeeAlsoFollowed;
+
             // TODO--0.3, Grid: stop getting 'checkbox altered' events, somewhat as below
             //_taskWindowForm._taskGridView.CheckBoxColumn.Event_ItemCheck -= Hear_ItemCheck;
             _taskWindow.Event_TaskListReset -= _taskWindowForm.Hear_TaskListReset;
@@ -231,7 +231,7 @@ namespace swept.Addin
             {
                 describeException( e );
                 Disconnect( null );
-                // TODO--0.2: convince the add-in manager that I'm outta here.
+                // TODO--0.3: convince the add-in manager that I'm outta here.
             }
 
         }
