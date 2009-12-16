@@ -12,6 +12,7 @@ namespace swept.Addin
     internal class StudioEventListener : IDisposable
     {
         private DTE2 _studio;
+        private AddIn _sweptAddin;
         private StudioAdapter _adapter;
 
         //  Class scoped to hold these references for the lifetime of the addin.
@@ -21,15 +22,17 @@ namespace swept.Addin
         private CommandEvents _commandEvents;
         private WindowEvents _windowEvents;
 
-        private TaskWindow_GUI _taskWindowForm;
+        private Window _taskWindowWindow;
+        private TaskWindow_GUI _taskWindowControl;
         //  When in the middle of a save-as, this will hold the original name.
         string _saveAsOldName = string.Empty;
 
         private List<string> log = new List<string>();
 
-        public void Connect( DTE2 studio, Starter starter )
+        public void Connect( DTE2 studio, Starter starter, AddIn sweptAddin )
         {
             _studio = studio;
+            _sweptAddin = sweptAddin;
             _adapter = starter.Adapter;
             _solutionEvents = _studio.Events.SolutionEvents;
             _solutionItemsEvents = _studio.Events.SolutionItemsEvents;
@@ -161,30 +164,40 @@ namespace swept.Addin
         private void hook_TaskWindow( TaskWindow taskWindow )
         {
             _taskWindow = taskWindow;
-
-            if (_taskWindowForm == null)
-            {
-                _taskWindowForm = new TaskWindow_GUI();
-            }
-
-            taskWindow.Event_TaskListReset += _taskWindowForm.Hear_TaskListReset;
+            
+            create_taskWindow();
+            taskWindow.Event_TaskListReset += _taskWindowControl.Hear_TaskListReset;
             // TODO--0.3, Grid: get 'checkbox altered' events from the GridView, somewhat as below
             //_taskWindowForm._taskGridView.CheckBoxColumn.Event_ItemCheck += Hear_ItemCheck;
 
-            _taskWindowForm.Event_SeeAlsoFollowed += taskWindow.Hear_SeeAlsoFollowed;
-            
-            _taskWindowForm.Show();
+            _taskWindowControl.Event_SeeAlsoFollowed += taskWindow.Hear_SeeAlsoFollowed;
+
+            _taskWindowWindow.Visible = true;
+            _taskWindowControl.Show();
+        }
+
+        private void create_taskWindow()
+        {
+            if (_taskWindowControl == null)
+            {
+                System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
+                Windows2 win2 = (Windows2)_studio.Windows;
+                object taskWindowControl = null;
+
+                _taskWindowWindow = win2.CreateToolWindow2(_sweptAddin, assembly.Location, "swept.Addin." + typeof(TaskWindow_GUI).Name, "Swept", "{9ED54F84-A89D-4fcd-A854-44251E925F09}", ref taskWindowControl);
+                _taskWindowControl = (TaskWindow_GUI)taskWindowControl;
+            }
         }
 
         private void unhook_TaskWindow()
         {
-            _taskWindowForm.Hide();
-
-            _taskWindowForm.Event_SeeAlsoFollowed -= _taskWindow.Hear_SeeAlsoFollowed;
+            _taskWindowWindow.Visible = false;
+            
+            _taskWindowControl.Event_SeeAlsoFollowed -= _taskWindow.Hear_SeeAlsoFollowed;
 
             // TODO--0.3, Grid: stop getting 'checkbox altered' events, somewhat as below
             //_taskWindowForm._taskGridView.CheckBoxColumn.Event_ItemCheck -= Hear_ItemCheck;
-            _taskWindow.Event_TaskListReset -= _taskWindowForm.Hear_TaskListReset;
+            _taskWindow.Event_TaskListReset -= _taskWindowControl.Hear_TaskListReset;
             _taskWindow = null;
         }
 
@@ -213,12 +226,12 @@ namespace swept.Addin
                 //Task = (Task)_taskWindowForm.tasks.Items[e.Index],
                 Checked = (e.NewValue == CheckState.Checked)
             };
-            _taskWindow.Hear_TaskCheck( _taskWindowForm, args );
+            _taskWindow.Hear_TaskCheck( _taskWindowControl, args );
         }
 
         void IDisposable.Dispose()
         {
-            _taskWindowForm.Dispose();
+            _taskWindowControl.Dispose();
         }
 
         public void Hear_SolutionOpened()
