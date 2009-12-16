@@ -265,8 +265,9 @@ namespace swept.Addin
         {
             try
             {
-                // TODO--0.N: If we later display tasks in the Studio Task List window, don't clear tasks on 
-                //   don't hide our tasks when the Task List window gets the focus.
+                if (GotFocus == _taskWindowWindow)
+                    return;
+
                 if (GotFocus.Document == null)
                     _adapter.Raise_NonSourceGetsFocus();
                 else
