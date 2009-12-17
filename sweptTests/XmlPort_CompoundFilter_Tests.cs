@@ -8,13 +8,16 @@ namespace swept.Tests
     [TestFixture]
     public class XmlPort_CompoundFilter_Tests
     {
-        private XmlPort port;
+        private XmlPort_CompoundFilter port;
 
         [SetUp]
         public void given_an_XmlPort()
         {
-            port = new XmlPort();
+            port = new XmlPort_CompoundFilter();
         }
+
+        // TODO--0.N: public void Removed_Changes_are_saved()
+        // TODO--0.N: public void Removed_Changes_are_loaded()
 
         #region ToText
         [Test]
@@ -109,7 +112,58 @@ namespace swept.Tests
 
         #endregion
 
-        #region From XML
+        #region SeeAlso
+        [Test]
+        public void SeeAlso_empty_ToXml()
+        {
+            var seeAlso = new SeeAlso();
+            string expectedText = "        <SeeAlso TargetType='URL' />\r\n";
+            string actualText = port.ToText( seeAlso );
+            Assert.That( actualText, Is.EqualTo( expectedText ) );
+        }
+
+        [Test]
+        public void SeeAlso_URL_ToXml()
+        {
+            var seeAlso = new SeeAlso
+            {
+                Description = "simple",
+                Target = "helloworld.com",
+                TargetType = TargetType.URL
+            };
+            string expectedText = "        <SeeAlso Description='simple' Target='helloworld.com' TargetType='URL' />\r\n";
+            string actualText = port.ToText( seeAlso );
+            Assert.That( actualText, Is.EqualTo( expectedText ) );
+        }
+
+        [Test]
+        public void full_SeeAlso_SVN_ToXml()
+        {
+            var seeAlso = new SeeAlso
+            {
+                Target = "TextOutputAdapter.cs",
+                Commit = "3427",
+                TargetType = TargetType.SVN
+            };
+            string expectedText = "        <SeeAlso Target='TextOutputAdapter.cs' Commit='3427' TargetType='SVN' />\r\n";
+            string actualText = port.ToText( seeAlso );
+            Assert.That( actualText, Is.EqualTo( expectedText ) );
+        }
+
+        [Test]
+        public void full_SeeAlso_ProjectFile_ToXml()
+        {
+            var seeAlso = new SeeAlso { 
+                Target = "utility\\MegaToString.cs", 
+                TargetType = TargetType.File 
+            };
+            string expectedText = "        <SeeAlso Target='utility\\MegaToString.cs' TargetType='File' />\r\n";
+            string actualText = port.ToText( seeAlso );
+            Assert.That( actualText, Is.EqualTo( expectedText ) );
+        }
+        #endregion
+
+        #region From Node
         [Test, ExpectedException( ExpectedMessage = "Changes must have IDs at their top level.")]
         public void FromNode_requires_ID_at_top_level()
         {
@@ -133,7 +187,7 @@ namespace swept.Tests
             string filter_text = @"<Change ID='misattributed' Author='Shakespeare'/>";
             var node = Node_FromText( filter_text );
 
-            CompoundFilter filter = port.CompoundFilter_FromNode( node );
+            port.CompoundFilter_FromNode( node );
         }
 
         [Test, ExpectedException( ExpectedMessage = "Filters do not have the following attributes: 'Author', 'Version'." )]
@@ -142,7 +196,7 @@ namespace swept.Tests
             string filter_text = @"<Change ID='misattributed' Author='Bob' Version='0.1'/>";
             var node = Node_FromText( filter_text );
 
-            CompoundFilter filter = port.CompoundFilter_FromNode( node );
+            port.CompoundFilter_FromNode( node );
         }
 
         [Test]
@@ -234,7 +288,7 @@ namespace swept.Tests
 @"<Change ID='typo' ManualCompletion='Allwoed' />";
             var node = Node_FromText( filter_text );
 
-            CompoundFilter filter = port.CompoundFilter_FromNode( node );
+            port.CompoundFilter_FromNode( node );  // bang
         }
 
 
@@ -389,7 +443,7 @@ namespace swept.Tests
 
         [Test]
         public void use_persisters_instead_of_direct_db_access_RoundTrip()
-            {
+        {
             var usePersistersNode = Node_FromText( UsePersisters_Text );
             CompoundFilter filterFromNode = port.CompoundFilter_FromNode( usePersistersNode );
 
@@ -407,7 +461,33 @@ namespace swept.Tests
             Assert.That( textFromFilter, Is.EqualTo( UsePersisters_Text ) );
         }
 
+        [Test]
+        public void Can_serialize_full_Change_ToXml()
+        {
+            Change change = new Change
+            {
+                ID = "Uno",
+                Description = "Eliminate profanity from error messages.",
+                ContentPattern = "contains this",
+                Subpath = @"utilities\error_handling",
+                NamePattern = "messages",
+                Language = FileLanguage.CSharp,
+                Operator = FilterOperator.Or, // note that the operator isn't expressed at the top level.
+                ManualCompletion = true,
+            };
 
+            string xmlText = port.ToText( change );
+
+            string expectedXml = string.Format(
+                "    <Change ID='{0}' Description='{1}' ManualCompletion='{2}' Subpath='{3}' NamePattern='{4}' Language='{5}' ContentPattern='{6}' />{7}",
+                change.ID, change.Description, change.ManualCompletionString,
+                change.Subpath, change.NamePattern, change.Language,
+                change.ContentPattern,
+                Environment.NewLine
+            );
+
+            Assert.AreEqual( expectedXml, xmlText );
+        }
         #endregion
     }
 }

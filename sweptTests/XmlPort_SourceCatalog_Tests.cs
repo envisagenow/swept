@@ -95,7 +95,6 @@ namespace swept.Tests
             Assert.That( bar_cs.Completions.Count, Is.EqualTo( 2 ) );
         }
 
-
         private SourceFileCatalog get_full_library_SourceFileCatalog()
         {
             string catalogText =
@@ -117,6 +116,7 @@ namespace swept.Tests
 
             return port.SourceFileCatalog_FromText( catalogText );
         }
+
         [Test]
         public void SourceFileCatalog_From_demo_gets_all_Files()
         {

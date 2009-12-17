@@ -139,36 +139,6 @@ namespace swept.Tests
             Assert.AreEqual( "AB2", bar_cs.Completions[1].ChangeID );
         }
 
-        // TODO--0.N: public void Removed_Changes_are_saved()
-        // TODO--0.N: public void Removed_Changes_are_loaded()
-
-        [Test]
-        public void Can_serialize_full_Change_ToXml()
-        {
-            Change change = new Change {
-                ID = "Uno",
-                Description = "Eliminate profanity from error messages.",
-                ContentPattern = "contains this",
-                Subpath = @"utilities\error_handling",
-                NamePattern = "messages",
-                Language = FileLanguage.CSharp,
-                Operator = FilterOperator.Or, // note that the operator isn't expressed at the top level.
-                ManualCompletion = true,
-            };
-
-            string xmlText = port.ToText(change);
-
-            string expectedXml = string.Format(
-                "    <Change ID='{0}' Description='{1}' ManualCompletion='{2}' Subpath='{3}' NamePattern='{4}' Language='{5}' ContentPattern='{6}' />{7}", 
-                change.ID, change.Description, change.ManualCompletionString,
-                change.Subpath, change.NamePattern, change.Language,
-                change.ContentPattern, 
-                Environment.NewLine
-            );
-
-            Assert.AreEqual(expectedXml, xmlText);
-        }
-
         // TODO--0.N: "Note that a 'Not' operator on a top level change won't do what you want.  Make an enclosed 'Not' filter instead."
 
         [Test]
@@ -243,54 +213,6 @@ namespace swept.Tests
     </SourceFile>
 </SourceFileCatalog>" ) );
         }
-
-        #region SeeAlso
-        [Test]
-        public void SeeAlso_empty_ToXml()
-        {
-            var seeAlso = new SeeAlso();
-            string expectedText = "        <SeeAlso TargetType='URL' />\r\n";
-            string actualText = port.ToText( seeAlso );
-            Assert.That( actualText, Is.EqualTo( expectedText ) );
-        }
-
-        [Test]
-        public void SeeAlso_URL_ToXml()
-        {
-            var seeAlso = new SeeAlso { 
-                Description = "simple", 
-                Target = "helloworld.com", 
-                TargetType = TargetType.URL 
-            };
-            string expectedText = "        <SeeAlso Description='simple' Target='helloworld.com' TargetType='URL' />\r\n";
-            string actualText = port.ToText( seeAlso );
-            Assert.That( actualText, Is.EqualTo( expectedText ) );
-        }
-
-        [Test]
-        public void full_SeeAlso_SVN_ToXml()
-        {
-            var seeAlso = new SeeAlso { 
-                Target = "TextOutputAdapter.cs", 
-                Commit = "3427",
-                TargetType = TargetType.SVN
-            };
-            string expectedText = "        <SeeAlso Target='TextOutputAdapter.cs' Commit='3427' TargetType='SVN' />\r\n";
-            string actualText = port.ToText( seeAlso );
-            Assert.That( actualText, Is.EqualTo( expectedText ) );
-        }
-
-        [Test]
-        public void full_SeeAlso_ProjectFile_ToXml()
-        {
-            var seeAlso = new SeeAlso();
-            seeAlso.Target = "utility\\MegaToString.cs";
-            seeAlso.TargetType = TargetType.File;
-            string expectedText = "        <SeeAlso Target='utility\\MegaToString.cs' TargetType='File' />\r\n";
-            string actualText = port.ToText( seeAlso );
-            Assert.That( actualText, Is.EqualTo( expectedText ) );
-        }
-        #endregion
 
         #region Exception testing
         [Test, ExpectedException(ExpectedMessage = "Document must have a <SourceFileCatalog> node.  Please supply one.")]
