@@ -50,7 +50,6 @@ namespace swept.Addin
         private void when_ContextItemClicked(object sender, EventArgs args)
         {
             ToolStripMenuItem item = (ToolStripMenuItem)sender;
-            MessageBox.Show(sender.ToString());
             SeeAlso seeAlso = (SeeAlso)item.Tag;
             Raise_SeeAlsoFollowed(seeAlso);
         }

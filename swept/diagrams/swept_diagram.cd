@@ -3,7 +3,7 @@
   <Class Name="swept.Change">
     <Position X="5.75" Y="3.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAACAAAAAAABA=</HashCode>
       <FileName>Change.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -32,7 +32,7 @@
   <Class Name="swept.UserGUIAdapter" Collapsed="true" BaseTypeListCollapsed="true">
     <Position X="9.5" Y="1.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>ACAAAAAAAAAAgAAACAAAAAAAAAAAIAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>ACAAAAAAAAAAgAAACAAAAAAAAAAAIAAAAAAAAgAAAAA=</HashCode>
       <FileName>UserGUIAdapter.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" Collapsed="true" />
@@ -69,7 +69,7 @@
     </TypeIdentifier>
   </Class>
   <Class Name="swept.StudioAdapter">
-    <Position X="10" Y="4" Width="1.5" />
+    <Position X="16.5" Y="3" Width="1.5" />
     <Compartments>
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
@@ -86,17 +86,24 @@
     </TypeIdentifier>
   </Class>
   <Class Name="swept.TaskWindow">
-    <Position X="7.75" Y="3" Width="2" />
+    <Position X="13.75" Y="3" Width="2" />
     <TypeIdentifier>
-      <HashCode>gCAAAEQAAAACAMAgABAQQAAwEAAAAAAIAAQpEAAQAIY=</HashCode>
+      <HashCode>gCAAAEQAAAACAMAgABAQRAAwEAAAAAAIAAQpAAAQCIc=</HashCode>
       <FileName>TaskWindow.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="swept.XmlPort" Collapsed="true">
     <Position X="7.75" Y="2.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAgABAAAGAQAAAAAAIAAAAABAAACgAAAIA=</HashCode>
+      <HashCode>AAAAAAAAAAAAABAAAGAQAAAAAAIAACAABAAACAAAAIA=</HashCode>
       <FileName>XmlPort.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="swept.CompoundFilter">
+    <Position X="7.75" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>RJAAAAAACAAggASCgAEEAAQAAAACAAAACIAAAAAEIBA=</HashCode>
+      <FileName>CompoundFilter.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Interface Name="swept.IStorageAdapter" Collapsed="true">
@@ -109,9 +116,16 @@
   <Interface Name="swept.IUserAdapter" Collapsed="true">
     <Position X="9.5" Y="0.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>ACAAAAAAAAAAgAAACAAAAAAAAAAAIAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>ACAAAAAAAAAAgAAACAAAAAAAAAAAIAAAAAAAAgAAAAA=</HashCode>
       <FileName>IUserAdapter.cs</FileName>
     </TypeIdentifier>
   </Interface>
+  <Enum Name="swept.FilterOperator" Collapsed="true">
+    <Position X="13.5" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAAAAAAAAAAAAAAAAAAAAAAAACAAAAAgAAAAAAAAAAA=</HashCode>
+      <FileName>CompoundFilter.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
   <Font Name="Tahoma" Size="8.25" />
 </ClassDiagram>
