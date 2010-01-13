@@ -69,7 +69,7 @@
     </TypeIdentifier>
   </Class>
   <Class Name="swept.StudioAdapter">
-    <Position X="16.5" Y="3" Width="1.5" />
+    <Position X="13.5" Y="3" Width="1.5" />
     <Compartments>
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
@@ -86,7 +86,7 @@
     </TypeIdentifier>
   </Class>
   <Class Name="swept.TaskWindow">
-    <Position X="13.75" Y="3" Width="2" />
+    <Position X="11.25" Y="3" Width="2" />
     <TypeIdentifier>
       <HashCode>gCAAAEQAAAACAMAgABAQRAAwEAAAAAAIAAQpAAAQCIc=</HashCode>
       <FileName>TaskWindow.cs</FileName>
