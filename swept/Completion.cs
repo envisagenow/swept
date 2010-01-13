@@ -9,7 +9,6 @@ namespace swept
     {
         public string ChangeID;
 
-        public Completion() {}
         public Completion( string changeID )
         {
             ChangeID = changeID;

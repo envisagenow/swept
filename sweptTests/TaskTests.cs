@@ -3,6 +3,7 @@
 //  This software is open source, MIT license.  See the file LICENSE for details.
 using System;
 using NUnit.Framework;
+using System.Collections.Generic;
 
 namespace swept.Tests
 {
@@ -11,6 +12,7 @@ namespace swept.Tests
     {
         private const string _Description = "this change";
         Change _change;
+        List<Task> _tasks;
         Task _task;
         SeeAlso _see;
 
@@ -20,7 +22,8 @@ namespace swept.Tests
             _change = new Change { ID = "id1", Description = _Description, Language = FileLanguage.CSharp };
             _see = new SeeAlso { Description = "Look here", Target = "here.com", TargetType = TargetType.URL };
             _change.SeeAlsos.Add( _see );
-            _task = Task.FromChange( _change );
+            _tasks = Task.FromChange( _change );
+            _task = _tasks[0];
         }
 
         [Test]
@@ -48,6 +51,14 @@ namespace swept.Tests
             Assert.That( _task.SeeAlsos.Count, Is.EqualTo( 1 ) );
             var see = _task.SeeAlsos[0];
             Assert.That( see, Is.EqualTo( _see ) );
+        }
+
+        [Test]
+        public void FromChange_gets_a_task_per_match_location()
+        {
+            _change._matchList = new List<int> { 4, 8, 9 };
+            List<Task> tasks = Task.FromChange( _change );
+            Assert.That( tasks.Count, Is.EqualTo( 3 ) );
         }
     }
 }

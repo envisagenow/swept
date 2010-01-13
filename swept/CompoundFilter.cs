@@ -39,6 +39,8 @@ namespace swept
             Children = new List<CompoundFilter>();
             Operator = FilterOperator.And;
             ManualCompletion = false;
+            _lineIndices = new List<int>();
+            _matchList = new List<int> { 1 };
         }
 
         public virtual string Name
@@ -72,6 +74,54 @@ namespace swept
         public bool FirstChild { get; set; }
         public List<CompoundFilter> Children { get; set; }
 
+        internal List<int> _lineIndices;
+        internal List<int> _matchList;
+
+        internal void generateLineIndices( string multiLineFile )
+        {
+            //list of newline indexes
+            Regex lineCatcher = new Regex( "\n", RegexOptions.Multiline );
+            MatchCollection lineMatches = lineCatcher.Matches( multiLineFile );
+
+            _lineIndices = new List<int>();
+            foreach (Match match in lineMatches)
+            {
+                _lineIndices.Add( match.Index );
+            }
+        }
+        public void identifyMatchLineNumbers( string multiLineFile, string pattern)
+        {
+            Regex rx = new Regex( pattern );
+            MatchCollection matches = rx.Matches( multiLineFile );
+            _matchList = new List<int>();
+
+            foreach (Match match in matches)
+            {
+                int line = lineNumberOfMatch( match.Index, _lineIndices );
+                _matchList.Add( line );
+            }
+        }
+
+        internal int lineNumberOfMatch( int matchIndex, List<int> lineIndices )
+        {
+            int currentLineNumber = 1;
+            foreach (int lineIndex in lineIndices)
+            {
+                if (matchIndex > lineIndex)
+                {
+                    currentLineNumber++;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            return currentLineNumber;
+        }
+
+
+
         public virtual bool Matches( SourceFile file )
         {
             //  breakpoint for tracing how a change matches a file.
@@ -79,12 +129,19 @@ namespace swept
             matches = matches && Language == FileLanguage.None || Language == file.Language;
             matches = matches && file.Name.StartsWith( Subpath );
             matches = matches && Regex.IsMatch( file.Name, NamePattern, RegexOptions.IgnoreCase );
-            matches = matches && Regex.IsMatch( file.Content, ContentPattern, RegexOptions.IgnoreCase );
+            matches = matches && MatchesContent( file.Content );
             matches = matches && MatchesChildren( file );
 
             if (Operator == FilterOperator.Not) matches = !matches;
 
             return matches;
+        }
+
+        internal bool MatchesContent( string content )
+        {
+            generateLineIndices(content);
+            identifyMatchLineNumbers( content, ContentPattern);
+            return _matchList.Count > 0;
         }
 
         public virtual bool MatchesChildren( SourceFile file )

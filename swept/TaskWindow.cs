@@ -103,9 +103,14 @@ namespace swept
 
             foreach( Change change in changes )
             {
-                Task entry = Task.FromChange( change );
-                entry.Completed = CurrentFile.Completions.Exists( c => c.ChangeID == entry.ID );
-                Tasks.Add( entry );
+                List<Task> entries = Task.FromChange( change );
+                bool completed = CurrentFile.Completions.Exists( c => c.ChangeID == change.ID );
+                foreach (var entry in entries)
+                {
+                    entry.Completed = completed;
+                    Tasks.Add(entry);
+                }
+                // TODO: Think about how completions work with multiple tasks per change
             }
 
             Raise_TaskListReset();

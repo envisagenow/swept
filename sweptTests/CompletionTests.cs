@@ -11,13 +11,7 @@ namespace swept.Tests
     public class CompletionTests
     {
         [Test]
-        public void SetUp()
-        {
-            Completion comp = new Completion();
-        }
-
-        [Test]
-        public void TakesEnhancementID()
+        public void TakesChangeID()
         {
             Completion comp = new Completion( "cr001" );
             Assert.AreEqual( "cr001", comp.ChangeID );

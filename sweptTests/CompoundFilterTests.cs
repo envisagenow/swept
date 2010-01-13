@@ -5,6 +5,7 @@ using System;
 using NUnit.Framework;
 using swept;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace swept.Tests
 {
@@ -12,6 +13,106 @@ namespace swept.Tests
     [TestFixture]
     public class CompoundFilterTests
     {
+        #region Line matching
+        private CompoundFilter filter;
+        [SetUp]
+        public void SetUp()
+        {
+            filter = new CompoundFilter();
+        }
+
+        [Test]
+        public void can_return_list_of_line_start_positions()
+        {
+            string multiLineFile =
+@"
+axxxxxx
+abxx
+bcxxxx
+cxxxxxxxxx
+";
+
+            filter.generateLineIndices( multiLineFile );
+
+            Assert.That( filter._lineIndices.Count, Is.EqualTo( 5 ) );
+            Assert.That( filter._lineIndices[0], Is.EqualTo( 1 ) );
+            Assert.That( filter._lineIndices[1], Is.EqualTo( 10 ) );
+        }
+
+
+        [Test]
+        public void can_return_list_of_matched_line_numbers()
+        {
+            const int number_of_Bs = 2;
+            string multiLineFile =
+@"
+axxxxxx
+abxx
+bcxxxx
+cxxxxxxxxx
+";
+
+            filter.generateLineIndices( multiLineFile );
+            filter.identifyMatchLineNumbers( multiLineFile, "b" );
+
+            Assert.That( filter._matchList.Count, Is.EqualTo( number_of_Bs ) );
+            Assert.That( filter._matchList[0], Is.EqualTo( 3 ) );
+            Assert.That( filter._matchList[1], Is.EqualTo( 4 ) );
+        }
+
+        [Test]
+        public void MatchesContent_returns_bool_of_match()
+        {
+            filter.ContentPattern = "Foo";
+            Assert.That( filter.MatchesContent( "using Foo;" ) );
+            filter.ContentPattern = "Bar";
+            Assert.That( filter.MatchesContent( "using Foo;" ), Is.False );
+        }
+
+        [Test]
+        public void MatchesContent_sets_list_of_match_line_indexes()
+        {
+            filter.ContentPattern = "Foo";
+            filter.MatchesContent( "using Foo;" );
+            Assert.That( filter._matchList.Count, Is.EqualTo( 1 ) );
+            Assert.That( filter._matchList[0], Is.EqualTo( 1 ) );
+        }
+
+        [Test]
+        public void MatchesContent_sets_list_of_match_line_indexes_empty_when_unmatched()
+        {
+            filter.ContentPattern = "Bar";
+            filter.MatchesContent( "using Foo;" );
+            Assert.That( filter._matchList.Count, Is.EqualTo( 0 ) );
+        }
+
+
+        [Test]
+        public void match_first_character_is_line_1()
+        {
+            Assert.That( filter.lineNumberOfMatch( 1, new List<int> { 2, 17 } ), Is.EqualTo( 1 ) );
+        }
+
+        [Test]
+        public void match_after_index_of_first_newline_is_line_2()
+        {
+            Assert.That( filter.lineNumberOfMatch( 4, new List<int> { 2, 5 } ), Is.EqualTo( 2 ) );
+        }
+
+        [Test]
+        public void match_first_newline_is_line_1()
+        {
+            Assert.That( filter.lineNumberOfMatch( 2, new List<int> { 2, 5 } ), Is.EqualTo( 1 ) );
+        }
+
+        [Test]
+        public void match_after_last_newline_is_last_line()
+        {
+            Assert.That( filter.lineNumberOfMatch( 40, new List<int> { 2, 5 } ), Is.EqualTo( 3 ) );
+        }
+
+        #endregion
+
         #region Compound matching
         [Test]
         public void Children_get_matched()
