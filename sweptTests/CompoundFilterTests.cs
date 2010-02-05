@@ -13,7 +13,6 @@ namespace swept.Tests
     [TestFixture]
     public class CompoundFilterTests
     {
-        #region Line matching
         private CompoundFilter filter;
         [SetUp]
         public void SetUp()
@@ -21,6 +20,62 @@ namespace swept.Tests
             filter = new CompoundFilter();
         }
 
+
+        #region Compound line matching
+        [Test]
+        public void line_start_positions_come_up_from_child_filters()
+        {
+            SourceFile file = new SourceFile( "bs.cs" );
+            file.Content =
+@"
+axxxxxx
+abxx
+bcxxxx
+cxxxxxxxxx
+";
+
+            filter = new CompoundFilter(); 
+            CompoundFilter parent = new CompoundFilter();
+            parent.Children.Add( filter );
+
+            filter.ContentPattern = "b";
+
+            parent.Matches( file );
+
+            Assert.That( parent._matchList.Count, Is.EqualTo( 2 ) );
+            Assert.That( parent._matchList[0], Is.EqualTo( 3 ) );
+            Assert.That( parent._matchList[1], Is.EqualTo( 4 ) );
+        }
+
+        [Test]
+        public void line_start_positions_come_up_from_child_filters_with_nested_child_filter()
+        {
+            SourceFile file = new SourceFile( "bs.cs" );
+            file.Content =
+@"
+axxxxxx
+abxx
+bcxxxx
+cxxxxxxxxx
+";
+
+            CompoundFilter parent = new CompoundFilter();
+            parent.Children.Add( filter );
+
+            filter.ContentPattern = "b";
+
+            parent.Matches( file );
+
+            Assert.That( filter._matchList.Count, Is.EqualTo( 2 ) );
+            Assert.That( filter._matchList[0], Is.EqualTo( 3 ) );
+            Assert.That( filter._matchList[1], Is.EqualTo( 4 ) );
+        }
+        
+        #endregion
+
+
+
+        #region Line matching
         [Test]
         public void can_return_list_of_line_start_positions()
         {
@@ -59,6 +114,28 @@ cxxxxxxxxx
             Assert.That( filter._matchList[0], Is.EqualTo( 3 ) );
             Assert.That( filter._matchList[1], Is.EqualTo( 4 ) );
         }
+
+        [Test]
+        public void matchlist_is_populated_by_Matches_call()
+        {
+            SourceFile file = new SourceFile( "bs.cs" );
+            file.Content = 
+@"
+axxxxxx
+abxx
+bcxxxx
+cxxxxxxxxx
+";
+
+            filter.ContentPattern = "b";
+
+            filter.Matches( file );
+
+            Assert.That( filter._matchList.Count, Is.EqualTo( 2 ) );
+            Assert.That( filter._matchList[0], Is.EqualTo( 3 ) );
+            Assert.That( filter._matchList[1], Is.EqualTo( 4 ) );
+        }
+
 
         [Test]
         public void MatchesContent_returns_bool_of_match()

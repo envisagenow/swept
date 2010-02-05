@@ -19,8 +19,9 @@ namespace swept.Addin
 
         public void Hear_TaskListReset(object objNewTasks, EventArgs e)
         {
-            List<Task> newTasks = (List<Task>)objNewTasks;  //here
+            List<Task> newTasks = (List<Task>)objNewTasks;
 
+            // TODO: When tearing down the current taskGridView, properly Dispose of all.
             _taskGridView.Rows.Clear();
 
             foreach (Task task in newTasks)

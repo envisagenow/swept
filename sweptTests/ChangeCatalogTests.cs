@@ -34,13 +34,29 @@ namespace swept.Tests
         //    Assert.AreEqual(moreChanges.Count, changes.Count);
         //}
 
-        //[Test]
-        //public void GetChanges_returns_only_pertinent_Changes()
-        //{
-        //    List<Change> changes = cat.GetChangesForFile(new SourceFile("hello_world.cs"));
-        //    Assert.AreEqual(1, changes.Count);
-        //    Assert.AreEqual("e1", changes[0].ID);
-        //}
+        [Test]
+        public void GetChanges_returns_only_pertinent_Changes()
+        {
+            List<Change> changes = cat.GetChangesForFile( new SourceFile( "hello_world.cs" ) );
+            Assert.AreEqual( 1, changes.Count );
+            Assert.AreEqual( "e1", changes[0].ID );
+        }
+
+        [Test]
+        public void GetChanges_returns_no_Changes_when_language_filters_enough()
+        {
+            List<Change> changes = cat.GetChangesForFile( new SourceFile( "hello_style.css" ) );
+            Assert.AreEqual( 0, changes.Count );
+        }
+
+        [Test]
+        public void GetChanges_returns_Appropriate_CompoundChanges()
+        {
+            CompoundFilter filter = new CompoundFilter();
+
+            List<Change> changes = cat.GetChangesForFile( new SourceFile( "hello_style.css" ) );
+            Assert.AreEqual( 0, changes.Count );
+        }
 
         [Test]
         public void Empty_Catalog_returns_empty_list()

@@ -5,6 +5,7 @@
 using System;
 using System.Text.RegularExpressions;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace swept
 {
@@ -125,16 +126,19 @@ namespace swept
         public virtual bool Matches( SourceFile file )
         {
             //  breakpoint for tracing how a change matches a file.
-            bool matches = true;
-            matches = matches && Language == FileLanguage.None || Language == file.Language;
-            matches = matches && file.Name.StartsWith( Subpath );
-            matches = matches && Regex.IsMatch( file.Name, NamePattern, RegexOptions.IgnoreCase );
-            matches = matches && MatchesContent( file.Content );
-            matches = matches && MatchesChildren( file );
+            bool didMatch = true;
+            didMatch = didMatch && Language == FileLanguage.None || Language == file.Language;
+            didMatch = didMatch && file.Name.StartsWith( Subpath );
+            didMatch = didMatch && Regex.IsMatch( file.Name, NamePattern, RegexOptions.IgnoreCase );
+            
+            if( ContentPattern != string.Empty)
+                didMatch = didMatch && MatchesContent( file.Content );
+            
+            didMatch = didMatch && MatchesChildren( file );
 
-            if (Operator == FilterOperator.Not) matches = !matches;
+            if (Operator == FilterOperator.Not) didMatch = !didMatch;
 
-            return matches;
+            return didMatch;
         }
 
         internal bool MatchesContent( string content )
@@ -146,16 +150,25 @@ namespace swept
 
         public virtual bool MatchesChildren( SourceFile file )
         {
-            bool matches = true;
+            bool didMatch = true;
+            List<int> workingMatches = new List<int>();
             foreach (CompoundFilter child in Children)
             {
+
                 if (child.Operator == FilterOperator.Or)
-                { matches = matches || child.Matches( file ); }
+                { 
+                    didMatch = didMatch || child.Matches( file );
+                }
                 else
-                { matches = matches && child.Matches( file ); }
+                { 
+                    didMatch = didMatch && child.Matches( file );
+                }
+
+                // TODO: !!!
+                _matchList = _matchList.Union( child._matchList).ToList();
             }
 
-            return matches;
+            return didMatch;
         }
 
         internal void markFirstChildren()

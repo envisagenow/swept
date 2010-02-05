@@ -27,6 +27,14 @@ namespace swept.Tests
         }
 
         [Test]
+        public void FromChange_gets_a_task_per_match_location()
+        {
+            _change._matchList = new List<int> { 4, 8, 9 };
+            List<Task> tasks = Task.FromChange( _change );
+            Assert.That( tasks.Count, Is.EqualTo( 3 ) );
+        }
+
+        [Test]
         public void attributes_filled_from_Change()
         {
             Assert.AreEqual( _change.ID, _task.ID );
@@ -51,14 +59,6 @@ namespace swept.Tests
             Assert.That( _task.SeeAlsos.Count, Is.EqualTo( 1 ) );
             var see = _task.SeeAlsos[0];
             Assert.That( see, Is.EqualTo( _see ) );
-        }
-
-        [Test]
-        public void FromChange_gets_a_task_per_match_location()
-        {
-            _change._matchList = new List<int> { 4, 8, 9 };
-            List<Task> tasks = Task.FromChange( _change );
-            Assert.That( tasks.Count, Is.EqualTo( 3 ) );
         }
     }
 }
