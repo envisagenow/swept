@@ -13,7 +13,7 @@ The history of filtering in Swept:
 
   The main awkwardness is that tests of the new filtering behavior will need to scratch up ChangeCatalogs.  However, the fine grain of this filtering has nothing to do with a catalog--it's a 1:1 relation between a change and a file.
 
-  So we turn the lambda into a real boy, give it a good name, tuck it into Change, leaving the catalog cleaner:
+  So we turn the lambda into a real boy, give it a good name, and tuck it into Change, leaving the catalog cleaner:
   
     public List<Change> GetChangesForFile( SourceFile file )
     {
@@ -22,7 +22,7 @@ The history of filtering in Swept:
 
 
   [Footnote:  1:1, Here vs. There]
-  Also, we TDD in a 'disregard language criterion' case.  New forms of filtering approach; it feels natural that we don't always want to use all of them.
+  Also, we add in an option to disregard the language.  New forms of filtering approach; it feels natural that we don't always want to use all of them.
 
     public bool PassesFilter( SourceFile file )
     {
@@ -40,11 +40,11 @@ The history of filtering in Swept:
         return passesLanguage && passesSubpath && passesNamePattern;
     }
 
-  This covers my needs for the changes I want to start with in my day-job project.  I can imagine several ways this filtering could continue to grow, [Footnote:  Several ways filtering could grow] which I'll defer until my need pulls the feature out of my future hours.  :D
+  This covers my needs for the changes I want to start with in my day-job project.  I can imagine several ways this filtering could continue to grow, [Footnote:  Several ways filtering could grow] which I'll defer until need pulls the feature out of my future hours.  :D
 
   Fast-forward past test-growing the storage of the new filters, and commit.
 
----  
+---
   
   Notes
 
@@ -71,4 +71,8 @@ The history of filtering in Swept:
   *  FileContentPattern
   *  More than one filter of each type
   *  Now that NamePattern exists, the Language and Subpath could be subsumed within it.
-  *  Logical combinations of patterns: FileContent includes 'Using Windows.Forms' and not Subpath in GUI
+  *  Logical combinations of patterns: 
+        FileContent includes 'Using Windows.Forms'
+        and not Subpath in "GUI\"
+
+---

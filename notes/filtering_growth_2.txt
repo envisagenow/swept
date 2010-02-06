@@ -1,2 +1,34 @@
 Filtering growth, part two:  Compound filters
 
+More filtering
+  When I finished with the first part of improving the filtering, I was able to create some useful changes for Swept to find in our main work product, but some possibilities I saw weren't practical until there was more power in the filtering.
+  There are perceptions that are extremely clear when you face the actual problem directly in your hands that aren't foreseen, considering the problem at a distance.  In my case, it was an entirely natural repercussion of one of the driving forces behind Swept in the first place:  Projects get so large that we need the leverage of automation.  When I faced a change that would show up on 300 files more than actually had the problem, and I considered all the practice that would give me at thinking of Swept as an annoyance to ignore, I knew we had to take further steps immediately.
+  
+
+
+  more possibilities with more power in the filtering, so that was  I set out to make that happen.
+  The forms of filtering were largely what I needed, the shortcoming was in refining the change's targeting, by being able to combine several clauses of filtering into a single set of criteria.  This lead smoothly to the classic logical operators, and some form of grouping notation.
+
+Logical expression notation
+  I waited to implement until I'd come up with a suitable developer notation.
+  The natural ways to represent compound logical expressions in XML are awful.
+  Other representations lead to writing an expression parser from the ground up.
+  So, I struggled to find an unnatural way to represent expressions in XML--and succeeded.  :D
+
+Repercussions
+  
+
+
+
+###
+  
+  Footnote:  Several ways filtering could grow
+
+  *  FileContentPattern
+  *  More than one filter of each type
+  *  Now that NamePattern exists, the Language and Subpath could be subsumed within it.
+  *  Logical combinations of patterns: 
+        FileContent includes 'Using Windows.Forms'
+        and not Subpath in "GUI\"
+
+---
