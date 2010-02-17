@@ -123,7 +123,7 @@ namespace swept
 
 
 
-        public virtual bool Matches( SourceFile file )
+        public virtual bool DoesMatch( SourceFile file )
         {
             //  breakpoint for tracing how a change matches a file.
             bool didMatch = true;
@@ -131,41 +131,57 @@ namespace swept
             didMatch = didMatch && file.Name.StartsWith( Subpath );
             didMatch = didMatch && Regex.IsMatch( file.Name, NamePattern, RegexOptions.IgnoreCase );
             
-            if( ContentPattern != string.Empty)
+            if( ContentPattern != string.Empty )
                 didMatch = didMatch && MatchesContent( file.Content );
             
             didMatch = didMatch && MatchesChildren( file );
 
             if (Operator == FilterOperator.Not) didMatch = !didMatch;
 
+            _matchList.Sort();
             return didMatch;
         }
 
         internal bool MatchesContent( string content )
         {
             generateLineIndices(content);
-            identifyMatchLineNumbers( content, ContentPattern);
+            identifyMatchLineNumbers( content, ContentPattern );
             return _matchList.Count > 0;
         }
 
         public virtual bool MatchesChildren( SourceFile file )
         {
+            if (Children.Count == 0)
+                return true;
+
             bool didMatch = true;
-            List<int> workingMatches = new List<int>();
+            List<int> workingMatches = null;
             foreach (CompoundFilter child in Children)
             {
+                bool childMatched = child.DoesMatch( file );
+                if (workingMatches == null)
+                    workingMatches = child._matchList.ToList();
 
                 if (child.Operator == FilterOperator.Or)
                 { 
-                    didMatch = didMatch || child.Matches( file );
+                    didMatch = didMatch || childMatched;
+                    workingMatches = workingMatches.Union( child._matchList ).ToList();
                 }
                 else
-                { 
-                    didMatch = didMatch && child.Matches( file );
+                {
+                    didMatch = didMatch && childMatched;
+                    workingMatches = workingMatches.Intersect( child._matchList ).ToList();
                 }
+            }
 
-                // TODO: !!!
-                _matchList = _matchList.Union( child._matchList).ToList();
+            //  roll child changes appropriately up to the parent
+            if (ContentPattern != String.Empty)
+            {
+                _matchList = _matchList.Intersect( workingMatches ).ToList();
+            }
+            else
+            {
+                _matchList = workingMatches;
             }
 
             return didMatch;

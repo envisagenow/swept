@@ -13,6 +13,13 @@ namespace swept.Tests
     [TestFixture]
     public class CompoundFilterTests
     {
+        private string _multiLineFile =
+@"
+axxxxxx
+abxx
+bcxxxx
+cxxxxxxxxx
+";
         private CompoundFilter filter;
         [SetUp]
         public void SetUp()
@@ -23,24 +30,18 @@ namespace swept.Tests
 
         #region Compound line matching
         [Test]
-        public void line_start_positions_come_up_from_child_filters()
+        public void when_parent_filter_is_not_content_filter_child_matches_replace_parent_matches()
         {
             SourceFile file = new SourceFile( "bs.cs" );
-            file.Content =
-@"
-axxxxxx
-abxx
-bcxxxx
-cxxxxxxxxx
-";
+            file.Content = _multiLineFile;
 
-            filter = new CompoundFilter(); 
+            CompoundFilter child = new CompoundFilter();
             CompoundFilter parent = new CompoundFilter();
-            parent.Children.Add( filter );
+            parent.Children.Add( child );
 
-            filter.ContentPattern = "b";
+            child.ContentPattern = "b";
 
-            parent.Matches( file );
+            parent.DoesMatch( file );
 
             Assert.That( parent._matchList.Count, Is.EqualTo( 2 ) );
             Assert.That( parent._matchList[0], Is.EqualTo( 3 ) );
@@ -48,27 +49,85 @@ cxxxxxxxxx
         }
 
         [Test]
+        public void sibling_with_And_operator_will_intersect_matches()
+        {
+            SourceFile file = new SourceFile( "bs.cs" );
+            file.Content = _multiLineFile;
+
+            CompoundFilter child = new CompoundFilter();
+            CompoundFilter and_sibling = new CompoundFilter { Operator = FilterOperator.And };
+            CompoundFilter parent = new CompoundFilter();
+            parent.Children.Add( child );
+            parent.Children.Add( and_sibling );
+
+            child.ContentPattern = "b";
+            and_sibling.ContentPattern = "a";
+            parent.DoesMatch( file );
+
+            Assert.That( parent._matchList.Count, Is.EqualTo( 1 ) );
+            Assert.That( parent._matchList[0], Is.EqualTo( 3 ) );
+        }
+
+        [Test]
+        public void sibling_with_Or_operator_will_intersect_matches()
+        {
+            SourceFile file = new SourceFile( "bs.cs" );
+            file.Content = _multiLineFile;
+
+            CompoundFilter child = new CompoundFilter();
+            CompoundFilter or_sibling = new CompoundFilter { Operator = FilterOperator.Or };
+            CompoundFilter parent = new CompoundFilter();
+            parent.Children.Add( child );
+            parent.Children.Add( or_sibling );
+
+            child.ContentPattern = "b";
+            or_sibling.ContentPattern = "a";
+            parent.DoesMatch( file );
+
+            Assert.That( parent._matchList.Count, Is.EqualTo( 3 ) );
+            Assert.That( parent._matchList[0], Is.EqualTo( 2 ) );
+            Assert.That( parent._matchList[1], Is.EqualTo( 3 ) );
+            Assert.That( parent._matchList[2], Is.EqualTo( 4 ) );
+        }
+
+        [Test]
+        public void when_parent_filter_is_content_filter_child_matches_combine_with_parent_matches()
+        {
+            SourceFile file = new SourceFile( "bs.cs" );
+            file.Content = _multiLineFile;
+
+            CompoundFilter parent = new CompoundFilter();
+            CompoundFilter child = new CompoundFilter();
+
+            parent.Children.Add( child );
+            child.ContentPattern = "b";
+            parent.ContentPattern = "c";
+
+            parent.DoesMatch( file );
+
+            Assert.That( parent._matchList.Count, Is.EqualTo( 1 ) );
+            Assert.That( parent._matchList[0], Is.EqualTo( 4 ) );
+        }
+
+        [Test]
         public void line_start_positions_come_up_from_child_filters_with_nested_child_filter()
         {
             SourceFile file = new SourceFile( "bs.cs" );
-            file.Content =
-@"
-axxxxxx
-abxx
-bcxxxx
-cxxxxxxxxx
-";
+            file.Content = _multiLineFile;
 
             CompoundFilter parent = new CompoundFilter();
-            parent.Children.Add( filter );
+            CompoundFilter child = new CompoundFilter();
+            CompoundFilter grandchild = new CompoundFilter();
 
-            filter.ContentPattern = "b";
+            parent.Children.Add( child );
+            child.Children.Add( grandchild );
+            grandchild.ContentPattern = "b";
+            
+            parent.DoesMatch( file );
 
-            parent.Matches( file );
-
-            Assert.That( filter._matchList.Count, Is.EqualTo( 2 ) );
-            Assert.That( filter._matchList[0], Is.EqualTo( 3 ) );
-            Assert.That( filter._matchList[1], Is.EqualTo( 4 ) );
+            Assert.That( parent._matchList.Count, Is.EqualTo( 2 ) );
+            Assert.That( parent._matchList[0], Is.EqualTo( 3 ) );
+            Assert.That( parent._matchList[1], Is.EqualTo( 4 ) );
         }
         
         #endregion
@@ -79,15 +138,7 @@ cxxxxxxxxx
         [Test]
         public void can_return_list_of_line_start_positions()
         {
-            string multiLineFile =
-@"
-axxxxxx
-abxx
-bcxxxx
-cxxxxxxxxx
-";
-
-            filter.generateLineIndices( multiLineFile );
+            filter.generateLineIndices( _multiLineFile );
 
             Assert.That( filter._lineIndices.Count, Is.EqualTo( 5 ) );
             Assert.That( filter._lineIndices[0], Is.EqualTo( 1 ) );
@@ -99,16 +150,9 @@ cxxxxxxxxx
         public void can_return_list_of_matched_line_numbers()
         {
             const int number_of_Bs = 2;
-            string multiLineFile =
-@"
-axxxxxx
-abxx
-bcxxxx
-cxxxxxxxxx
-";
 
-            filter.generateLineIndices( multiLineFile );
-            filter.identifyMatchLineNumbers( multiLineFile, "b" );
+            filter.generateLineIndices( _multiLineFile );
+            filter.identifyMatchLineNumbers( _multiLineFile, "b" );
 
             Assert.That( filter._matchList.Count, Is.EqualTo( number_of_Bs ) );
             Assert.That( filter._matchList[0], Is.EqualTo( 3 ) );
@@ -119,17 +163,11 @@ cxxxxxxxxx
         public void matchlist_is_populated_by_Matches_call()
         {
             SourceFile file = new SourceFile( "bs.cs" );
-            file.Content = 
-@"
-axxxxxx
-abxx
-bcxxxx
-cxxxxxxxxx
-";
+            file.Content = _multiLineFile;
 
             filter.ContentPattern = "b";
 
-            filter.Matches( file );
+            filter.DoesMatch( file );
 
             Assert.That( filter._matchList.Count, Is.EqualTo( 2 ) );
             Assert.That( filter._matchList[0], Is.EqualTo( 3 ) );
@@ -201,9 +239,9 @@ cxxxxxxxxx
             filter.Children.Add( child1 );
             filter.Children.Add( child2 );
 
-            Assert.IsFalse( filter.Matches( new SourceFile( "my.cs" ) ) );
-            Assert.IsFalse( filter.Matches( new SourceFile( "blue.html" ) ) );
-            Assert.IsTrue( filter.Matches( new SourceFile( "blue.cs" ) ) );
+            Assert.IsFalse( filter.DoesMatch( new SourceFile( "my.cs" ) ) );
+            Assert.IsFalse( filter.DoesMatch( new SourceFile( "blue.html" ) ) );
+            Assert.IsTrue( filter.DoesMatch( new SourceFile( "blue.cs" ) ) );
         }
 
         [Test]
@@ -216,10 +254,10 @@ cxxxxxxxxx
             filter.Children.Add( child1 );
             filter.Children.Add( child2 );
 
-            Assert.IsTrue( filter.Matches( new SourceFile( "my.cs" ) ) );
-            Assert.IsTrue( filter.Matches( new SourceFile( "blue.html" ) ) );
-            Assert.IsTrue( filter.Matches( new SourceFile( "blue.cs" ) ) );
-            Assert.IsFalse( filter.Matches( new SourceFile( "bluuue.css" ) ) );
+            Assert.IsTrue( filter.DoesMatch( new SourceFile( "my.cs" ) ) );
+            Assert.IsTrue( filter.DoesMatch( new SourceFile( "blue.html" ) ) );
+            Assert.IsTrue( filter.DoesMatch( new SourceFile( "blue.cs" ) ) );
+            Assert.IsFalse( filter.DoesMatch( new SourceFile( "bluuue.css" ) ) );
         }
 
 
@@ -234,9 +272,9 @@ cxxxxxxxxx
                 Operator = FilterOperator.Not,
             };
 
-            Assert.IsFalse( filter.Matches( new SourceFile( "my.cs" ) ) );
-            Assert.IsTrue( filter.Matches( new SourceFile( "my.html" ) ) );
-            Assert.IsTrue( filter.Matches( new SourceFile( "my.unknownextension" ) ) );
+            Assert.IsFalse( filter.DoesMatch( new SourceFile( "my.cs" ) ) );
+            Assert.IsTrue( filter.DoesMatch( new SourceFile( "my.html" ) ) );
+            Assert.IsTrue( filter.DoesMatch( new SourceFile( "my.unknownextension" ) ) );
         }
 
         [Test]
@@ -250,8 +288,8 @@ cxxxxxxxxx
                 Operator = FilterOperator.Not
             };
 
-            Assert.IsTrue( filter.Matches( new SourceFile( @"my_test.cs" ) ) );
-            Assert.IsFalse( filter.Matches( new SourceFile( @"Tests.cs" ) ) );
+            Assert.IsTrue( filter.DoesMatch( new SourceFile( @"my_test.cs" ) ) );
+            Assert.IsFalse( filter.DoesMatch( new SourceFile( @"Tests.cs" ) ) );
         }
 
         [Test]
@@ -269,8 +307,8 @@ cxxxxxxxxx
                 Children = new List<CompoundFilter> { child }
             };
 
-            Assert.IsFalse( filter.Matches( new SourceFile( @"my_test.cs" ) ) );
-            Assert.IsTrue( filter.Matches( new SourceFile( @"Tests.cs" ) ) );
+            Assert.IsFalse( filter.DoesMatch( new SourceFile( @"my_test.cs" ) ) );
+            Assert.IsTrue( filter.DoesMatch( new SourceFile( @"Tests.cs" ) ) );
         }
 
         [Test]
@@ -296,10 +334,10 @@ cxxxxxxxxx
                 Children = new List<CompoundFilter> { one, two }
             };
 
-            Assert.IsTrue( filter.Matches( new SourceFile( @"my_one.cs" ) ) );
-            Assert.IsTrue( filter.Matches( new SourceFile( @"my_two.cs" ) ) );
-            Assert.IsFalse( filter.Matches( new SourceFile( @"my_three.cs" ) ) );
-            Assert.IsTrue( filter.Matches( new SourceFile( @"my_one_two.cs" ) ) );
+            Assert.IsTrue( filter.DoesMatch( new SourceFile( @"my_one.cs" ) ) );
+            Assert.IsTrue( filter.DoesMatch( new SourceFile( @"my_two.cs" ) ) );
+            Assert.IsFalse( filter.DoesMatch( new SourceFile( @"my_three.cs" ) ) );
+            Assert.IsTrue( filter.DoesMatch( new SourceFile( @"my_one_two.cs" ) ) );
         }
 
         #endregion
@@ -311,7 +349,7 @@ cxxxxxxxxx
         {
             var filter = new CompoundFilter();
             var file = new SourceFile( @"\path\file.ext" );
-            Assert.That( filter.Matches( file ) );
+            Assert.That( filter.DoesMatch( file ) );
         }
 
         [Test]
@@ -324,9 +362,9 @@ cxxxxxxxxx
                 Language = FileLanguage.None
             };
 
-            Assert.IsTrue( filter.Matches( new SourceFile( "my.cs" ) ) );
-            Assert.IsTrue( filter.Matches( new SourceFile( "my.html" ) ) );
-            Assert.IsTrue( filter.Matches( new SourceFile( "my.unknownextension" ) ) );
+            Assert.IsTrue( filter.DoesMatch( new SourceFile( "my.cs" ) ) );
+            Assert.IsTrue( filter.DoesMatch( new SourceFile( "my.html" ) ) );
+            Assert.IsTrue( filter.DoesMatch( new SourceFile( "my.unknownextension" ) ) );
         }
 
         [Test]
@@ -339,9 +377,9 @@ cxxxxxxxxx
                 Language = FileLanguage.CSharp
             };
 
-            Assert.IsTrue( filter.Matches( new SourceFile( "my.cs" ) ) );
-            Assert.IsFalse( filter.Matches( new SourceFile( "my.html" ) ) );
-            Assert.IsFalse( filter.Matches( new SourceFile( "my.unknownextension" ) ) );
+            Assert.IsTrue( filter.DoesMatch( new SourceFile( "my.cs" ) ) );
+            Assert.IsFalse( filter.DoesMatch( new SourceFile( "my.html" ) ) );
+            Assert.IsFalse( filter.DoesMatch( new SourceFile( "my.unknownextension" ) ) );
         }
 
         [Test]
@@ -354,10 +392,10 @@ cxxxxxxxxx
                 Subpath = ""
             };
 
-            Assert.IsTrue( filter.Matches( new SourceFile( @"my.cs" ) ) );
-            Assert.IsTrue( filter.Matches( new SourceFile( @"specified\subpath\my.cs" ) ) );
-            Assert.IsTrue( filter.Matches( new SourceFile( @"specified\subpath\and\deeper\my.cs" ) ) );
-            Assert.IsTrue( filter.Matches( new SourceFile( @"another\subpath\my.cs" ) ) );
+            Assert.IsTrue( filter.DoesMatch( new SourceFile( @"my.cs" ) ) );
+            Assert.IsTrue( filter.DoesMatch( new SourceFile( @"specified\subpath\my.cs" ) ) );
+            Assert.IsTrue( filter.DoesMatch( new SourceFile( @"specified\subpath\and\deeper\my.cs" ) ) );
+            Assert.IsTrue( filter.DoesMatch( new SourceFile( @"another\subpath\my.cs" ) ) );
         }
 
         [Test]
@@ -370,10 +408,10 @@ cxxxxxxxxx
                 Subpath = @"specified\subpath"
             };
 
-            Assert.IsFalse( filter.Matches( new SourceFile( @"my.cs" ) ) );
-            Assert.IsTrue( filter.Matches( new SourceFile( @"specified\subpath\my.cs" ) ) );
-            Assert.IsTrue( filter.Matches( new SourceFile( @"specified\subpath\and\deeper\my.cs" ) ) );
-            Assert.IsFalse( filter.Matches( new SourceFile( @"another\subpath\my.cs" ) ) );
+            Assert.IsFalse( filter.DoesMatch( new SourceFile( @"my.cs" ) ) );
+            Assert.IsTrue( filter.DoesMatch( new SourceFile( @"specified\subpath\my.cs" ) ) );
+            Assert.IsTrue( filter.DoesMatch( new SourceFile( @"specified\subpath\and\deeper\my.cs" ) ) );
+            Assert.IsFalse( filter.DoesMatch( new SourceFile( @"another\subpath\my.cs" ) ) );
         }
 
         [Test]
@@ -386,10 +424,10 @@ cxxxxxxxxx
                 NamePattern = ""
             };
 
-            Assert.IsTrue( filter.Matches( new SourceFile( @"myCode.cs" ) ) );
-            Assert.IsTrue( filter.Matches( new SourceFile( @"Tests.cs" ) ) );
-            Assert.IsTrue( filter.Matches( new SourceFile( @"myTests.cs" ) ) );
-            Assert.IsTrue( filter.Matches( new SourceFile( @"my_tests.js" ) ) );
+            Assert.IsTrue( filter.DoesMatch( new SourceFile( @"myCode.cs" ) ) );
+            Assert.IsTrue( filter.DoesMatch( new SourceFile( @"Tests.cs" ) ) );
+            Assert.IsTrue( filter.DoesMatch( new SourceFile( @"myTests.cs" ) ) );
+            Assert.IsTrue( filter.DoesMatch( new SourceFile( @"my_tests.js" ) ) );
         }
 
         [Test]
@@ -402,10 +440,10 @@ cxxxxxxxxx
                 NamePattern = "tests"
             };
 
-            Assert.IsFalse( filter.Matches( new SourceFile( @"my_test.cs" ) ) );
-            Assert.IsTrue( filter.Matches( new SourceFile( @"Tests.cs" ) ) );
-            Assert.IsTrue( filter.Matches( new SourceFile( @"myTests.cs" ) ) );
-            Assert.IsTrue( filter.Matches( new SourceFile( @"my_tests.js" ) ) );
+            Assert.IsFalse( filter.DoesMatch( new SourceFile( @"my_test.cs" ) ) );
+            Assert.IsTrue( filter.DoesMatch( new SourceFile( @"Tests.cs" ) ) );
+            Assert.IsTrue( filter.DoesMatch( new SourceFile( @"myTests.cs" ) ) );
+            Assert.IsTrue( filter.DoesMatch( new SourceFile( @"my_tests.js" ) ) );
         }
 
         #endregion
@@ -418,7 +456,7 @@ cxxxxxxxxx
             var filter = new CompoundFilter { ContentPattern = "(foo|bar)" };
             var file = new SourceFile( "foo.cs" );
             file.Content = "using System;";
-            Assert.That( filter.Matches( file ), Is.False );
+            Assert.That( filter.DoesMatch( file ), Is.False );
         }
 
         [Test]
@@ -427,7 +465,7 @@ cxxxxxxxxx
             var filter = new CompoundFilter { ContentPattern = "(foo|bar)" };
             var file = new SourceFile( "foo.cs" );
             file.Content = "using System.foo;";
-            Assert.That( filter.Matches( file ), Is.True );
+            Assert.That( filter.DoesMatch( file ), Is.True );
         }
 
         #endregion
