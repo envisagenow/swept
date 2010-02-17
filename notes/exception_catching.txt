@@ -16,15 +16,15 @@ at ...StudioEventListener.Hear_WindowActivated...
   This brings up memories of when I had to rescue a legacy VB6 project from sudden performance death.  Learning that in that environment, I needed to manually wrestle errors, with boilerplate code, at every location of consequence.
 
   Yes, Visual Studio 2008 silently catches and vanishes any exception that makes it back from an event it fires.  In particular, inclding the top-level methods in the Connect class OnConnection() and OnDisconnection().  How many lost developer hours are due to this design choice?  Let me pitch my own 2:30 into the kitty.
-  See, the sad thing here is that I'd encountered this problem _earlier_, when it was generating much more baffling behavior in my app, and when I finally (after about 2:15 of freaking out) recognized the issue, I wrapped all my Studio event listener method bodies in try/catch{show exception} boilerplate.  The exception message that started all this off is from one of those.  I say I wrapped them all, but I didn't.  I forgot about the very top level IDTExtensibility2 object, starting and stopping my addin as a whole.
+  See, the sad thing here is that I'd encountered this problem _earlier_, when it was generating much more baffling behavior in my app, and when I finally (after about 2:15 of freaking out) recognized the issue, I wrapped each Studio event listener method body in try/catch{show exception} boilerplate.  The exception message that started all this off is from one of those.  I say I wrapped them all, but I didn't.  I forgot about the very top level IDTExtensibility2 object, starting and stopping my addin as a whole.
   Well, fool me twice, I'm a monkey's barber.
 
   Putting a try/catch around each of those, sure enough, there's my exception, and in ten minutes I fix both underlying problems.  I want an exclamation that melds "euREKA!" with "NUTS!"
   I also want an exception display mechanism that makes it easy to get the stack trace into my clipboard.
 
   So, this was fruitful.  Three categories of error.
-  *  I forgot to try/catch around the main event, even after I'd been bit by that once.
-  *  I tried to shut one thing down twice, which was the cause of the exception that skipped the remainder of the shutdown code.
+  *  I forgot to try/catch around the startup/shutdown methods, even after I'd been bit by that once.  I guess those didn't seem quite...event-y enough to recognize?
+  *  Once I fixed that, the trace pointed to where I was trying to shut one thing down twice.
   *  After cleaning that up, there was still one category of event I'd forgot to unsubscribe from.
 
   Now, Sun Tzu tells us we want to code so that we never encounter these errors again.  Failing that, the next most excellent path is to learn immediately when they occur.  Let us see how far we can walk towards excellence.
@@ -55,6 +55,7 @@ Pretty straightforward, if tedious, at first look.  Let's look closer, and refin
 
  * The VS Extensibility model sets me up with a number of event sources, using several event-delivery structures.
  * We'll want to check that each event winds up in the right spot.
+ * Swept has a secondary design goal of being easy to ramp-up on, so I'm not including a mocking framework.
 
   For each event source
     Create a mock source and a mock listener
