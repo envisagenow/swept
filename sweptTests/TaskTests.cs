@@ -35,6 +35,16 @@ namespace swept.Tests
         }
 
         [Test]
+        public void FromChange_tasks_include_match_location()
+        {
+            _change._matchList = new List<int> { 4, 8, 9 };
+            List<Task> tasks = Task.FromChange( _change );
+            Assert.That( tasks[0].LineNumber, Is.EqualTo( 4 ) );
+            Assert.That( tasks[1].LineNumber, Is.EqualTo( 8 ) );
+            Assert.That( tasks[2].LineNumber, Is.EqualTo( 9 ) );
+        }
+
+        [Test]
         public void attributes_filled_from_Change()
         {
             Assert.AreEqual( _change.ID, _task.ID );

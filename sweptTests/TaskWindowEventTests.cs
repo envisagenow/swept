@@ -27,6 +27,25 @@ namespace swept.Tests
         }
 
         [Test]
+        public void when_TaskWindow_hears_SeekingTaskLocation_the_UserAdapter_gets_the_task()
+        {
+            //unfinished
+            _preparer.ShiftSweptToMocks( _starter );
+            MockUserAdapter userAdapter = _preparer.MockGUI;
+
+            Task task = new Task
+            {
+                Children = null,
+                Description = "hi!",
+            };
+            TaskEventArgs args = new TaskEventArgs { Task = task };
+
+            _window.Hear_TaskChosen( this, args );
+
+            Assert.That( userAdapter.DoubleClickedTask, Is.SameAs( task ) );
+        }
+
+        [Test]
         public void when_TaskWindow_toggled_visibility_changed()
         {
             _window.Visible = false;

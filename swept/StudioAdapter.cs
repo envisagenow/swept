@@ -13,6 +13,13 @@ namespace swept
         public ProjectLibrarian Librarian { get; set; }
 
 
+        public void Hear_TaskLocationSought( object sender, TaskEventArgs args )
+        {
+            
+        }
+
+
+
         #region Publish events
 
         public event EventHandler<FileEventArgs> Event_SolutionOpened;

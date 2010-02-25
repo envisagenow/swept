@@ -116,6 +116,10 @@ namespace swept
             Raise_TaskListReset();
         }
 
+        private void SendViewToTaskLocation( Task task )
+        {
+            Raise_TaskLocationSought( task );
+        }
         #region Raise events
 
         public event EventHandler<EventArgs> Event_TaskWindowToggled;
@@ -128,8 +132,15 @@ namespace swept
         public event EventHandler<EventArgs> Event_TaskListReset;
         public void Raise_TaskListReset()
         {
-            if( Event_TaskListReset != null )
+            if (Event_TaskListReset != null)
                 Event_TaskListReset( Tasks, null );
+        }
+
+        public event EventHandler<TaskEventArgs> Event_TaskLocationSought;
+        public void Raise_TaskLocationSought( Task task )
+        {
+            if (Event_TaskLocationSought != null)
+                Event_TaskLocationSought( Tasks, new TaskEventArgs { Task = task } );
         }
 
         #endregion
@@ -153,11 +164,6 @@ namespace swept
             RefreshChangeCatalog( args.Catalog );
         }
 
-        public void Hear_SeeAlsoFollowed( object sender, SeeAlsoEventArgs args )
-        {
-            Follow( args.SeeAlso );
-        }
-
         public void Hear_SourceCatalogUpdated( object sender, SourceCatalogEventArgs args )
         {
             RefreshSourceCatalog( args.Catalog );
@@ -166,6 +172,16 @@ namespace swept
         public void Hear_TaskWindowToggled( object sender, EventArgs args )
         {
             ToggleWindowVisibility();
+        }
+
+        public void Hear_SeeAlsoFollowed( object sender, SeeAlsoEventArgs args )
+        {
+            Follow( args.SeeAlso );
+        }
+
+        public void Hear_TaskChosen( object sender, TaskEventArgs args )
+        {
+            SendViewToTaskLocation( args.Task );
         }
 
         public void Hear_TaskCheck( object sender, TaskEventArgs args )

@@ -14,6 +14,8 @@ namespace swept.Tests
 
         internal List<string> messages;
 
+        public Task DoubleClickedTask { get; private set; }
+
         public MockUserAdapter()
         {
             messages = new List<string>();

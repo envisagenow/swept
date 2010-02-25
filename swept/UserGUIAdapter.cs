@@ -37,6 +37,11 @@ namespace swept
             //MessageBox.Show( message );
         }
 
+        //public void MoveStudioCursorToLocation( int lineNumber )
+        //{
+        //    throw new NotImplementedException( String.Format("Soon...  But I got line number [{0}].", lineNumber ) );
+        //}
+
         public void ShowSeeAlso( SeeAlso seeAlso )
         {
             switch (seeAlso.TargetType)

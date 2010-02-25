@@ -45,6 +45,9 @@ namespace swept
             //  A self-subscription.  Odd, possibly poor practice...
             TaskWindow.Event_TaskWindowToggled += TaskWindow.Hear_TaskWindowToggled;
 
+            // TODO: finish!
+            //TaskWindow.Event_TaskLocationSought
+
 
             //  Subscribe to the ChangeWindow's events
             ChangeWindow.Event_ChangeAdded += Librarian.Hear_ChangeAdded;

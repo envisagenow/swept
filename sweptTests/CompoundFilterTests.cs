@@ -49,49 +49,7 @@ cxxxxxxxxx
         }
 
         [Test]
-        public void sibling_with_And_operator_will_intersect_matches()
-        {
-            SourceFile file = new SourceFile( "bs.cs" );
-            file.Content = _multiLineFile;
-
-            CompoundFilter child = new CompoundFilter();
-            CompoundFilter and_sibling = new CompoundFilter { Operator = FilterOperator.And };
-            CompoundFilter parent = new CompoundFilter();
-            parent.Children.Add( child );
-            parent.Children.Add( and_sibling );
-
-            child.ContentPattern = "b";
-            and_sibling.ContentPattern = "a";
-            parent.DoesMatch( file );
-
-            Assert.That( parent._matchList.Count, Is.EqualTo( 1 ) );
-            Assert.That( parent._matchList[0], Is.EqualTo( 3 ) );
-        }
-
-        [Test]
-        public void sibling_with_Or_operator_will_intersect_matches()
-        {
-            SourceFile file = new SourceFile( "bs.cs" );
-            file.Content = _multiLineFile;
-
-            CompoundFilter child = new CompoundFilter();
-            CompoundFilter or_sibling = new CompoundFilter { Operator = FilterOperator.Or };
-            CompoundFilter parent = new CompoundFilter();
-            parent.Children.Add( child );
-            parent.Children.Add( or_sibling );
-
-            child.ContentPattern = "b";
-            or_sibling.ContentPattern = "a";
-            parent.DoesMatch( file );
-
-            Assert.That( parent._matchList.Count, Is.EqualTo( 3 ) );
-            Assert.That( parent._matchList[0], Is.EqualTo( 2 ) );
-            Assert.That( parent._matchList[1], Is.EqualTo( 3 ) );
-            Assert.That( parent._matchList[2], Is.EqualTo( 4 ) );
-        }
-
-        [Test]
-        public void when_parent_filter_is_content_filter_child_matches_combine_with_parent_matches()
+        public void when_parent_filter_is_content_filter_child_matches_intersect_with_parent_matches()
         {
             SourceFile file = new SourceFile( "bs.cs" );
             file.Content = _multiLineFile;
@@ -128,6 +86,48 @@ cxxxxxxxxx
             Assert.That( parent._matchList.Count, Is.EqualTo( 2 ) );
             Assert.That( parent._matchList[0], Is.EqualTo( 3 ) );
             Assert.That( parent._matchList[1], Is.EqualTo( 4 ) );
+        }
+
+        [Test]
+        public void sibling_with_And_operator_will_intersect_matches()
+        {
+            SourceFile file = new SourceFile( "bs.cs" );
+            file.Content = _multiLineFile;
+
+            CompoundFilter child = new CompoundFilter();
+            CompoundFilter and_sibling = new CompoundFilter { Operator = FilterOperator.And };
+            CompoundFilter parent = new CompoundFilter();
+            parent.Children.Add( child );
+            parent.Children.Add( and_sibling );
+
+            child.ContentPattern = "b";
+            and_sibling.ContentPattern = "a";
+            parent.DoesMatch( file );
+
+            Assert.That( parent._matchList.Count, Is.EqualTo( 1 ) );
+            Assert.That( parent._matchList[0], Is.EqualTo( 3 ) );
+        }
+
+        [Test]
+        public void sibling_with_Or_operator_will_union_matches()
+        {
+            SourceFile file = new SourceFile( "bs.cs" );
+            file.Content = _multiLineFile;
+
+            CompoundFilter child = new CompoundFilter();
+            CompoundFilter or_sibling = new CompoundFilter { Operator = FilterOperator.Or };
+            CompoundFilter parent = new CompoundFilter();
+            parent.Children.Add( child );
+            parent.Children.Add( or_sibling );
+
+            child.ContentPattern = "b";
+            or_sibling.ContentPattern = "a";
+            parent.DoesMatch( file );
+
+            Assert.That( parent._matchList.Count, Is.EqualTo( 3 ) );
+            Assert.That( parent._matchList[0], Is.EqualTo( 2 ) );
+            Assert.That( parent._matchList[1], Is.EqualTo( 3 ) );
+            Assert.That( parent._matchList[2], Is.EqualTo( 4 ) );
         }
         
         #endregion
