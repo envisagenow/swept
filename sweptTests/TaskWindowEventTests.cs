@@ -42,6 +42,7 @@ namespace swept.Tests
 
             _window.Hear_TaskChosen( this, args );
 
+            // TODO: finish this.
             Assert.That( userAdapter.DoubleClickedTask, Is.SameAs( task ) );
         }
 
