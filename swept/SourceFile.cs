@@ -12,6 +12,7 @@ namespace swept
         public FileLanguage Language;
         public string Name;
         public string Content;
+        public int TaskCount;
         internal List<Completion> Completions;
         public bool IsRemoved { get; set; }
 

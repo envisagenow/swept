@@ -1,0 +1,48 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Xml.Linq;
+
+namespace swept
+{
+    public class BuildReporter
+    {
+        public BuildReporter()
+        {
+        }
+
+        public string ReportOn( Dictionary<Change, List<SourceFile>> filesPerChange )
+        {
+            XDocument report_doc = new XDocument();
+            XElement report_root = new XElement( "SweptBuildReport" );
+
+            foreach (Change change in filesPerChange.Keys)
+            {
+                int totalTasksPerChange = 0;
+
+                var change_element = new XElement( "Change",
+                    new XAttribute( "ID", change.ID ),
+                    new XAttribute("Description",change.Description)
+                );
+
+                foreach(SourceFile sf in filesPerChange[change])
+                {
+                    var source_file_element = new XElement("SourceFile",
+                        new XAttribute("Name",sf.Name),
+                        new XAttribute("TaskCount",sf.TaskCount));
+                    totalTasksPerChange += sf.TaskCount;
+
+                    change_element.Add( source_file_element );
+                }
+
+                change_element.Add( new XAttribute( "TotalTasks", totalTasksPerChange ) );
+
+                report_root.Add( change_element );
+            }
+
+            report_doc.Add( report_root );
+            return report_doc.ToString();
+        }
+    }
+}
