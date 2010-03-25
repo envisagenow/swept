@@ -3,6 +3,7 @@
 //  This software is open source, MIT license.  See the file LICENSE for details.
 using System;
 using System.Xml;
+using System.Collections.Generic;
 
 namespace swept
 {
@@ -11,5 +12,7 @@ namespace swept
         void Save( string fileName, string xmlText );
         XmlDocument LoadLibrary(string libraryPath);
         void RenameLibrary( string oldPath, string newPath );
+        string GetCWD();
+        IEnumerable<string> GetFilesInFolder( string folder );
     }
 }

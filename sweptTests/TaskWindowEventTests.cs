@@ -26,7 +26,7 @@ namespace swept.Tests
             _window = _starter.TaskWindow;
         }
 
-        [Test]
+        [Test, Ignore("tricky--not well suited for dev candidates")]
         public void when_TaskWindow_hears_SeekingTaskLocation_the_UserAdapter_gets_the_task()
         {
             //unfinished

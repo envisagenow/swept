@@ -1,28 +1,21 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
   <Class Name="swept.Change">
-    <Position X="5.75" Y="3.5" Width="1.5" />
+    <Position X="5.75" Y="3.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAACAAAAAAABA=</HashCode>
       <FileName>Change.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="swept.ChangeCatalog">
-    <Position X="5.75" Y="0.75" Width="1.5" />
+    <Position X="5.75" Y="0.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>IBIAAAAAAAAAAAAAgAAABAAAEAAAAAAAAAAAAAAAABA=</HashCode>
       <FileName>ChangeCatalog.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="swept.Completion">
-    <Position X="0.5" Y="4.75" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABI=</HashCode>
-      <FileName>Completion.cs</FileName>
-    </TypeIdentifier>
-  </Class>
   <Class Name="swept.StorageAdapter" Collapsed="true" BaseTypeListCollapsed="true">
-    <Position X="7.75" Y="1.5" Width="1.5" />
+    <Position X="0.5" Y="6" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAABAQBAAQAA=</HashCode>
       <FileName>StorageAdapter.cs</FileName>
@@ -30,7 +23,7 @@
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="swept.UserGUIAdapter" Collapsed="true" BaseTypeListCollapsed="true">
-    <Position X="9.5" Y="1.5" Width="1.5" />
+    <Position X="2.25" Y="6" Width="1.5" />
     <TypeIdentifier>
       <HashCode>ACAAAAAAAAAAgAAACAAAAAAAAAAAIAAAAAAAAgAAAAA=</HashCode>
       <FileName>UserGUIAdapter.cs</FileName>
@@ -50,82 +43,68 @@
   <Class Name="swept.SourceFile">
     <Position X="0.5" Y="0.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAQAAAAACgACAACAgEEAAQQCAAAAAAAAAAAgAAQAABA=</HashCode>
+      <HashCode>AAQAABAACgACAACAgEEAAQQCAAAAAAAAAAAgAAQAABA=</HashCode>
       <FileName>SourceFile.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="swept.SourceFileCatalog">
-    <Position X="2.25" Y="0.75" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAIAAAAAAAAAAAAAgIEgBAAAABAIAAAAAAABAAIAgJA=</HashCode>
-      <FileName>SourceFileCatalog.cs</FileName>
-    </TypeIdentifier>
-  </Class>
   <Class Name="swept.Starter" Collapsed="true">
-    <Position X="9.5" Y="2.25" Width="1.5" />
+    <Position X="2.25" Y="6.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAwCAAAAIAAAAEAAAAAAAAAAAAIAAAAAAAAAA=</HashCode>
       <FileName>Starter.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="swept.StudioAdapter">
-    <Position X="13.5" Y="3" Width="1.5" />
+    <Position X="12.25" Y="3" Width="1.5" />
     <Compartments>
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>AACQAAiARAIBAVIAEgAMAAAQAAABAAAAABASABAAAAI=</HashCode>
+      <HashCode>AACQAAiARAIBAVIAEgAMAAAQAAABAAgAABASABAAAAI=</HashCode>
       <FileName>StudioAdapter.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="swept.Task">
     <Position X="5.75" Y="5.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAEAIEAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAEAIEAAAIAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Task.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="swept.TaskWindow">
-    <Position X="11.25" Y="3" Width="2" />
+    <Position X="10" Y="0.5" Width="2" />
     <TypeIdentifier>
-      <HashCode>gCAAAEQAAAACAMAgABAQRAAwEAAAAAAIAAQpAAAQCIc=</HashCode>
+      <HashCode>gCAAAEQAAAACAMBgABAQRAAwEAAAAABIAAQpAAAwCIc=</HashCode>
       <FileName>TaskWindow.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="swept.XmlPort" Collapsed="true">
-    <Position X="7.75" Y="2.25" Width="1.5" />
+    <Position X="0.5" Y="6.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAABAAAGAQAAAAAAIAACAABAAACAAAAIA=</HashCode>
       <FileName>XmlPort.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="swept.CompoundFilter">
-    <Position X="7.75" Y="3.25" Width="1.5" />
+    <Position X="7.5" Y="0.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>RJAAAAAACAAggASCgAEEAAQAAAACAAAACIAAAAAEIBA=</HashCode>
+      <HashCode>RIAAAAAACAAggASCgQEEAAQAAAwKIAAEiIAAAAAEIBA=</HashCode>
       <FileName>CompoundFilter.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Interface Name="swept.IStorageAdapter" Collapsed="true">
-    <Position X="7.75" Y="0.75" Width="1.5" />
+    <Position X="0.5" Y="5.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAABAQAAAAAA=</HashCode>
       <FileName>IStorageAdapter.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Interface Name="swept.IUserAdapter" Collapsed="true">
-    <Position X="9.5" Y="0.75" Width="1.5" />
+    <Position X="2.25" Y="5.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>ACAAAAAAAAAAgAAACAAAAAAAAAAAIAAAAAAAAgAAAAA=</HashCode>
       <FileName>IUserAdapter.cs</FileName>
     </TypeIdentifier>
   </Interface>
-  <Enum Name="swept.FilterOperator" Collapsed="true">
-    <Position X="13.5" Y="2" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>IAAAAAAAAAAAAAAAAAAAAAAAACAAAAAgAAAAAAAAAAA=</HashCode>
-      <FileName>CompoundFilter.cs</FileName>
-    </TypeIdentifier>
-  </Enum>
   <Font Name="Tahoma" Size="8.25" />
 </ClassDiagram>

@@ -4,6 +4,7 @@
 using System;
 using System.IO;
 using System.Xml;
+using System.Collections.Generic;
 
 namespace swept
 {
@@ -58,6 +59,18 @@ namespace swept
                 }
             }
         }
+
+        public string GetCWD()
+        {
+            throw new NotImplementedException( "Need to learn how to GetCWD." );
+        }
+
+        public IEnumerable<string> GetFilesInFolder( string folder )
+        {
+            throw new NotImplementedException( "Need to learn how to GetFilesInFolder." );
+
+        }
+        
         // future:  Pick another location if not found, store that location...somewhere?
 
         public void RenameLibrary( string oldPath, string newPath )

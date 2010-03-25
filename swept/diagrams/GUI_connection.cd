@@ -1,21 +1,26 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
   <Comment CommentText="IUserAdapter:  Provides technically abstract, functionally explicit interface points for Swept to provide a GUI during live addin use, mocks for testing, and possible command-line usage later.">
-    <Position X="9.021" Y="2.136" Height="0.99" Width="2.21" />
+    <Position X="11.386" Y="0.5" Height="0.99" Width="2.21" />
+  </Comment>
+  <Comment CommentText="StudioAdapter:  Gets sanitized events from the Visual Studio Addin, propagates those to subscribers.&#xD;&#xA;">
+    <Position X="5.094" Y="0.5" Height="0.75" Width="1.7" />
+  </Comment>
+  <Comment CommentText="TaskWindow holds the logic and routes events, and is attached to UserGUIAdapter and TaskWindow_GUI (in SweptAddin).">
+    <Position X="5.198" Y="6.312" Height="0.885" Width="1.7" />
   </Comment>
   <Class Name="swept.Change" Collapsed="true">
     <Position X="0.5" Y="1.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAACAAggAAAgAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAACAAAAAAABA=</HashCode>
       <FileName>Change.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="swept.ProjectLibrarian">
-    <Position X="2.75" Y="0.5" Width="2.25" />
+    <Position X="9.75" Y="4" Width="2.25" />
     <Members>
       <Method Name="AbandonFileChanges" Hidden="true" />
       <Method Name="AddChange" Hidden="true" />
-      <Method Name="DeleteFile" Hidden="true" />
       <Event Name="Event_ChangeCatalogUpdated" Hidden="true" />
       <Event Name="Event_SourceCatalogUpdated" Hidden="true" />
       <Method Name="GetLibraryDocument" Hidden="true" />
@@ -33,7 +38,7 @@
       <Compartment Name="Properties" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>AEABgcAhAACAAAAAAAKgIAIEAAkAgAhIBIHBkAJQAAA=</HashCode>
+      <HashCode>AEABgcAgAACAAAgAJAKgAAIGAAkAgAhIBIHBgAJQAAA=</HashCode>
       <FileName>ProjectLibrarian.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -45,24 +50,24 @@
     </TypeIdentifier>
   </Class>
   <Class Name="swept.StudioAdapter">
-    <Position X="6" Y="0.5" Width="2.25" />
+    <Position X="2.75" Y="0.5" Width="2.25" />
     <Compartments>
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>AACQAAiARAIBAVIIEgAMAAAQAAABAAAAABASABAAAAI=</HashCode>
+      <HashCode>AACQAAiARAIBAVIAEgAMAAAQAAABAAgAABASABAAAAI=</HashCode>
       <FileName>StudioAdapter.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="swept.Task">
     <Position X="0.5" Y="2.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAEAIEAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAEAIEAAAIAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Task.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="swept.TaskWindow">
-    <Position X="2.75" Y="4.25" Width="2.25" />
+    <Position X="2.75" Y="4.5" Width="2.25" />
     <Members>
       <Event Name="Event_TaskListReset" Hidden="true" />
       <Event Name="Event_TaskWindowToggled" Hidden="true" />
@@ -80,14 +85,22 @@
       <Compartment Name="Properties" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>gCAAAEQAAAACAMAgABAQQAAwEAAAAAAIAAQpEAAQAIY=</HashCode>
+      <HashCode>gCAAAEQAAAACAMBgABAQRAAwEAAAAABIAAQpAAAwCIc=</HashCode>
       <FileName>TaskWindow.cs</FileName>
     </TypeIdentifier>
+  </Class>
+  <Class Name="swept.UserGUIAdapter">
+    <Position X="5.25" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACAAAAAAAAAAgAAACAAAAAAAAAAAIAAAAAAAAgAAAAA=</HashCode>
+      <FileName>UserGUIAdapter.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
   </Class>
   <Interface Name="swept.IUserAdapter">
     <Position X="9" Y="0.5" Width="2.25" />
     <TypeIdentifier>
-      <HashCode>ACAAAAAAAAAAgAAACAAAAAAAAAAAIAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>ACAAAAAAAAAAgAAACAAAAAAAAAAAIAAAAAAAAgAAAAA=</HashCode>
       <FileName>IUserAdapter.cs</FileName>
     </TypeIdentifier>
   </Interface>

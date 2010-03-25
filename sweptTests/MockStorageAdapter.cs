@@ -3,6 +3,7 @@
 //  This software is open source, MIT license.  See the file LICENSE for details.
 using System;
 using System.Xml;
+using System.Collections.Generic;
 
 namespace swept.Tests
 {
@@ -10,11 +11,14 @@ namespace swept.Tests
     {
         public string FileName { get; set; }
         public XmlDocument LibraryDoc { get; set; }
+        public Dictionary<string, List<string>> FilesInFolder { get; set; }
+        public string CWD = String.Empty;
         public bool ThrowBadXmlException;
 
         public MockStorageAdapter()
         {
             setDocFromText( StorageAdapter.emptyCatalogText );
+            FilesInFolder = new Dictionary<string, List<string>>();
         }
 
         public void Save(string fileName, string xmlText)
@@ -48,5 +52,16 @@ namespace swept.Tests
             renamedNewLibraryPath = newPath;
             renamedOldLibraryPath = oldPath;
         }
+
+        public string GetCWD()
+        {
+            return CWD;
+        }
+
+        public IEnumerable<string> GetFilesInFolder( string folder )
+        {
+            return FilesInFolder[folder];
+        }
+        
     }
 }

@@ -2,43 +2,59 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.IO;
 
 namespace swept
 {
     public class Arguments
     {
-        public Arguments( string[] args )
+        public Arguments( string[] args, IStorageAdapter fileSystem )
         {
-
+            Exclude = new List<string>();
 
             foreach (string s in args)
             {
-                string[] pair = null;
+                string[] tokens = null;
 
                 if (!s.Contains( ':' ))
                     throw new ArgumentException( String.Format( "Don't understand the argument [{0}].", s ) );
 
-                pair= s.Split( ':' );
+                tokens = s.Split( ':' );
 
+                if (tokens.Length > 2)
+                {
+                    tokens[1] += ":" + tokens[2];
+                }
 
-                switch (pair[0])
+                switch (tokens[0])
                 {
                     case "library":
-                        Library = pair[1];
+                        Library = tokens[1];
                         break;
                     case "folder":
-                        Folder = pair[1];
-                        if (pair.Length > 2)
-                            Folder += ":" + pair[2];
+                        Folder = tokens[1];
                         break;
                     case "exclude":
-                        Exclude = pair[1].Split(',');
+                        Exclude = tokens[1].Split(',');
                         break;
                     case null:
                     case "":
                     default:
-                        throw new ArgumentException( String.Format( "Don't recognize the argument [{0}].", pair[0] ) );
+                        throw new ArgumentException( String.Format( "Don't recognize the argument [{0}].", tokens[0] ) );
                 }
+            }
+
+            if( string.IsNullOrEmpty( Library ))
+                throw new Exception( "The [library] argument is required." );
+
+            if (String.IsNullOrEmpty( Folder ))
+            {
+                Folder = fileSystem.GetCWD();
+            }
+
+            if ( Folder[1] == ':' && Library[1] != ':')
+            {
+                Library = Path.Combine( Folder, Library );
             }
         }
 
