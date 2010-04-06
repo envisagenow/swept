@@ -12,6 +12,7 @@ namespace swept.Tests
         public string FileName { get; set; }
         public XmlDocument LibraryDoc { get; set; }
         public Dictionary<string, List<string>> FilesInFolder { get; set; }
+        public Dictionary<string, List<string>> FoldersInFolder { get; set; }
         public string CWD = String.Empty;
         public bool ThrowBadXmlException;
 
@@ -19,6 +20,7 @@ namespace swept.Tests
         {
             setDocFromText( StorageAdapter.emptyCatalogText );
             FilesInFolder = new Dictionary<string, List<string>>();
+            FoldersInFolder = new Dictionary<string, List<string>>();
         }
 
         public void Save(string fileName, string xmlText)
@@ -60,7 +62,18 @@ namespace swept.Tests
 
         public IEnumerable<string> GetFilesInFolder( string folder )
         {
-            return FilesInFolder[folder];
+            if (FilesInFolder.ContainsKey( folder ))
+                return FilesInFolder[folder];
+
+            return new List<string>();
+        }
+
+       public IEnumerable<string> GetFoldersInFolder( string folder )
+        {
+            if (FoldersInFolder.ContainsKey( folder ))
+                return FoldersInFolder[folder];
+
+            return new List<string>();
         }
         
     }

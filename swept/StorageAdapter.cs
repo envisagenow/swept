@@ -68,7 +68,11 @@ namespace swept
         public IEnumerable<string> GetFilesInFolder( string folder )
         {
             throw new NotImplementedException( "Need to learn how to GetFilesInFolder." );
+        }
 
+        public IEnumerable<string> GetFoldersInFolder( string folder )
+        {
+            throw new NotImplementedException( "Need to learn how to GetFolderInFolder." );
         }
         
         // future:  Pick another location if not found, store that location...somewhere?

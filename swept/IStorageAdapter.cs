@@ -14,5 +14,7 @@ namespace swept
         void RenameLibrary( string oldPath, string newPath );
         string GetCWD();
         IEnumerable<string> GetFilesInFolder( string folder );
+
+        IEnumerable<string> GetFoldersInFolder( string p );
     }
 }

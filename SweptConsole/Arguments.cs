@@ -17,7 +17,7 @@ namespace swept
                 string[] tokens = null;
 
                 if (!s.Contains( ':' ))
-                    throw new ArgumentException( String.Format( "Don't understand the argument [{0}].", s ) );
+                    throw new ArgumentException( String.Format( "Don't understand the input [{0}].", s ) );
 
                 tokens = s.Split( ':' );
 

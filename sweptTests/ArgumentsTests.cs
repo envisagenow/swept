@@ -19,7 +19,7 @@ namespace swept.Tests
             mockStorageAdapter.CWD = @"d:\code\project";
         }
 
-        [Test, ExpectedException( ExpectedMessage = "Don't understand the argument [bad-argument]." )]
+        [Test, ExpectedException( ExpectedMessage = "Don't understand the input [bad-argument]." )]
         public void malformed_args_throw()
         {
             var argsArray = new string[] { "bad-argument", "library:unused" };
