@@ -16,8 +16,14 @@ namespace swept
         {
             StorageAdapter = storageAdapter;
             Args = args;
+            WhiteListPattern = @"\.(cs|aspx|ascx|x?html?|xml|txt|xslt?|css)$";
         }
 
+        public string WhiteListPattern
+        {
+            get;
+            set;
+        }
 
         public IEnumerable<string> GetProjectFiles()
         {
@@ -36,7 +42,8 @@ namespace swept
             foreach (string file in StorageAdapter.GetFilesInFolder( folder ))
             {
                 string fullyQualifiedFileName = Path.Combine( folder, file );
-                projectFiles.Add( fullyQualifiedFileName );
+                if( Regex.IsMatch( file, WhiteListPattern, RegexOptions.IgnoreCase ))
+                    projectFiles.Add( fullyQualifiedFileName );
             }
 
             IEnumerable<string> children = StorageAdapter.GetFoldersInFolder( folder );

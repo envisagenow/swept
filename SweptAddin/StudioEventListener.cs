@@ -33,7 +33,7 @@ namespace swept.Addin
         {
             _studio = studio;
             _sweptAddin = sweptAddin;
-            _adapter = starter.Adapter;
+            _adapter = starter.StudioAdapter;
             _solutionEvents = _studio.Events.SolutionEvents;
             _solutionItemsEvents = _studio.Events.SolutionItemsEvents;
             _documentEvents = _studio.Events.get_DocumentEvents( null );

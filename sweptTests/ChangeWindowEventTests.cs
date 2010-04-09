@@ -27,10 +27,10 @@ namespace swept.Tests
             starter.Start();
 
             librarian = starter.Librarian;
-            adapter = starter.Adapter;
+            adapter = starter.StudioAdapter;
             librarian.SolutionPath = @"c:\somewhere\for_the.sln";
 
-            changeCat = librarian._changeCatalog;
+            changeCat = starter.ChangeCatalog;
             string indentID = "14";
             changeCat.Add( new Change { ID = indentID, Description = "indentation cleanup", Language = FileLanguage.CSharp } );
             librarian._savedChangeCatalog = changeCat.Clone();
@@ -81,7 +81,7 @@ namespace swept.Tests
         [Test]
         public void WhenChangeAdded_ChangeCatalogPersisted()
         {
-            changeCat = librarian._changeCatalog;
+            changeCat = starter.ChangeCatalog;
             Assert.IsTrue( librarian.IsSaved );
             changeCat.Add( new Change { ID = "Inf09_altered" } );
             Assert.IsFalse( librarian.IsSaved );

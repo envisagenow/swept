@@ -23,10 +23,10 @@ namespace swept.Tests
         public void given_a_deleted_change()
         {
             _testingSolutionPath = @"f:\over\here.sln";
-            Horace = new ProjectLibrarian { SolutionPath = _testingSolutionPath };
-
             _storageAdapter = new MockStorageAdapter();
-            Horace._storageAdapter = _storageAdapter;
+            ChangeCatalog changeCatalog = new ChangeCatalog();
+            Horace = new ProjectLibrarian( _storageAdapter, changeCatalog ) { SolutionPath = _testingSolutionPath };
+
             Horace._userAdapter = new MockUserAdapter();
 
 
@@ -36,7 +36,7 @@ namespace swept.Tests
             Horace._sourceCatalog.Add( foo );
             foo.Completions.Add( new Completion( "14" ) );
 
-            Horace._changeCatalog.Remove( "14" );
+            changeCatalog.Remove( "14" );
 
             talker = new MockUserAdapter();
             Horace._userAdapter = talker;

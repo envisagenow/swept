@@ -21,7 +21,7 @@ namespace swept.Tests
         [Test]
         public void StudioAdapter_is_connected()
         {
-            StudioAdapter studio = starter.Adapter;
+            StudioAdapter studio = starter.StudioAdapter;
 
             Assert.IsNotNull(studio.taskWindow);
             Assert.IsNotNull(studio.Librarian);
@@ -32,7 +32,7 @@ namespace swept.Tests
         {
             ProjectLibrarian lib = starter.Librarian;
             Assert.IsNotNull(lib);
-            Assert.IsNotNull(lib._changeCatalog);
+            Assert.IsNotNull( starter.ChangeCatalog );
         }
 
         [Test]
@@ -40,7 +40,7 @@ namespace swept.Tests
         {
             starter.Stop();
 
-            Assert.IsNull( starter.Adapter );
+            Assert.IsNull( starter.StudioAdapter );
             Assert.IsNull( starter.Librarian );
             Assert.IsNull( starter.TaskWindow );
             Assert.IsNull( starter.ChangeWindow );

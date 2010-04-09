@@ -26,7 +26,7 @@ namespace swept.Tests
             _librarian.SolutionPath = @"c:\code\path\to.sln";
             
             _tasks = _starter.TaskWindow;
-            _adapter = _starter.Adapter;
+            _adapter = _starter.StudioAdapter;
             _changes = _starter.ChangeWindow;
 
             TestPreparer preparer = new TestPreparer();
@@ -60,9 +60,9 @@ namespace swept.Tests
         [Test]
         public void When_SolutionOpened_all_change_catalog_references_updated()
         {
-            ChangeCatalog oldCatalog = _librarian._changeCatalog;
+            ChangeCatalog oldCatalog = _starter.ChangeCatalog;
             _adapter.Raise_SolutionOpened( @"c:\different\place\for.sln" );
-            ChangeCatalog newCatalog = _librarian._changeCatalog;
+            ChangeCatalog newCatalog = _starter.ChangeCatalog;
             Assert.That( newCatalog, Is.Not.EqualTo( oldCatalog ) );
             Assert.That( newCatalog, Is.EqualTo( _tasks._changeCatalog ) );
         }

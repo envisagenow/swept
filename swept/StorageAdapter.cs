@@ -62,17 +62,17 @@ namespace swept
 
         public string GetCWD()
         {
-            throw new NotImplementedException( "Need to learn how to GetCWD." );
+            return Environment.CurrentDirectory;
         }
 
         public IEnumerable<string> GetFilesInFolder( string folder )
         {
-            throw new NotImplementedException( "Need to learn how to GetFilesInFolder." );
+            return Directory.GetFiles( folder );
         }
 
         public IEnumerable<string> GetFoldersInFolder( string folder )
         {
-            throw new NotImplementedException( "Need to learn how to GetFolderInFolder." );
+            return Directory.GetDirectories( folder );
         }
         
         // future:  Pick another location if not found, store that location...somewhere?
@@ -82,5 +82,19 @@ namespace swept
             throw new NotImplementedException();
         }
 
+        public SourceFile LoadFile( string fileName )
+        {
+            try
+            {
+                SourceFile file = new SourceFile( fileName );
+                file.Content = File.ReadAllText( fileName );
+                return file;
+            }
+            catch( Exception ex )
+            {
+                Console.Out.WriteLine( String.Format( "LoadFile( {0} ) failed.", fileName ) );
+                throw;
+            }
+        }
     }
 }

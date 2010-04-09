@@ -28,9 +28,9 @@ namespace swept.Tests
             starter = new Starter();
             starter.Start();
             librarian = starter.Librarian;
-            dispatcher = starter.Adapter;
+            dispatcher = starter.StudioAdapter;
 
-            changeCat = librarian._changeCatalog;
+            changeCat = starter.ChangeCatalog;
             string indentID = "14";
             changeCat.Add( new Change { ID = indentID, Description = "indentation cleanup", Language = FileLanguage.CSharp } );
 

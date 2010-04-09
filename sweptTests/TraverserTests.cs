@@ -120,5 +120,23 @@ namespace swept.Tests
             Assert.That( filesFromTraverser[1], Is.EqualTo( @"c:\foo\bar\bar.html" ) );
         }
 
+        [Test]
+        public void traversal_omits_file_extensions_not_whitelisted()
+        {
+            List<string> filesInFoo = new List<string> { "foo.cs", "foo.html", "foo.schnob", "foo.dll", "foo.pdb" };
+            mockStorageAdapter.FilesInFolder["c:\\foo"] = filesInFoo;
+
+            string[] argsText = { "folder:c:\\foo", "library:foo.library" };
+            var args = new Arguments( argsText, null );
+            Traverser traverser = new Traverser( args, mockStorageAdapter );
+            traverser.WhiteListPattern = @"\.(cs|html)$";
+
+            IEnumerable<string> files = traverser.GetProjectFiles();
+            List<string> filesFromTraverser = files.ToList();
+            Assert.That( filesFromTraverser.Count, Is.EqualTo( 2 ) );
+            Assert.That( filesFromTraverser[0], Is.EqualTo( @"c:\foo\foo.cs" ) );
+            Assert.That( filesFromTraverser[1], Is.EqualTo( @"c:\foo\foo.html" ) );
+        }
+
     }
 }

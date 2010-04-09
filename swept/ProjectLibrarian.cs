@@ -13,7 +13,7 @@ namespace swept
         //  There are two major collections per solution:  The Change and Source File catalogs.
 
         //  The Change Catalog holds things the team wants to improve in this solution.
-        internal ChangeCatalog _changeCatalog;
+        private ChangeCatalog _changeCatalog;
         internal ChangeCatalog _savedChangeCatalog;  //  For comparison to find unsaved changes.
 
         //  The Source File Catalog tracks which changes have been completed for which files.
@@ -43,14 +43,14 @@ namespace swept
             get { return Path.ChangeExtension(SolutionPath, "swept.library"); }
         }
 
-        public ProjectLibrarian()
+        public ProjectLibrarian( IStorageAdapter storageAdapter, ChangeCatalog changeCatalog )
         {
+            _storageAdapter = storageAdapter;
+            _changeCatalog = changeCatalog;
             _sourceCatalog = new SourceFileCatalog();
             _savedSourceCatalog = new SourceFileCatalog();
             _savedChangeCatalog = new ChangeCatalog();
-            _changeCatalog = new ChangeCatalog();
             _userAdapter = new UserGUIAdapter();
-            _storageAdapter = new StorageAdapter();
         }
 
         internal bool SourceFileCatalogSaved

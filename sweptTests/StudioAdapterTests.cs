@@ -29,9 +29,9 @@ namespace swept.Tests
             preparer.ShiftSweptToMocks( starter );
 
             librarian = starter.Librarian;
-            adapter = starter.Adapter;
+            adapter = starter.StudioAdapter;
 
-            changeCat = librarian._changeCatalog;
+            changeCat = starter.ChangeCatalog;
             string indentID = "14";
             changeCat.Add( new Change { ID = indentID, Description = "indentation cleanup", Language = FileLanguage.CSharp } );
             librarian._savedChangeCatalog = changeCat.Clone();

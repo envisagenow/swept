@@ -16,5 +16,6 @@ namespace swept
         IEnumerable<string> GetFilesInFolder( string folder );
 
         IEnumerable<string> GetFoldersInFolder( string p );
+        SourceFile LoadFile( string fileName );
     }
 }

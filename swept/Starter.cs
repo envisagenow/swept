@@ -9,37 +9,42 @@ namespace swept
     {
         public ProjectLibrarian Librarian { get; private set; }
 
-        public StudioAdapter Adapter { get; set; }
+        public IStorageAdapter StorageAdapter { get; set; }
+        public ChangeCatalog ChangeCatalog { get; set; }
+        public StudioAdapter StudioAdapter { get; set; }
         public ChangeWindow ChangeWindow { get; set; }
         public TaskWindow TaskWindow { get; set; }
 
         public void Start()
         {
-            Adapter = new StudioAdapter();
-            Librarian = new ProjectLibrarian();
-            Adapter.Librarian = Librarian;
+            StudioAdapter = new StudioAdapter();
+            StorageAdapter = new StorageAdapter();
+            ChangeCatalog = new ChangeCatalog();
+
+            Librarian = new ProjectLibrarian( StorageAdapter, ChangeCatalog );
+            StudioAdapter.Librarian = Librarian;
 
             TaskWindow = new TaskWindow();
-            TaskWindow._changeCatalog = Librarian._changeCatalog;
+            TaskWindow._changeCatalog = ChangeCatalog;
             TaskWindow._fileCatalog = Librarian._sourceCatalog;
 
-            Adapter.taskWindow = TaskWindow;
+            StudioAdapter.taskWindow = TaskWindow;
 
             ChangeWindow = new ChangeWindow();
-            Adapter.changeWindow = ChangeWindow;
-            ChangeWindow.ChangeCatalog = Librarian._changeCatalog;
+            StudioAdapter.changeWindow = ChangeWindow;
+            ChangeWindow.ChangeCatalog = ChangeCatalog;
 
             //  Subscribe to the StudioAdapter's events
-            Adapter.Event_NonSourceGotFocus += TaskWindow.Hear_NonSourceGotFocus;
-            Adapter.Event_FileGotFocus += TaskWindow.Hear_FileGotFocus;
-            Adapter.Event_FileSaved += Librarian.Hear_FileSaved;
-            Adapter.Event_FilePasted += Librarian.Hear_FilePasted;
-            Adapter.Event_FileSavedAs += Librarian.Hear_FileSavedAs;
-            Adapter.Event_FileChangesAbandoned += Librarian.Hear_FileChangesAbandoned;
-            Adapter.Event_FileRenamed += Librarian.Hear_FileRenamed;
-            Adapter.Event_SolutionSaved += Librarian.Hear_SolutionSaved;
-            Adapter.Event_SolutionOpened += Librarian.Hear_SolutionOpened;
-            Adapter.Event_SolutionRenamed += Librarian.Hear_SolutionRenamed;
+            StudioAdapter.Event_NonSourceGotFocus += TaskWindow.Hear_NonSourceGotFocus;
+            StudioAdapter.Event_FileGotFocus += TaskWindow.Hear_FileGotFocus;
+            StudioAdapter.Event_FileSaved += Librarian.Hear_FileSaved;
+            StudioAdapter.Event_FilePasted += Librarian.Hear_FilePasted;
+            StudioAdapter.Event_FileSavedAs += Librarian.Hear_FileSavedAs;
+            StudioAdapter.Event_FileChangesAbandoned += Librarian.Hear_FileChangesAbandoned;
+            StudioAdapter.Event_FileRenamed += Librarian.Hear_FileRenamed;
+            StudioAdapter.Event_SolutionSaved += Librarian.Hear_SolutionSaved;
+            StudioAdapter.Event_SolutionOpened += Librarian.Hear_SolutionOpened;
+            StudioAdapter.Event_SolutionRenamed += Librarian.Hear_SolutionRenamed;
 
             //  Subscribe to the TaskWindow's events
             //  A self-subscription.  Odd, possibly poor practice...
@@ -74,17 +79,17 @@ namespace swept
             //  A self-subscription.  Odd, possibly poor practice...
 
             //  Unsubscribe from the StudioAdapter's events
-            Adapter.Event_NonSourceGotFocus -= TaskWindow.Hear_NonSourceGotFocus;
-            Adapter.Event_FileGotFocus -= TaskWindow.Hear_FileGotFocus;
-            Adapter.Event_FileSaved -= Librarian.Hear_FileSaved;
-            Adapter.Event_FilePasted -= Librarian.Hear_FilePasted;
-            Adapter.Event_FileSavedAs -= Librarian.Hear_FileSavedAs;
-            Adapter.Event_FileChangesAbandoned -= Librarian.Hear_FileChangesAbandoned;
-            Adapter.Event_FileRenamed -= Librarian.Hear_FileRenamed;
-            Adapter.Event_SolutionSaved -= Librarian.Hear_SolutionSaved;
-            Adapter.Event_SolutionOpened -= Librarian.Hear_SolutionOpened;
+            StudioAdapter.Event_NonSourceGotFocus -= TaskWindow.Hear_NonSourceGotFocus;
+            StudioAdapter.Event_FileGotFocus -= TaskWindow.Hear_FileGotFocus;
+            StudioAdapter.Event_FileSaved -= Librarian.Hear_FileSaved;
+            StudioAdapter.Event_FilePasted -= Librarian.Hear_FilePasted;
+            StudioAdapter.Event_FileSavedAs -= Librarian.Hear_FileSavedAs;
+            StudioAdapter.Event_FileChangesAbandoned -= Librarian.Hear_FileChangesAbandoned;
+            StudioAdapter.Event_FileRenamed -= Librarian.Hear_FileRenamed;
+            StudioAdapter.Event_SolutionSaved -= Librarian.Hear_SolutionSaved;
+            StudioAdapter.Event_SolutionOpened -= Librarian.Hear_SolutionOpened;
 
-            Adapter = null;
+            StudioAdapter = null;
             Librarian = null;
             TaskWindow = null;
             ChangeWindow = null;

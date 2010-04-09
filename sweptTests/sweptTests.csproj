@@ -71,6 +71,7 @@
     <Compile Include="ChangeWindowEventTests.cs" />
     <Compile Include="ChangeWindowTests.cs" />
     <Compile Include="CompoundFilterTests.cs" />
+    <Compile Include="GathererTests.cs" />
     <Compile Include="SeeAlsoTests.cs" />
     <Compile Include="TraverserTests.cs" />
     <Compile Include="XmlPort_CompoundFilter_Tests.cs" />

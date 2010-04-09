@@ -9,6 +9,7 @@ namespace swept.Tests
 {
     class MockStorageAdapter : IStorageAdapter
     {
+        private List<string> _loadedFiles;
         public string FileName { get; set; }
         public XmlDocument LibraryDoc { get; set; }
         public Dictionary<string, List<string>> FilesInFolder { get; set; }
@@ -21,6 +22,7 @@ namespace swept.Tests
             setDocFromText( StorageAdapter.emptyCatalogText );
             FilesInFolder = new Dictionary<string, List<string>>();
             FoldersInFolder = new Dictionary<string, List<string>>();
+            _loadedFiles = new List<string>();
         }
 
         public void Save(string fileName, string xmlText)
@@ -75,6 +77,22 @@ namespace swept.Tests
 
             return new List<string>();
         }
-        
+
+
+       public SourceFile LoadFile( string fileName )
+       {
+           if (!_loadedFiles.Contains(fileName))
+           {
+               _loadedFiles.Add( fileName );
+           }
+
+           return new SourceFile( fileName );
+       }
+
+
+       internal bool DidLoad( string fileName )
+       {
+           return _loadedFiles.Contains( fileName );
+       }
     }
 }
