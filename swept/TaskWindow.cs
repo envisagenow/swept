@@ -56,19 +56,6 @@ namespace swept
             Visible = !Visible;
         }
 
-        public void ToggleTaskCompletion( int index )
-        {
-            Task task = Tasks[index];
-            SetTaskCompletion( task, !task.Completed );
-        }
-
-        // Smell:  With a name and args like this...
-        private void SetTaskCompletion( Task task, bool completion )
-        {
-            task.Completed = completion;
-            CurrentFile.AdjustCompletionFrom( task );
-        }
-
         private void ShowFile( string fileName, string content )
         {
             ShowFile( _fileCatalog.Fetch( fileName ), content );
@@ -104,13 +91,10 @@ namespace swept
             foreach( Change change in changes )
             {
                 List<Task> entries = Task.FromChange( change );
-                bool completed = CurrentFile.Completions.Exists( c => c.ChangeID == change.ID );
                 foreach (var entry in entries)
                 {
-                    entry.Completed = completed;
                     Tasks.Add(entry);
                 }
-                // TODO: Think about how completions work with multiple tasks per change
             }
 
             Raise_TaskListReset();
@@ -182,11 +166,6 @@ namespace swept
         public void Hear_TaskChosen( object sender, TaskEventArgs args )
         {
             SendViewToTaskLocation( args.Task );
-        }
-
-        public void Hear_TaskCheck( object sender, TaskEventArgs args )
-        {
-            SetTaskCompletion( args.Task, args.Checked );
         }
         #endregion
 

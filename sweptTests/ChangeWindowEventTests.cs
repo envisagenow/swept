@@ -40,7 +40,6 @@ namespace swept.Tests
             fileCat.SolutionPath = @"c:\somewhere\for_the.sln";
             fileName = "bari.cs";
             file = new SourceFile( fileName );
-            file.Completions.Add( new Completion( indentID ) );
             fileCat.Add( file );
 
             MockStorageAdapter writer = new MockStorageAdapter();
@@ -76,57 +75,6 @@ namespace swept.Tests
             changeWindow.Raise_ChangeListUpdated();
 
             Assert.AreEqual( 0, _taskWindow.Tasks.Count );
-        }
-
-        [Test]
-        public void WhenChangeAdded_ChangeCatalogPersisted()
-        {
-            changeCat = starter.ChangeCatalog;
-            Assert.IsTrue( librarian.IsSaved );
-            changeCat.Add( new Change { ID = "Inf09_altered" } );
-            Assert.IsFalse( librarian.IsSaved );
-            changeWindow.Raise_ChangeListUpdated();
-            Assert.IsTrue( librarian.IsSaved );
-        }
-
-        [Test]
-        public void WhenChangeAdded_IfChangeExistedPreviously_UserCanKeepHistory()
-        {
-            changeCat.Remove( "14" );
-
-            MockUserAdapter mockGUI = new MockUserAdapter();
-            adapter.Librarian._userAdapter = mockGUI;
-            //  When the dialog is presented, the 'user' responds 'keep', for this test
-            mockGUI.KeepHistoricalResponse = true;
-
-            // Add Change 14 back
-            Change change = new Change { ID = "14" };
-            changeWindow.Raise_ChangeAdded( change );
-
-            // Bari has kept the completion of Change 14
-            SourceFile savedBari = librarian._savedSourceCatalog.Fetch( "bari.cs" );
-            Assert.AreEqual( 1, savedBari.Completions.Count );
-            Assert.AreEqual( "14", savedBari.Completions[0].ChangeID );
-        }
-
-        [Test]
-        public void WhenChangeAdded_IfChangeExistedPreviously_UserCanRemoveHistory()
-        {
-            changeCat.Remove( "14" );
-
-            MockUserAdapter mockGUI = new MockUserAdapter();
-            adapter.Librarian._userAdapter = mockGUI;
-            //  When the dialog is presented, the 'user' responds 'remove', for this test
-            mockGUI.KeepHistoricalResponse = false;
-
-            // Add Change 14 back
-            Change change = new Change { ID = "14" };
-            changeWindow.Raise_ChangeAdded( change );
-
-            adapter.Raise_FileSaved( "bari.cs" );
-
-            // Bari has removed the completion of Change 14
-            Assert.IsFalse( TestProbe.IsCompletionSaved( librarian, "bari.cs", "14" ) );
         }
 
         [Test]

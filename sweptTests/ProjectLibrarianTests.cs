@@ -76,7 +76,8 @@ namespace swept.Tests
 
             SourceFile someFile = Horace._savedSourceCatalog.Fetch( "some_file.cs" );
 
-            Assert.AreEqual( 1, someFile.Completions.Count );
+            // TODO: some assertion of loadedness
+            // Assert.AreEqual( 1, someFile.Completions.Count );
         }
 
         [Test]
@@ -123,12 +124,12 @@ namespace swept.Tests
             Assert.That( _userAdapter.SentBadLibraryMessage );
         }
 
+        // TODO: disenridiculize
         [Test]
         public void SaveSolution_will_persist_all_unsaved_SourceFiles()
         {
             string someFileName = "some_file.cs";
             SourceFile someFile = new SourceFile( someFileName );
-            someFile.AddNewCompletion( "007" );
             Horace._sourceCatalog.Add( someFile );
 
             Horace.Hear_SolutionSaved( this, new EventArgs() );
@@ -152,46 +153,6 @@ namespace swept.Tests
             Assert.IsNotNull( Horace._sourceCatalog );
             Assert.IsNotNull( Horace._savedSourceCatalog );
             Assert.AreNotSame( Horace._sourceCatalog, Horace._savedSourceCatalog );
-        }
-
-        [Test]
-        public void SaveFile_persists_file_Completions()
-        {
-            string someFileName = "some_file.cs";
-            SourceFile someFile = new SourceFile( someFileName );
-            someFile.AddNewCompletion( "007" );
-            Horace._sourceCatalog.Add( someFile );
-
-            FileEventArgs args = new FileEventArgs { Name = someFileName };
-            Horace.Hear_FileSaved( this, args );
-
-            Assert.AreEqual( toOuterXml( TestProbe.SingleFileLibrary_text ), _storageAdapter.LibraryDoc.OuterXml );
-        }
-
-        [Test]
-        public void persisting_Completions_does_not_overwrite_updated_Changes()
-        {
-            string someFileName = "some_file.cs";
-            SourceFile someFile = new SourceFile( someFileName );
-            someFile.AddNewCompletion( "007" );
-            Horace._sourceCatalog.Add( someFile );
-
-            // to start with, no changes apply.
-            List<Change> changes = _changeCatalog.GetChangesForFile( someFile );
-            Assert.That( changes.Count, Is.EqualTo( 0 ) );
-
-            // our developer adds a change in some text editor, saves it to disk
-            XmlDocument updatedChanges = new XmlDocument();
-            updatedChanges.LoadXml( TestProbe.SingleChangeLibrary_text );
-            _storageAdapter.LibraryDoc = updatedChanges;
-
-            // then saves a file in the IDE
-            FileEventArgs args = new FileEventArgs { Name = someFileName };
-            Horace.Hear_FileSaved( this, args );
-
-            // during save of completions, the updated change was loaded.
-            changes = _changeCatalog.GetChangesForFile( someFile );
-            Assert.That( changes.Count, Is.EqualTo( 1 ) );
         }
 
         // TODO: Determine if there's any sensible future to saving changes from this end.
@@ -236,7 +197,6 @@ namespace swept.Tests
         private static SourceFile newTestingFile( string someFileName )
         {
             SourceFile someFile = new SourceFile( someFileName );
-            someFile.AddNewCompletion( "007" );
             return someFile;
         }
 
@@ -263,17 +223,5 @@ namespace swept.Tests
             Assert.IsTrue( Horace.SourceFileCatalogSaved );
             Assert.IsTrue( Horace.IsSaved );
         }
-
-        [Test]
-        public void Can_AddChange()
-        {
-            Assert.AreEqual( 0, _changeCatalog._changes.Count );
-
-            Change change = new Change { ID = "14" };
-            Horace.Hear_ChangeAdded( this, new ChangeEventArgs { Change = change } );
-
-            Assert.AreEqual( 1, _changeCatalog._changes.Count );
-        }
-
     }
 }

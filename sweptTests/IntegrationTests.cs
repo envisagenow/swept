@@ -34,20 +34,6 @@ namespace swept.Tests
         }
 
         [Test]
-        public void when_Task_Completion_changed_Library_has_an_unsaved_change()
-        {
-            _changes.Raise_ChangeAdded( new Change { ID = "100", Description = "test change", Language = FileLanguage.CSharp } );
-            _adapter.Raise_FileGotFocus( "foo.cs", "using System;" );
-            _adapter.Raise_SolutionSaved();
-
-            Assert.IsTrue( _librarian.IsSaved );
-
-            _tasks.ToggleTaskCompletion( 0 );
-
-            Assert.IsFalse( _librarian.IsSaved );
-        }
-
-        [Test]
         public void When_SolutionOpened_all_source_catalog_references_updated()
         {
             SourceFileCatalog oldCatalog = _librarian._sourceCatalog;

@@ -37,10 +37,6 @@ namespace swept
             //  Subscribe to the StudioAdapter's events
             StudioAdapter.Event_NonSourceGotFocus += TaskWindow.Hear_NonSourceGotFocus;
             StudioAdapter.Event_FileGotFocus += TaskWindow.Hear_FileGotFocus;
-            StudioAdapter.Event_FileSaved += Librarian.Hear_FileSaved;
-            StudioAdapter.Event_FilePasted += Librarian.Hear_FilePasted;
-            StudioAdapter.Event_FileSavedAs += Librarian.Hear_FileSavedAs;
-            StudioAdapter.Event_FileChangesAbandoned += Librarian.Hear_FileChangesAbandoned;
             StudioAdapter.Event_FileRenamed += Librarian.Hear_FileRenamed;
             StudioAdapter.Event_SolutionSaved += Librarian.Hear_SolutionSaved;
             StudioAdapter.Event_SolutionOpened += Librarian.Hear_SolutionOpened;
@@ -55,7 +51,6 @@ namespace swept
 
 
             //  Subscribe to the ChangeWindow's events
-            ChangeWindow.Event_ChangeAdded += Librarian.Hear_ChangeAdded;
             ChangeWindow.Event_ChangeListUpdated += TaskWindow.Hear_ChangeCatalogUpdated;
             ChangeWindow.Event_ChangeListUpdated += Librarian.Hear_ChangeListUpdated;
 
@@ -70,7 +65,6 @@ namespace swept
             Librarian.Event_ChangeCatalogUpdated -= TaskWindow.Hear_ChangeCatalogUpdated;
 
             //  Unsubscribe from the ChangeWindow's events
-            ChangeWindow.Event_ChangeAdded -= Librarian.Hear_ChangeAdded;
             ChangeWindow.Event_ChangeListUpdated -= TaskWindow.Hear_ChangeCatalogUpdated;
             ChangeWindow.Event_ChangeListUpdated -= Librarian.Hear_ChangeListUpdated;
 
@@ -81,10 +75,6 @@ namespace swept
             //  Unsubscribe from the StudioAdapter's events
             StudioAdapter.Event_NonSourceGotFocus -= TaskWindow.Hear_NonSourceGotFocus;
             StudioAdapter.Event_FileGotFocus -= TaskWindow.Hear_FileGotFocus;
-            StudioAdapter.Event_FileSaved -= Librarian.Hear_FileSaved;
-            StudioAdapter.Event_FilePasted -= Librarian.Hear_FilePasted;
-            StudioAdapter.Event_FileSavedAs -= Librarian.Hear_FileSavedAs;
-            StudioAdapter.Event_FileChangesAbandoned -= Librarian.Hear_FileChangesAbandoned;
             StudioAdapter.Event_FileRenamed -= Librarian.Hear_FileRenamed;
             StudioAdapter.Event_SolutionSaved -= Librarian.Hear_SolutionSaved;
             StudioAdapter.Event_SolutionOpened -= Librarian.Hear_SolutionOpened;

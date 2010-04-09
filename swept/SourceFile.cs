@@ -13,7 +13,6 @@ namespace swept
         public string Name;
         public string Content;
         public int TaskCount;
-        internal List<Completion> Completions;
         public bool IsRemoved { get; set; }
 
         public SourceFile( string name )
@@ -23,7 +22,6 @@ namespace swept
 
             string fileExt = Path.GetExtension( name );
             Language = SourceFile.FileLanguageFromExtension( fileExt );
-            Completions = new List<Completion>();
         }
 
         private static Dictionary<string, FileLanguage> extensionLanguage;
@@ -60,54 +58,19 @@ namespace swept
             return FileLanguage.Unknown;
         }
 
-        public void MarkCompleted( string changeID )
-        {
-            if( !Completions.Exists( c => c.ChangeID == changeID ) )
-                Completions.Add( new Completion( changeID ) );
-        }
-
         public SourceFile Clone()
         {
             SourceFile file = new SourceFile( Name );
 
-            file.CopyCompletionsFrom( this );
+            // TODO: clone other attrs?  Figure out how to automagic this.
             
             return file;
-        }
-
-        //TODO--0.3, DC: refactor into SourceFile.Clone( file )
-        public void CopyCompletionsFrom( SourceFile workingFile )
-        {
-            Completions.Clear();
-            workingFile.Completions.ForEach( c => Completions.Add( c.Clone() ) );
-        }
-
-        public void AdjustCompletionFrom(Task alteredTask)
-        {
-            Completions.RemoveAll( c => c.ChangeID == alteredTask.ID );
-            if (alteredTask.Completed)
-                Completions.Add(new Completion(alteredTask.ID));
-        }
-
-        public void AddNewCompletion( string changeID )
-        {
-            Completions.Add( new Completion( changeID ) );
         }
 
         public bool Equals(SourceFile file)
         {
             if( Name != file.Name ) return false;
-
-            if (Completions.Count != file.Completions.Count)
-                return false;
-
-            int UpperBound = Completions.Count;
-
-            for (int i = 0; i < UpperBound; i++)
-            {
-                if (!Completions[i].ChangeID.Equals(file.Completions[i].ChangeID))
-                    return false;
-            }
+            // TODO: expand equality?  Automagic?
 
             return true;
         }

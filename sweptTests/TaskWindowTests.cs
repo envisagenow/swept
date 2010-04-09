@@ -26,26 +26,16 @@ namespace swept.Tests
             changes.Add( new Change { ID = "id2", Description = "mop-up", Language = FileLanguage.CSharp } );
 
             file = new SourceFile( "glue.cs" );
-            file.Completions.Add( new Completion( "id1" ) );
 
             //  Using this entry point is handy for testing--lets us skip building a ChangeCatalog
             window.ShowFile( file, changes );
         }
-        // TODO--0.3: Have "Manually Uncheckable" in the check box list.  Intercept the click event?
 
         [Test]
         public void ShowFile_sets_CurrentFile_and_Title()
         {
             Assert.AreSame( file, window.CurrentFile );
             Assert.AreEqual( file.Name, window.Title );
-        }
-
-        [Test]
-        public void ShowFile_checkmarks_Tasks_to_match_File_Completions()
-        {
-            Assert.AreEqual( 2, window.Tasks.Count );
-            Assert.IsTrue( window.Tasks[0].Completed );
-            Assert.IsFalse( window.Tasks[1].Completed );
         }
 
         [Test]
@@ -79,62 +69,6 @@ namespace swept.Tests
         private void Hear_TaskListReset( object objNewTasks, EventArgs e )
         {
             _taskList_reset = true;
-        }
-
-        [Test]
-        public void clicking_a_Task_toggles_its_Completion()
-        {
-            //  We start with 0 completed, 1 not
-            Assert.IsTrue(window.Tasks[0].Completed);
-            Assert.IsFalse(window.Tasks[1].Completed);
-
-            //  Clicking 0 should clear 0, and not affect 1
-            window.ToggleTaskCompletion(0);
-            Assert.IsFalse(window.Tasks[0].Completed);
-            Assert.IsFalse(window.Tasks[1].Completed);
-
-            //  Clicking 0 again should complete 0, and not affect 1
-            window.ToggleTaskCompletion(0);
-            Assert.IsTrue(window.Tasks[0].Completed);
-            Assert.IsFalse(window.Tasks[1].Completed);
-
-            //  Clicking 1 should complete 1, and not affect 0
-            window.ToggleTaskCompletion(1);
-            Assert.IsTrue(window.Tasks[0].Completed);
-            Assert.IsTrue(window.Tasks[1].Completed);
-
-            //  Clicking 1 again should clear 1, and not affect 0
-            window.ToggleTaskCompletion(1);
-            Assert.IsTrue(window.Tasks[0].Completed);
-            Assert.IsFalse(window.Tasks[1].Completed);
-        }
-
-        [Test]
-        public void clicking_a_Task_alters_CurrentFile_Completions()
-        {
-            //  We start with 0 completed, 1 not
-            Assert.AreEqual( 1, file.Completions.Count );
-            Assert.AreEqual("id1", file.Completions[0].ChangeID);
-
-            //  Clicking 0 should clear 0, and not affect 1
-            window.ToggleTaskCompletion(0);
-            Assert.AreEqual(0, file.Completions.Count);
-
-            //  Clicking 0 again should complete 0, and not affect 1
-            window.ToggleTaskCompletion(0);
-            Assert.AreEqual(1, file.Completions.Count);
-            Assert.AreEqual("id1", file.Completions[0].ChangeID);
-
-            //  Clicking 1 should complete 1, and not affect 0
-            window.ToggleTaskCompletion(1);
-            Assert.AreEqual(2, file.Completions.Count);
-            Assert.AreEqual("id1", file.Completions[0].ChangeID);
-            Assert.AreEqual("id2", file.Completions[1].ChangeID);
-
-            //  Clicking 1 again should clear 1, and not affect 0
-            window.ToggleTaskCompletion(1);
-            Assert.AreEqual(1, file.Completions.Count);
-            Assert.AreEqual("id1", file.Completions[0].ChangeID);
         }
     }
 }

@@ -60,18 +60,10 @@ namespace swept
         {
             string elementLabel = "SourceFile";
             string xmlText = String.Format( "    <{0} Name='{1}'>\r\n", elementLabel, file.Name );
-            file.Completions.Sort( ( left, right ) => left.ChangeID.CompareTo( right.ChangeID ) );
-            file.Completions.ForEach( c => xmlText += ToText( c ) );
             xmlText += String.Format( "    </{0}>\r\n", elementLabel );
 
             return xmlText;
         }
-
-        public string ToText( Completion comp )
-        {
-            return string.Format( "        <Completion ID='{0}' />\r\n", comp.ChangeID );
-        }
-
 
         public ChangeCatalog ChangeCatalog_FromXmlDocument( XmlDocument doc )
         {
@@ -142,19 +134,7 @@ namespace swept
                 throw new Exception( "A SourceFile node must have a Name attribute.  Please add one." );
 
             SourceFile file = new SourceFile( xmlNode.Attributes["Name"].Value );
-            foreach (XmlNode completionNode in xmlNode.SelectNodes( "Completion" ))
-            {
-                Completion comp = Completion_FromNode( completionNode );
-                file.Completions.Add( comp );
-            }
             return file;
-        }
-
-        public Completion Completion_FromNode( XmlNode completion )
-        {
-            string changeID = completion.Attributes[XmlPort_CompoundFilter.cfa_ID].Value;
-            Completion fileChange = new Completion( changeID );
-            return fileChange;
         }
     }
 }

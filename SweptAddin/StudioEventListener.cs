@@ -218,17 +218,6 @@ namespace swept.Addin
                 Clipboard.SetText( exceptionText );
         }
 
-        private void Hear_ItemCheck( object sender, ItemCheckEventArgs e )
-        {
-            TaskEventArgs args = new TaskEventArgs
-            {
-                // TODO--0.3, Grid:  deduce the task and checked state from the event
-                //Task = (Task)_taskWindowForm.tasks.Items[e.Index],
-                Checked = (e.NewValue == CheckState.Checked)
-            };
-            _taskWindow.Hear_TaskCheck( _taskWindowControl, args );
-        }
-
         void IDisposable.Dispose()
         {
             _taskWindowControl.Dispose();

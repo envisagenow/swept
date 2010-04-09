@@ -58,55 +58,6 @@ namespace swept.Tests
         }
 
         [Test]
-        public void When_SourceFile_readded_user_can_choose_to_keep_history()
-        {
-            changeCat.Add( new Change { ID = "77" } );
-
-            bariFile = new SourceFile( "bari.cs" );
-            fileCat.Add( bariFile );
-            bariFile.AddNewCompletion( "77" );
-            
-            fileCat.Remove( bariFile );
-
-            MockUserAdapter mockGUI = new MockUserAdapter();
-            fileCat.UserAdapter = mockGUI;
-
-            //  When the dialog is presented, the 'user' responds 'keep', for this test
-            mockGUI.KeepHistoricalResponse = true;
-
-            // Bari has kept the completion of Change 77
-            SourceFile savedBari = fileCat.Fetch( "bari.cs" );
-            Assert.IsFalse( savedBari.IsRemoved );
-
-            Assert.AreEqual( 1, savedBari.Completions.Count );
-            Assert.AreEqual( "77", savedBari.Completions[0].ChangeID );
-        }
-
-        [Test]
-        public void When_SourceFile_readded_user_can_choose_to_discard_history()
-        {
-            changeCat.Add( new Change { ID = "77" } );
-
-            bariFile = new SourceFile( "bari.cs" );
-            fileCat.Add( bariFile );
-            bariFile.AddNewCompletion( "77" );
-
-            fileCat.Remove( bariFile );
-
-            MockUserAdapter mockGUI = new MockUserAdapter();
-            fileCat.UserAdapter = mockGUI;
-
-            //  When the dialog is presented, the 'user' responds 'discard', for this test
-            mockGUI.KeepHistoricalResponse = false;
-
-            // Bari has kept the completion of Change 77
-            SourceFile savedBari = fileCat.Fetch( "bari.cs" );
-            Assert.IsFalse( savedBari.IsRemoved );
-
-            Assert.AreEqual( 0, savedBari.Completions.Count );
-        }
-
-        [Test]
         public void can_Clone_FileCatalog()
         {
             fileCat.Files.Add( new SourceFile( "flubber.cs" ) );
@@ -115,24 +66,6 @@ namespace swept.Tests
 
             Assert.AreEqual( fileCat.Files.Count, secondCat.Files.Count );
             Assert.AreEqual( "flubber.cs", secondCat.Files[0].Name );
-        }
-
-        [Test]
-        public void Clone_includes_SourceFile_Completions()
-        {
-            //  I have completed change 33 in file flubber.cs
-            string fileName = "flubber.cs";
-            SourceFile file = new SourceFile(fileName);
-            file.Completions.Add(new Completion("33"));
-            fileCat.Files.Add(file);
-
-            SourceFileCatalog clonedCat = fileCat.Clone();
-
-            SourceFile clonedFile = clonedCat.Fetch(fileName);
-            Assert.AreEqual(file.Completions.Count, clonedFile.Completions.Count);
-            Assert.AreEqual(file.Name, clonedFile.Name);
-
-            Assert.AreNotSame(file, clonedFile);
         }
 
         [Test]
@@ -165,7 +98,6 @@ namespace swept.Tests
         {
             SourceFile file = fileCat.Fetch( "unknown.html" );
             Assert.AreEqual( "unknown.html", file.Name );
-            Assert.AreEqual( 0, file.Completions.Count );
         }
 
         [Test]
@@ -196,35 +128,12 @@ namespace swept.Tests
         public void FileCatalog_remembers_Fetched_SourceFiles()
         {
             SourceFile blue = fileCat.Fetch( "blue.cs" );
-
-            blue.Completions.Add( new Completion( "id11" ) );
-            Assert.AreEqual( 1, fileCat.Files.Count );
-
             SourceFile alsoBlue = fileCat.Fetch( "blue.cs" );
-            Assert.AreEqual( 1, alsoBlue.Completions.Count );
+
             Assert.AreSame( blue, alsoBlue );
         }
 
         // TODO--0.3: Reexamine whether file removal is a sensible notion in Swept's idiom
-        [Test]
-        public void CanRemove_ExistingFile()
-        {
-            var adapter = new MockUserAdapter();
-            adapter.KeepHistoricalResponse = false;
-            fileCat.UserAdapter = adapter;
-
-            string blueName = "blue.cs";
-            SourceFile blue = fileCat.Fetch(blueName);
-
-            blue.Completions.Add(new Completion("id11"));
-            Assert.AreEqual(1, fileCat.Files.Count);
-
-            fileCat.Remove(blueName);
-
-            SourceFile alsoBlue = fileCat.Fetch(blueName);
-            Assert.AreEqual(0, alsoBlue.Completions.Count);
-        }
-
         [Test]
         public void CanRemove_NonExistingFile()
         {
@@ -233,8 +142,6 @@ namespace swept.Tests
             fileCat.Remove("blue.cs");
             Assert.AreEqual(fileCount, fileCat.Files.Count);
         }
-
-
 
         [Test]
         public void Empty_Catalogs_are_Equal()
@@ -268,20 +175,6 @@ namespace swept.Tests
 
             Assert.IsTrue(whiteCat.Equals(blackCat));
             
-        }
-
-        [Test]
-        public void Catalogs_with_synonymous_Files_with_different_Completions_are_Unequal()
-        {
-            SourceFile meow1 = new SourceFile("meow.cs");
-            SourceFile meow2 = new SourceFile("meow.cs");
-            meow1.AddNewCompletion("101");
-            meow2.AddNewCompletion("102");
-
-            whiteCat.Add(meow1);
-            blackCat.Add(meow2);
-
-            Assert.IsFalse(whiteCat.Equals(blackCat));
         }
     }
 }

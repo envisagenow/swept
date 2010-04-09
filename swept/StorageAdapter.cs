@@ -90,7 +90,7 @@ namespace swept
                 file.Content = File.ReadAllText( fileName );
                 return file;
             }
-            catch( Exception ex )
+            catch
             {
                 Console.Out.WriteLine( String.Format( "LoadFile( {0} ) failed.", fileName ) );
                 throw;

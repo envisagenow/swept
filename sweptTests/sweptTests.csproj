@@ -79,11 +79,9 @@
     <Compile Include="IntegrationTests.cs" />
     <Compile Include="MockUserAdapter.cs" />
     <Compile Include="MockStorageAdapter.cs" />
-    <Compile Include="ProjectLibrarianHistoryTests.cs" />
     <Compile Include="StarterTests.cs" />
     <Compile Include="TaskTests.cs" />
     <Compile Include="ChangeTests.cs" />
-    <Compile Include="CompletionTests.cs" />
     <Compile Include="TaskWindowEventTests.cs" />
     <Compile Include="TaskWindowForm_tests.cs" />
     <Compile Include="TaskWindowTests.cs" />

@@ -88,8 +88,6 @@ namespace swept
                 Files.Add( foundFile );
             }
 
-            MaintainHistory( foundFile );
-
             return foundFile;
         }
 
@@ -104,17 +102,6 @@ namespace swept
                 return name;
 
             return name.Substring( solutionDir.Length + 1 );
-        }
-
-        private void MaintainHistory( SourceFile foundFile )
-        {
-            if( !foundFile.IsRemoved ) return;
-
-            if( !UserAdapter.KeepSourceFileHistory( foundFile ) )
-            {
-                foundFile.Completions.Clear();
-            }
-            foundFile.IsRemoved = false;
         }
     }
 }

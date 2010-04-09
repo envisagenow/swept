@@ -56,17 +56,6 @@ namespace swept.Tests
         }
 
         [Test]
-        public void when_TaskChecked_completion_is_set()
-        {
-            Task task = new Task { ID = "x", Description = "I get checked." };
-            _window.Tasks.Add( task );
-            Assert.IsFalse( _window.Tasks[0].Completed );
-
-            _window.Hear_TaskCheck( this, new TaskEventArgs{ Task = task, Checked = true } );
-            Assert.IsTrue( _window.Tasks[0].Completed );
-        }
-
-        [Test]
         public void when_SeeAlsoFollowed_GUI_shows_it()
         {
             _preparer.ShiftSweptToMocks( _starter );

@@ -76,7 +76,6 @@
     <Compile Include="StorageAdapter.cs" />
     <Compile Include="Starter.cs" />
     <Compile Include="Task.cs" />
-    <Compile Include="Completion.cs" />
     <Compile Include="TaskWindow.cs" />
     <Compile Include="ProjectLibrarian.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

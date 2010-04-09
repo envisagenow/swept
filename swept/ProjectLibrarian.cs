@@ -123,75 +123,6 @@ namespace swept
             return doc;
         }
 
-        private void SaveFile(string fileName)
-        {
-            _userAdapter.DebugMessage( string.Format( "Raise_FileSaved( {0} )", fileName ) );
-
-            SourceFile workingFile = _sourceCatalog.Fetch(fileName);
-            SourceFile diskFile = _savedSourceCatalog.Fetch(fileName);
-            diskFile.CopyCompletionsFrom(workingFile);
-
-            Persist();
-        }
-
-        private void PasteFile(string fileName)
-        {
-            SourceFile pastedWorkingFile = _sourceCatalog.Fetch(fileName);
-            SourceFile pastedDiskFile = _savedSourceCatalog.Fetch(fileName);
-
-            string copyPrefix = "Copy of ";
-            if (fileName.StartsWith(copyPrefix))
-            {
-                string baseFileName = fileName.Substring(copyPrefix.Length);
-                SourceFile baseDiskFile = _savedSourceCatalog.Fetch(baseFileName);
-
-                pastedDiskFile.CopyCompletionsFrom(baseDiskFile);
-            }
-
-            pastedWorkingFile.CopyCompletionsFrom(pastedDiskFile);
-
-            Persist();
-        }
-
-        private void SaveFileAs(string oldName, string newName)
-        {
-            SourceFile workingOriginalFile = _sourceCatalog.Fetch(oldName);
-            SourceFile diskOriginalFile = _savedSourceCatalog.Fetch(oldName);
-            SourceFile workingNewFile = _sourceCatalog.Fetch(newName);
-            SourceFile diskNewFile = _savedSourceCatalog.Fetch(newName);
-
-            diskNewFile.CopyCompletionsFrom(workingOriginalFile);
-            workingOriginalFile.CopyCompletionsFrom(diskOriginalFile);
-            workingNewFile.CopyCompletionsFrom(diskNewFile);
-
-            Persist();
-        }
-
-        private void AbandonFileChanges(string fileName)
-        {
-            SourceFile workingFile = _sourceCatalog.Fetch(fileName);
-            SourceFile diskFile = _savedSourceCatalog.Fetch(fileName);
-            workingFile.CopyCompletionsFrom(diskFile);
-        }
-
-        private void AddChange(Change change)
-        {
-            _changeCatalog.Add(change);
-
-            //if we have any completions pre-existing for this ID
-            List<SourceFile> filesWithHistory = _sourceCatalog.Files.FindAll(file => file.Completions.Exists(c => c.ChangeID == change.ID));
-            if (filesWithHistory.Count > 0)
-            {
-                bool keep = _userAdapter.KeepChangeHistory(change);
-
-                //if discard, sweep them out of the file catalogs.
-                if (!keep)
-                {
-                    filesWithHistory.ForEach(file => file.Completions.RemoveAll(c => c.ChangeID == change.ID));
-                }
-            }
-        }
-
         private void RenameFile(string oldName, string newName)
         {
             _sourceCatalog.Rename(oldName, newName);
@@ -224,39 +155,14 @@ namespace swept
             OpenSolution(arg.Name);
         }
 
-        public void Hear_FileSaved(object sender, FileEventArgs args)
-        {
-            SaveFile(args.Name);
-        }
-
         public void Hear_ChangeListUpdated(object sender, EventArgs e)
         {
             Persist();
         }
 
-        public void Hear_FilePasted(object sender, FileEventArgs args)
-        {
-            PasteFile(args.Name);
-        }
-
-        public void Hear_FileSavedAs(object sender, FileListEventArgs args)
-        {
-            SaveFileAs(args.Names[0], args.Names[1]);
-        }
-
-        public void Hear_FileChangesAbandoned(object sender, FileEventArgs args)
-        {
-            AbandonFileChanges(args.Name);
-        }
-
         public void Hear_FileRenamed(object sender, FileListEventArgs args)
         {
             RenameFile(args.Names[0], args.Names[1]);
-        }
-
-        public void Hear_ChangeAdded(object sender, ChangeEventArgs args)
-        {
-            AddChange(args.Change);
         }
 
         public void Hear_SolutionSaved(object sender, EventArgs args)
