@@ -1,9 +1,7 @@
 ﻿//  Swept:  Software Enhancement Progress Tracking.
-//  Copyright (c) 2009 Jason Cole and Envisage Technologies Corp.
+//  Copyright (c) 2010 Jason Cole and Envisage Technologies Corp.
 //  This software is open source, MIT license.  See the file LICENSE for details.
 using System;
-// TODO--0.3, DC: replace the hand serialization with XElement code
-// using System.Xml.Linq;
 using NUnit.Framework;
 using System.Xml;
 
@@ -23,6 +21,7 @@ namespace swept.Tests
 
         // TODO--0.N: "Note that a 'Not' operator on a top level change won't do what you want.  Make an enclosed 'Not' filter instead."
 
+        // TODO--0.3: strip out the serialization
         [Test]
         public void basic_ChangeCatalog_ToXml()
         {
