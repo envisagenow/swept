@@ -11,32 +11,38 @@ namespace swept
         {
             try
             {
-                //string[] fs = System.IO.Directory.GetFiles( Environment.CurrentDirectory, "*.(cs|html)", System.IO.SearchOption.AllDirectories );
-                //Console.WriteLine( "found " + fs.Length + " files" );
-
-                Starter starter = new Starter();
-                starter.Start();
-
-                var arguments = new Arguments( args, starter.StorageAdapter );
-
-                var traverser = new Traverser( arguments, starter.StorageAdapter );
-                var files = traverser.GetProjectFiles();
-
-                var changes = starter.ChangeCatalog.GetSortedChanges();
-
-                var gatherer = new Gatherer( changes, files, starter.StorageAdapter );
-                var results = gatherer.GetIssueList();
-
-                var buildReporter = new BuildReporter();
-                var reportXML = buildReporter.ReportOn( results );
-
-                Console.Out.WriteLine( reportXML );
-
+                execute( args );
             }
             catch (Exception ex)
             {
                 Console.Out.WriteLine( ex.Message + "\nStack trace:\n" + ex.StackTrace );
             }
+        }
+
+        private static void execute( string[] args )
+        {
+            //string[] fs = System.IO.Directory.GetFiles( Environment.CurrentDirectory, "*.(cs|html)", System.IO.SearchOption.AllDirectories );
+            //Console.WriteLine( "found " + fs.Length + " files" );
+
+            Starter starter = new Starter();
+            starter.Start();
+
+            var arguments = new Arguments( args, starter.StorageAdapter );
+            if (arguments.AreInvalid)
+                return;
+
+            var traverser = new Traverser( arguments, starter.StorageAdapter );
+            var files = traverser.GetProjectFiles();
+
+            var changes = starter.ChangeCatalog.GetSortedChanges();
+
+            var gatherer = new Gatherer( changes, files, starter.StorageAdapter );
+            var results = gatherer.GetIssueList();
+
+            var buildReporter = new BuildReporter();
+            var reportXML = buildReporter.ReportOn( results );
+
+            Console.Out.WriteLine( reportXML );
         }
     }
 }

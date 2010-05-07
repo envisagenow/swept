@@ -9,15 +9,35 @@ namespace swept
 {
     public class Arguments
     {
+
+        public string Library { get; private set; }
+        public string Folder { get; private set; }
+        public IEnumerable<string> Exclude { get; private set; }
+
+        public bool AreInvalid
+        {
+            get { return String.IsNullOrEmpty( Folder ); }
+        }
+
         public Arguments( string[] args, IStorageAdapter fileSystem )
         {
+            Library = string.Empty;
+            Folder = string.Empty;
             Exclude = new List<string>();
+
+            if (args.Length == 0)
+            {
+                Console.Out.WriteLine( "SweptConsole usage:" );
+                Console.Out.WriteLine( @"> SweptConsole library:my_solution.swept.library" );
+                Console.Out.WriteLine( @"> SweptConsole folder:c:\work\acadis library:acadis-2008.swept.library exclude:.svn,bin,build" );
+                return;
+            }
 
             foreach (string s in args)
             {
                 string[] tokens = null;
 
-                if (!s.Contains( ':' ))
+                if (!s.Contains( ":" ))
                     throw new ArgumentException( String.Format( "Don't understand the input [{0}].", s ) );
 
                 tokens = s.Split( ':' );
@@ -58,9 +78,5 @@ namespace swept
                 Library = Path.Combine( Folder, Library );
             }
         }
-
-        public string Library { get; private set; }
-        public string Folder { get; private set; }
-        public IEnumerable<string> Exclude { get; private set; }
     }
 }

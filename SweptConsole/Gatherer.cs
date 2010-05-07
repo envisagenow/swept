@@ -19,18 +19,16 @@ namespace swept
             _files = files;
             _storageAdapter = storageAdapter;
         }
+
         public Dictionary<Change, List<SourceFile>> GetIssueList()
         {
-            List<SourceFile> sourceFiles = new List<SourceFile>();
-            foreach (var file in _files)
-            {
-                sourceFiles.Add( _storageAdapter.LoadFile( file ) );
-            }
+            var result = new Dictionary<Change, List<SourceFile>>();
 
-            Dictionary<Change, List<SourceFile>> result = new Dictionary<Change, List<SourceFile>>();
-            foreach (var change in _changes)
+            foreach (var fileName in _files)
             {
-                foreach (var sourceFile in sourceFiles)
+                var sourceFile = _storageAdapter.LoadFile( fileName );
+
+                foreach (var change in _changes)
                 {
                     if (change.DoesMatch( sourceFile ))
                     {

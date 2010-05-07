@@ -48,7 +48,7 @@ namespace swept.Tests
             ChangeCatalog oldCatalog = _starter.ChangeCatalog;
             _adapter.Raise_SolutionOpened( @"c:\different\place\for.sln" );
             ChangeCatalog newCatalog = _starter.ChangeCatalog;
-            Assert.That( newCatalog, Is.Not.EqualTo( oldCatalog ) );
+            Assert.That( newCatalog, Is.Not.SameAs( oldCatalog ) );
             Assert.That( newCatalog, Is.EqualTo( _tasks._changeCatalog ) );
         }
 
