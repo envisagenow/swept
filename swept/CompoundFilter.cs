@@ -92,9 +92,11 @@ namespace swept
         }
         public void identifyMatchLineNumbers( string multiLineFile, string pattern)
         {
+            _matchList = new List<int>();
+            if (string.IsNullOrEmpty( pattern ))
+                return;
             Regex rx = new Regex( pattern );
             MatchCollection matches = rx.Matches( multiLineFile );
-            _matchList = new List<int>();
 
             foreach (Match match in matches)
             {

@@ -107,5 +107,43 @@ namespace swept.Tests
             second.Commit = "x";
             Assert.That( second, Is.Not.EqualTo( seeAlso ) );
         }
+
+        [Test]
+        public void assure_hashcode_cannot_overflow()
+        {
+            int near_max = int.MaxValue / 23;
+
+            hash = near_max;
+            int code = hashcode( int.MaxValue );
+            //Console.Out.WriteLine( "Got back {0} from hashcode()", code );
+
+            for (int i = 0; i < 25; i++)
+            {
+                hash = near_max;
+                code = hashcode( int.MinValue + i );
+                //Console.Out.WriteLine( "Got back {0} from hashcode()", code );
+            }
+
+            for (int i = 0; i < 25; i++)
+            {
+                hash = near_max;
+                code = hashcode( int.MaxValue - i );
+                //Console.Out.WriteLine( "Got back {0} from hashcode()", code );
+            }
+
+            for (int i = -25; i < 25; i++)
+            {
+                hash = near_max;
+                code = hashcode( i );
+                //Console.Out.WriteLine( "Got back {0} from hashcode()", code );
+            }
+        }
+
+        int hash = 17;
+        private int hashcode( int next )
+        {
+            hash = hash * 23 + next;
+            return hash;
+        }
     }
 }

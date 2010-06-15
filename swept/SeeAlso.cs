@@ -14,8 +14,6 @@ namespace swept
 
     public class SeeAlso
     {
-        public SeeAlso() { }
-
         public string Description { get; set; }
         public string Commit { get; set; }
 
@@ -41,10 +39,10 @@ namespace swept
         {
             return new SeeAlso
             {
-                Description = this.Description,
-                Target = this.Target,
-                TargetType = this.TargetType,
-                Commit = this.Commit
+                Description = Description,
+                Target = Target,
+                TargetType = TargetType,
+                Commit = Commit
             };
         }
 
@@ -66,8 +64,12 @@ namespace swept
             int hash = 17;
             foreach (var field in new[] { Description, Target, Commit })
             {
-                if (field == null) continue;
-                hash = hash * 23 + field.GetHashCode();
+                if (field == null)
+                {
+                    hash++;  //  so (null, X) hashes differently than (X, null)
+                    continue;
+                }
+                hash = hash * 23 + field.GetHashCode();  // overflow into negative is fine.
             }
             return hash;
         }
