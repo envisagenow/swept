@@ -80,6 +80,9 @@ namespace swept
 
         internal void generateLineIndices( string multiLineFile )
         {
+            // TODO: cache results per sourcefile
+            //if( mySourceFile.LineIndices != null )
+
             //list of newline indexes
             Regex lineCatcher = new Regex( "\n", RegexOptions.Multiline );
             MatchCollection lineMatches = lineCatcher.Matches( multiLineFile );
@@ -90,6 +93,7 @@ namespace swept
                 _lineIndices.Add( match.Index );
             }
         }
+
         public void identifyMatchLineNumbers( string multiLineFile, string pattern)
         {
             _matchList = new List<int>();
@@ -103,6 +107,11 @@ namespace swept
                 int line = lineNumberOfMatch( match.Index, _lineIndices );
                 _matchList.Add( line );
             }
+        }
+
+        public List<int> GetMatchList()
+        {
+            return _matchList;
         }
 
         internal int lineNumberOfMatch( int matchIndex, List<int> lineIndices )
@@ -146,7 +155,7 @@ namespace swept
 
         internal bool MatchesContent( string content )
         {
-            generateLineIndices(content);
+            generateLineIndices( content );
             identifyMatchLineNumbers( content, ContentPattern );
             return _matchList.Count > 0;
         }
@@ -165,7 +174,7 @@ namespace swept
                     workingMatches = child._matchList.ToList();
 
                 if (child.Operator == FilterOperator.Or)
-                { 
+                {
                     didMatch = didMatch || childMatched;
                     workingMatches = workingMatches.Union( child._matchList ).ToList();
                 }

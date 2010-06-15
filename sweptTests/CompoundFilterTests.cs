@@ -144,7 +144,6 @@ cxxxxxxxxx
             Assert.That( filter._lineIndices[1], Is.EqualTo( 10 ) );
         }
 
-
         [Test]
         public void can_return_list_of_matched_line_numbers()
         {
@@ -152,10 +151,11 @@ cxxxxxxxxx
 
             filter.generateLineIndices( _multiLineFile );
             filter.identifyMatchLineNumbers( _multiLineFile, "b" );
+            List<int> matches = filter.GetMatchList();
 
-            Assert.That( filter._matchList.Count, Is.EqualTo( number_of_Bs ) );
-            Assert.That( filter._matchList[0], Is.EqualTo( 3 ) );
-            Assert.That( filter._matchList[1], Is.EqualTo( 4 ) );
+            Assert.That( matches.Count, Is.EqualTo( number_of_Bs ) );
+            Assert.That( matches[0], Is.EqualTo( 3 ) );
+            Assert.That( matches[1], Is.EqualTo( 4 ) );
         }
 
         [Test]
@@ -167,10 +167,11 @@ cxxxxxxxxx
             filter.ContentPattern = "b";
 
             filter.DoesMatch( file );
+            List<int> matches = filter.GetMatchList();
 
-            Assert.That( filter._matchList.Count, Is.EqualTo( 2 ) );
-            Assert.That( filter._matchList[0], Is.EqualTo( 3 ) );
-            Assert.That( filter._matchList[1], Is.EqualTo( 4 ) );
+            Assert.That( matches.Count, Is.EqualTo( 2 ) );
+            Assert.That( matches[0], Is.EqualTo( 3 ) );
+            Assert.That( matches[1], Is.EqualTo( 4 ) );
         }
 
 

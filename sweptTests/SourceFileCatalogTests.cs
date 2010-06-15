@@ -10,7 +10,6 @@ namespace swept.Tests
     [TestFixture]
     public class SourceFileCatalogTests
     {
-        private SourceFile bariFile;
         private SourceFileCatalog fileCat;
         private ChangeCatalog changeCat;
         private SourceFileCatalog blackCat;

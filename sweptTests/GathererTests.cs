@@ -115,6 +115,8 @@ namespace swept.Tests
             Assert.That( results[change2][0].Name, Is.SameAs( FILEONE ) );
         }
 
+
+
         private const string FILEONE = @"c:\work\one.cs";
         private const string FILETWO = @"c:\work\two.cs";
     }

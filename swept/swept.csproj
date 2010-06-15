@@ -65,6 +65,7 @@
     <Compile Include="ChangeCatalog.cs" />
     <Compile Include="ChangeWindow.cs" />
     <Compile Include="CompoundFilter.cs" />
+    <Compile Include="Issue.cs" />
     <Compile Include="SeeAlso.cs" />
     <Compile Include="UserGUIAdapter.cs" />
     <Compile Include="StudioAdapter.cs">
