@@ -13,12 +13,15 @@ namespace swept
         //  There are two major collections per solution:  The Change and Source File catalogs.
 
         //  The Change Catalog holds things the team wants to improve in this solution.
-        private ChangeCatalog _changeCatalog;
+        internal ChangeCatalog _changeCatalog;
         internal ChangeCatalog _savedChangeCatalog;  //  For comparison to find unsaved changes.
 
         //  The Source File Catalog tracks which changes have been completed for which files.
         internal SourceFileCatalog _sourceCatalog;
         internal SourceFileCatalog _savedSourceCatalog;  //  For comparison to find unsaved changes.
+
+        // TODO: eliminate the saved catalog distinction
+        // TODO: eliminate the SourceFileCatalog entirely
 
         internal IUserAdapter _userAdapter;
         internal IStorageAdapter _storageAdapter;

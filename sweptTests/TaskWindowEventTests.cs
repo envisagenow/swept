@@ -25,25 +25,25 @@ namespace swept.Tests
             _window = _starter.TaskWindow;
         }
 
-        [Test, Ignore("tricky--not well suited for dev candidates")]
-        public void when_TaskWindow_hears_SeekingTaskLocation_the_UserAdapter_gets_the_task()
-        {
-            //unfinished
-            _preparer.ShiftSweptToMocks( _starter );
-            MockUserAdapter userAdapter = _preparer.MockGUI;
+        //[Test, Ignore("tricky--not well suited for dev candidates")]
+        //public void when_TaskWindow_hears_SeekingTaskLocation_the_UserAdapter_gets_the_task()
+        //{
+        //    //unfinished
+        //    _preparer.ShiftSweptToMocks( _starter );
+        //    MockUserAdapter userAdapter = _preparer.MockGUI;
 
-            Task task = new Task
-            {
-                Children = null,
-                Description = "hi!",
-            };
-            TaskEventArgs args = new TaskEventArgs { Task = task };
+        //    Task task = new Task
+        //    {
+        //        Children = null,
+        //        Description = "hi!",
+        //    };
+        //    TaskEventArgs args = new TaskEventArgs { Task = task };
 
-            _window.Hear_TaskChosen( this, args );
+        //    _window.Hear_TaskChosen( this, args );
 
-            // TODO: finish this.
-            Assert.That( userAdapter.DoubleClickedTask, Is.SameAs( task ) );
-        }
+        //    // TODO: finish this.
+        //    Assert.That( userAdapter.DoubleClickedTask, Is.SameAs( task ) );
+        //}
 
         [Test]
         public void when_TaskWindow_toggled_visibility_changed()

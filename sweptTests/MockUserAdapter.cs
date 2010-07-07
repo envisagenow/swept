@@ -10,6 +10,8 @@ namespace swept.Tests
     class MockUserAdapter : IUserAdapter
     {
         public bool SentBadLibraryMessage;
+
+        // TODO: Eliminate KeepHistorical
         public bool KeepHistoricalResponse;
 
         internal List<string> messages;

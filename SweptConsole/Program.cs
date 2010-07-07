@@ -27,7 +27,7 @@ namespace swept
             Starter starter = new Starter();
             starter.Start();
 
-            var arguments = new Arguments( args, starter.StorageAdapter );
+            var arguments = new Arguments( args, starter.StorageAdapter, Console.Out );
             if (arguments.AreInvalid)
                 return;
 

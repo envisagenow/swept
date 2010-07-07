@@ -62,6 +62,7 @@ namespace swept
         public void Stop()
         {
             //  Unsubscribe from the Librarian's events
+            Librarian.Event_SourceCatalogUpdated -= TaskWindow.Hear_SourceCatalogUpdated;
             Librarian.Event_ChangeCatalogUpdated -= TaskWindow.Hear_ChangeCatalogUpdated;
 
             //  Unsubscribe from the ChangeWindow's events

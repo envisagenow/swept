@@ -27,7 +27,7 @@ namespace swept.Tests
             mockStorageAdapter.FilesInFolder["c:\\foo"] = filesInFoo;
 
             string[] argsText = { "folder:c:\\foo", "exclude:c:\\foo", "library:foo.library" };
-            var args = new Arguments( argsText, null );
+            var args = new Arguments( argsText, null, Console.Out );
             Traverser traverser = new Traverser( args, mockStorageAdapter );
 
             IEnumerable<string> files = traverser.GetProjectFiles();
@@ -44,7 +44,7 @@ namespace swept.Tests
             mockStorageAdapter.FilesInFolder["c:\\foo"] = filesInFoo;
 
             string[] argsText = { "folder:c:\\foo", "library:foo.library" };
-            var args = new Arguments( argsText, null );
+            var args = new Arguments( argsText, null, null );
             Traverser traverser = new Traverser( args, mockStorageAdapter );
 
             IEnumerable<string> files = traverser.GetProjectFiles();
@@ -63,7 +63,7 @@ namespace swept.Tests
             mockStorageAdapter.FilesInFolder["c:\\foo\\bar"] = filesInFooBar;
 
             string[] argsText = { "folder:c:\\foo", "library:foo.library" };
-            var args = new Arguments( argsText, null );
+            var args = new Arguments( argsText, null, null );
             Traverser traverser = new Traverser( args, mockStorageAdapter );
 
             IEnumerable<string> files = traverser.GetProjectFiles();
@@ -86,7 +86,7 @@ namespace swept.Tests
             mockStorageAdapter.FilesInFolder["c:\\foo\\bar\\subsub"] = filesInSubSub;
 
             string[] argsText = { "folder:c:\\foo", "library:foo.library" };
-            var args = new Arguments( argsText, null );
+            var args = new Arguments( argsText, null, null );
             Traverser traverser = new Traverser( args, mockStorageAdapter );
 
             IEnumerable<string> files = traverser.GetProjectFiles();
@@ -111,7 +111,7 @@ namespace swept.Tests
             mockStorageAdapter.FilesInFolder["c:\\foo\\bar\\subsub"] = filesInSubSub;
 
             string[] argsText = { "folder:c:\\foo", "library:foo.library", "exclude:bar\\subsub" };
-            var args = new Arguments( argsText, null );
+            var args = new Arguments( argsText, null, null );
             Traverser traverser = new Traverser( args, mockStorageAdapter );
 
             IEnumerable<string> files = traverser.GetProjectFiles();
@@ -129,7 +129,7 @@ namespace swept.Tests
             mockStorageAdapter.FilesInFolder["c:\\foo"] = filesInFoo;
 
             string[] argsText = { "folder:c:\\foo", "library:foo.library" };
-            var args = new Arguments( argsText, null );
+            var args = new Arguments( argsText, null, null );
             Traverser traverser = new Traverser( args, mockStorageAdapter );
             traverser.WhiteListPattern = @"\.(cs|html)$";
 

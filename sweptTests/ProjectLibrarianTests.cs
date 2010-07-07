@@ -87,8 +87,8 @@ namespace swept.Tests
             _storageAdapter.LibraryDoc.LoadXml( TestProbe.SingleChangeLibrary_text );
             Horace.Hear_SolutionOpened( this, Get_testfile_FileEventArgs() );
 
-            Assert.AreEqual( 1, _changeCatalog._changes.Count );
-            Change change = _changeCatalog._changes[0];
+            Assert.AreEqual( 1, Horace._changeCatalog._changes.Count );
+            Change change = Horace._changeCatalog._changes[0];
             Assert.AreEqual( "Update to use persister", change.Description );
             Assert.AreEqual( FileLanguage.CSharp, change.Language );
         }

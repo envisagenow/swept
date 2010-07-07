@@ -19,7 +19,18 @@ namespace swept
             get { return String.IsNullOrEmpty( Folder ); }
         }
 
-        public Arguments( string[] args, IStorageAdapter fileSystem )
+        public static string UsageMessage
+        {
+            get
+            {
+                return @"SweptConsole usage:
+> SweptConsole library:my_solution.swept.library
+> SweptConsole folder:c:\work\acadis library:acadis-2008.swept.library exclude:.svn,bin,build
+";
+            }
+        }
+
+        public Arguments( string[] args, IStorageAdapter fileSystem, TextWriter writer )
         {
             Library = string.Empty;
             Folder = string.Empty;
@@ -27,9 +38,7 @@ namespace swept
 
             if (args.Length == 0)
             {
-                Console.Out.WriteLine( "SweptConsole usage:" );
-                Console.Out.WriteLine( @"> SweptConsole library:my_solution.swept.library" );
-                Console.Out.WriteLine( @"> SweptConsole folder:c:\work\acadis library:acadis-2008.swept.library exclude:.svn,bin,build" );
+                writer.Write( UsageMessage );
                 return;
             }
 
@@ -38,7 +47,7 @@ namespace swept
                 string[] tokens = null;
 
                 if (!s.Contains( ":" ))
-                    throw new ArgumentException( String.Format( "Don't understand the input [{0}].", s ) );
+                    throw new Exception( String.Format( "Don't understand the input [{0}].", s ) );
 
                 tokens = s.Split( ':' );
 
@@ -61,7 +70,7 @@ namespace swept
                     case null:
                     case "":
                     default:
-                        throw new ArgumentException( String.Format( "Don't recognize the argument [{0}].", tokens[0] ) );
+                        throw new Exception( String.Format( "Don't recognize the argument [{0}].", tokens[0] ) );
                 }
             }
 

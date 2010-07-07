@@ -45,9 +45,12 @@ namespace swept.Tests
         [Test]
         public void When_SolutionOpened_all_change_catalog_references_updated()
         {
-            ChangeCatalog oldCatalog = _starter.ChangeCatalog;
+            ChangeCatalog oldCatalog = _librarian._changeCatalog;
+            Assert.That( oldCatalog, Is.EqualTo( _tasks._changeCatalog ) );
+
             _adapter.Raise_SolutionOpened( @"c:\different\place\for.sln" );
-            ChangeCatalog newCatalog = _starter.ChangeCatalog;
+            
+            ChangeCatalog newCatalog = _librarian._changeCatalog;
             Assert.That( newCatalog, Is.Not.SameAs( oldCatalog ) );
             Assert.That( newCatalog, Is.EqualTo( _tasks._changeCatalog ) );
         }
