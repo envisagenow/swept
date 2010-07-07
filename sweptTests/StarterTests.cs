@@ -43,7 +43,6 @@ namespace swept.Tests
             Assert.IsNull( starter.StudioAdapter );
             Assert.IsNull( starter.Librarian );
             Assert.IsNull( starter.TaskWindow );
-            Assert.IsNull( starter.ChangeWindow );
         }
         
         // TODO--0.2: load the appropriate library if Swept started with a solution already loaded

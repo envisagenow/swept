@@ -124,19 +124,6 @@ namespace swept.Tests
             Assert.That( _userAdapter.SentBadLibraryMessage );
         }
 
-        // TODO: disenridiculize
-        [Test]
-        public void SaveSolution_will_persist_all_unsaved_SourceFiles()
-        {
-            string someFileName = "some_file.cs";
-            SourceFile someFile = new SourceFile( someFileName );
-            Horace._sourceCatalog.Add( someFile );
-
-            Horace.Hear_SolutionSaved( this, new EventArgs() );
-
-            Assert.AreEqual( toOuterXml( TestProbe.SingleFileLibrary_text ), _storageAdapter.LibraryDoc.OuterXml );
-        }
-
         [Test]
         public void Can_set_SolutionPath()
         {
@@ -210,18 +197,6 @@ namespace swept.Tests
 
             Assert.IsFalse( Horace.SourceFileCatalogSaved );
             Assert.IsFalse( Horace.IsSaved );
-        }
-
-        [Test]
-        public void When_SaveSolution_fires_Librarian_reports_saved()
-        {
-            Horace._sourceCatalog.Add( newTestingFile( "some_file.cs" ) );
-            Assert.IsFalse( Horace.IsSaved );
-
-            Horace.Hear_SolutionSaved( this, new EventArgs() );
-
-            Assert.IsTrue( Horace.SourceFileCatalogSaved );
-            Assert.IsTrue( Horace.IsSaved );
         }
     }
 }

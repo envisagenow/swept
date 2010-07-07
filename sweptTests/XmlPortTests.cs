@@ -19,59 +19,9 @@ namespace swept.Tests
         }
 
 
-        // TODO--0.N: "Note that a 'Not' operator on a top level change won't do what you want.  Make an enclosed 'Not' filter instead."
+        // TODO--0.N: "Note that a 'Not' operator on a top level change won't do what you want.
+        // Make an enclosed 'Not' filter instead."
 
-        // TODO--0.3: strip out the serialization
-        [Test]
-        public void basic_ChangeCatalog_ToXml()
-        {
-            ChangeCatalog cat = new ChangeCatalog();
-            cat.Add( new Change { ID = "1", Description = "Desc", Language = FileLanguage.CSharp } );
-            Assert.That( port.ToText( cat ), Is.EqualTo( 
-@"<ChangeCatalog>
-    <Change ID='1' Description='Desc' Language='CSharp' />
-</ChangeCatalog>" ) );
-        }
-
-        [Test]
-        public void saved_Changes_are_sorted_by_ID()
-        {
-            ChangeCatalog cat = new ChangeCatalog();
-            cat.Add( new Change { ID = "003", Description = "A", Language = FileLanguage.CSharp } );
-            cat.Add( new Change { ID = "002", Description = "B", Language = FileLanguage.CSS } );
-            cat.Add( new Change { ID = "004", Description = "C", Language = FileLanguage.HTML } );
-            cat.Add( new Change { ID = "001", Description = "D", Language = FileLanguage.JavaScript } );
-            Assert.That( port.ToText( cat ), Is.EqualTo(
-@"<ChangeCatalog>
-    <Change ID='001' Description='D' Language='JavaScript' />
-    <Change ID='002' Description='B' Language='CSS' />
-    <Change ID='003' Description='A' Language='CSharp' />
-    <Change ID='004' Description='C' Language='HTML' />
-</ChangeCatalog>" ) );
-        }
-
-
-        [Test]
-        public void saved_SourceFiles_are_sorted_on_file_fqName()
-        {
-            SourceFileCatalog cat = new SourceFileCatalog();
-            cat.Add( new SourceFile( "a.cs" ) );
-            cat.Add( new SourceFile( "d.cs" ) );
-            cat.Add( new SourceFile( "b.cs" ) );
-            cat.Add( new SourceFile( "c.cs" ) );
-
-            Assert.That( port.ToText( cat ), Is.EqualTo(
-@"<SourceFileCatalog>
-    <SourceFile Name='a.cs'>
-    </SourceFile>
-    <SourceFile Name='b.cs'>
-    </SourceFile>
-    <SourceFile Name='c.cs'>
-    </SourceFile>
-    <SourceFile Name='d.cs'>
-    </SourceFile>
-</SourceFileCatalog>" ) );
-        }
 
         #region Exception testing
         [Test, ExpectedException(ExpectedMessage = "Document must have a <SourceFileCatalog> node.  Please supply one.")]

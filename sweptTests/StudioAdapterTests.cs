@@ -44,7 +44,6 @@ namespace swept.Tests
 
             librarian._savedSourceCatalog = fileCat.Clone();
             librarian.SolutionPath = @"d:\old_stuff\old.sln";
-            librarian.Persist();
 
             window = adapter.taskWindow;
         }
@@ -102,16 +101,6 @@ namespace swept.Tests
             string newPath = @"new\location";
             adapter.Raise_SolutionOpened( newPath );
             Assert.AreEqual( newPath, adapter.Librarian.SolutionPath );
-        }
-
-        [Test]
-        public void when_SolutionSaved_DiskCatalog_saved()
-        {
-            Assert.IsTrue( librarian.IsSaved );
-            librarian._sourceCatalog.Add( new SourceFile( "moo.cs" ) );
-            Assert.IsFalse( librarian.IsSaved );
-            adapter.Raise_SolutionSaved();
-            Assert.IsTrue( librarian.IsSaved );
         }
     }
 }

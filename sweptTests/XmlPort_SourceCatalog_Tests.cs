@@ -17,33 +17,6 @@ namespace swept.Tests
             port = new XmlPort();
         }
 
-        [Test]
-        public void SourceFile_ToXmlText()
-        {
-            SourceFile file = new SourceFile( "foo.cs" );
-
-            string serializedFile = port.ToText( file );
-            string expectedFile =
-@"    <SourceFile Name='foo.cs'>
-    </SourceFile>
-";
-            Assert.AreEqual( expectedFile, serializedFile );
-        }
-
-        [Test]
-        public void SourceFileCatalog_ToXMLText()
-        {
-            SourceFileCatalog fileCat = new SourceFileCatalog();
-            SourceFile blue_cs = fileCat.Fetch( "blue.cs" );
-
-            string text = port.ToText( fileCat );
-            string answer =
-@"<SourceFileCatalog>
-    <SourceFile Name='blue.cs'>
-    </SourceFile>
-</SourceFileCatalog>";
-            Assert.AreEqual( answer, text );
-        }
 
         private SourceFileCatalog get_testing_SourceFileCatalog()
         {

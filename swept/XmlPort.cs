@@ -15,53 +15,6 @@ namespace swept
             _filterPort = new XmlPort_CompoundFilter();
         }
 
-        public string ToText( ChangeCatalog changeCatalog, SourceFileCatalog sourceCatalog )
-        {
-            return string.Format(
-@"<SweptProjectData>
-{0}
-{1}
-</SweptProjectData>",
-                ToText( changeCatalog ),
-                ToText( sourceCatalog )
-            );
-        }
-
-        public string ToText( ChangeCatalog changeCatalog )
-        {
-            string catalogLabel = "ChangeCatalog";
-            string xmlText = String.Format( "<{0}>\r\n", catalogLabel );
-
-            changeCatalog._changes.Sort( ( a, b ) => a.ID.CompareTo(b.ID) );
-
-            foreach (Change change in changeCatalog._changes)
-            {
-                xmlText += _filterPort.ToText( change );
-            }
-
-            xmlText += String.Format( "</{0}>", catalogLabel );
-            return xmlText;
-        }
-
-        public string ToText( SourceFileCatalog fileCatalog )
-        {
-            string catalogLabel = "SourceFileCatalog";
-            string xmlText = String.Format( "<{0}>\r\n", catalogLabel );
-            fileCatalog.Files.Sort( ( left, right ) => left.Name.CompareTo( right.Name ) );
-            fileCatalog.Files.ForEach( file => xmlText += ToText( file ) );
-            xmlText += String.Format( "</{0}>", catalogLabel );
-            return xmlText;
-        }
-
-        public string ToText( SourceFile file )
-        {
-            string elementLabel = "SourceFile";
-            string xmlText = String.Format( "    <{0} Name='{1}'>\r\n", elementLabel, file.Name );
-            xmlText += String.Format( "    </{0}>\r\n", elementLabel );
-
-            return xmlText;
-        }
-
         public ChangeCatalog ChangeCatalog_FromXmlDocument( XmlDocument doc )
         {
             XmlNode node = doc.SelectSingleNode( "SweptProjectData/ChangeCatalog" );

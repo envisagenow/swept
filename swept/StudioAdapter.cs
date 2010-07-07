@@ -9,7 +9,6 @@ namespace swept
     public class StudioAdapter
     {
         internal TaskWindow taskWindow;
-        internal ChangeWindow changeWindow;
         public ProjectLibrarian Librarian { get; set; }
 
 

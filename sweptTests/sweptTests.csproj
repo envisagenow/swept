@@ -68,8 +68,6 @@
     <Compile Include="ArgumentsTests.cs" />
     <Compile Include="BuildReporterTests.cs" />
     <Compile Include="ChangeCatalogTests.cs" />
-    <Compile Include="ChangeWindowEventTests.cs" />
-    <Compile Include="ChangeWindowTests.cs" />
     <Compile Include="CompoundFilterTests.cs" />
     <Compile Include="GathererTests.cs" />
     <Compile Include="IssueTests.cs" />

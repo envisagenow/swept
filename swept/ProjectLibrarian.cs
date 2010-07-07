@@ -126,25 +126,11 @@ namespace swept
             return doc;
         }
 
-        private void RenameFile(string oldName, string newName)
-        {
-            _sourceCatalog.Rename(oldName, newName);
-            _savedSourceCatalog.Rename(oldName, newName);
-
-            Persist();
-        }
-
         private void RenameSolution( string oldSolutionPath, string newSolutionPath )
         {
             string oldLibraryPath = LibraryPath;
             SolutionPath = newSolutionPath;
             _storageAdapter.RenameLibrary( oldLibraryPath, LibraryPath );
-        }
-
-        private void SaveSolution()
-        {
-            _savedSourceCatalog = _sourceCatalog.Clone();
-            Persist();
         }
 
         #region Event Listeners
@@ -158,32 +144,6 @@ namespace swept
             OpenSolution(arg.Name);
         }
 
-        public void Hear_ChangeListUpdated(object sender, EventArgs e)
-        {
-            Persist();
-        }
-
-        public void Hear_FileRenamed(object sender, FileListEventArgs args)
-        {
-            RenameFile(args.Names[0], args.Names[1]);
-        }
-
-        public void Hear_SolutionSaved(object sender, EventArgs args)
-        {
-            SaveSolution();
-        }
-
         #endregion
-
-        internal void Persist()
-        {
-            _savedChangeCatalog = _changeCatalog.Clone();
-
-            var port = new XmlPort();
-            var library = _storageAdapter.LoadLibrary( LibraryPath );
-            _savedChangeCatalog = port.ChangeCatalog_FromXmlDocument( library );
-            _changeCatalog = _savedChangeCatalog.Clone();
-            _storageAdapter.Save( LibraryPath, port.ToText( this._changeCatalog, this._sourceCatalog ) );
-        }
     }
 }

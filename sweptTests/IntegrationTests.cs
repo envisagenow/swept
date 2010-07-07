@@ -11,7 +11,6 @@ namespace swept.Tests
     {
         private Starter _starter;
         private StudioAdapter _adapter;
-        private ChangeWindow _changes;
         private ProjectLibrarian _librarian;
         private TaskWindow _tasks;
 
@@ -26,7 +25,6 @@ namespace swept.Tests
             
             _tasks = _starter.TaskWindow;
             _adapter = _starter.StudioAdapter;
-            _changes = _starter.ChangeWindow;
 
             TestPreparer preparer = new TestPreparer();
             preparer.ShiftSweptToMocks( _starter );
