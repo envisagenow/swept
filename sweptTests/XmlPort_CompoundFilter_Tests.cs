@@ -9,7 +9,7 @@ using System.Collections.Generic;
 namespace swept.Tests
 {
     [TestFixture]
-    public class XmlPort_CompoundFilter_Tests
+    public class XmlPort_CompoundFilter_Tests 
     {
         private XmlPort_CompoundFilter port;
 
@@ -18,153 +18,6 @@ namespace swept.Tests
         {
             port = new XmlPort_CompoundFilter();
         }
-
-        // TODO--0.N: public void Removed_Changes_are_saved()
-        // TODO--0.N: public void Removed_Changes_are_loaded()
-
-        #region ToText
-        [Test]
-        public void Filter_ToText_empty()
-        {
-            CompoundFilter filter = new Change();
-
-            string serializedFilter = port.ToText( filter );
-            string expectedFilter =
-@"    <Change />
-";
-            Assert.AreEqual( expectedFilter, serializedFilter );
-        }
-
-        [Test]
-        public void Filter_ToText_attributes()
-        {
-            CompoundFilter filter = new Change
-            {
-                ID = "thing",
-                Description = "for my test",
-                ContentPattern = "bad code",
-                NamePattern = "(affected|relevant)_file",
-                Language = FileLanguage.CSharp,
-                Subpath = @"down\\(here|there)",
-            };
-
-            string serializedFilter = port.ToText( filter );
-            string expectedFilter =
-@"    <Change ID='thing' Description='for my test' Subpath='down\\(here|there)' NamePattern='(affected|relevant)_file' Language='CSharp' ContentPattern='bad code' />
-";
-            Assert.AreEqual( expectedFilter, serializedFilter );
-        }
-
-        [Test]
-        public void Filter_ToText_children()
-        {
-            CompoundFilter filter = new Change{
-                ID = "parent",
-                Description = "outer"
-            };
-            filter.Children.Add( new CompoundFilter { ID = "child1" } );
-            filter.Children.Add( new CompoundFilter { ID = "child2", Operator = FilterOperator.Or } );
-
-            string serializedFilter = port.ToText( filter );
-            string expectedFilter =
-@"    <Change ID='parent' Description='outer'>
-        <When ID='child1' />
-        <Or ID='child2' />
-    </Change>
-";
-            Assert.AreEqual( expectedFilter, serializedFilter );
-        }
-
-        [Test]
-        public void shows_manual_completion_when_allowed()
-        {
-            Change change = new Change { ID = "permitted", ManualCompletion = true };
-            string serializedFilter = port.ToText( change );
-
-            string expectedText = @"    <Change ID='permitted' ManualCompletion='Allowed' />
-";
-            Assert.That( serializedFilter, Is.EqualTo( expectedText ) );
-
-            change.ManualCompletion = false;
-            serializedFilter = port.ToText( change );
-
-            expectedText = @"    <Change ID='permitted' />
-";
-            Assert.That( serializedFilter, Is.EqualTo( expectedText ) );
-        }
-
-        [Test]
-        public void shows_SeeAlsos()
-        {
-            Change change = new Change { ID = "references" };
-            var newSeeAlso = new SeeAlso { 
-                Description = "Google is your friend.", 
-                Target = "http://www.google.com",
-                TargetType = TargetType.URL
-            };
-            change.SeeAlsos.Add( newSeeAlso );
-            string serializedFilter = port.ToText( change );
-
-            string expectedText = 
-@"    <Change ID='references'>
-        <SeeAlso Description='Google is your friend.' Target='http://www.google.com' TargetType='URL' />
-    </Change>
-";
-            Assert.That( serializedFilter, Is.EqualTo( expectedText ) );
-        }
-
-        #endregion
-
-        #region SeeAlso
-        [Test]
-        public void SeeAlso_empty_ToXml()
-        {
-            var seeAlso = new SeeAlso();
-            string expectedText = "        <SeeAlso TargetType='URL' />\r\n";
-            string actualText = port.ToText( seeAlso );
-            Assert.That( actualText, Is.EqualTo( expectedText ) );
-        }
-
-        [Test]
-        public void SeeAlso_URL_ToXml()
-        {
-            var seeAlso = new SeeAlso
-            {
-                Description = "simple",
-                Target = "helloworld.com",
-                TargetType = TargetType.URL
-            };
-            string expectedText = "        <SeeAlso Description='simple' Target='helloworld.com' TargetType='URL' />\r\n";
-            string actualText = port.ToText( seeAlso );
-            Assert.That( actualText, Is.EqualTo( expectedText ) );
-        }
-
-        [Test]
-        public void full_SeeAlso_SVN_ToXml()
-        {
-            var seeAlso = new SeeAlso
-            {
-                Target = "TextOutputAdapter.cs",
-                Commit = "3427",
-                TargetType = TargetType.SVN
-            };
-            string expectedText = "        <SeeAlso Target='TextOutputAdapter.cs' Commit='3427' TargetType='SVN' />\r\n";
-            string actualText = port.ToText( seeAlso );
-            Assert.That( actualText, Is.EqualTo( expectedText ) );
-        }
-
-        [Test]
-        public void full_SeeAlso_ProjectFile_ToXml()
-        {
-            var seeAlso = new SeeAlso { 
-                Target = "utility\\MegaToString.cs", 
-                TargetType = TargetType.File 
-            };
-            string expectedText = "        <SeeAlso Target='utility\\MegaToString.cs' TargetType='File' />\r\n";
-            string actualText = port.ToText( seeAlso );
-            Assert.That( actualText, Is.EqualTo( expectedText ) );
-        }
-        #endregion
 
         #region From Node
         [Test, ExpectedException( ExpectedMessage = "Changes must have IDs at their top level.")]
@@ -268,32 +121,6 @@ namespace swept.Tests
             Assert.That( filter.ID, Is.EqualTo( "single" ) );
             Assert.That( filter.Children.Count, Is.EqualTo( 1 ) );
         }
-
-        // TODO--0.3: finish feature: manual completion (UI checkbox)
-        //  Manual completion:  Some filters may show false-positive, and we may want to give
-        //  the developer a chance to manually mark a file as okay.  (Currently this is always on.)
-        [Test]
-        public void FromNode_sets_manual_completion_permission()
-        {
-            string filter_text =
-@"<Change ID='single' ManualCompletion='Allowed' />
-";
-            var node = Node_FromText( filter_text );
-
-            CompoundFilter filter = port.CompoundFilter_FromNode( node );
-            Assert.IsTrue( filter.ManualCompletion );
-        }
-
-        [Test, ExpectedException( ExpectedMessage = "Don't understand the manual completion permission 'Allwoed'." )]
-        public void FromNode_throws_on_manual_completion_typo()
-        {
-            string filter_text =
-@"<Change ID='typo' ManualCompletion='Allwoed' />";
-            var node = Node_FromText( filter_text );
-
-            port.CompoundFilter_FromNode( node );  // bang
-        }
-
 
         [Test]
         public void FromNode_retrieves_attributes()
@@ -442,54 +269,6 @@ namespace swept.Tests
             Assert.That( thisFromNode.Equals( thisExpected ) );
             Assert.That( filterFromNode.Children[3].Equals( expectedFilter.Children[3] ) );
             Assert.That( filterFromNode.Equals( expectedFilter ) );
-        }
-
-        [Test]
-        public void use_persisters_instead_of_direct_db_access_RoundTrip()
-        {
-            var usePersistersNode = Node_FromText( UsePersisters_Text );
-            CompoundFilter filterFromNode = port.CompoundFilter_FromNode( usePersistersNode );
-
-            string textFromFilter = port.ToText( filterFromNode );
-
-            Assert.That( textFromFilter, Is.EqualTo( UsePersisters_Text ) );
-        }
-
-        [Test]
-        public void use_persisters_instead_of_direct_db_access_ToText()
-        {
-            CompoundFilter use_persisters = UsePersisters_Filter;
-            string textFromFilter = port.ToText( use_persisters );
-
-            Assert.That( textFromFilter, Is.EqualTo( UsePersisters_Text ) );
-        }
-
-        [Test]
-        public void Can_serialize_full_Change_ToXml()
-        {
-            Change change = new Change
-            {
-                ID = "Uno",
-                Description = "Eliminate profanity from error messages.",
-                ContentPattern = "contains this",
-                Subpath = @"utilities\error_handling",
-                NamePattern = "messages",
-                Language = FileLanguage.CSharp,
-                Operator = FilterOperator.Or, // note that the operator isn't expressed at the top level.
-                ManualCompletion = true,
-            };
-
-            string xmlText = port.ToText( change );
-
-            string expectedXml = string.Format(
-                "    <Change ID='{0}' Description='{1}' ManualCompletion='{2}' Subpath='{3}' NamePattern='{4}' Language='{5}' ContentPattern='{6}' />{7}",
-                change.ID, change.Description, change.ManualCompletionString,
-                change.Subpath, change.NamePattern, change.Language,
-                change.ContentPattern,
-                Environment.NewLine
-            );
-
-            Assert.AreEqual( expectedXml, xmlText );
         }
         #endregion
     }

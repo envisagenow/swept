@@ -52,12 +52,6 @@ namespace swept.Tests
         }
 
         [Test]
-        public void Task_incomplete_by_default()
-        {
-            Assert.IsFalse( _task.Completed );
-        }
-
-        [Test]
         public void ToString_shows_description_for_GUI()
         {
             Assert.That( _task.ToString(), Is.EqualTo( _Description ) );

@@ -14,9 +14,8 @@ namespace swept
 
         public void Hear_TaskLocationSought( object sender, TaskEventArgs args )
         {
-            
+            // TODO: transmit this to the IDE.
         }
-
 
 
         #region Publish events
@@ -79,13 +78,6 @@ namespace swept
                 Event_FileSavedAs(this, new FileListEventArgs { Names = names });
             }
         }
-
-        public event EventHandler<FileEventArgs> Event_FileChangesAbandoned;
-        public void Raise_FileChangesAbandoned(string fileName)
-        {
-            if (Event_FileChangesAbandoned != null)
-                Event_FileChangesAbandoned(this, new FileEventArgs { Name = fileName });
-        }
         
         public event EventHandler<FileListEventArgs> Event_FileRenamed;
         public void Raise_FileRenamed(string oldName, string newName)
@@ -97,13 +89,6 @@ namespace swept
                 names.Add(newName);
                 Event_FileRenamed(this, new FileListEventArgs { Names = names });
             }
-        }
-
-        public event EventHandler Event_SolutionSaved;
-        public void Raise_SolutionSaved()
-        {
-            if (Event_SolutionSaved != null)
-                Event_SolutionSaved(this, new EventArgs());
         }
 
         #endregion

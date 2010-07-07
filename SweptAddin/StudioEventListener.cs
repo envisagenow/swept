@@ -44,7 +44,6 @@ namespace swept.Addin
 
             _solutionItemsEvents.ItemRenamed += Hear_ItemRenamed;
 
-            _documentEvents.DocumentClosing += Hear_DocumentClosing;
             _documentEvents.DocumentSaved += Hear_DocumentSaved;
 
             _windowEvents.WindowActivated += Hear_WindowActivated;
@@ -67,7 +66,6 @@ namespace swept.Addin
             _windowEvents.WindowActivated -= Hear_WindowActivated;
 
             _documentEvents.DocumentSaved -= Hear_DocumentSaved;
-            _documentEvents.DocumentClosing -= Hear_DocumentClosing;
 
             _solutionEvents.Renamed -= Hear_SolutionRenamed;
             _solutionEvents.Opened -= Hear_SolutionOpened;
@@ -296,19 +294,6 @@ namespace swept.Addin
             try
             {
                 _adapter.Raise_FileRenamed( oldName, item.Name );
-            }
-            catch (Exception e)
-            {
-                describeException( e );
-            }
-        }
-
-        private void Hear_DocumentClosing( Document doc )
-        {
-            try
-            {
-                if (!doc.Saved)
-                    _adapter.Raise_FileChangesAbandoned( doc.Name );
             }
             catch (Exception e)
             {

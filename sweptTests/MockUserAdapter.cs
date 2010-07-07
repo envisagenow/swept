@@ -11,9 +11,6 @@ namespace swept.Tests
     {
         public bool SentBadLibraryMessage;
 
-        // TODO: Eliminate KeepHistorical
-        public bool KeepHistoricalResponse;
-
         internal List<string> messages;
 
         public Task DoubleClickedTask { get; private set; }
@@ -24,16 +21,6 @@ namespace swept.Tests
         }
 
         #region IUserAdapter Members
-
-        public bool KeepChangeHistory( Change historicalChange )
-        {
-            return KeepHistoricalResponse;
-        }
-
-        public bool KeepSourceFileHistory( SourceFile historicalFile )
-        {
-            return KeepHistoricalResponse;
-        }
 
         public void BadXmlInExpectedLibrary( string libraryPath, XmlException exception )
         {

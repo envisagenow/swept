@@ -472,47 +472,6 @@ cxxxxxxxxx
 
         #region Name reporting
         [Test]
-        public void default_name_is_And()
-        {
-            CompoundFilter filter = new CompoundFilter();
-            Assert.That( filter.Name, Is.EqualTo( "And" ) );
-        }
-
-        [Test]
-        public void name_generally_matches_operator()
-        {
-            CompoundFilter filter = new CompoundFilter();
-
-            filter.Operator = FilterOperator.And;
-            Assert.That( filter.Name, Is.EqualTo( "And" ) );
-            filter.Operator = FilterOperator.Not;
-            Assert.That( filter.Name, Is.EqualTo( "AndNot" ) );
-            filter.Operator = FilterOperator.Or;
-            Assert.That( filter.Name, Is.EqualTo( "Or" ) );
-        }
-
-        [Test]
-        public void first_child_name_is_different()
-        {
-            CompoundFilter filter = new CompoundFilter();
-            filter.FirstChild = true;
-
-            filter.Operator = FilterOperator.And;
-            Assert.That( filter.Name, Is.EqualTo( "When" ) );
-            filter.Operator = FilterOperator.Not;
-            Assert.That( filter.Name, Is.EqualTo( "Not" ) );
-            filter.Operator = FilterOperator.Or;
-            Assert.That( filter.Name, Is.EqualTo( "Either" ) );
-        }
-
-        [Test, ExpectedException( ExpectedMessage = "Can't get Name for Operator [-1]." )]
-        public void operator_out_of_range_is_caught()
-        {
-            CompoundFilter filter = new CompoundFilter { Operator = (FilterOperator)(-1) };
-            string never_seen = filter.Name;
-        }
-
-        [Test]
         public void can_mark_all_first_children()
         {
             CompoundFilter filter = new CompoundFilter();

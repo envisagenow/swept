@@ -12,7 +12,7 @@ namespace swept
         SVN
     }
 
-    public class SeeAlso
+    public class SeeAlso: IEquatable<SeeAlso>
     {
         public string Description { get; set; }
         public string Commit { get; set; }
@@ -48,13 +48,18 @@ namespace swept
 
         public override bool Equals( object obj )
         {
-            SeeAlso compareTo = obj as SeeAlso;
-            if (compareTo == null) return false;
+            SeeAlso other = obj as SeeAlso;
+            return Equals( other );
+        }
 
-            bool match = Description == compareTo.Description;
-            match = match && Target == compareTo.Target;
-            match = match && TargetType == compareTo.TargetType;
-            match = match && Commit == compareTo.Commit;
+        public bool Equals( SeeAlso other )
+        {
+            if (other == null) return false;
+
+            bool match = Description == other.Description;
+            match = match && Target == other.Target;
+            match = match && TargetType == other.TargetType;
+            match = match && Commit == other.Commit;
 
             return match;
         }

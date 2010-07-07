@@ -22,10 +22,6 @@ namespace swept
         public string Description       { get; internal set; }
         public FilterOperator Operator  { get; internal set; }
         public FileLanguage Language    { get; internal set; }
-        public string LanguageString
-        {
-            get { return Language == FileLanguage.None ? string.Empty : Language.ToString(); }
-        }
         public string Subpath           { get; internal set; }
         public string NamePattern       { get; internal set; }
         public string ContentPattern    { get; internal set; }
@@ -39,39 +35,10 @@ namespace swept
             ContentPattern = string.Empty;
             Children = new List<CompoundFilter>();
             Operator = FilterOperator.And;
-            ManualCompletion = false;
             _lineIndices = new List<int>();
             _matchList = new List<int> { 1 };
         }
 
-        public virtual string Name
-        {
-            get
-            {
-                switch( Operator )
-                {
-                case FilterOperator.And:
-                    return FirstChild ? "When" : "And";
-
-                case FilterOperator.Not:
-                    return FirstChild ? "Not" : "AndNot";
-
-                case FilterOperator.Or:
-                    return FirstChild ? "Either" : "Or";
-
-                default:
-                    throw new Exception( string.Format( "Can't get Name for Operator [{0}].", Operator.ToString() ) );
-                }
-            }
-        }
-        public bool ManualCompletion { get; set; }
-        public string ManualCompletionString
-        {
-            get
-            {
-                return ManualCompletion ? "Allowed" : string.Empty;
-            }
-        }
         public bool FirstChild { get; set; }
         public List<CompoundFilter> Children { get; set; }
 
@@ -266,7 +233,6 @@ namespace swept
             newFilter.Language = Language;
 
             newFilter.ContentPattern = ContentPattern;
-            newFilter.ManualCompletion = ManualCompletion;
 
             foreach (CompoundFilter child in Children)
             {

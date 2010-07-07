@@ -21,7 +21,7 @@ namespace swept.Tests
             // TODO--0.3: figure out contentPattern for avoidAliasUsing.
             cat.Add( avoidAliasUsing );
 
-            cat.Add( new Change { ID = "e2", Description = "Upgrade to XHTML", Language = FileLanguage.HTML, ManualCompletion = true } );
+            cat.Add( new Change { ID = "e2", Description = "Upgrade to XHTML", Language = FileLanguage.HTML } );
             cat.Add( new Change { ID = "e3", Description = "Put <title> on all pages", Language = FileLanguage.HTML } );
         }
 

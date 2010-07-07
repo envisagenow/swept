@@ -9,7 +9,6 @@ namespace swept
     public class Task : Change
     {
         public int LineNumber { get; private set; }
-        public bool Completed;
 
         public static List<Task> FromChange( Change change )
         {
@@ -22,7 +21,6 @@ namespace swept
                     ID = change.ID,
                     Description = change.Description,
                     LineNumber = line,
-                    Completed = false
                 };
 
                 foreach (var seeAlso in change.SeeAlsos)

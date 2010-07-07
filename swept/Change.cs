@@ -26,11 +26,6 @@ namespace swept
             SeeAlsos = new List<SeeAlso>();
         }
 
-        public override string Name
-        {
-            get { return "Change"; }
-        }
-
         public new Change Clone()
         {
             return (Change)base.CloneInto( new Change() );

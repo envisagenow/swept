@@ -40,7 +40,6 @@ namespace swept.Addin
                 row.ContextMenuStrip = menu;
 
                 row.Cells["Description"].Value = task.Description;
-                row.Cells["Done"].Value = task.Completed;
                 // TODO--0.3:  Populate Line number column
             }
 

@@ -18,69 +18,6 @@ namespace swept
         public const string cfa_Language = "Language";
         public const string cfa_ContentPattern = "ContentPattern";
 
-        public string ToText( CompoundFilter filter )
-        {
-            filter.markFirstChildren();
-            StringBuilder sb = new StringBuilder();
-            IntoStringBuilder( filter, sb, 1 );
-            return sb.ToString();
-        }
-
-        private static void AppendAttributeIfExists( StringBuilder sb, string name, string value )
-        {
-            if (string.IsNullOrEmpty( value )) return;
-            sb.AppendFormat( " {0}='{1}'", name, value );
-        }
-
-        private void IntoStringBuilder( CompoundFilter filter, StringBuilder sb, int depth )
-        {
-            string indentFormat = "{0," + 4 * depth + "}";
-            string indent = string.Format( indentFormat, string.Empty );
-
-            sb.AppendFormat( "{0}<{1}", indent, filter.Name );
-
-            AppendAttributeIfExists( sb, cfa_ID, filter.ID );
-            AppendAttributeIfExists( sb, cfa_Description, filter.Description );
-            AppendAttributeIfExists( sb, cfa_ManualCompletion, filter.ManualCompletionString );
-            AppendAttributeIfExists( sb, cfa_Subpath, filter.Subpath );
-            AppendAttributeIfExists( sb, cfa_NamePattern, filter.NamePattern );
-            AppendAttributeIfExists( sb, cfa_Language, filter.LanguageString );
-            AppendAttributeIfExists( sb, cfa_ContentPattern, filter.ContentPattern );
-
-            var change = filter as Change;
-            bool hasSeeAlsos = change != null && change.SeeAlsos.Count > 0;
-            bool hasChildren = filter.Children.Count > 0;
-
-            bool isSelfClosing = !hasChildren && !hasSeeAlsos;
-            if (isSelfClosing)
-                sb.Append( " /" );
-
-            sb.AppendFormat( ">{0}", Environment.NewLine );
-
-            filter.Children.ForEach( child => IntoStringBuilder( child, sb, depth + 1 ) );
-
-            if (hasSeeAlsos)
-                change.SeeAlsos.ForEach( seeAlso => sb.Append( ToText( seeAlso ) ) );
-
-            if (!isSelfClosing)
-                sb.AppendFormat( "{0}</{1}>{2}", indent, filter.Name, Environment.NewLine );
-        }
-
-        public string ToText( SeeAlso seeAlso )
-        {
-            var sb = new StringBuilder();
-            sb.Append( "        <SeeAlso" );
-
-            AppendAttributeIfExists( sb, "Description", seeAlso.Description );
-            AppendAttributeIfExists( sb, "Target", seeAlso.Target );
-            AppendAttributeIfExists( sb, "Commit", seeAlso.Commit );
-
-            sb.AppendFormat( " {0}='{1}'", "TargetType", seeAlso.TargetType );
-
-            sb.AppendFormat( " />{0}", Environment.NewLine );
-            return sb.ToString();
-        }
-
         private static string[] UnknownAttributesIn( XmlNode filterNode )
         {
             var known = new List<string>() { cfa_ID, cfa_Description, cfa_ManualCompletion, cfa_Subpath, cfa_NamePattern, cfa_Language, cfa_ContentPattern };
@@ -132,13 +69,6 @@ namespace swept
 
             if (filterNode.Attributes[cfa_Description] != null)
                 filter.Description = filterNode.Attributes[cfa_Description].Value;
-
-            if (filterNode.Attributes[cfa_ManualCompletion] != null)
-            {
-                if (filterNode.Attributes[cfa_ManualCompletion].Value != "Allowed")
-                    throw new Exception( String.Format( "Don't understand the manual completion permission '{0}'.", filterNode.Attributes[cfa_ManualCompletion].Value ) );
-                filter.ManualCompletion = true;
-            }
 
             if (filterNode.Attributes[cfa_Subpath] != null)
                 filter.Subpath = filterNode.Attributes[cfa_Subpath].Value;

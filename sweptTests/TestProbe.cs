@@ -61,9 +61,6 @@ namespace swept.Tests
             }
         }
 
-
-
-
         [Test]
         public void When_set_to_populated_list()
         {
@@ -104,7 +101,6 @@ namespace swept.Tests
             {
                 ID = id,
                 Description = description,
-                Completed = r.Next( 0, 2 ) == 1,
                 Language = FileLanguage.CSharp,
             };
         }

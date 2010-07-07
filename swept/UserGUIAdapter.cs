@@ -10,20 +10,6 @@ namespace swept
 {
     public class UserGUIAdapter : IUserAdapter
     {
-        public bool KeepChangeHistory( Change historicalChange )
-        {
-            //TODO--0.3:  Better message
-            DialogResult keepChangeHistory = MessageBox.Show( "This change existed in the past.  Should I keep its history?" );
-            return (keepChangeHistory == DialogResult.Yes);
-        }
-
-        public bool KeepSourceFileHistory( SourceFile historicalFile )
-        {
-            //TODO--0.3:  Better message
-            DialogResult keepFileHistory = MessageBox.Show( "This source file existed in the past.  Shall I keep its history?" );
-            return (keepFileHistory == DialogResult.Yes);
-        }
-
         public void BadXmlInExpectedLibrary( string libraryPath, XmlException exception )
         {
             MessageBox.Show( string.Format( 
