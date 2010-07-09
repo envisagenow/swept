@@ -70,7 +70,7 @@
     <Compile Include="ChangeCatalogTests.cs" />
     <Compile Include="CompoundFilterTests.cs" />
     <Compile Include="GathererTests.cs" />
-    <Compile Include="IssueTests.cs" />
+    <Compile Include="IssueSetTests.cs" />
     <Compile Include="SeeAlsoTests.cs" />
     <Compile Include="TraverserTests.cs" />
     <Compile Include="XmlPort_CompoundFilter_Tests.cs" />

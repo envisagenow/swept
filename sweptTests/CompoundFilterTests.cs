@@ -12,7 +12,7 @@ namespace swept.Tests
     [TestFixture]
     public class CompoundFilterTests
     {
-        private string _multiLineFile =
+        public static string _multiLineFile =
 @"
 axxxxxx
 abxx
@@ -130,7 +130,6 @@ cxxxxxxxxx
         }
         
         #endregion
-
 
 
         #region Line matching

@@ -2,6 +2,8 @@
 //  Copyright (c) 2010 Jason Cole and Envisage Technologies Corp.
 //  This software is open source, MIT license.  See the file LICENSE for details.
 using System;
+using System.Collections.Generic;
+using System.IO;
 
 namespace swept
 {
@@ -11,7 +13,7 @@ namespace swept
         {
             try
             {
-                execute( args );
+                execute( args, Console.Out );
             }
             catch (Exception ex)
             {
@@ -19,30 +21,30 @@ namespace swept
             }
         }
 
-        private static void execute( string[] args )
+        private static void execute( string[] args, TextWriter writer )
         {
-            //string[] fs = System.IO.Directory.GetFiles( Environment.CurrentDirectory, "*.(cs|html)", System.IO.SearchOption.AllDirectories );
-            //Console.WriteLine( "found " + fs.Length + " files" );
-
             Starter starter = new Starter();
             starter.Start();
 
-            var arguments = new Arguments( args, starter.StorageAdapter, Console.Out );
+            var arguments = new Arguments( args, starter.StorageAdapter, writer );
             if (arguments.AreInvalid)
                 return;
 
             var traverser = new Traverser( arguments, starter.StorageAdapter );
-            var files = traverser.GetProjectFiles();
+            IEnumerable<string> fileNames = traverser.GetProjectFiles();
 
             var changes = starter.ChangeCatalog.GetSortedChanges();
 
-            var gatherer = new Gatherer( changes, files, starter.StorageAdapter );
-            var results = gatherer.GetIssueList();
+            var gatherer = new Gatherer( changes, fileNames, starter.StorageAdapter );
+            
+            //goal code
+            //Dictionary<Change, List<IssueSet>> results = gatherer.GetIssueSetDictionary();
+            Dictionary<Change, List<SourceFile>> results = gatherer.GetIssueSetDictionary();
 
             var buildReporter = new BuildReporter();
             var reportXML = buildReporter.ReportOn( results );
 
-            Console.Out.WriteLine( reportXML );
+            writer.WriteLine( reportXML );
         }
     }
 }

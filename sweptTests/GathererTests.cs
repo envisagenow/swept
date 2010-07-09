@@ -20,7 +20,7 @@ namespace swept.Tests
             MockStorageAdapter storage = new MockStorageAdapter();
             Gatherer gatherer = new Gatherer( changes, files, storage );
 
-            Dictionary<Change, List<SourceFile>> results = gatherer.GetIssueList();
+            Dictionary<Change, List<SourceFile>> results = gatherer.GetIssueSetDictionary();
 
             Assert.That( results, Is.Not.Null );
             Assert.That( results.Count, Is.EqualTo( 0 ) );
@@ -34,7 +34,7 @@ namespace swept.Tests
             MockStorageAdapter storage = new MockStorageAdapter();
             Gatherer gatherer = new Gatherer( changes, files, storage );
 
-            Dictionary<Change, List<SourceFile>> results = gatherer.GetIssueList();
+            Dictionary<Change, List<SourceFile>> results = gatherer.GetIssueSetDictionary();
 
             Assert.That( results, Is.Not.Null );
             Assert.That( results.Count, Is.EqualTo( 0 ) );
@@ -47,7 +47,7 @@ namespace swept.Tests
             MockStorageAdapter storage = new MockStorageAdapter();
             Gatherer gatherer = new Gatherer( new List<Change>(), files, storage );
 
-            Dictionary<Change, List<SourceFile>> results = gatherer.GetIssueList();
+            Dictionary<Change, List<SourceFile>> results = gatherer.GetIssueSetDictionary();
 
             Assert.That( storage.DidLoad( FILEONE ) );
             Assert.That( storage.DidLoad( FILETWO ) );
@@ -64,7 +64,7 @@ namespace swept.Tests
             MockStorageAdapter storage = new MockStorageAdapter();
             Gatherer gatherer = new Gatherer( changes, files, storage );
 
-            Dictionary<Change, List<SourceFile>> results = gatherer.GetIssueList();
+            Dictionary<Change, List<SourceFile>> results = gatherer.GetIssueSetDictionary();
 
             Assert.That( results.Count, Is.EqualTo( 1 ) );
             Assert.That( results.Keys.First(), Is.SameAs( change ) );
@@ -83,7 +83,7 @@ namespace swept.Tests
             MockStorageAdapter storage = new MockStorageAdapter();
             Gatherer gatherer = new Gatherer( changes, files, storage );
 
-            Dictionary<Change, List<SourceFile>> results = gatherer.GetIssueList();
+            Dictionary<Change, List<SourceFile>> results = gatherer.GetIssueSetDictionary();
 
             Assert.That( results.Count, Is.EqualTo( 1 ) );
             Assert.That( results.Keys.First(), Is.SameAs( change ) );
@@ -104,7 +104,7 @@ namespace swept.Tests
             MockStorageAdapter storage = new MockStorageAdapter();
             Gatherer gatherer = new Gatherer( changes, files, storage );
 
-            Dictionary<Change, List<SourceFile>> results = gatherer.GetIssueList();
+            Dictionary<Change, List<SourceFile>> results = gatherer.GetIssueSetDictionary();
 
             Assert.That( results.Count, Is.EqualTo( 2 ) );
             Assert.That( results.Keys.ElementAt( 0 ), Is.SameAs( change1 ) );
