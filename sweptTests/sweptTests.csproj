@@ -66,13 +66,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ArgumentsTests.cs" />
-    <Compile Include="BuildReporterTests.cs" />
+    <Compile Include="Console\BuildReporterTests.cs" />
     <Compile Include="ChangeCatalogTests.cs" />
     <Compile Include="CompoundFilterTests.cs" />
-    <Compile Include="GathererTests.cs" />
+    <Compile Include="Console\GathererTests.cs" />
     <Compile Include="IssueSetTests.cs" />
     <Compile Include="SeeAlsoTests.cs" />
-    <Compile Include="TraverserTests.cs" />
+    <Compile Include="Console\TraverserTests.cs" />
     <Compile Include="XmlPort_CompoundFilter_Tests.cs" />
     <Compile Include="FileContentFilterTests.cs" />
     <Compile Include="IntegrationTests.cs" />

@@ -20,11 +20,7 @@ namespace swept
             WhiteListPattern = @"\.(cs|aspx|ascx|x?html?|xml|txt|xslt?|css)$";
         }
 
-        public string WhiteListPattern
-        {
-            get;
-            set;
-        }
+        public string WhiteListPattern { get; set; }
 
         public IEnumerable<string> GetProjectFiles()
         {
