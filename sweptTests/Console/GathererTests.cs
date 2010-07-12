@@ -20,7 +20,7 @@ namespace swept.Tests
             MockStorageAdapter storage = new MockStorageAdapter();
             Gatherer gatherer = new Gatherer( changes, files, storage );
 
-            Dictionary<Change, List<SourceFile>> results = gatherer.GetIssueSetDictionary();
+            var results = gatherer.GetIssueSetDictionary();
 
             Assert.That( results, Is.Not.Null );
             Assert.That( results.Count, Is.EqualTo( 0 ) );
@@ -34,7 +34,7 @@ namespace swept.Tests
             MockStorageAdapter storage = new MockStorageAdapter();
             Gatherer gatherer = new Gatherer( changes, files, storage );
 
-            Dictionary<Change, List<SourceFile>> results = gatherer.GetIssueSetDictionary();
+            var results = gatherer.GetIssueSetDictionary();
 
             Assert.That( results, Is.Not.Null );
             Assert.That( results.Count, Is.EqualTo( 0 ) );
@@ -47,7 +47,7 @@ namespace swept.Tests
             MockStorageAdapter storage = new MockStorageAdapter();
             Gatherer gatherer = new Gatherer( new List<Change>(), files, storage );
 
-            Dictionary<Change, List<SourceFile>> results = gatherer.GetIssueSetDictionary();
+            var results = gatherer.GetIssueSetDictionary();
 
             Assert.That( storage.DidLoad( FILEONE ) );
             Assert.That( storage.DidLoad( FILETWO ) );
@@ -64,12 +64,15 @@ namespace swept.Tests
             MockStorageAdapter storage = new MockStorageAdapter();
             Gatherer gatherer = new Gatherer( changes, files, storage );
 
-            Dictionary<Change, List<SourceFile>> results = gatherer.GetIssueSetDictionary();
+            Dictionary<Change, List<IssueSet>> results = gatherer.GetIssueSetDictionary();
 
             Assert.That( results.Count, Is.EqualTo( 1 ) );
             Assert.That( results.Keys.First(), Is.SameAs( change ) );
-            Assert.That( results[change].Count, Is.EqualTo( 1 ) );
-            Assert.That( results[change][0].Name, Is.SameAs( FILEONE ) );
+            
+            List<IssueSet> issueSets = results[change];
+            var issueSet = issueSets[0];
+            Assert.That( issueSet.Change, Is.EqualTo( change ) );
+            Assert.That( issueSet.SourceFile.Name, Is.EqualTo( FILEONE ) );
         }
 
 
@@ -83,13 +86,13 @@ namespace swept.Tests
             MockStorageAdapter storage = new MockStorageAdapter();
             Gatherer gatherer = new Gatherer( changes, files, storage );
 
-            Dictionary<Change, List<SourceFile>> results = gatherer.GetIssueSetDictionary();
+            var results = gatherer.GetIssueSetDictionary();
 
             Assert.That( results.Count, Is.EqualTo( 1 ) );
             Assert.That( results.Keys.First(), Is.SameAs( change ) );
             Assert.That( results[change].Count, Is.EqualTo( 2 ) );
-            Assert.That( results[change][0].Name, Is.SameAs( FILEONE ) );
-            Assert.That( results[change][1].Name, Is.SameAs( FILETWO ) );
+            Assert.That( results[change][0].SourceFile.Name, Is.SameAs( FILEONE ) );
+            Assert.That( results[change][1].SourceFile.Name, Is.SameAs( FILETWO ) );
         }
 
         [Test]
@@ -104,18 +107,16 @@ namespace swept.Tests
             MockStorageAdapter storage = new MockStorageAdapter();
             Gatherer gatherer = new Gatherer( changes, files, storage );
 
-            Dictionary<Change, List<SourceFile>> results = gatherer.GetIssueSetDictionary();
+            var results = gatherer.GetIssueSetDictionary();
 
             Assert.That( results.Count, Is.EqualTo( 2 ) );
             Assert.That( results.Keys.ElementAt( 0 ), Is.SameAs( change1 ) );
             Assert.That( results.Keys.ElementAt( 1 ), Is.SameAs( change2 ) );
             Assert.That( results[change1].Count, Is.EqualTo( 1 ) );
             Assert.That( results[change2].Count, Is.EqualTo( 1 ) );
-            Assert.That( results[change1][0].Name, Is.SameAs( FILEONE ) );
-            Assert.That( results[change2][0].Name, Is.SameAs( FILEONE ) );
+            Assert.That( results[change1][0].SourceFile.Name, Is.SameAs( FILEONE ) );
+            Assert.That( results[change2][0].SourceFile.Name, Is.SameAs( FILEONE ) );
         }
-
-
 
         private const string FILEONE = @"c:\work\one.cs";
         private const string FILETWO = @"c:\work\two.cs";

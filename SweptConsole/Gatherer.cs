@@ -20,9 +20,9 @@ namespace swept
             _storageAdapter = storageAdapter;
         }
 
-        public Dictionary<Change, List<SourceFile>> GetIssueSetDictionary()
+        public Dictionary<Change, List<IssueSet>> GetIssueSetDictionary()
         {
-            var result = new Dictionary<Change, List<SourceFile>>();
+            var result = new Dictionary<Change, List<IssueSet>>();
 
             foreach (string fileName in _files)
             {
@@ -34,11 +34,9 @@ namespace swept
                     {
                         if (!result.ContainsKey( change ))
                         {
-                            //result.Add( change, new List<IssueSet>() );
-                            result.Add( change, new List<SourceFile>() );
+                            result.Add( change, new List<IssueSet>() );
                         }
-                        //result[change].Add( new IssueSet( change, sourceFile ) );
-                        result[change].Add( sourceFile );
+                        result[change].Add( new IssueSet( change, sourceFile ) );
                     }
                 }
             }

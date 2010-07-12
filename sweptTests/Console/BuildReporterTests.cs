@@ -19,7 +19,7 @@ namespace swept.Tests
         {
             BuildReporter reporter = new BuildReporter();
 
-            string report = reporter.ReportOn( new Dictionary<Change, List<SourceFile>>() );
+            string report = reporter.ReportOn( new Dictionary<Change, List<IssueSet>>() );
 
             Assert.That( report, Is.EqualTo( empty_report ) );
         }
@@ -37,7 +37,7 @@ namespace swept.Tests
 
             BuildReporter reporter = new BuildReporter();
 
-            var changes = new Dictionary<Change, List<SourceFile>>();
+            var changes = new Dictionary<Change, List<IssueSet>>();
 
             var change = new Change
             {
@@ -46,10 +46,10 @@ namespace swept.Tests
                 Description = "Improve browser compatibility"
             };
 
-            var files = new List<SourceFile>();
-            files.Add( new SourceFile( "bar.htm" ) { TaskCount = 4 } );
+            var bar = new SourceFile( "bar.htm" ) { TaskCount = 4 };
+            var set = new IssueSet( change, bar );
 
-            changes.Add( change, files );
+            changes.Add( change, new List<IssueSet> { set } );
 
             string report = reporter.ReportOn( changes );
 
@@ -82,7 +82,7 @@ namespace swept.Tests
 "
             );
 
-            var changes = new Dictionary<Change, List<SourceFile>>();
+            var changes = new Dictionary<Change, List<IssueSet>>();
 
             var csharpChange = new Change
             {
@@ -90,10 +90,12 @@ namespace swept.Tests
                 Description = "Use DomainEvents instead of AcadisUserPersister and AuditRecordPersister"
             };
 
-            var csharpFiles = new List<SourceFile>();
+            var csharpFiles = new List<IssueSet>();
 
-            csharpFiles.Add( new SourceFile( "foo.cs" ) { TaskCount = 1 } );
-            csharpFiles.Add( new SourceFile( "goo.cs" ) { TaskCount = 3 } );
+            SourceFile foo = new SourceFile( "foo.cs" ) { TaskCount = 1 };
+            SourceFile goo = new SourceFile( "goo.cs" ) { TaskCount = 3 };
+            csharpFiles.Add( new IssueSet( csharpChange, foo ) );
+            csharpFiles.Add( new IssueSet( csharpChange, goo ) );
 
             changes.Add( csharpChange, csharpFiles );
 
@@ -104,9 +106,11 @@ namespace swept.Tests
                 Description = "Improve browser compatibility across IE versions"
             };
 
-            var htmlFiles = new List<SourceFile>();
-            htmlFiles.Add( new SourceFile( "bar.htm" ) { TaskCount = 4 } );
-            htmlFiles.Add( new SourceFile( "shmoo.aspx" ) { TaskCount = 2 } );
+            var htmlFiles = new List<IssueSet>();
+            SourceFile bar = new SourceFile( "bar.htm" ) { TaskCount = 4 };
+            SourceFile shmoo = new SourceFile( "shmoo.aspx" ) { TaskCount = 2 };
+            htmlFiles.Add( new IssueSet( htmlChange, bar ) );
+            htmlFiles.Add( new IssueSet( htmlChange, shmoo ) );
 
             changes.Add( htmlChange, htmlFiles );
 

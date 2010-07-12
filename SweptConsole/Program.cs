@@ -37,9 +37,7 @@ namespace swept
 
             var gatherer = new Gatherer( changes, fileNames, starter.StorageAdapter );
             
-            //goal code
-            //Dictionary<Change, List<IssueSet>> results = gatherer.GetIssueSetDictionary();
-            Dictionary<Change, List<SourceFile>> results = gatherer.GetIssueSetDictionary();
+            Dictionary<Change, List<IssueSet>> results = gatherer.GetIssueSetDictionary();
 
             var buildReporter = new BuildReporter();
             var reportXML = buildReporter.ReportOn( results );

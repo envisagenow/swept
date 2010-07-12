@@ -13,7 +13,7 @@ namespace swept
         {
         }
 
-        public string ReportOn( Dictionary<Change, List<SourceFile>> filesPerChange )
+        public string ReportOn( Dictionary<Change, List<IssueSet>> filesPerChange )
         {
             XDocument report_doc = new XDocument();
             XElement report_root = new XElement( "SweptBuildReport" );
@@ -27,12 +27,12 @@ namespace swept
                     new XAttribute("Description",change.Description)
                 );
 
-                foreach(SourceFile sf in filesPerChange[change])
+                foreach(IssueSet issueSet in filesPerChange[change])
                 {
                     var source_file_element = new XElement("SourceFile",
-                        new XAttribute("Name",sf.Name),
-                        new XAttribute("TaskCount",sf.TaskCount));
-                    totalTasksPerChange += sf.TaskCount;
+                        new XAttribute("Name",issueSet.SourceFile.Name),
+                        new XAttribute("TaskCount",issueSet.SourceFile.TaskCount));
+                    totalTasksPerChange += issueSet.SourceFile.TaskCount;
 
                     change_element.Add( source_file_element );
                 }
