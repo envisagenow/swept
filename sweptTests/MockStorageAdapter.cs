@@ -70,7 +70,15 @@ namespace swept.Tests
             return new List<string>();
         }
 
-       public IEnumerable<string> GetFoldersInFolder( string folder )
+        public IEnumerable<string> GetFilesInFolder( string folder, string searchPattern )
+        {
+            if (FilesInFolder.ContainsKey( folder ))
+                return FilesInFolder[folder];
+
+            return new List<string>();
+        }
+
+        public IEnumerable<string> GetFoldersInFolder( string folder )
         {
             if (FoldersInFolder.ContainsKey( folder ))
                 return FoldersInFolder[folder];

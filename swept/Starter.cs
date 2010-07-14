@@ -54,8 +54,8 @@ namespace swept
             Librarian.Event_ChangeCatalogUpdated -= TaskWindow.Hear_ChangeCatalogUpdated;
 
             //  Unsubscribe from the TaskWindow's events
-            TaskWindow.Event_TaskWindowToggled -= TaskWindow.Hear_TaskWindowToggled;
             //  A self-subscription.  Odd, possibly poor practice...
+            TaskWindow.Event_TaskWindowToggled -= TaskWindow.Hear_TaskWindowToggled;
 
             //  Unsubscribe from the StudioAdapter's events
             StudioAdapter.Event_NonSourceGotFocus -= TaskWindow.Hear_NonSourceGotFocus;

@@ -14,8 +14,6 @@ namespace swept
 @"<SweptProjectData>
 <ChangeCatalog>
 </ChangeCatalog>
-<SourceFileCatalog>
-</SourceFileCatalog>
 </SweptProjectData>";
 
         static internal XmlDocument emptyCatalogDoc
@@ -70,11 +68,16 @@ namespace swept
             return Directory.GetFiles( folder );
         }
 
+        public IEnumerable<string> GetFilesInFolder( string folder, string searchPattern )
+        {
+            return Directory.GetFiles( folder, searchPattern );
+        }
+
         public IEnumerable<string> GetFoldersInFolder( string folder )
         {
             return Directory.GetDirectories( folder );
         }
-        
+
         // future:  Pick another location if not found, store that location...somewhere?
 
         public void RenameLibrary( string oldPath, string newPath )

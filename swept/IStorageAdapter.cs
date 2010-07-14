@@ -13,9 +13,11 @@ namespace swept
         XmlDocument LoadLibrary(string libraryPath);
         void RenameLibrary( string oldPath, string newPath );
         string GetCWD();
-        IEnumerable<string> GetFilesInFolder( string folder );
 
-        IEnumerable<string> GetFoldersInFolder( string p );
+        IEnumerable<string> GetFilesInFolder( string folder );
+        IEnumerable<string> GetFilesInFolder( string folder, string searchPattern );
+        IEnumerable<string> GetFoldersInFolder( string folder );
+
         SourceFile LoadFile( string fileName );
     }
 }

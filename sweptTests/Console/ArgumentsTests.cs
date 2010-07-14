@@ -6,6 +6,7 @@ using System.Linq;
 using NUnit.Framework;
 using swept;
 using System.IO;
+using System.Collections.Generic;
 
 namespace swept.Tests
 {
@@ -51,11 +52,61 @@ namespace swept.Tests
         }
 
         [Test]
-        public void Library_is_required()
+        public void Version_emits_version_and_copyright()
         {
-            var argsArray = new string[] { "folder:f:\\work\\project" };
+            var argsArray = new string[] { "version" };
+
+            string output;
+            using (StringWriter writer = new StringWriter())
+            {
+                var args = new Arguments( argsArray, mockStorageAdapter, writer );
+                writer.Close();
+                output = writer.ToString();
+            }
+            Assert.That( output, Is.EqualTo( Arguments.VersionMessage ) );
+        }
+
+        [Test]
+        public void Missing_Library_arg_will_throw_if_no_library_found_in_folder()
+        {
+            string searchFolder = "f:\\work\\search_here";
+            mockStorageAdapter.FilesInFolder[searchFolder] = new List<string>();
+            var argsArray = new string[] { "folder:" + searchFolder };
+
             var ex = Assert.Throws<Exception>( () => new Arguments( argsArray, mockStorageAdapter, Console.Out ) );
-            Assert.That( ex.Message, Is.EqualTo( "The [library] argument is required." ) );
+            
+            Assert.That( ex.Message, Is.EqualTo( String.Format("No library found in folder [{0}].", searchFolder ) ) );
+        }
+
+        [Test]
+        public void Missing_Library_arg_will_use_single_library_found_in_folder()
+        {
+            string searchFolder = "f:\\work\\search_here";
+            List<string> foundFiles = new List<string>();
+            string foundLibrary = "found.swept.library";
+            foundFiles.Add( foundLibrary );
+            mockStorageAdapter.FilesInFolder[searchFolder] = foundFiles;
+            var argsArray = new string[] { "folder:" + searchFolder };
+
+            var args = new Arguments( argsArray, mockStorageAdapter, Console.Out );
+
+            Assert.That( args.Library, Is.EqualTo( Path.Combine( searchFolder, foundLibrary ) ) );
+        }
+
+        [Test]
+        public void Missing_Library_arg_will_throw_on_multiple_libraries_found_in_folder()
+        {
+            string searchFolder = "f:\\work\\search_here";
+            List<string> foundFiles = new List<string>();
+            string foundLibrary = "found.swept.library";
+            foundFiles.Add( foundLibrary );
+            foundFiles.Add( "another.swept.Library" );
+            mockStorageAdapter.FilesInFolder[searchFolder] = foundFiles;
+            var argsArray = new string[] { "folder:" + searchFolder };
+
+            var ex = Assert.Throws<Exception>( () => new Arguments( argsArray, mockStorageAdapter, Console.Out ) );
+
+            Assert.That( ex.Message, Is.EqualTo( String.Format( "Too many libraries (*.swept.library) found in folder [{0}].", searchFolder ) ) );
         }
 
         [Test]

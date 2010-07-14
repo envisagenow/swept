@@ -6,6 +6,7 @@ using swept;
 using System;
 using System.Xml;
 using System.Collections.Generic;
+using System.IO;
 
 namespace swept.Tests
 {
@@ -26,7 +27,11 @@ namespace swept.Tests
             _storageAdapter = new MockStorageAdapter();
             _changeCatalog = new ChangeCatalog();
 
-            Horace = new ProjectLibrarian( _storageAdapter, _changeCatalog ) { SolutionPath = _testingSolutionPath };
+            Horace = new ProjectLibrarian( _storageAdapter, _changeCatalog ) 
+            { 
+                SolutionPath = _testingSolutionPath,
+                LibraryPath = Path.ChangeExtension( _testingSolutionPath, "swept.library" )
+            };
 
             _userAdapter = new MockUserAdapter();
             Horace._userAdapter = _userAdapter;
@@ -65,19 +70,6 @@ namespace swept.Tests
 
             Assert.That( _storageAdapter.renamedOldLibraryPath, Is.EqualTo( @"f:\over\here.swept.library" ) );
             Assert.That( _storageAdapter.renamedNewLibraryPath, Is.EqualTo( @"c:\newplace\new.swept.library" ) );
-        }
-
-        [Test]
-        public void OpenSolution_finding_Swept_Library_will_load_SourceFiles()
-        {
-            _storageAdapter.LibraryDoc = new XmlDocument();
-            _storageAdapter.LibraryDoc.LoadXml( TestProbe.SingleFileLibrary_text );
-            Horace.Hear_SolutionOpened( this, Get_testfile_FileEventArgs() );
-
-            SourceFile someFile = Horace._savedSourceCatalog.Fetch( "some_file.cs" );
-
-            // TODO: some assertion of loadedness
-            // Assert.AreEqual( 1, someFile.Completions.Count );
         }
 
         [Test]
@@ -135,68 +127,9 @@ namespace swept.Tests
         }
 
         [Test]
-        public void separate_Catalogs_created_by_solution_path_difference()
+        public void SolutionName_from_LibraryName()
         {
-            Assert.IsNotNull( Horace._sourceCatalog );
-            Assert.IsNotNull( Horace._savedSourceCatalog );
-            Assert.AreNotSame( Horace._sourceCatalog, Horace._savedSourceCatalog );
-        }
-
-        // TODO: Determine if there's any sensible future to saving changes from this end.
-//        [Test]
-//        public void persist_saves_ChangeCatalog()
-//        {
-//            Horace._changeCatalog.Add( new Change { ID = "Uno", Description = "Eliminate profanity from error messages.", Language = FileLanguage.CSharp } );
-//            Horace.Persist();
-
-//            string expectedXmlText =
-//@"<SweptProjectData>
-//<ChangeCatalog>
-//    <Change ID='Uno' Description='Eliminate profanity from error messages.' Language='CSharp' />
-//</ChangeCatalog>
-//<SourceFileCatalog>
-//</SourceFileCatalog>
-//</SweptProjectData>";
-
-//            Assert.AreEqual( toOuterXml( expectedXmlText ), _storageAdapter.LibraryDoc.OuterXml );
-//        }
-
-        private string toOuterXml( string text )
-        {
-            var doc = new XmlDocument();
-            doc.LoadXml( text );
-            return doc.OuterXml;
-        }
-
-
-        [Test]
-        public void when_ChangeCatalog_altered_Librarian_reports_not_saved()
-        {
-            Assert.IsTrue( Horace.ChangeCatalogSaved );
-            Assert.IsTrue( Horace.IsSaved );
-
-            Horace._savedChangeCatalog.Add( new Change { ID = "eek" } );
-
-            Assert.IsFalse( Horace.ChangeCatalogSaved );
-            Assert.IsFalse( Horace.IsSaved );
-        }
-
-        private static SourceFile newTestingFile( string someFileName )
-        {
-            SourceFile someFile = new SourceFile( someFileName );
-            return someFile;
-        }
-
-        [Test]
-        public void When_SourceFileCatalog_altered_Librarian_reports_not_saved()
-        {
-            Assert.IsTrue( Horace.SourceFileCatalogSaved );
-            Assert.IsTrue( Horace.IsSaved );
-
-            Horace._sourceCatalog.Add( newTestingFile( "some_file.cs" ) );
-
-            Assert.IsFalse( Horace.SourceFileCatalogSaved );
-            Assert.IsFalse( Horace.IsSaved );
+            
         }
     }
 }

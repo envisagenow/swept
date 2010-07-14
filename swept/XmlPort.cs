@@ -40,51 +40,5 @@ namespace swept
 
             return cat;
         }
-
-        public SourceFileCatalog SourceFileCatalog_FromText(string xmlText)
-        {
-            try
-            {
-                XmlDocument doc = new XmlDocument();
-                doc.LoadXml( xmlText );
-                return SourceFileCatalog_FromXmlDocument( doc );
-            }
-            catch (XmlException xe)
-            {
-                throw new Exception( String.Format( "Text [{0}] was not valid XML.  Please check its contents.  Details: {1}", xmlText, xe.Message ) );
-            }
-        }
-
-        public SourceFileCatalog SourceFileCatalog_FromXmlDocument( XmlDocument doc )
-        {
-            XmlNode node = doc.SelectSingleNode( "SweptProjectData/SourceFileCatalog" );
-            if (node == null)
-                throw new Exception( "Document must have a <SourceFileCatalog> node.  Please supply one." );
-
-            return SourceFileCatalog_FromNode( node );
-        }
-
-
-        public SourceFileCatalog SourceFileCatalog_FromNode( XmlNode node )
-        {
-            SourceFileCatalog cat = new SourceFileCatalog();
-
-            XmlNodeList files = node.SelectNodes( "SourceFile" );
-            foreach (XmlNode fileNode in files)
-            {
-                cat.Files.Add( SourceFile_FromNode( fileNode ) );
-            }
-
-            return cat;
-        }
-
-        private SourceFile SourceFile_FromNode( XmlNode xmlNode )
-        {
-            if (xmlNode.Attributes["Name"] == null)
-                throw new Exception( "A SourceFile node must have a Name attribute.  Please add one." );
-
-            SourceFile file = new SourceFile( xmlNode.Attributes["Name"].Value );
-            return file;
-        }
     }
 }

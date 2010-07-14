@@ -65,12 +65,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ArgumentsTests.cs" />
+    <Compile Include="Console\ArgumentsTests.cs" />
     <Compile Include="Console\BuildReporterTests.cs" />
     <Compile Include="ChangeCatalogTests.cs" />
     <Compile Include="CompoundFilterTests.cs" />
     <Compile Include="Console\GathererTests.cs" />
-    <Compile Include="IssueSetTests.cs" />
+    <Compile Include="Console\IssueSetTests.cs" />
     <Compile Include="SeeAlsoTests.cs" />
     <Compile Include="Console\TraverserTests.cs" />
     <Compile Include="XmlPort_CompoundFilter_Tests.cs" />
@@ -92,7 +92,6 @@
     <Compile Include="TestPreparer.cs" />
     <Compile Include="TestProbe.cs" />
     <Compile Include="XmlPortTests.cs" />
-    <Compile Include="XmlPort_SourceCatalog_Tests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SweptAddin\SweptAddin.csproj">

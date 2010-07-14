@@ -20,7 +20,7 @@ namespace swept
             _storageAdapter = storageAdapter;
         }
 
-        public Dictionary<Change, List<IssueSet>> GetIssueSetDictionary()
+        public Dictionary<Change, List<IssueSet>> GetIssuesPerChange()
         {
             var result = new Dictionary<Change, List<IssueSet>>();
 
@@ -36,7 +36,10 @@ namespace swept
                         {
                             result.Add( change, new List<IssueSet>() );
                         }
-                        result[change].Add( new IssueSet( change, sourceFile ) );
+                        var reportFile = new SourceFile( sourceFile.Name );
+                        reportFile.TaskCount = change.GetMatchList().Count;
+                        IssueSet issueSet = new IssueSet( change, reportFile );
+                        result[change].Add( issueSet );
                     }
                 }
             }

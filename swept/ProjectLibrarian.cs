@@ -14,14 +14,8 @@ namespace swept
 
         //  The Change Catalog holds things the team wants to improve in this solution.
         internal ChangeCatalog _changeCatalog;
-        internal ChangeCatalog _savedChangeCatalog;  //  For comparison to find unsaved changes.
 
-        //  The Source File Catalog tracks which changes have been completed for which files.
         internal SourceFileCatalog _sourceCatalog;
-        internal SourceFileCatalog _savedSourceCatalog;  //  For comparison to find unsaved changes.
-
-        // TODO: eliminate the saved catalog distinction
-        // TODO: eliminate the SourceFileCatalog entirely
 
         internal IUserAdapter _userAdapter;
         internal IStorageAdapter _storageAdapter;
@@ -37,62 +31,45 @@ namespace swept
             {
                 _solutionPath = value;
                 _sourceCatalog.SolutionPath = _solutionPath;
-                _savedSourceCatalog.SolutionPath = _solutionPath;
             }
         }
 
-        public string LibraryPath
-        {
-            get { return Path.ChangeExtension(SolutionPath, "swept.library"); }
-        }
+        public string LibraryPath {get; set;}
 
         public ProjectLibrarian( IStorageAdapter storageAdapter, ChangeCatalog changeCatalog )
         {
             _storageAdapter = storageAdapter;
             _changeCatalog = changeCatalog;
             _sourceCatalog = new SourceFileCatalog();
-            _savedSourceCatalog = new SourceFileCatalog();
-            _savedChangeCatalog = new ChangeCatalog();
             _userAdapter = new UserGUIAdapter();
         }
-
-        internal bool SourceFileCatalogSaved
-        {
-            get { return _sourceCatalog.Equals( _savedSourceCatalog ); }
-        }
-
-        internal bool ChangeCatalogSaved
-        {
-            get { return _changeCatalog.Equals( _savedChangeCatalog ); }
-        }
-
-        internal bool IsSaved
-        {
-            get
-            {
-                return ChangeCatalogSaved && SourceFileCatalogSaved;
-            }
-        }
-
 
         private void OpenSolution(string solutionPath)
         {
             SolutionPath = solutionPath;
+            LibraryPath = Path.ChangeExtension( SolutionPath, "swept.library" );
 
-            XmlDocument libraryDoc = GetLibraryDocument();
+            OpenLibrary(LibraryPath);
+        }
+
+        public void OpenLibrary( string libraryPath )
+        {
+            XmlDocument libraryDoc = GetLibraryDocument( libraryPath );
 
             XmlPort port = new XmlPort();
             _changeCatalog = port.ChangeCatalog_FromXmlDocument( libraryDoc );
 
-            _savedChangeCatalog = _changeCatalog.Clone();
-
-            _sourceCatalog = port.SourceFileCatalog_FromXmlDocument( libraryDoc );
+            _sourceCatalog = new SourceFileCatalog();
             _sourceCatalog.ChangeCatalog = _changeCatalog;
             _sourceCatalog.SolutionPath = SolutionPath;
-            _savedSourceCatalog = _sourceCatalog.Clone();
 
             Raise_ChangeCatalogUpdated();
             Raise_SourceCatalogUpdated();
+        }
+
+        public List<Change> GetSortedChanges()
+        {
+            return _changeCatalog.GetSortedChanges();
         }
 
         public event EventHandler<ChangeCatalogEventArgs> Event_ChangeCatalogUpdated;
@@ -109,16 +86,16 @@ namespace swept
                 Event_SourceCatalogUpdated( this, new SourceCatalogEventArgs { Catalog = _sourceCatalog } );
         }
 
-        private XmlDocument GetLibraryDocument()
+        private XmlDocument GetLibraryDocument( string libraryPath )
         {
             XmlDocument doc;
             try
             {
-                doc = _storageAdapter.LoadLibrary( LibraryPath );
+                doc = _storageAdapter.LoadLibrary( libraryPath );
             }
-            catch( XmlException exception )
+            catch (XmlException exception)
             {
-                _userAdapter.BadXmlInExpectedLibrary( LibraryPath, exception );
+                _userAdapter.BadXmlInExpectedLibrary( libraryPath, exception );
                 doc = StorageAdapter.emptyCatalogDoc;
                 // TODO--0.3: Shut down addin cleanly on bad library XML
             }
@@ -130,6 +107,7 @@ namespace swept
         {
             string oldLibraryPath = LibraryPath;
             SolutionPath = newSolutionPath;
+            LibraryPath = Path.ChangeExtension( SolutionPath, "swept.library" );
             _storageAdapter.RenameLibrary( oldLibraryPath, LibraryPath );
         }
 

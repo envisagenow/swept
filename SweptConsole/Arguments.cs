@@ -2,8 +2,10 @@
 //  Copyright (c) 2010 Jason Cole and Envisage Technologies Corp.
 //  This software is open source, MIT license.  See the file LICENSE for details.
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.IO;
+using System.Diagnostics;
 
 namespace swept
 {
@@ -30,7 +32,18 @@ namespace swept
             }
         }
 
-        public Arguments( string[] args, IStorageAdapter fileSystem, TextWriter writer )
+        public static object VersionMessage
+        {
+            get
+            {
+                return @"SweptConsole version 0.1, Swept core version 0.2.4
+Copyright (c) 2010 Jason Cole and Envisage Technologies Corp.
+This software is open source, MIT license.  See the file LICENSE for details.
+";
+            }
+        }
+
+        public Arguments( string[] args, IStorageAdapter storageAdapter, TextWriter writer )
         {
             Library = string.Empty;
             Folder = string.Empty;
@@ -42,14 +55,29 @@ namespace swept
                 return;
             }
 
+            List<string> exceptionMessages = new List<string>();
+
             foreach (string s in args)
             {
-                string[] tokens = null;
-
                 if (!s.Contains( ":" ))
-                    throw new Exception( String.Format( "Don't understand the input [{0}].", s ) );
+                {
+                    switch (s)
+                    {
+                    case "debug":
+                        Debugger.Launch();
+                        continue;
 
-                tokens = s.Split( ':' );
+                    case "version":
+                        writer.Write( VersionMessage );
+                        return;
+
+                    default:
+                        exceptionMessages.Add( String.Format( "Don't understand the input [{0}].", s ) );
+                        continue;
+                    }
+                }
+
+                string[] tokens = s.Split( ':' );
 
                 if (tokens.Length > 2)
                 {
@@ -58,31 +86,45 @@ namespace swept
 
                 switch (tokens[0])
                 {
-                    case "library":
-                        Library = tokens[1];
-                        break;
-                    case "folder":
-                        Folder = tokens[1];
-                        break;
-                    case "exclude":
-                        Exclude = tokens[1].Split(',');
-                        break;
-                    case null:
-                    case "":
-                    default:
-                        throw new Exception( String.Format( "Don't recognize the argument [{0}].", tokens[0] ) );
+                case "library":
+                    Library = tokens[1];
+                    break;
+                case "folder":
+                    Folder = tokens[1];
+                    break;
+                case "exclude":
+                    Exclude = tokens[1].Split( ',' );
+                    break;
+                case null:
+                case "":
+                default:
+                    exceptionMessages.Add( String.Format( "Don't recognize the argument [{0}].", tokens[0] ) );
+                    break;
                 }
             }
 
-            if( string.IsNullOrEmpty( Library ))
-                throw new Exception( "The [library] argument is required." );
-
             if (String.IsNullOrEmpty( Folder ))
             {
-                Folder = fileSystem.GetCWD();
+                Folder = storageAdapter.GetCWD();
             }
 
-            if ( Folder[1] == ':' && Library[1] != ':')
+            if (string.IsNullOrEmpty( Library ))
+            {
+                var possibilities = storageAdapter.GetFilesInFolder( Folder, "*.swept.library" );
+                int resultCount = possibilities.Count();
+
+                if (resultCount == 0)
+                    exceptionMessages.Add( String.Format( "No library found in folder [{0}].", Folder ) );
+                else if (resultCount > 1)
+                    exceptionMessages.Add( String.Format( "Too many libraries (*.swept.library) found in folder [{0}].", Folder ) );
+                else
+                    Library = possibilities.First();
+            }
+
+            if (exceptionMessages.Any())
+                throw new Exception( string.Join( "\n", exceptionMessages.ToArray() ) );
+
+            if (Folder[1] == ':' && Library[1] != ':')
             {
                 Library = Path.Combine( Folder, Library );
             }

@@ -24,25 +24,6 @@ namespace swept.Tests
 
 
         #region Exception testing
-        [Test, ExpectedException(ExpectedMessage = "Document must have a <SourceFileCatalog> node.  Please supply one.")]
-        public void IncorrectRootNodeThrows()
-        {
-            port.SourceFileCatalog_FromText("<IncorrectRoot><other /></IncorrectRoot>");
-        }
-
-        [Test, ExpectedException(ExpectedMessage = "A SourceFile node must have a Name attribute.  Please add one.")]
-        public void SourceFileNodeMissingNameThrows()
-        {
-            port.SourceFileCatalog_FromText("<SweptProjectData><SourceFileCatalog><SourceFile /></SourceFileCatalog></SweptProjectData>");
-        }
-
-
-        [Test, ExpectedException( ExpectedMessage = "Text [asdflkj] was not valid XML.  Please check its contents.  Details: Data at the root level is invalid. Line 1, position 1." )]
-        public void SourceFileCatalog_from_InvalidXML_Throws()
-        {
-            port.SourceFileCatalog_FromText( "asdflkj" );
-        }
-
         [Test, ExpectedException( ExpectedMessage = "Document must have a <ChangeCatalog> node.  Please supply one." )]
         public void ChangeCatalog_from_IncorrectXML_Throws()
         {

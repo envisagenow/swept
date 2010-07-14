@@ -34,7 +34,6 @@ namespace swept.Tests
             changeCat = starter.ChangeCatalog;
             string indentID = "14";
             changeCat.Add( new Change { ID = indentID, Description = "indentation cleanup", Language = FileLanguage.CSharp } );
-            librarian._savedChangeCatalog = changeCat.Clone();
 
             fileCat = librarian._sourceCatalog;
 
@@ -42,7 +41,6 @@ namespace swept.Tests
             file = new SourceFile( fileName );
             fileCat.Files.Add( file );
 
-            librarian._savedSourceCatalog = fileCat.Clone();
             librarian.SolutionPath = @"d:\old_stuff\old.sln";
 
             window = adapter.taskWindow;

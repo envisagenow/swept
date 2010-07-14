@@ -25,19 +25,23 @@ namespace swept
         {
             Starter starter = new Starter();
             starter.Start();
+            ProjectLibrarian librarian = starter.Librarian;
+            IStorageAdapter storageAdapter = starter.StorageAdapter;
 
-            var arguments = new Arguments( args, starter.StorageAdapter, writer );
+            var arguments = new Arguments( args, storageAdapter, writer );
             if (arguments.AreInvalid)
                 return;
 
-            var traverser = new Traverser( arguments, starter.StorageAdapter );
+            var traverser = new Traverser( arguments, storageAdapter );
             IEnumerable<string> fileNames = traverser.GetProjectFiles();
 
-            var changes = starter.ChangeCatalog.GetSortedChanges();
+            librarian.OpenLibrary( arguments.Library );
 
-            var gatherer = new Gatherer( changes, fileNames, starter.StorageAdapter );
-            
-            Dictionary<Change, List<IssueSet>> results = gatherer.GetIssueSetDictionary();
+            var changes = librarian.GetSortedChanges();
+
+            var gatherer = new Gatherer( changes, fileNames, storageAdapter );
+
+            Dictionary<Change, List<IssueSet>> results = gatherer.GetIssuesPerChange();
 
             var buildReporter = new BuildReporter();
             var reportXML = buildReporter.ReportOn( results );
