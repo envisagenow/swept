@@ -22,25 +22,34 @@ namespace swept
 
         public Dictionary<Change, List<IssueSet>> GetIssuesPerChange()
         {
+            List<string> troublemakers = new List<string>();
+
             var result = new Dictionary<Change, List<IssueSet>>();
 
             foreach (string fileName in _files)
             {
-                var sourceFile = _storageAdapter.LoadFile( fileName );
-
-                foreach (var change in _changes)
+                try
                 {
-                    if (change.DoesMatch( sourceFile ))
+                    var sourceFile = _storageAdapter.LoadFile( fileName );
+
+                    foreach (var change in _changes)
                     {
-                        if (!result.ContainsKey( change ))
+                        if (change.DoesMatch( sourceFile ))
                         {
-                            result.Add( change, new List<IssueSet>() );
+                            if (!result.ContainsKey( change ))
+                            {
+                                result.Add( change, new List<IssueSet>() );
+                            }
+                            var reportFile = new SourceFile( sourceFile.Name );
+                            reportFile.TaskCount = change.GetMatchList().Count;
+                            IssueSet issueSet = new IssueSet( change, reportFile );
+                            result[change].Add( issueSet );
                         }
-                        var reportFile = new SourceFile( sourceFile.Name );
-                        reportFile.TaskCount = change.GetMatchList().Count;
-                        IssueSet issueSet = new IssueSet( change, reportFile );
-                        result[change].Add( issueSet );
                     }
+                }
+                catch
+                {
+                    troublemakers.Add( fileName );
                 }
             }
 
