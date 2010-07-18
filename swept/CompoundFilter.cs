@@ -61,12 +61,14 @@ namespace swept
             }
         }
 
-        public void identifyMatchLineNumbers( string multiLineFile, string pattern)
+        public void identifyMatchLineNumbers( string multiLineFile, string pattern )
         {
             _matchList = new List<int>();
             if (string.IsNullOrEmpty( pattern ))
                 return;
-            Regex rx = new Regex( pattern );
+
+            // TODO: Add attribute to allow case sensitive matching
+            Regex rx = new Regex( pattern, RegexOptions.IgnoreCase );
             MatchCollection matches = rx.Matches( multiLineFile );
 
             foreach (Match match in matches)
@@ -74,7 +76,7 @@ namespace swept
                 int line = lineNumberOfMatch( match.Index, _lineIndices );
                 _matchList.Add( line );
             }
-        }
+        } 
 
         public List<int> GetMatchList()
         {

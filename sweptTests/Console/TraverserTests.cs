@@ -110,7 +110,7 @@ namespace swept.Tests
             mockStorageAdapter.FilesInFolder["c:\\foo\\bar"] = filesInFooBar;
             mockStorageAdapter.FilesInFolder["c:\\foo\\bar\\subsub"] = filesInSubSub;
 
-            string[] argsText = { "folder:c:\\foo", "library:foo.library", "exclude:bar\\subsub" };
+            string[] argsText = { "folder:c:\\foo", "library:foo.library", "exclude:.*ubs.*" };
             var args = new Arguments( argsText, null, null );
             Traverser traverser = new Traverser( args, mockStorageAdapter );
 

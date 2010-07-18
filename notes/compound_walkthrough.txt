@@ -1,0 +1,68 @@
+===  Basic Operations and conjunctions
+
+---  basic 'And' is intersection, 'Intersect'
+
+whole file set:  (foo.cs, bar.cs, baz.cs)
+when /a/
+    gives whole file set to match
+    match /a/
+        takes SourceFiles (foo.cs, bar.cs, baz.cs)
+        returns List<IssueSet> (foo.cs:3;5, bar.cs:10;22)
+    sets progress to result from match /a/
+and  /b/  (foo.cs, bar.cs)
+    gives progress to match
+    match /b/
+        takes SourceFiles (foo.cs, bar.cs)
+        returns List<IssueSet> (bar.cs:10;77;99)
+    sets progress to intersection of progess and result of match /b/ (bar.cs:10)
+
+
+---  basic 'Or' is union, 'Add'
+
+whole file set:  (foo.cs, bar.cs, baz.cs)
+when /a/
+    gives whole file set to match
+    match /a/
+        takes SourceFiles (foo.cs, bar.cs, baz.cs)
+        returns List<IssueSet> (foo.cs:23;144)
+    sets progress to result from match /a/
+or   /b/  (foo.cs, bar.cs)
+    gives whole file set to match
+    match /b/
+        takes SourceFiles (foo.cs, bar.cs, baz.cs)
+        returns List<IssueSet> (foo.cs:23;25, bar.cs:22)
+    sets progress to union of progess and result of match /b/ (foo.cs:23;25,144, bar.cs:22)
+
+
+---  basic 'AndNot' is subtraction, 'Subtract'
+
+whole file set:  (foo.cs, bar.cs, baz.cs)
+when   /a/
+    gives whole file set to match
+    match /a/
+        takes SourceFiles (foo.cs, bar.cs, baz.cs)
+        returns List<IssueSet> (foo.cs:3;5, bar.cs:10;22)
+    sets progress to result from match /a/
+andnot /b/  (foo.cs, bar.cs)
+    gives progress to match
+    match /b/
+        takes SourceFiles (foo.cs, bar.cs)
+        returns List<IssueSet> (bar.cs:10;77;99)
+    subtracts result of match /b/ from progress (foo.cs:3;5, bar.cs:22)
+
+
+---  basic 'OrNot' makes no sense, or is arguably also subtraction.
+    * If subtraction, it's equivalent to AndNot.
+    * Sedulous misconstrual could contrive it to be the union of the complement of the match.
+
+===  Scoping
+
+---  Basics of scoping
+
+    Language and FilePattern criteria are scoped to the file.  The file does or does not match as a whole.
+    ContentPattern criteria are scoped to each line they match on.  A ContentPattern might match five times in one file.
+
+    If necessary, a ContentPattern can be overridden to be file scoped, by adding Scope="file" to the ContentPattern element.  This is useful for cases where one mention of a piece of code means that the entire file needs rewriting, or where one mention of a piece of code means that a possible problem indicated by other matches has been entirely fixed.
+
+---  nesting
+
