@@ -32,14 +32,14 @@ namespace swept.Tests
         private void prep_left()
         {
             _leftLines = new List<int> { 1, 2 };
-            _leftIssues = new IssueSet( freshIndents, fooFile, _leftLines );
+            _leftIssues = new IssueSet( freshIndents, fooFile, ClauseMatchScope.Line, _leftLines );
             _left.IssueSets.Add( fooFile, _leftIssues );
         }
 
         private void prep_right()
         {
             _rightLines = new List<int> { 1, 3 };
-            _rightIssues = new IssueSet( freshIndents, fooFile, _rightLines );
+            _rightIssues = new IssueSet( freshIndents, fooFile, ClauseMatchScope.Line, _rightLines );
             _right.IssueSets.Add( fooFile, _rightIssues );
         }
 

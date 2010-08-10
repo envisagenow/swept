@@ -15,7 +15,7 @@ namespace swept.Tests
             Change change = new Change { ContentPattern = "b" };
             SourceFile file = new SourceFile( "foo.cs" ) { Content = CompoundFilterTests._multiLineFile };
 
-            IssueSet issue = change.GetFileIssueSet( file );
+            IssueSet issue = change.GetIssueSet( file );
 
             IList<int> matchLineNumbers = issue.MatchLineNumbers;
             Assert.That( matchLineNumbers.Count, Is.EqualTo( 2 ) );
@@ -26,7 +26,7 @@ namespace swept.Tests
         {
             Change change = new Change { ContentPattern = "b" };
             SourceFile fooFile = new SourceFile( "foo.cs" ) { Content = CompoundFilterTests._multiLineFile };
-            IssueSet fooIssue = change.GetFileIssueSet( fooFile );
+            IssueSet fooIssue = change.GetIssueSet( fooFile );
 
             string barContent = @"bar
 bar
@@ -35,7 +35,7 @@ bar
 barbar
 ";
             SourceFile barFile = new SourceFile( "bar.cs" ) { Content = barContent };
-            IssueSet barIssue = change.GetFileIssueSet( barFile );
+            IssueSet barIssue = change.GetIssueSet( barFile );
 
             Assert.That( barIssue.MatchLineNumbers.Count, Is.EqualTo( 5 ) );
             Assert.That( fooIssue.MatchLineNumbers.Count, Is.EqualTo( 2 ) );
@@ -47,7 +47,7 @@ barbar
             Change change = new Change { ContentPattern = "b" };
             SourceFile file = new SourceFile( "foo.cs" ) { Content = CompoundFilterTests._multiLineFile };
 
-            IssueSet issue = change.GetFileIssueSet( file );
+            IssueSet issue = change.GetIssueSet( file );
 
             Assert.That( issue.SourceFile, Is.EqualTo( file ) );
             Assert.That( issue.Clause, Is.EqualTo( change ) );
@@ -56,7 +56,7 @@ barbar
         [Test]
         public void Can_unite_MatchLineNumbers()
         {
-            var issueSet = new IssueSet( null, null, new List<int> { 1, 2 } );
+            var issueSet = new IssueSet( null, null, ClauseMatchScope.Line, new List<int> { 1, 2 } );
             issueSet.UniteLines( new List<int> { 1, 3 } );
 
             Assert.That( issueSet.MatchLineNumbers, Has.Count.EqualTo( 3 ) );

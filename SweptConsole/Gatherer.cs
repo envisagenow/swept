@@ -42,7 +42,7 @@ namespace swept
                             }
                             var reportFile = new SourceFile( sourceFile.Name );
                             reportFile.TaskCount = change.GetMatchList().Count;
-                            IssueSet issueSet = change.GetFileIssueSet( reportFile );
+                            IssueSet issueSet = change.GetIssueSet( reportFile );
                             result[change].Add( issueSet );
                         }
                     }

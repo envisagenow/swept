@@ -14,7 +14,7 @@ namespace swept.Tests
         public void FromIssueSet_gets_one_task_on_matching_File_scope()
         {
             Clause clause = new Clause { Language = FileLanguage.CSharp };
-            IssueSet set = new IssueSet( clause, new SourceFile( "foo.cs" ), ClauseMatchScope.File, new List<int>(), true );
+            IssueSet set = new IssueSet( clause, new SourceFile( "foo.cs" ), ClauseMatchScope.File, new List<int> { 1 } );
             List<Task> tasks = Task.FromIssueSet( set );
             Assert.That( tasks.Count, Is.EqualTo( 1 ) );
             Assert.That( tasks[0].LineNumber, Is.EqualTo( 1 ) );
@@ -23,15 +23,15 @@ namespace swept.Tests
         [Test]
         public void FromIssueSet_gets_no_tasks_on_unmatching_File_scope()
         {
-            IssueSet set = new IssueSet( null, null, ClauseMatchScope.File, new List<int>(), false );
+            IssueSet set = new IssueSet( null, null, ClauseMatchScope.File, new List<int>() );
             List<Task> tasks = Task.FromIssueSet( set );
             Assert.That( tasks.Count, Is.EqualTo( 0 ) );
         }
 
         [Test]
-        public void FromIssueSet_tasks_include_match_location()
+        public void FromIssueSet_gets_one_Task_per_match_location()
         {
-            IssueSet set = new IssueSet( null, null, ClauseMatchScope.Line, new List<int> { 4, 8, 9 }, true );
+            IssueSet set = new IssueSet( null, null, ClauseMatchScope.Line, new List<int> { 4, 8, 9 } );
 
             List<Task> tasks = Task.FromIssueSet( set );
 
@@ -40,6 +40,20 @@ namespace swept.Tests
             Assert.That( tasks[1].LineNumber, Is.EqualTo( 8 ) );
             Assert.That( tasks[2].LineNumber, Is.EqualTo( 9 ) );
         }
+
+        [Test]
+        public void FromIssueSet_gets_no_Tasks_when_does_not_match()
+        {
+            IssueSet set = new IssueSet( null, null, ClauseMatchScope.Line, new List<int>() );
+
+            List<Task> tasks = Task.FromIssueSet( set );
+
+            Assert.That( tasks.Count, Is.EqualTo( 0 ) );
+        }
+
+
+
+
 
         //[Test]
         //public void ToString_shows_description_for_GUI()

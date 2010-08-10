@@ -30,22 +30,19 @@ namespace swept.Tests
         }
 
         [Test]
-        public void IssueSet_for_file_scoped_match_has_no_match_lines()
+        public void IssueSet_for_file_scoped_match_has_one_match_line()
         {
             Clause isCSharp = new Clause { Language = FileLanguage.CSharp };
             SourceFile file = new SourceFile( "foo.cs" );
 
-            IssueSet set = isCSharp.GetFileIssueSet( file );
+            IssueSet set = isCSharp.GetIssueSet( file );
 
             Assert.That( set, Is.Not.Null );
             Assert.That( set.MatchScope, Is.EqualTo( ClauseMatchScope.File ) );
             Assert.That( set.DoesMatch );
 
-            Assert.That( set.MatchLineNumbers, Has.Count.EqualTo( 0 ) );
-
-            //// alt impl
-            //Assert.That( issues.MatchLineNumbers, Has.Count.EqualTo( 1 ) );
-            //Assert.That( issues.MatchLineNumbers[0], Is.EqualTo( 1 ) );
+            Assert.That( set.MatchLineNumbers, Has.Count.EqualTo( 1 ) );
+            Assert.That( set.MatchLineNumbers[0], Is.EqualTo( 1 ) );
         }
 
         [Test]
@@ -56,7 +53,7 @@ namespace swept.Tests
             Clause isCSharp = new Clause { Language = FileLanguage.CSharp };
 
             SourceFile file = new SourceFile( "foo.html" );
-            set = isCSharp.GetFileIssueSet( file );
+            set = isCSharp.GetIssueSet( file );
 
             Assert.That( set.DoesMatch, Is.False );
             Assert.That( set.MatchLineNumbers, Has.Count.EqualTo( 0 ) );

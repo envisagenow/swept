@@ -35,8 +35,7 @@ cxxxxxxxxx
             SourceFile file = new SourceFile( "foo.cs" );
 
             file.Content = _multiLineFile;
-            filter.identifyMatchLineNumbers( file, "b" );
-            List<int> matches = filter.GetMatchList();
+            List<int> matches = filter.identifyMatchLineNumbers( file, "b" );
 
             Assert.That( matches.Count, Is.EqualTo( number_of_Bs ) );
             Assert.That( matches[0], Is.EqualTo( 3 ) );
@@ -183,7 +182,7 @@ cxxxxxxxxx
 
             Clause child = new Clause();
             Clause and_sibling = new Clause { Operator = ClauseOperator.And };
-            Clause parent = new Clause();
+            Clause parent = new Clause { ContentPattern = "xx" };
             parent.Children.Add( child );
             parent.Children.Add( and_sibling );
 
@@ -224,7 +223,7 @@ cxxxxxxxxx
 
             Clause child = new Clause();
             Clause or_sibling = new Clause { Operator = ClauseOperator.Or };
-            Clause parent = new Clause();
+            Clause parent = new Clause { ContentPattern = "xx" };
             parent.Children.Add( child );
             parent.Children.Add( or_sibling );
 

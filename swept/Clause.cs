@@ -44,11 +44,11 @@ namespace swept
             _matchList = new List<int>();
         }
 
-        public IssueSet GetFileIssueSet( SourceFile file )
+        public IssueSet GetIssueSet( SourceFile file )
         {
-            // TODO: fix the lame.
+            // TODO: smooth this out.
             bool doesMatch = DoesMatch( file );
-            return new IssueSet( this, file, MatchScope, GetMatchList(), doesMatch );
+            return new IssueSet( this, file, MatchScope, GetMatchList() );
         }
 
         public ClauseMatchScope MatchScope
@@ -68,11 +68,11 @@ namespace swept
 
         internal List<int> _matchList;
 
-        public void identifyMatchLineNumbers( SourceFile file, string pattern )
+        public List<int> identifyMatchLineNumbers( SourceFile file, string pattern )
         {
-            _matchList = new List<int>();
+            var matchList = new List<int>();
             if (string.IsNullOrEmpty( pattern ))
-                return;
+                return matchList;
 
             // TODO: Add attribute to allow case sensitive matching
             Regex rx = new Regex( pattern, RegexOptions.IgnoreCase );
@@ -81,8 +81,10 @@ namespace swept
             foreach (Match match in matches)
             {
                 int line = lineNumberOfMatch( match.Index, file.LineIndices );
-                _matchList.Add( line );
+                matchList.Add( line );
             }
+
+            return matchList;
         } 
 
         public List<int> GetMatchList()
@@ -125,13 +127,16 @@ namespace swept
 
             if (Operator == ClauseOperator.Not) didMatch = !didMatch;
 
+            if (didMatch && MatchScope == ClauseMatchScope.File)
+                _matchList = new List<int> { 1 };
+
             _matchList.Sort();
             return didMatch;
         }
 
         internal bool MatchesContent( SourceFile file )
         {
-            identifyMatchLineNumbers( file, ContentPattern );
+            _matchList = identifyMatchLineNumbers( file, ContentPattern );
             return _matchList.Count > 0;
         }
 

@@ -10,50 +10,43 @@ namespace swept
             Clause clause, 
             SourceFile sourceFile, 
             ClauseMatchScope matchScope, 
-            List<int> matchedLines, 
-            bool doesMatch )
+            IList<int> matchedLines )
         {
             Clause = clause;
             SourceFile = sourceFile;
             MatchScope = matchScope;
             MatchLineNumbers = matchedLines;
-            DoesMatch = doesMatch;
         }
 
+        // TODO: delegate to the max-arg constructor
         public IssueSet( Clause clause, SourceFile file )
         {
+            clause.DoesMatch( file );
+
             Clause = clause;
             SourceFile = file;
 
             MatchScope = clause.MatchScope;
             MatchLineNumbers = clause.GetMatchList();
-
-            DoesMatch = clause.DoesMatch( file );
         }
 
-        internal IssueSet( Clause clause, SourceFile file, IList<int> matchLineNumbers )
+        // TODO: make MatchLineNumbers independent
+        public IssueSet( IssueSet clone ) : this( clone.Clause, clone.SourceFile, clone.MatchScope, clone.MatchLineNumbers )
         {
-            Clause = clause;
-            SourceFile = file;
-
-            MatchScope = ClauseMatchScope.Line;
-            MatchLineNumbers = matchLineNumbers;
         }
 
-        internal IssueSet( Clause clause, SourceFile file, bool matchesAtFileScope )
-        {
-            Clause = clause;
-            SourceFile = file;
-
-            MatchScope = ClauseMatchScope.File;
-            DoesMatch = matchesAtFileScope;
-        }
 
         public Clause Clause { get; private set; }
         public SourceFile SourceFile { get; private set; }
         public ClauseMatchScope MatchScope { get; private set; }
         public IList<int> MatchLineNumbers { get; private set; }
-        public bool DoesMatch { get; private set; }
+        public bool DoesMatch
+        {
+            get
+            {
+                return MatchLineNumbers.Any();
+            }
+        }
 
         public void UniteLines( IList<int> lines )
         {

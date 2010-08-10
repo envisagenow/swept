@@ -46,7 +46,7 @@ namespace swept
                 if (other.IssueSets.ContainsKey( issueSet.SourceFile ))
                 {
                     var matchingSet = other.IssueSets[issueSet.SourceFile];
-                    IssueSet intersectingSet = new IssueSet( issueSet.Clause, issueSet.SourceFile, new List<int>( issueSet.MatchLineNumbers ) );
+                    IssueSet intersectingSet = new IssueSet( issueSet );
                     intersectingSet.IntersectLines( matchingSet.MatchLineNumbers );
                     if (intersectingSet.MatchLineNumbers.Any())
                     {
@@ -64,7 +64,7 @@ namespace swept
 
             foreach (IssueSet issueSet in IssueSets.Values)
             {
-                IssueSet subtractingSet = new IssueSet( issueSet.Clause, issueSet.SourceFile, new List<int>( issueSet.MatchLineNumbers ) );
+                IssueSet subtractingSet = new IssueSet( issueSet );
                 if (other.IssueSets.ContainsKey( issueSet.SourceFile ))
                 {
                     var matchingSet = other.IssueSets[issueSet.SourceFile];

@@ -37,6 +37,7 @@ namespace swept
         public static List<Task> FromIssueSet( IssueSet set )
         {
             List<Task> tasks = new List<Task>();
+            if (!set.DoesMatch) return tasks;
 
             string description = string.Empty;
             if (set.Clause != null && !string.IsNullOrEmpty( set.Clause.Description ))
@@ -44,13 +45,11 @@ namespace swept
 
             foreach (int line in set.MatchLineNumbers)
             {
-                Task task = new Task
+                tasks.Add( new Task
                 {
                     Description = description,
                     LineNumber = line,
-                };
-
-                tasks.Add( task );
+                } );
             }
 
             return tasks;
