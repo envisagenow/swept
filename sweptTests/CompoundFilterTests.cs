@@ -19,137 +19,23 @@ abxx
 bcxxxx
 cxxxxxxxxx
 ";
-        private CompoundFilter filter;
+        private Clause filter;
         [SetUp]
         public void SetUp()
         {
-            filter = new CompoundFilter();
+            filter = new Clause();
         }
 
-
-        #region Compound line matching
-        [Test]
-        public void when_parent_filter_is_not_content_filter_child_matches_replace_parent_matches()
-        {
-            SourceFile file = new SourceFile( "bs.cs" );
-            file.Content = _multiLineFile;
-
-            CompoundFilter child = new CompoundFilter();
-            CompoundFilter parent = new CompoundFilter();
-            parent.Children.Add( child );
-
-            child.ContentPattern = "b";
-
-            parent.DoesMatch( file );
-
-            Assert.That( parent._matchList.Count, Is.EqualTo( 2 ) );
-            Assert.That( parent._matchList[0], Is.EqualTo( 3 ) );
-            Assert.That( parent._matchList[1], Is.EqualTo( 4 ) );
-        }
-
-        [Test]
-        public void when_parent_filter_is_content_filter_child_matches_intersect_with_parent_matches()
-        {
-            SourceFile file = new SourceFile( "bs.cs" );
-            file.Content = _multiLineFile;
-
-            CompoundFilter parent = new CompoundFilter();
-            CompoundFilter child = new CompoundFilter();
-
-            parent.Children.Add( child );
-            child.ContentPattern = "b";
-            parent.ContentPattern = "c";
-
-            parent.DoesMatch( file );
-
-            Assert.That( parent._matchList.Count, Is.EqualTo( 1 ) );
-            Assert.That( parent._matchList[0], Is.EqualTo( 4 ) );
-        }
-
-        [Test]
-        public void line_start_positions_come_up_from_child_filters_with_nested_child_filter()
-        {
-            SourceFile file = new SourceFile( "bs.cs" );
-            file.Content = _multiLineFile;
-
-            CompoundFilter parent = new CompoundFilter();
-            CompoundFilter child = new CompoundFilter();
-            CompoundFilter grandchild = new CompoundFilter();
-
-            parent.Children.Add( child );
-            child.Children.Add( grandchild );
-            grandchild.ContentPattern = "b";
-            
-            parent.DoesMatch( file );
-
-            Assert.That( parent._matchList.Count, Is.EqualTo( 2 ) );
-            Assert.That( parent._matchList[0], Is.EqualTo( 3 ) );
-            Assert.That( parent._matchList[1], Is.EqualTo( 4 ) );
-        }
-
-        [Test]
-        public void sibling_with_And_operator_will_intersect_matches()
-        {
-            SourceFile file = new SourceFile( "bs.cs" );
-            file.Content = _multiLineFile;
-
-            CompoundFilter child = new CompoundFilter();
-            CompoundFilter and_sibling = new CompoundFilter { Operator = FilterOperator.And };
-            CompoundFilter parent = new CompoundFilter();
-            parent.Children.Add( child );
-            parent.Children.Add( and_sibling );
-
-            child.ContentPattern = "b";
-            and_sibling.ContentPattern = "a";
-            parent.DoesMatch( file );
-
-            Assert.That( parent._matchList.Count, Is.EqualTo( 1 ) );
-            Assert.That( parent._matchList[0], Is.EqualTo( 3 ) );
-        }
-
-        [Test]
-        public void sibling_with_Or_operator_will_union_matches()
-        {
-            SourceFile file = new SourceFile( "bs.cs" );
-            file.Content = _multiLineFile;
-
-            CompoundFilter child = new CompoundFilter();
-            CompoundFilter or_sibling = new CompoundFilter { Operator = FilterOperator.Or };
-            CompoundFilter parent = new CompoundFilter();
-            parent.Children.Add( child );
-            parent.Children.Add( or_sibling );
-
-            child.ContentPattern = "b";
-            or_sibling.ContentPattern = "a";
-            parent.DoesMatch( file );
-
-            Assert.That( parent._matchList.Count, Is.EqualTo( 3 ) );
-            Assert.That( parent._matchList[0], Is.EqualTo( 2 ) );
-            Assert.That( parent._matchList[1], Is.EqualTo( 3 ) );
-            Assert.That( parent._matchList[2], Is.EqualTo( 4 ) );
-        }
-        
-        #endregion
-
-
-        #region Line matching
-        [Test]
-        public void can_return_list_of_line_start_positions()
-        {
-            filter.generateLineIndices( _multiLineFile );
-
-            Assert.That( filter._lineIndices.Count, Is.EqualTo( 5 ) );
-            Assert.That( filter._lineIndices[0], Is.EqualTo( 1 ) );
-            Assert.That( filter._lineIndices[1], Is.EqualTo( 10 ) );
-        }
-
+        #region Match lines
         [Test]
         public void can_return_list_of_matched_line_numbers()
         {
             const int number_of_Bs = 2;
 
-            filter.generateLineIndices( _multiLineFile );
-            filter.identifyMatchLineNumbers( _multiLineFile, "b" );
+            SourceFile file = new SourceFile( "foo.cs" );
+
+            file.Content = _multiLineFile;
+            filter.identifyMatchLineNumbers( file, "b" );
             List<int> matches = filter.GetMatchList();
 
             Assert.That( matches.Count, Is.EqualTo( number_of_Bs ) );
@@ -158,36 +44,21 @@ cxxxxxxxxx
         }
 
         [Test]
-        public void matchlist_is_populated_by_Matches_call()
-        {
-            SourceFile file = new SourceFile( "bs.cs" );
-            file.Content = _multiLineFile;
-
-            filter.ContentPattern = "b";
-
-            filter.DoesMatch( file );
-            List<int> matches = filter.GetMatchList();
-
-            Assert.That( matches.Count, Is.EqualTo( 2 ) );
-            Assert.That( matches[0], Is.EqualTo( 3 ) );
-            Assert.That( matches[1], Is.EqualTo( 4 ) );
-        }
-
-
-        [Test]
         public void MatchesContent_returns_bool_of_match()
         {
+            SourceFile file = new SourceFile( "foo.cs" ) { Content = "using Foo;" };
             filter.ContentPattern = "Foo";
-            Assert.That( filter.MatchesContent( "using Foo;" ) );
+            Assert.That( filter.MatchesContent( file ) );
             filter.ContentPattern = "Bar";
-            Assert.That( filter.MatchesContent( "using Foo;" ), Is.False );
+            Assert.That( filter.MatchesContent( file ), Is.False );
         }
 
         [Test]
         public void MatchesContent_sets_list_of_match_line_indexes()
         {
+            SourceFile file = new SourceFile( "foo.cs" ) { Content = "using Foo;" };
             filter.ContentPattern = "Foo";
-            filter.MatchesContent( "using Foo;" );
+            Assert.That( filter.MatchesContent( file ) );
             Assert.That( filter._matchList.Count, Is.EqualTo( 1 ) );
             Assert.That( filter._matchList[0], Is.EqualTo( 1 ) );
         }
@@ -195,8 +66,9 @@ cxxxxxxxxx
         [Test]
         public void MatchesContent_sets_list_of_match_line_indexes_empty_when_unmatched()
         {
+            SourceFile file = new SourceFile( "foo.cs" ) { Content = "using Foo;" };
             filter.ContentPattern = "Bar";
-            filter.MatchesContent( "using Foo;" );
+            Assert.That( filter.MatchesContent( file ), Is.False );
             Assert.That( filter._matchList.Count, Is.EqualTo( 0 ) );
         }
 
@@ -227,14 +99,157 @@ cxxxxxxxxx
 
         #endregion
 
+        [Test]
+        public void matchlist_is_populated_by_Matches_call()
+        {
+            SourceFile file = new SourceFile( "bs.cs" );
+            file.Content = _multiLineFile;
+
+            filter.ContentPattern = "b";
+
+            filter.DoesMatch( file );
+            List<int> matches = filter.GetMatchList();
+
+            Assert.That( matches.Count, Is.EqualTo( 2 ) );
+            Assert.That( matches[0], Is.EqualTo( 3 ) );
+            Assert.That( matches[1], Is.EqualTo( 4 ) );
+        }
+
+        #region Compound line matching
+        //[Test]
+        //public void when_parent_filter_is_not_content_filter_child_matches_replace_parent_matches()
+        //{
+        //    SourceFile file = new SourceFile( "bs.cs" );
+        //    file.Content = _multiLineFile;
+
+        //    CompoundFilter child = new CompoundFilter();
+        //    CompoundFilter parent = new CompoundFilter();
+        //    parent.Children.Add( child );
+
+        //    child.ContentPattern = "b";
+
+        //    parent.DoesMatch( file );
+
+        //    Assert.That( parent._matchList.Count, Is.EqualTo( 2 ) );
+        //    Assert.That( parent._matchList[0], Is.EqualTo( 3 ) );
+        //    Assert.That( parent._matchList[1], Is.EqualTo( 4 ) );
+        //}
+
+        //[Test]
+        //public void when_parent_filter_is_content_filter_child_matches_intersect_with_parent_matches()
+        //{
+        //    SourceFile file = new SourceFile( "bs.cs" );
+        //    file.Content = _multiLineFile;
+
+        //    CompoundFilter parent = new CompoundFilter();
+        //    CompoundFilter child = new CompoundFilter();
+
+        //    parent.Children.Add( child );
+        //    child.ContentPattern = "b";
+        //    parent.ContentPattern = "c";
+
+        //    parent.DoesMatch( file );
+
+        //    Assert.That( parent._matchList.Count, Is.EqualTo( 1 ) );
+        //    Assert.That( parent._matchList[0], Is.EqualTo( 4 ) );
+        //}
+
+        //[Test]
+        //public void line_start_positions_come_up_from_child_filters_with_nested_child_filter()
+        //{
+        //    SourceFile file = new SourceFile( "bs.cs" );
+        //    file.Content = _multiLineFile;
+
+        //    CompoundFilter parent = new CompoundFilter();
+        //    CompoundFilter child = new CompoundFilter();
+        //    CompoundFilter grandchild = new CompoundFilter();
+
+        //    parent.Children.Add( child );
+        //    child.Children.Add( grandchild );
+        //    grandchild.ContentPattern = "b";
+        //    
+        //    parent.DoesMatch( file );
+
+        //    Assert.That( parent._matchList.Count, Is.EqualTo( 2 ) );
+        //    Assert.That( parent._matchList[0], Is.EqualTo( 3 ) );
+        //    Assert.That( parent._matchList[1], Is.EqualTo( 4 ) );
+        //}
+
+        [Test]
+        public void sibling_with_And_operator_will_intersect_matches()
+        {
+            SourceFile file = new SourceFile( "bs.cs" );
+            file.Content = _multiLineFile;
+
+            Clause child = new Clause();
+            Clause and_sibling = new Clause { Operator = ClauseOperator.And };
+            Clause parent = new Clause();
+            parent.Children.Add( child );
+            parent.Children.Add( and_sibling );
+
+            child.ContentPattern = "b";
+            and_sibling.ContentPattern = "a";
+            parent.DoesMatch( file );
+
+            Assert.That( parent._matchList.Count, Is.EqualTo( 1 ) );
+            Assert.That( parent._matchList[0], Is.EqualTo( 3 ) );
+        }
+
+        // TODO: goal
+        //[Test]
+        //public void Clause_sibling_with_And_operator_will_intersect_matches()
+        //{
+        //    SourceFile file = new SourceFile( "bs.cs" );
+        //    file.Content = _multiLineFile;
+
+        //    Clause child = new Clause();
+        //    Clause and_sibling = new Clause { Operator = FilterOperator.And };
+        //    Clause parent = new Clause();
+        //    parent.Children.Add( child );
+        //    parent.Children.Add( and_sibling );
+
+        //    child.ContentPattern = "b";
+        //    and_sibling.ContentPattern = "a";
+        //    var issues = parent.GetIssueSet( file );
+
+        //    Assert.That( parent._matchList.Count, Is.EqualTo( 1 ) );
+        //    Assert.That( parent._matchList[0], Is.EqualTo( 3 ) );
+        //}
+
+        [Test]
+        public void sibling_with_Or_operator_will_union_matches()
+        {
+            SourceFile file = new SourceFile( "bs.cs" );
+            file.Content = _multiLineFile;
+
+            Clause child = new Clause();
+            Clause or_sibling = new Clause { Operator = ClauseOperator.Or };
+            Clause parent = new Clause();
+            parent.Children.Add( child );
+            parent.Children.Add( or_sibling );
+
+            child.ContentPattern = "b";
+            or_sibling.ContentPattern = "a";
+            parent.DoesMatch( file );
+
+            Assert.That( parent._matchList.Count, Is.EqualTo( 3 ) );
+            Assert.That( parent._matchList[0], Is.EqualTo( 2 ) );
+            Assert.That( parent._matchList[1], Is.EqualTo( 3 ) );
+            Assert.That( parent._matchList[2], Is.EqualTo( 4 ) );
+        }
+        
+        #endregion
+
+
+
         #region Compound matching
         [Test]
         public void Children_get_matched()
         {
-            var child1 = new CompoundFilter { Language = FileLanguage.CSharp };
-            var child2 = new CompoundFilter { NamePattern = "blue" };
+            var child1 = new Clause { Language = FileLanguage.CSharp };
+            var child2 = new Clause { NamePattern = "blue" };
 
-            var filter = new CompoundFilter { };
+            var filter = new Clause { };
             filter.Children.Add( child1 );
             filter.Children.Add( child2 );
 
@@ -246,10 +261,10 @@ cxxxxxxxxx
         [Test]
         public void Or_filter()
         {
-            var child1 = new CompoundFilter { Language = FileLanguage.CSharp };
-            var child2 = new CompoundFilter { NamePattern = "blue", Operator = FilterOperator.Or };
+            var child1 = new Clause { Language = FileLanguage.CSharp };
+            var child2 = new Clause { NamePattern = "blue", Operator = ClauseOperator.Or };
 
-            var filter = new CompoundFilter { };
+            var filter = new Clause { };
             filter.Children.Add( child1 );
             filter.Children.Add( child2 );
 
@@ -263,12 +278,12 @@ cxxxxxxxxx
         [Test]
         public void Not_language_filter_passes_MISmatches_only()
         {
-            var filter = new CompoundFilter
+            var filter = new Clause
             {
                 ID = "Not language",
                 Description = "Relevant to everything except C# files.",
                 Language = FileLanguage.CSharp,
-                Operator = FilterOperator.Not,
+                Operator = ClauseOperator.Not,
             };
 
             Assert.IsFalse( filter.DoesMatch( new SourceFile( "my.cs" ) ) );
@@ -279,12 +294,12 @@ cxxxxxxxxx
         [Test]
         public void NotFilter_inverts_decision()
         {
-            CompoundFilter filter = new CompoundFilter
+            Clause filter = new Clause
             {
                 ID = "no_tests",
                 Description = "Skip the test files",
                 NamePattern = "tests",
-                Operator = FilterOperator.Not
+                Operator = ClauseOperator.Not
             };
 
             Assert.IsTrue( filter.DoesMatch( new SourceFile( @"my_test.cs" ) ) );
@@ -294,16 +309,16 @@ cxxxxxxxxx
         [Test]
         public void Filter_passes_depending_on_internal_filters()
         {
-            CompoundFilter child = new CompoundFilter
+            Clause child = new Clause
             {
                 ID = "Tests",
                 Description = "Give me just the unit tests.",
                 NamePattern = "tests"
             };
 
-            CompoundFilter filter = new CompoundFilter
+            Clause filter = new Clause
             {
-                Children = new List<CompoundFilter> { child }
+                Children = new List<Clause> { child }
             };
 
             Assert.IsFalse( filter.DoesMatch( new SourceFile( @"my_test.cs" ) ) );
@@ -313,24 +328,24 @@ cxxxxxxxxx
         [Test]
         public void either_of_or_filter_passing_passes()
         {
-            CompoundFilter one = new CompoundFilter
+            Clause one = new Clause
             {
                 ID = "one",
                 Description = "files named one",
                 NamePattern = "one"
             };
 
-            CompoundFilter two = new CompoundFilter
+            Clause two = new Clause
             {
                 ID = "two",
                 Description = "files named two",
                 NamePattern = "two",
-                Operator = FilterOperator.Or,
+                Operator = ClauseOperator.Or,
             };
 
-            CompoundFilter filter = new CompoundFilter
+            Clause filter = new Clause
             {
-                Children = new List<CompoundFilter> { one, two }
+                Children = new List<Clause> { one, two }
             };
 
             Assert.IsTrue( filter.DoesMatch( new SourceFile( @"my_one.cs" ) ) );
@@ -346,7 +361,7 @@ cxxxxxxxxx
         [Test]
         public void empty_filter_matches_any_file()
         {
-            var filter = new CompoundFilter();
+            var filter = new Clause();
             var file = new SourceFile( @"\path\file.ext" );
             Assert.That( filter.DoesMatch( file ) );
         }
@@ -354,22 +369,22 @@ cxxxxxxxxx
         [Test]
         public void language_filter_passes_all_when_set_to_None()
         {
-            CompoundFilter filter = new CompoundFilter
+            Clause filter = new Clause
             {
                 ID = "no language",
                 Description = "Relevant to files of all languages.",
                 Language = FileLanguage.None
             };
 
-            Assert.IsTrue( filter.DoesMatch( new SourceFile( "my.cs" ) ) );
-            Assert.IsTrue( filter.DoesMatch( new SourceFile( "my.html" ) ) );
-            Assert.IsTrue( filter.DoesMatch( new SourceFile( "my.unknownextension" ) ) );
+            Assert.That( filter.DoesMatch( new SourceFile( "my.cs" ) ) );
+            Assert.That( filter.DoesMatch( new SourceFile( "my.html" ) ) );
+            Assert.That( filter.DoesMatch( new SourceFile( "my.unknownextension" ) ) );
         }
 
         [Test]
         public void language_filter_passes_matches_only()
         {
-            CompoundFilter filter = new CompoundFilter
+            Clause filter = new Clause
             {
                 ID = "set language",
                 Description = "Relevant to C# files.",
@@ -382,29 +397,13 @@ cxxxxxxxxx
         }
 
         [Test]
-        public void subpath_filter_passes_all_when_empty()
-        {
-            CompoundFilter filter = new CompoundFilter
-            {
-                ID = "no subpath",
-                Description = "Relevant to files in all locations.",
-                Subpath = ""
-            };
-
-            Assert.IsTrue( filter.DoesMatch( new SourceFile( @"my.cs" ) ) );
-            Assert.IsTrue( filter.DoesMatch( new SourceFile( @"specified\subpath\my.cs" ) ) );
-            Assert.IsTrue( filter.DoesMatch( new SourceFile( @"specified\subpath\and\deeper\my.cs" ) ) );
-            Assert.IsTrue( filter.DoesMatch( new SourceFile( @"another\subpath\my.cs" ) ) );
-        }
-
-        [Test]
         public void subpath_filter_passes_matches_only()
         {
-            CompoundFilter filter = new CompoundFilter
+            Clause filter = new Clause
             {
                 ID = "specified subpath",
                 Description = "Relevant to files in one subtree.",
-                Subpath = @"specified\subpath"
+                NamePattern = @"^specified\\subpath\\.*"
             };
 
             Assert.IsFalse( filter.DoesMatch( new SourceFile( @"my.cs" ) ) );
@@ -416,7 +415,7 @@ cxxxxxxxxx
         [Test]
         public void name_pattern_filter_passes_all_when_empty()
         {
-            CompoundFilter filter = new CompoundFilter
+            Clause filter = new Clause
             {
                 ID = "no name pattern",
                 Description = "Relevant to files of all names.",
@@ -432,7 +431,7 @@ cxxxxxxxxx
         [Test]
         public void name_pattern_filter_passes_matches_only()
         {
-            CompoundFilter filter = new CompoundFilter
+            Clause filter = new Clause
             {
                 ID = "no name pattern",
                 Description = "Relevant to files of all names.",
@@ -452,7 +451,7 @@ cxxxxxxxxx
         [Test]
         public void content_pattern_misses_file_lacking_regex_match()
         {
-            var filter = new CompoundFilter { ContentPattern = "(foo|bar)" };
+            var filter = new Clause { ContentPattern = "(foo|bar)" };
             var file = new SourceFile( "foo.cs" );
             file.Content = "using System;";
             Assert.That( filter.DoesMatch( file ), Is.False );
@@ -461,7 +460,7 @@ cxxxxxxxxx
         [Test]
         public void content_pattern_matches_file_containing_regex_match()
         {
-            var filter = new CompoundFilter { ContentPattern = "(foo|bar)" };
+            var filter = new Clause { ContentPattern = "(foo|bar)" };
             var file = new SourceFile( "foo.cs" );
             file.Content = "using System.foo;";
             Assert.That( filter.DoesMatch( file ), Is.True );
@@ -473,12 +472,12 @@ cxxxxxxxxx
         [Test]
         public void can_mark_all_first_children()
         {
-            CompoundFilter filter = new CompoundFilter();
-            filter.Children.Add( new CompoundFilter() );
-            filter.Children.Add( new CompoundFilter() );
-            filter.Children.Add( new CompoundFilter() );
-            filter.Children[1].Children.Add( new CompoundFilter() );
-            filter.Children[1].Children.Add( new CompoundFilter() );
+            Clause filter = new Clause();
+            filter.Children.Add( new Clause() );
+            filter.Children.Add( new Clause() );
+            filter.Children.Add( new Clause() );
+            filter.Children[1].Children.Add( new Clause() );
+            filter.Children[1].Children.Add( new Clause() );
             filter.markFirstChildren();
 
             Assert_first_children_correct( filter );
@@ -489,7 +488,7 @@ cxxxxxxxxx
             Assert_first_children_correct( filter );
         }
 
-        private static void Assert_first_children_correct( CompoundFilter filter )
+        private static void Assert_first_children_correct( Clause filter )
         {
             Assert.True( filter.FirstChild );
 
@@ -501,7 +500,7 @@ cxxxxxxxxx
             Assert.False( filter.Children[1].Children[1].FirstChild );
         }
 
-        private void interregnum_pretendership( CompoundFilter filter )
+        private void interregnum_pretendership( Clause filter )
         {
             filter.FirstChild = true;
             filter.Children.ForEach( child => interregnum_pretendership( child ) );
@@ -512,8 +511,8 @@ cxxxxxxxxx
         [Test]
         public void Can_compare_equality()
         {
-            CompoundFilter filter1 = new Change();
-            CompoundFilter filter2 = new Change();
+            Clause filter1 = new Change();
+            Clause filter2 = new Change();
 
             Assert.IsTrue( filter1.Equals( filter2 ) );
         }
@@ -521,14 +520,14 @@ cxxxxxxxxx
         [Test]
         public void Can_compare_inequal_objects()
         {
-            CompoundFilter filter1 = new CompoundFilter { 
-                ID = "101-443", Description = "Remove all dinguses", Operator = FilterOperator.And,
-                Subpath = @"\here\", NamePattern = "this", Language = FileLanguage.CSharp,
+            Clause filter1 = new Clause { 
+                ID = "101-443", Description = "Remove all dinguses", Operator = ClauseOperator.And,
+                NamePattern = "this", Language = FileLanguage.CSharp,
                 ContentPattern = "old_technology"
             };
-            CompoundFilter filter2 = new CompoundFilter { 
-                ID = "5987515", Description = "Frob all wobbishes", Operator = FilterOperator.Not,
-                Subpath = @"\there\", NamePattern = "that", Language = FileLanguage.CSS,
+            Clause filter2 = new Clause { 
+                ID = "5987515", Description = "Frob all wobbishes", Operator = ClauseOperator.Not,
+                NamePattern = "that", Language = FileLanguage.CSS,
                 ContentPattern = "old_technique"
             };
 
@@ -541,9 +540,6 @@ cxxxxxxxxx
             Assert.IsFalse( filter1.Equals( filter2 ) );
 
             filter1.Operator = filter2.Operator;
-            Assert.IsFalse( filter1.Equals( filter2 ) );
-
-            filter1.Subpath = filter2.Subpath;
             Assert.IsFalse( filter1.Equals( filter2 ) );
 
             filter1.NamePattern = filter2.NamePattern;
@@ -560,16 +556,16 @@ cxxxxxxxxx
         public void CompoundFilter_Equals_considers_child_filters()
         {
 
-            CompoundFilter filter1 = new CompoundFilter
+            Clause filter1 = new Clause
             {
                 ID = "near duplicate",
-                Children = new List<CompoundFilter> { new CompoundFilter { ID = "Thing 1" }, new CompoundFilter { ID = "Thing 2" }, }
+                Children = new List<Clause> { new Clause { ID = "Thing 1" }, new Clause { ID = "Thing 2" }, }
             };
 
-            CompoundFilter filter2 = new CompoundFilter
+            Clause filter2 = new Clause
             {
                 ID = "near duplicate",
-                Children = new List<CompoundFilter> { new CompoundFilter { ID = "Thing 1" }, new CompoundFilter { ID = "Thing 3" }, }
+                Children = new List<Clause> { new Clause { ID = "Thing 1" }, new Clause { ID = "Thing 3" }, }
             };
 
             Assert.That( filter1.Equals( filter2 ), Is.False );
@@ -579,16 +575,16 @@ cxxxxxxxxx
         public void CompoundFilter_Equals_considers_child_filters_count()
         {
 
-            CompoundFilter filter1 = new CompoundFilter
+            Clause filter1 = new Clause
             {
                 ID = "near duplicate",
-                Children = new List<CompoundFilter> { new CompoundFilter { ID = "Thing 1" } }
+                Children = new List<Clause> { new Clause { ID = "Thing 1" } }
             };
 
-            CompoundFilter filter2 = new CompoundFilter
+            Clause filter2 = new Clause
             {
                 ID = "near duplicate",
-                Children = new List<CompoundFilter> { new CompoundFilter { ID = "Thing 1" }, new CompoundFilter { ID = "Thing 2" }, new CompoundFilter { ID = "Thing 3" } }
+                Children = new List<Clause> { new Clause { ID = "Thing 1" }, new Clause { ID = "Thing 2" }, new Clause { ID = "Thing 3" } }
             };
 
             Assert.That( filter1.Equals( filter2 ), Is.False );
@@ -605,25 +601,23 @@ cxxxxxxxxx
         [Test]
         public void Clone_copies_core_attributes()
         {
-            CompoundFilter filter = new CompoundFilter {
+            Clause filter = new Clause {
                 ID = "A",
                 Description = "B",
-                Operator = FilterOperator.Not,
+                Operator = ClauseOperator.Not,
 
-                Subpath = @"D:\",
                 NamePattern = "E",
                 Language = FileLanguage.CSharp,
 
                 ContentPattern = "F"
             };
 
-            CompoundFilter clone = filter.Clone();
+            Clause clone = filter.Clone();
             
             Assert.That( clone.ID, Is.EqualTo( "A" ) );
             Assert.That( clone.Description, Is.EqualTo( "B" ) );
-            Assert.That( clone.Operator, Is.EqualTo( FilterOperator.Not ) );
+            Assert.That( clone.Operator, Is.EqualTo( ClauseOperator.Not ) );
             
-            Assert.That( clone.Subpath, Is.EqualTo( @"D:\" ) );
             Assert.That( clone.NamePattern, Is.EqualTo( "E" ) );
             Assert.That( clone.Language, Is.EqualTo( FileLanguage.CSharp ) );
 

@@ -4,6 +4,7 @@
 using NUnit.Framework;
 using swept;
 using System;
+using System.Collections.Generic;
 
 namespace swept.Tests
 {
@@ -49,5 +50,27 @@ namespace swept.Tests
         {
             Assert.IsTrue(bargle.Equals(bargle2));
         }
+
+        #region Line matching
+        public static string _multiLineFile =
+@"
+axxxxxx
+abxx
+bcxxxx
+cxxxxxxxxx
+";
+
+        [Test]
+        public void can_return_list_of_line_start_positions()
+        {
+            file.Content = _multiLineFile;
+
+            Assert.That( file.LineIndices.Count, Is.EqualTo( 5 ) );
+            Assert.That( file.LineIndices[0], Is.EqualTo( 1 ) );
+            Assert.That( file.LineIndices[1], Is.EqualTo( 10 ) );
+        }
+
+        #endregion
+
     }
 }

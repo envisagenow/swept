@@ -43,6 +43,25 @@ namespace swept.Tests
         }
 
         [Test]
+        public void Can_GetSortedChanges()
+        {
+            Change a_17 = new Change { ID = "a_17", };
+            Change a_177 = new Change { ID = "a_177", };
+            Change b_52 = new Change { ID = "b_52", };
+
+            _changeCatalog._changes.Clear();
+            _changeCatalog.Add( b_52 );
+            _changeCatalog.Add( a_17 );
+            _changeCatalog.Add( a_177 );
+
+            var changes = Horace.GetSortedChanges();
+            Assert.That( changes[0].ID, Is.EqualTo( a_17.ID ) );
+            Assert.That( changes[1].ID, Is.EqualTo( a_177.ID ) );
+            Assert.That( changes[2].ID, Is.EqualTo( b_52.ID ) );
+        }
+
+
+        [Test]
         public void Swept_Library_opened_sought_in_expected_location()
         {
             Assert.AreEqual( @"f:\over\here.swept.library", Horace.LibraryPath );

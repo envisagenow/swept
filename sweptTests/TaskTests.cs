@@ -10,59 +10,50 @@ namespace swept.Tests
     [TestFixture]
     public class TaskTests
     {
-        private const string _Description = "this change";
-        Change _change;
-        List<Task> _tasks;
-        Task _task;
-        SeeAlso _see;
-
-        [SetUp]
-        public void given_a_Task_created_from_a_Change()
+        [Test]
+        public void FromIssueSet_gets_one_task_on_matching_File_scope()
         {
-            _change = new Change { ID = "id1", Description = _Description, Language = FileLanguage.CSharp };
-            _see = new SeeAlso { Description = "Look here", Target = "here.com", TargetType = TargetType.URL };
-            _change.SeeAlsos.Add( _see );
-            _tasks = Task.FromChange( _change );
-            _task = _tasks[0];
+            Clause clause = new Clause { Language = FileLanguage.CSharp };
+            IssueSet set = new IssueSet( clause, new SourceFile( "foo.cs" ), ClauseMatchScope.File, new List<int>(), true );
+            List<Task> tasks = Task.FromIssueSet( set );
+            Assert.That( tasks.Count, Is.EqualTo( 1 ) );
+            Assert.That( tasks[0].LineNumber, Is.EqualTo( 1 ) );
         }
 
         [Test]
-        public void FromChange_gets_a_task_per_match_location()
+        public void FromIssueSet_gets_no_tasks_on_unmatching_File_scope()
         {
-            _change._matchList = new List<int> { 4, 8, 9 };
-            List<Task> tasks = Task.FromChange( _change );
+            IssueSet set = new IssueSet( null, null, ClauseMatchScope.File, new List<int>(), false );
+            List<Task> tasks = Task.FromIssueSet( set );
+            Assert.That( tasks.Count, Is.EqualTo( 0 ) );
+        }
+
+        [Test]
+        public void FromIssueSet_tasks_include_match_location()
+        {
+            IssueSet set = new IssueSet( null, null, ClauseMatchScope.Line, new List<int> { 4, 8, 9 }, true );
+
+            List<Task> tasks = Task.FromIssueSet( set );
+
             Assert.That( tasks.Count, Is.EqualTo( 3 ) );
-        }
-
-        [Test]
-        public void FromChange_tasks_include_match_location()
-        {
-            _change._matchList = new List<int> { 4, 8, 9 };
-            List<Task> tasks = Task.FromChange( _change );
             Assert.That( tasks[0].LineNumber, Is.EqualTo( 4 ) );
             Assert.That( tasks[1].LineNumber, Is.EqualTo( 8 ) );
             Assert.That( tasks[2].LineNumber, Is.EqualTo( 9 ) );
         }
 
-        [Test]
-        public void attributes_filled_from_Change()
-        {
-            Assert.AreEqual( _change.ID, _task.ID );
-            Assert.AreEqual( _change.Description, _task.Description );
-        }
+        //[Test]
+        //public void ToString_shows_description_for_GUI()
+        //{
+        //    Assert.That( _task.ToString(), Is.EqualTo( _Description ) );
+        //}
 
-        [Test]
-        public void ToString_shows_description_for_GUI()
-        {
-            Assert.That( _task.ToString(), Is.EqualTo( _Description ) );
-        }
+        //[Test]
+        //public void SeeAlsos_are_copied()
+        //{
+        //    Assert.That( _task.SeeAlsos.Count, Is.EqualTo( 1 ) );
+        //    var see = _task.SeeAlsos[0];
+        //    Assert.That( see, Is.EqualTo( _see ) );
+        //}
 
-        [Test]
-        public void SeeAlsos_are_copied()
-        {
-            Assert.That( _task.SeeAlsos.Count, Is.EqualTo( 1 ) );
-            var see = _task.SeeAlsos[0];
-            Assert.That( see, Is.EqualTo( _see ) );
-        }
     }
 }

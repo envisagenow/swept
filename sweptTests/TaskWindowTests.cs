@@ -39,15 +39,6 @@ namespace swept.Tests
         }
 
         [Test]
-        public void ShowFile_with_no_file_may_still_show_Tasks()
-        {
-            //  No file and some changes isn't a current use case--but it "works".
-            window.ShowFile( null, changes );
-            Assert.AreEqual( "No source file", window.Title );
-            Assert.AreEqual( 2, window.Tasks.Count );
-        }
-
-        [Test]
         public void ShowFile_with_no_changes_makes_empty_TaskList()
         {
             window.ShowFile( file, new List<Change>() );

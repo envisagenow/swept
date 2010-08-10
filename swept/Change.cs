@@ -18,7 +18,7 @@ namespace swept
         Unknown
     }
 
-    public class Change : CompoundFilter
+    public class Change : Clause
     {
         public List<SeeAlso> SeeAlsos { get; set; }
         public Change() : base() 
@@ -29,6 +29,7 @@ namespace swept
         public new Change Clone()
         {
             return (Change)base.CloneInto( new Change() );
+            // TODO: also the SeeAlsos
         }
     }
 }

@@ -63,7 +63,9 @@
   <ItemGroup>
     <Compile Include="Change.cs" />
     <Compile Include="ChangeCatalog.cs" />
-    <Compile Include="CompoundFilter.cs" />
+    <Compile Include="ChangeLoad.cs" />
+    <Compile Include="Clause.cs" />
+    <Compile Include="CoverageExcludeAttribute.cs" />
     <Compile Include="IssueSet.cs" />
     <Compile Include="SeeAlso.cs" />
     <Compile Include="SourceFileCatalog.cs" />
@@ -112,6 +114,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <None Include="diagrams\clauses_and_tasks.cd" />
     <None Include="diagrams\GUI_connection.cd" />
     <None Include="diagrams\swept_diagram.cd" />
   </ItemGroup>

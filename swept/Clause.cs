@@ -9,59 +9,66 @@ using System.Linq;
 
 namespace swept
 {
-    public enum FilterOperator
+    public enum ClauseOperator
     {
         And,
         Not,
         Or,
     }
 
-    public class CompoundFilter
+    public enum ClauseMatchScope
+    {
+        File,
+        Line,
+    }
+
+    public class Clause
     {
         public string ID                { get; internal set; }
         public string Description       { get; internal set; }
-        public FilterOperator Operator  { get; internal set; }
+        public ClauseOperator Operator  { get; internal set; }
+        public bool ForceFileScope      { get; internal set; }
         public FileLanguage Language    { get; internal set; }
-        public string Subpath           { get; internal set; }
         public string NamePattern       { get; internal set; }
         public string ContentPattern    { get; internal set; }
+        public List<Clause> Children    { get; set; }
 
-        public CompoundFilter()
+        public Clause()
         {
             ID = string.Empty;
-            Subpath = string.Empty;
             NamePattern = string.Empty;
             Language = FileLanguage.None;
             ContentPattern = string.Empty;
-            Children = new List<CompoundFilter>();
-            Operator = FilterOperator.And;
-            _lineIndices = new List<int>();
-            _matchList = new List<int> { 1 };
+            Children = new List<Clause>();
+            Operator = ClauseOperator.And;
+            _matchList = new List<int>();
         }
 
-        public bool FirstChild { get; set; }
-        public List<CompoundFilter> Children { get; set; }
-
-        internal List<int> _lineIndices;
-        internal List<int> _matchList;
-
-        internal void generateLineIndices( string multiLineFile )
+        public IssueSet GetFileIssueSet( SourceFile file )
         {
-            // TODO: cache results per sourcefile
-            //if( mySourceFile.LineIndices != null )
+            // TODO: fix the lame.
+            bool doesMatch = DoesMatch( file );
+            return new IssueSet( this, file, MatchScope, GetMatchList(), doesMatch );
+        }
 
-            //list of newline indexes
-            Regex lineCatcher = new Regex( "\n", RegexOptions.Multiline );
-            MatchCollection lineMatches = lineCatcher.Matches( multiLineFile );
-
-            _lineIndices = new List<int>();
-            foreach (Match match in lineMatches)
+        public ClauseMatchScope MatchScope
+        {
+            get
             {
-                _lineIndices.Add( match.Index );
+                if (ForceFileScope) return ClauseMatchScope.File;
+
+                if (ContentPattern != string.Empty) return ClauseMatchScope.Line;
+
+                return ClauseMatchScope.File;
             }
         }
 
-        public void identifyMatchLineNumbers( string multiLineFile, string pattern )
+
+        public bool FirstChild { get; set; }
+
+        internal List<int> _matchList;
+
+        public void identifyMatchLineNumbers( SourceFile file, string pattern )
         {
             _matchList = new List<int>();
             if (string.IsNullOrEmpty( pattern ))
@@ -69,11 +76,11 @@ namespace swept
 
             // TODO: Add attribute to allow case sensitive matching
             Regex rx = new Regex( pattern, RegexOptions.IgnoreCase );
-            MatchCollection matches = rx.Matches( multiLineFile );
+            MatchCollection matches = rx.Matches( file.Content );
 
             foreach (Match match in matches)
             {
-                int line = lineNumberOfMatch( match.Index, _lineIndices );
+                int line = lineNumberOfMatch( match.Index, file.LineIndices );
                 _matchList.Add( line );
             }
         } 
@@ -101,31 +108,30 @@ namespace swept
             return currentLineNumber;
         }
 
-
-
         public virtual bool DoesMatch( SourceFile file )
         {
             //  breakpoint for tracing how a change matches a file.
             bool didMatch = true;
             didMatch = didMatch && Language == FileLanguage.None || Language == file.Language;
-            didMatch = didMatch && file.Name.StartsWith( Subpath );
             didMatch = didMatch && Regex.IsMatch( file.Name, NamePattern, RegexOptions.IgnoreCase );
-            
-            if( ContentPattern != string.Empty )
-                didMatch = didMatch && MatchesContent( file.Content );
-            
+
+            if (MatchScope == ClauseMatchScope.Line)
+            {
+                if (ContentPattern != string.Empty)
+                    didMatch = didMatch && MatchesContent( file );
+            }
+
             didMatch = didMatch && MatchesChildren( file );
 
-            if (Operator == FilterOperator.Not) didMatch = !didMatch;
+            if (Operator == ClauseOperator.Not) didMatch = !didMatch;
 
             _matchList.Sort();
             return didMatch;
         }
 
-        internal bool MatchesContent( string content )
+        internal bool MatchesContent( SourceFile file )
         {
-            generateLineIndices( content );
-            identifyMatchLineNumbers( content, ContentPattern );
+            identifyMatchLineNumbers( file, ContentPattern );
             return _matchList.Count > 0;
         }
 
@@ -136,13 +142,13 @@ namespace swept
 
             bool didMatch = true;
             List<int> workingMatches = null;
-            foreach (CompoundFilter child in Children)
+            foreach (Clause child in Children)
             {
                 bool childMatched = child.DoesMatch( file );
                 if (workingMatches == null)
                     workingMatches = child._matchList.ToList();
 
-                if (child.Operator == FilterOperator.Or)
+                if (child.Operator == ClauseOperator.Or)
                 {
                     didMatch = didMatch || childMatched;
                     workingMatches = workingMatches.Union( child._matchList ).ToList();
@@ -172,7 +178,7 @@ namespace swept
             markGeneration( this, true );
         }
 
-        private void markGeneration( CompoundFilter filter, bool isFirstChild )
+        private void markGeneration( Clause filter, bool isFirstChild )
         {
             filter.FirstChild = isFirstChild;
 
@@ -186,7 +192,7 @@ namespace swept
         }
 
         // TODO--0.3, DC: CompoundFilter.Equals( object )
-        public bool Equals( CompoundFilter other )
+        public bool Equals( Clause other )
         {
             if( other == null ) return false;
 
@@ -197,8 +203,6 @@ namespace swept
             if( Operator != other.Operator )
                 return false;
 
-            if( Subpath != other.Subpath )
-                return false;
             if( NamePattern != other.NamePattern )
                 return false;
             if( Language != other.Language )
@@ -219,24 +223,23 @@ namespace swept
             return true;
         }
 
-        public CompoundFilter Clone()
+        public Clause Clone()
         {
-            return CloneInto( new CompoundFilter() );
+            return CloneInto( new Clause() );
         }
 
-        protected CompoundFilter CloneInto( CompoundFilter newFilter )
+        protected Clause CloneInto( Clause newFilter )
         {
             newFilter.ID = ID;
             newFilter.Description = Description;
             newFilter.Operator = Operator;
 
-            newFilter.Subpath = Subpath;
             newFilter.NamePattern = NamePattern;
             newFilter.Language = Language;
 
             newFilter.ContentPattern = ContentPattern;
 
-            foreach (CompoundFilter child in Children)
+            foreach (Clause child in Children)
             {
                 newFilter.Children.Add( child.Clone() );
             }

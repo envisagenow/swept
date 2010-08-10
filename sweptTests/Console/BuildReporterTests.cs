@@ -47,7 +47,7 @@ namespace swept.Tests
             };
 
             var bar = new SourceFile( "bar.htm" ) { TaskCount = 4 };
-            var set = new IssueSet( change, bar );
+            var set = change.GetFileIssueSet( bar );
 
             changes.Add( change, new List<IssueSet> { set } );
 
@@ -94,8 +94,8 @@ namespace swept.Tests
 
             SourceFile foo = new SourceFile( "foo.cs" ) { TaskCount = 1 };
             SourceFile goo = new SourceFile( "goo.cs" ) { TaskCount = 3 };
-            csharpFiles.Add( new IssueSet( csharpChange, foo ) );
-            csharpFiles.Add( new IssueSet( csharpChange, goo ) );
+            csharpFiles.Add( csharpChange.GetFileIssueSet( foo ) );
+            csharpFiles.Add( csharpChange.GetFileIssueSet( goo ) );
 
             changes.Add( csharpChange, csharpFiles );
 
@@ -109,8 +109,8 @@ namespace swept.Tests
             var htmlFiles = new List<IssueSet>();
             SourceFile bar = new SourceFile( "bar.htm" ) { TaskCount = 4 };
             SourceFile shmoo = new SourceFile( "shmoo.aspx" ) { TaskCount = 2 };
-            htmlFiles.Add( new IssueSet( htmlChange, bar ) );
-            htmlFiles.Add( new IssueSet( htmlChange, shmoo ) );
+            htmlFiles.Add( htmlChange.GetFileIssueSet( bar ) );
+            htmlFiles.Add( htmlChange.GetFileIssueSet( shmoo ) );
 
             changes.Add( htmlChange, htmlFiles );
 

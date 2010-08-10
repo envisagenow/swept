@@ -33,7 +33,7 @@ namespace swept.Tests
             string filter_text = @"<Change ID='Empty'/>";
             var node = Node_FromText( filter_text );
 
-            CompoundFilter filter = port.CompoundFilter_FromNode( node );
+            Clause filter = port.CompoundFilter_FromNode( node );
             Assert.That( filter.Children.Count, Is.EqualTo( 0 ) );
         }
 
@@ -59,14 +59,14 @@ namespace swept.Tests
         public void FromNode_sets_Operator()
         {
             // Puzzle:  How to keep this current as operators are _added_.
-            var namesToOps = new Dictionary<string, FilterOperator>() {
-                { "Either", FilterOperator.Or },
-                { "Or", FilterOperator.Or },
-                { "When", FilterOperator.And },
-                { "And", FilterOperator.And },
-                { "Change", FilterOperator.And },
-                { "AndNot", FilterOperator.Not },
-                { "Not", FilterOperator.Not },
+            var namesToOps = new Dictionary<string, ClauseOperator>() {
+                { "Either", ClauseOperator.Or },
+                { "Or", ClauseOperator.Or },
+                { "When", ClauseOperator.And },
+                { "And", ClauseOperator.And },
+                { "Change", ClauseOperator.And },
+                { "AndNot", ClauseOperator.Not },
+                { "Not", ClauseOperator.Not },
             };
 
             foreach (string filterName in namesToOps.Keys)
@@ -101,7 +101,7 @@ namespace swept.Tests
 ";
             var node = Node_FromText( filter_text );
 
-            CompoundFilter filter = port.CompoundFilter_FromNode( node );
+            Clause filter = port.CompoundFilter_FromNode( node );
             Assert.That( filter.ID, Is.EqualTo( "parent" ) );
             Assert.That( filter.Children.Count, Is.EqualTo( 2 ) );
             Assert.That( filter.Children[0].Children[1].Children[0].ID, Is.EqualTo( "first great-grandchild" ) );
@@ -117,7 +117,7 @@ namespace swept.Tests
 ";
             var node = Node_FromText( filter_text );
 
-            CompoundFilter filter = port.CompoundFilter_FromNode( node );
+            Clause filter = port.CompoundFilter_FromNode( node );
             Assert.That( filter.ID, Is.EqualTo( "single" ) );
             Assert.That( filter.Children.Count, Is.EqualTo( 1 ) );
         }
@@ -127,20 +127,19 @@ namespace swept.Tests
         {
             string filter_text =
 @"<Change ID='1212' Description='Through and through'>
-    <When Subpath='swords' NamePattern='vorpal.cs' Language='CSharp' ContentPattern='using System.Snicker.Snack;' />
+    <When NamePattern='vorpal.cs' Language='CSharp' ContentPattern='using System.Snicker.Snack;' />
 </Change>
 ";
             var node = Node_FromText( filter_text );
 
-            CompoundFilter filter = port.CompoundFilter_FromNode( node );
+            Clause filter = port.CompoundFilter_FromNode( node );
             Assert.That( filter.Children.Count, Is.EqualTo( 1 ) );
             var child = filter.Children[0];
 
             Assert.That( filter.ID, Is.EqualTo( "1212" ) );
             Assert.That( filter.Description, Is.EqualTo( "Through and through" ) );
 
-            Assert.That( child.Operator, Is.EqualTo( FilterOperator.And ) );
-            Assert.That( child.Subpath, Is.EqualTo( "swords" ) );
+            Assert.That( child.Operator, Is.EqualTo( ClauseOperator.And ) );
             Assert.That( child.NamePattern, Is.EqualTo( "vorpal.cs" ) );
             Assert.That( child.Language, Is.EqualTo( FileLanguage.CSharp ) );
 
@@ -217,24 +216,24 @@ namespace swept.Tests
 
         #region Integration round-trips
 
-        private CompoundFilter UsePersisters_Filter
+        private Clause UsePersisters_Filter
         {
             get
             {
-                CompoundFilter use_persisters = new Change
+                Clause use_persisters = new Change
                 {
                     ID = "Pers_1",
                     Description = "Use persisters instead of direct DB access",
                 };
 
-                use_persisters.Children.Add( new CompoundFilter { ContentPattern = "(XADR|Oracle|NHibernate)" } );
-                use_persisters.Children.Add( new CompoundFilter { NamePattern = "(Persister|Service)", Operator = FilterOperator.Not } );
-                use_persisters.Children.Add( new CompoundFilter { Subpath = "(Xadr|TestXadr)", Operator = FilterOperator.Not } );
+                use_persisters.Children.Add( new Clause { ContentPattern = "(XADR|Oracle|NHibernate)" } );
+                use_persisters.Children.Add( new Clause { NamePattern = "(Persister|Service)", Operator = ClauseOperator.Not } );
+                use_persisters.Children.Add( new Clause { NamePattern = "(Xadr|TestXadr)", Operator = ClauseOperator.Not } );
 
-                CompoundFilter special_cases = new CompoundFilter { Operator = FilterOperator.Or, ID = "Special cases" };
-                special_cases.Children.Add( new CompoundFilter { NamePattern = "this.cs" } );
-                special_cases.Children.Add( new CompoundFilter { NamePattern = "that.cs", Operator = FilterOperator.Or } );
-                special_cases.Children.Add( new CompoundFilter { NamePattern = "another.cs", Operator = FilterOperator.Or } );
+                Clause special_cases = new Clause { Operator = ClauseOperator.Or, ID = "Special cases" };
+                special_cases.Children.Add( new Clause { NamePattern = "this.cs" } );
+                special_cases.Children.Add( new Clause { NamePattern = "that.cs", Operator = ClauseOperator.Or } );
+                special_cases.Children.Add( new Clause { NamePattern = "another.cs", Operator = ClauseOperator.Or } );
 
                 use_persisters.Children.Add( special_cases );
 
@@ -246,7 +245,7 @@ namespace swept.Tests
 @"    <Change ID='Pers_1' Description='Use persisters instead of direct DB access'>
         <When ContentPattern='(XADR|Oracle|NHibernate)' />
         <AndNot NamePattern='(Persister|Service)' />
-        <AndNot Subpath='(Xadr|TestXadr)' />
+        <AndNot NamePattern='(Xadr|TestXadr)' />
         <Or ID='Special cases'>
             <When NamePattern='this.cs' />
             <Or NamePattern='that.cs' />
@@ -259,13 +258,13 @@ namespace swept.Tests
         public void use_persisters_instead_of_direct_db_access_FromNodes()
         {
             var usePersistersNode = Node_FromText( UsePersisters_Text );
-            CompoundFilter filterFromNode = port.CompoundFilter_FromNode( usePersistersNode );
+            Clause filterFromNode = port.CompoundFilter_FromNode( usePersistersNode );
 
-            CompoundFilter expectedFilter = UsePersisters_Filter;
+            Clause expectedFilter = UsePersisters_Filter;
 
             //multiple asserts because I'm not getting very good visibility into the problem.
-            CompoundFilter thisFromNode = filterFromNode.Children[3].Children[0];
-            CompoundFilter thisExpected = expectedFilter.Children[3].Children[0];
+            Clause thisFromNode = filterFromNode.Children[3].Children[0];
+            Clause thisExpected = expectedFilter.Children[3].Children[0];
             Assert.That( thisFromNode.Equals( thisExpected ) );
             Assert.That( filterFromNode.Children[3].Equals( expectedFilter.Children[3] ) );
             Assert.That( filterFromNode.Equals( expectedFilter ) );

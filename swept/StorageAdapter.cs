@@ -8,6 +8,7 @@ using System.Collections.Generic;
 
 namespace swept
 {
+    [CoverageExclude( "Wrapper around file system" )]
     public class StorageAdapter : IStorageAdapter
     {
         static internal string emptyCatalogText = 
@@ -77,8 +78,6 @@ namespace swept
         {
             return Directory.GetDirectories( folder );
         }
-
-        // future:  Pick another location if not found, store that location...somewhere?
 
         public void RenameLibrary( string oldPath, string newPath )
         {

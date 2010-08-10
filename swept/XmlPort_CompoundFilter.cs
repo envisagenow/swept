@@ -13,14 +13,13 @@ namespace swept
         public const string cfa_ID = "ID";
         public const string cfa_Description = "Description";
         public const string cfa_ManualCompletion = "ManualCompletion";
-        public const string cfa_Subpath = "Subpath";
         public const string cfa_NamePattern = "NamePattern";
         public const string cfa_Language = "Language";
         public const string cfa_ContentPattern = "ContentPattern";
 
         private static string[] UnknownAttributesIn( XmlNode filterNode )
         {
-            var known = new List<string>() { cfa_ID, cfa_Description, cfa_ManualCompletion, cfa_Subpath, cfa_NamePattern, cfa_Language, cfa_ContentPattern };
+            var known = new List<string>() { cfa_ID, cfa_Description, cfa_ManualCompletion, cfa_NamePattern, cfa_Language, cfa_ContentPattern };
             var unknown = new List<string>();
             foreach (XmlAttribute attribute in filterNode.Attributes)
             {
@@ -31,10 +30,10 @@ namespace swept
             return unknown.ToArray();
         }
 
-        public CompoundFilter CompoundFilter_FromNode( XmlNode filterNode )
+        public Clause CompoundFilter_FromNode( XmlNode filterNode )
         {
             bool isTopLevel = filterNode.LocalName == "Change";
-            CompoundFilter filter = isTopLevel ? new Change() : new CompoundFilter();
+            Clause filter = isTopLevel ? new Change() : new Clause();
 
             var invalidAttributes = UnknownAttributesIn( filterNode );
             if (invalidAttributes.Length > 0)
@@ -44,18 +43,18 @@ namespace swept
             {
             case "Either":
             case "Or":
-                filter.Operator = FilterOperator.Or;
+                filter.Operator = ClauseOperator.Or;
                 break;
 
             case "And":
             case "When":
             case "Change":
-                filter.Operator = FilterOperator.And;
+                filter.Operator = ClauseOperator.And;
                 break;
 
             case "Not":
             case "AndNot":
-                filter.Operator = FilterOperator.Not;
+                filter.Operator = ClauseOperator.Not;
                 break;
 
             default:
@@ -69,9 +68,6 @@ namespace swept
 
             if (filterNode.Attributes[cfa_Description] != null)
                 filter.Description = filterNode.Attributes[cfa_Description].Value;
-
-            if (filterNode.Attributes[cfa_Subpath] != null)
-                filter.Subpath = filterNode.Attributes[cfa_Subpath].Value;
 
             if (filterNode.Attributes[cfa_NamePattern] != null)
                 filter.NamePattern = filterNode.Attributes[cfa_NamePattern].Value;

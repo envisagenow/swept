@@ -71,7 +71,7 @@ namespace swept.Tests
             
             List<IssueSet> issueSets = results[change];
             var issueSet = issueSets[0];
-            Assert.That( issueSet.Change, Is.EqualTo( change ) );
+            Assert.That( issueSet.Clause, Is.EqualTo( change ) );
             Assert.That( issueSet.SourceFile.Name, Is.EqualTo( FILEONE ) );
         }
 

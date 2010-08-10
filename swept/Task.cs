@@ -10,6 +10,7 @@ namespace swept
     {
         public int LineNumber { get; private set; }
 
+        [Obsolete("Generate Tasks from an IssueSet instead")]
         public static List<Task> FromChange( Change change )
         {
             List<Task> tasks = new List<Task>();
@@ -32,6 +33,29 @@ namespace swept
 
             return tasks;
         }
+
+        public static List<Task> FromIssueSet( IssueSet set )
+        {
+            List<Task> tasks = new List<Task>();
+
+            string description = string.Empty;
+            if (set.Clause != null && !string.IsNullOrEmpty( set.Clause.Description ))
+                description = set.Clause.Description;
+
+            foreach (int line in set.MatchLineNumbers)
+            {
+                Task task = new Task
+                {
+                    Description = description,
+                    LineNumber = line,
+                };
+
+                tasks.Add( task );
+            }
+
+            return tasks;
+        }
+
 
         public override string ToString()
         {

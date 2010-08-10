@@ -52,7 +52,7 @@ namespace swept.Tests
         [Test]
         public void GetChanges_returns_Appropriate_CompoundChanges()
         {
-            CompoundFilter filter = new CompoundFilter();
+            Clause filter = new Clause();
 
             List<Change> changes = cat.GetChangesForFile( new SourceFile( "hello_style.css" ) );
             Assert.AreEqual( 0, changes.Count );
@@ -141,10 +141,10 @@ namespace swept.Tests
         [Test]
         public void Changes_sort_alphabetically_by_ID()
         {
-            Change a_17 = new Change{ID= "a_17", };
-            Change a_18 = new Change{ID= "a_18", };
-            Change a_117 = new Change{ID= "a_117", };
-            Change a_177 = new Change{ID= "a_177", };
+            Change a_17 = new Change { ID = "a_17", };
+            Change a_18 = new Change { ID = "a_18", };
+            Change a_117 = new Change { ID = "a_117", };
+            Change a_177 = new Change { ID = "a_177", };
             Change b_52 = new Change { ID = "b_52", };
 
             ChangeCatalog cat = new ChangeCatalog();
@@ -199,10 +199,10 @@ namespace swept.Tests
         {
             Change change = new Change {
                 ID = "This",
-                Children = new List<CompoundFilter> {
-                    new CompoundFilter {
+                Children = new List<Clause> {
+                    new Clause {
                         ID = "Child",
-                        Subpath = "hidden"
+                        NamePattern = "hidden"
                     }
                 }
             };
@@ -212,7 +212,7 @@ namespace swept.Tests
             Assert.AreEqual( 4, catClone._changes.Count );
             var hiddenChild = catClone._changes[3].Children[0];
             Assert.That( hiddenChild.ID, Is.EqualTo( "Child" ) );
-            Assert.That( hiddenChild.Subpath, Is.EqualTo( "hidden" ) );
+            Assert.That( hiddenChild.NamePattern, Is.EqualTo( "hidden" ) );
         }
     }
 }

@@ -1,29 +1,79 @@
 using System;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace swept
 {
     public class IssueSet
     {
-        private List<int> _matchList;
-        public IssueSet( Change change, SourceFile file )
+        public IssueSet( 
+            Clause clause, 
+            SourceFile sourceFile, 
+            ClauseMatchScope matchScope, 
+            List<int> matchedLines, 
+            bool doesMatch )
         {
-            Change = change;
+            Clause = clause;
+            SourceFile = sourceFile;
+            MatchScope = matchScope;
+            MatchLineNumbers = matchedLines;
+            DoesMatch = doesMatch;
+        }
+
+        public IssueSet( Clause clause, SourceFile file )
+        {
+            Clause = clause;
             SourceFile = file;
 
-            change.DoesMatch(file);
-            _matchList = Change._matchList;
-        }
-                
-        public SourceFile SourceFile { get; set; }
-        public Change Change { get; set; }
+            MatchScope = clause.MatchScope;
+            MatchLineNumbers = clause.GetMatchList();
 
-        public IList<int> MatchLineNumbers
+            DoesMatch = clause.DoesMatch( file );
+        }
+
+        internal IssueSet( Clause clause, SourceFile file, IList<int> matchLineNumbers )
         {
-            get
+            Clause = clause;
+            SourceFile = file;
+
+            MatchScope = ClauseMatchScope.Line;
+            MatchLineNumbers = matchLineNumbers;
+        }
+
+        internal IssueSet( Clause clause, SourceFile file, bool matchesAtFileScope )
+        {
+            Clause = clause;
+            SourceFile = file;
+
+            MatchScope = ClauseMatchScope.File;
+            DoesMatch = matchesAtFileScope;
+        }
+
+        public Clause Clause { get; private set; }
+        public SourceFile SourceFile { get; private set; }
+        public ClauseMatchScope MatchScope { get; private set; }
+        public IList<int> MatchLineNumbers { get; private set; }
+        public bool DoesMatch { get; private set; }
+
+        public void UniteLines( IList<int> lines )
+        {
+            MatchLineNumbers = MatchLineNumbers.Union( lines ).ToList();
+        }
+
+        public void IntersectLines( IList<int> lines )
+        {
+            MatchLineNumbers = MatchLineNumbers.Intersect( lines ).ToList();
+        }
+
+        public void SubtractLines( IList<int> lines )
+        {
+            MatchLineNumbers = MatchLineNumbers.ToList();
+            foreach (int line in lines)
             {
-                return _matchList;
+                if (MatchLineNumbers.Contains( line ))
+                    MatchLineNumbers.Remove( line );
             }
         }
+
     }
 }

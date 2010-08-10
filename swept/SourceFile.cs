@@ -4,24 +4,39 @@
 using System.Collections.Generic;
 using System.IO;
 using System;
+using System.Text.RegularExpressions;
 
 namespace swept
 {
     public class SourceFile
     {
-        public FileLanguage Language;
-        public string Name;
-        public string Content;
-        public int TaskCount;
-        public bool IsRemoved { get; set; }
 
         public SourceFile( string name )
         {
             Name = name;
+            LineIndices = new List<int>();
             Content = string.Empty;
 
             string fileExt = Path.GetExtension( name );
             Language = SourceFile.FileLanguageFromExtension( fileExt );
+        }
+
+        public FileLanguage Language;
+        public string Name;
+        public int TaskCount;
+        public bool IsRemoved { get; set; }
+
+        public List<int> LineIndices { get; private set; }
+
+        private string _content;
+        public string Content
+        {
+            get { return _content; }
+            set
+            {
+                _content = value;
+                LineIndices = GetLineIndices( _content );
+            }
         }
 
         private static Dictionary<string, FileLanguage> extensionLanguage;
@@ -49,15 +64,6 @@ namespace swept
             }
         }
 
-
-        public static FileLanguage FileLanguageFromExtension( string fileExt )
-        {
-            if( ExtensionLanguage.ContainsKey( fileExt ) )
-                return ExtensionLanguage[fileExt];
-
-            return FileLanguage.Unknown;
-        }
-
         public SourceFile Clone()
         {
             SourceFile file = new SourceFile( Name );
@@ -73,6 +79,29 @@ namespace swept
             // TODO: expand equality?  Automagic?
 
             return true;
+        }
+
+        public static FileLanguage FileLanguageFromExtension( string fileExt )
+        {
+            if (ExtensionLanguage.ContainsKey( fileExt ))
+                return ExtensionLanguage[fileExt];
+
+            return FileLanguage.Unknown;
+        }
+
+        internal List<int> GetLineIndices( string content )
+        {
+            //list of newline indexes
+            Regex lineCatcher = new Regex( "\n", RegexOptions.Multiline );
+            MatchCollection lineMatches = lineCatcher.Matches( content );
+
+            var indices = new List<int>();
+            foreach (Match match in lineMatches)
+            {
+                indices.Add( match.Index );
+            }
+
+            return indices;
         }
     }
 }

@@ -63,6 +63,7 @@ namespace swept
             _sourceCatalog.ChangeCatalog = _changeCatalog;
             _sourceCatalog.SolutionPath = SolutionPath;
 
+            // TODO: return here to see if it's needed
             Raise_ChangeCatalogUpdated();
             Raise_SourceCatalogUpdated();
         }

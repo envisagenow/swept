@@ -60,13 +60,5 @@ namespace swept
                 throw new Exception( string.Format( "There is already a change with the ID [{0}].", change.ID ) );
             _changes.Add( change );
         }
-
-        public void Remove( string changeID )
-        {
-            _changes.RemoveAll( change => change.ID == changeID );
-        }
-
-        // TODO--0.3, DC: Edit a Change
-
     }
 }

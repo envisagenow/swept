@@ -8,6 +8,7 @@ using System.Diagnostics;
 
 namespace swept
 {
+    [CoverageExclude( "Wrapper around Windows GUI" )]
     public class UserGUIAdapter : IUserAdapter
     {
         public void BadXmlInExpectedLibrary( string libraryPath, XmlException exception )

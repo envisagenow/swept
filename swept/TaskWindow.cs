@@ -69,14 +69,14 @@ namespace swept
         internal void ShowFile( SourceFile file, List<Change> changes )
         {
             CurrentFile = file;
-            SetTasksFromChanges( changes );
+            SetTasksFromChanges( changes, file );
         }
 
         public void RefreshChangeCatalog( ChangeCatalog catalog )
         {
             _changeCatalog = catalog;
             List<Change> changes = _changeCatalog.GetChangesForFile( CurrentFile );
-            SetTasksFromChanges( changes );
+            SetTasksFromChanges( changes, CurrentFile );
         }
 
         public void RefreshSourceCatalog( SourceFileCatalog catalog )
@@ -84,16 +84,16 @@ namespace swept
             _fileCatalog = catalog;
         }
 
-        private void SetTasksFromChanges( List<Change> changes )
+        private void SetTasksFromChanges( List<Change> changes, SourceFile sourceFile )
         {
             Tasks.Clear();
 
             foreach( Change change in changes )
             {
-                List<Task> entries = Task.FromChange( change );
-                foreach (var entry in entries)
+                change.DoesMatch( sourceFile );
+                foreach (var task in Task.FromIssueSet( change.GetFileIssueSet( sourceFile ) ))
                 {
-                    Tasks.Add(entry);
+                    Tasks.Add(task);
                 }
             }
 
@@ -104,6 +104,7 @@ namespace swept
         {
             Raise_TaskLocationSought( task );
         }
+
         #region Raise events
 
         public event EventHandler<EventArgs> Event_TaskWindowToggled;
@@ -168,7 +169,6 @@ namespace swept
             SendViewToTaskLocation( args.Task );
         }
         #endregion
-
 
     }
 }
