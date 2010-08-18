@@ -22,7 +22,18 @@ namespace swept
         Line,
     }
 
-    public class Clause
+    public class ScopedMatches
+    {
+        public virtual ClauseMatchScope MatchScope { get; set; }
+        protected internal List<int> _matchList;
+        public virtual List<int> Matches 
+        {
+            get { return _matchList; } 
+        }
+    }
+
+
+    public class Clause : ScopedMatches
     {
         public string ID                { get; internal set; }
         public string Description       { get; internal set; }
@@ -51,7 +62,7 @@ namespace swept
             return new IssueSet( this, file, MatchScope, GetMatchList() );
         }
 
-        public ClauseMatchScope MatchScope
+        public virtual ClauseMatchScope MatchScope
         {
             get
             {
@@ -61,12 +72,14 @@ namespace swept
 
                 return ClauseMatchScope.File;
             }
+            set
+            {
+                throw new Exception( "Clause match scope cannot be set directly, it is a result of the clause's criteria." );
+            }
         }
 
 
         public bool FirstChild { get; set; }
-
-        internal List<int> _matchList;
 
         public List<int> identifyMatchLineNumbers( SourceFile file, string pattern )
         {
@@ -165,15 +178,17 @@ namespace swept
                 }
             }
 
-            //  roll child changes appropriately up to the parent
-            if (ContentPattern != String.Empty)
-            {
-                _matchList = _matchList.Intersect( workingMatches ).ToList();
-            }
-            else
-            {
-                _matchList = workingMatches;
-            }
+            _matchList = workingMatches;
+            
+            ////  roll child changes appropriately up to the parent
+            //if (ContentPattern != String.Empty)
+            //{
+            //    _matchList = _matchList.Intersect( workingMatches ).ToList();
+            //}
+            //else
+            //{
+            //    _matchList = workingMatches;
+            //}
 
             return didMatch;
         }

@@ -174,26 +174,6 @@ cxxxxxxxxx
         //    Assert.That( parent._matchList[1], Is.EqualTo( 4 ) );
         //}
 
-        [Test]
-        public void sibling_with_And_operator_will_intersect_matches()
-        {
-            SourceFile file = new SourceFile( "bs.cs" );
-            file.Content = _multiLineFile;
-
-            Clause child = new Clause();
-            Clause and_sibling = new Clause { Operator = ClauseOperator.And };
-            Clause parent = new Clause { ContentPattern = "xx" };
-            parent.Children.Add( child );
-            parent.Children.Add( and_sibling );
-
-            child.ContentPattern = "b";
-            and_sibling.ContentPattern = "a";
-            parent.DoesMatch( file );
-
-            Assert.That( parent._matchList.Count, Is.EqualTo( 1 ) );
-            Assert.That( parent._matchList[0], Is.EqualTo( 3 ) );
-        }
-
         // TODO: goal
         //[Test]
         //public void Clause_sibling_with_And_operator_will_intersect_matches()
