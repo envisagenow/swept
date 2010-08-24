@@ -39,7 +39,6 @@ namespace swept.Tests
 
             Assert.That( set, Is.Not.Null );
             Assert.That( set.Scope, Is.EqualTo( MatchScope.File ) );
-            Assert.That( set.DoesMatch );
 
             Assert.That( set.Matches, Has.Count.EqualTo( 1 ) );
             Assert.That( set.Matches[0], Is.EqualTo( 1 ) );
@@ -55,7 +54,6 @@ namespace swept.Tests
             SourceFile file = new SourceFile( "foo.html" );
             set = isCSharp.GetIssueSet( file );
 
-            Assert.That( set.DoesMatch, Is.False );
             Assert.That( set.Matches, Has.Count.EqualTo( 0 ) );
         }
 

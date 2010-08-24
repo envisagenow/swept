@@ -2,6 +2,7 @@
 //  Copyright (c) 2010 Jason Cole and Envisage Technologies Corp.
 //  This software is open source, MIT license.  See the file LICENSE for details.
 using System;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Collections.Generic;
 
@@ -60,6 +61,87 @@ namespace swept
         // TODO: eliminate this wart.
         public bool FirstChild { get; set; }
 
+        internal int lineNumberOfMatch( int matchIndex, List<int> lineIndices )
+        {
+            int currentLineNumber = 1;
+            foreach (int lineIndex in lineIndices)
+            {
+                if (matchIndex > lineIndex)
+                {
+                    currentLineNumber++;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            return currentLineNumber;
+        }
+
+        public IssueSet GetIssueSet( SourceFile file )
+        {
+            return new IssueSet( this, file, Scope, GetMatchList( file ) );
+        }
+
+        private List<int> FilterOnLanguage( SourceFile file, List<int> returnList )
+        {
+            if (returnList.Any() && Language != FileLanguage.None)
+            {
+                if (Language != file.Language)
+                    return new List<int>();
+            }
+            return returnList;
+        }
+
+        public List<int> GetMatchList( SourceFile file )
+        {
+            var returnList = new List<int> { 1 };
+
+            returnList = FilterOnLanguage( file, returnList );
+
+            if (returnList.Any() && !(string.IsNullOrEmpty( NamePattern )))
+            {
+                if (!Regex.IsMatch( file.Name, NamePattern, RegexOptions.IgnoreCase ))
+                    returnList.Clear();
+            }
+
+            if (returnList.Any() && !string.IsNullOrEmpty( ContentPattern ))
+            {
+                returnList = identifyMatchList( file, ContentPattern );
+            }
+
+            if (returnList.Any() && Children.Any())
+            {
+                List<int> childMatches = GetChildMatches( file );
+                
+                if (Operator == ClauseOperator.And)
+                    returnList = returnList.Intersect( childMatches).ToList();
+                else if (Operator == ClauseOperator.Or)
+                    returnList = returnList.Union( childMatches).ToList();
+            }
+
+            if (Operator == ClauseOperator.Not)
+            {
+                if (returnList.Any())
+                {
+                    returnList.Clear();
+                }
+                else
+                {
+                    returnList.Add( 1 );
+                }
+            }
+
+            return returnList;
+        }
+
+        internal bool MatchesContent( SourceFile file )
+        {
+            var matches = identifyMatchLineNumbers( file, ContentPattern );
+            return matches.Matches.Count > 0;
+        }
+
         public ScopedMatches identifyMatchLineNumbers( SourceFile file, string pattern )
         {
             var matchList = new List<int>();
@@ -79,80 +161,60 @@ namespace swept
             return new ScopedMatches( MatchScope.Line, matchList );
         }
 
-        internal int lineNumberOfMatch( int matchIndex, List<int> lineIndices )
+        public List<int> identifyMatchList( SourceFile file, string pattern )
         {
-            int currentLineNumber = 1;
-            foreach (int lineIndex in lineIndices)
+            var matchList = new List<int>();
+            if (string.IsNullOrEmpty( pattern ))
+                return new List<int>();
+
+            // TODO: Add attribute to allow case sensitive matching
+            Regex rx = new Regex( pattern, RegexOptions.IgnoreCase );
+            MatchCollection matches = rx.Matches( file.Content );
+
+            foreach (Match match in matches)
             {
-                if (matchIndex > lineIndex)
-                {
-                    currentLineNumber++;
-                }
-                else
-                {
-                    break;
-                }
+                int line = lineNumberOfMatch( match.Index, file.LineIndices );
+                matchList.Add( line );
             }
 
-            return currentLineNumber;
+            return matchList;
         }
 
-        //public virtual bool DoesMatch( SourceFile file )
-        //{
-        //    //  breakpoint for tracing how a change matches a file.
-        //    bool didMatch = true;
-        //    didMatch = didMatch && Language == FileLanguage.None || Language == file.Language;
-        //    didMatch = didMatch && Regex.IsMatch( file.Name, NamePattern, RegexOptions.IgnoreCase );
 
-        //    if (Scope == MatchScope.Line)
-        //    {
-        //        if (ContentPattern != string.Empty)
-        //            didMatch = didMatch && MatchesContent( file );
-        //    }
-
-        //    didMatch = didMatch && MatchesChildren( file );
-
-        //    if (Operator == ClauseOperator.Not) didMatch = !didMatch;
-
-        //    return didMatch;
-        //}
-
-
-        public IssueSet GetIssueSet( SourceFile file )
+        public virtual List<int> GetChildMatches( SourceFile file )
         {
-            return new IssueSet( this, file, Scope, GetMatchList( file ) );
-        }
+            List<int> workingMatches = new List<int>();
 
-        public List<int> GetMatchList( SourceFile file )
-        {
-            //  breakpoint for tracing how a change matches a file.
-            bool didMatch = true;
-            didMatch = didMatch && Language == FileLanguage.None || Language == file.Language;
-            didMatch = didMatch && Regex.IsMatch( file.Name, NamePattern, RegexOptions.IgnoreCase );
-
-            if (Scope == MatchScope.Line)
+            bool first = true;
+            foreach (Clause child in Children)
             {
-                if (ContentPattern != string.Empty)
-                    didMatch = didMatch && MatchesContent( file );
+                var childMatches = child.GetMatchList( file );
+
+                if (first)
+                {
+                    workingMatches = childMatches;
+                }
+                else if (child.Operator == ClauseOperator.Or)
+                {
+                    workingMatches = workingMatches.Union( childMatches ).ToList();
+                }
+                else if (child.Operator == ClauseOperator.And)
+                {
+                    workingMatches = workingMatches.Intersect( childMatches ).ToList();
+                }
+                //else if (child.Operator == ClauseOperator.Not)
+                //{
+                //    foreach (int match in childMatches)
+                //    {
+                //        if (workingMatches.Contains( match ))
+                //            workingMatches.Remove( match );
+                //    }
+                //}
+
+                first = false;
             }
 
-            didMatch = didMatch && MatchesChildren( file );
-
-            if (Operator == ClauseOperator.Not) didMatch = !didMatch;
-
-            return GetMatchList();
-        }
-
-        // TODO: fix
-        public List<int> GetMatchList()
-        {
-            return new List<int>();
-        }
-
-        internal bool MatchesContent( SourceFile file )
-        {
-            var matches = identifyMatchLineNumbers( file, ContentPattern );
-            return matches.Matches.Count > 0;
+            return workingMatches;
         }
 
         public virtual bool MatchesChildren( SourceFile file )
@@ -182,7 +244,7 @@ namespace swept
             //}
 
             //_matches = workingMatches;
-            
+
             ////  roll child changes appropriately up to the parent
             //if (ContentPattern != String.Empty)
             //{

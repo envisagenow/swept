@@ -2,6 +2,7 @@
 //  Copyright (c) 2010 Jason Cole and Envisage Technologies Corp.
 //  This software is open source, MIT license.  See the file LICENSE for details.
 using System;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace swept
@@ -34,14 +35,15 @@ namespace swept
 
                     foreach (var change in _changes)
                     {
-                        if (change.DoesMatch( sourceFile ))
+                        if (change.GetMatchList( sourceFile ).Any())
                         {
                             if (!result.ContainsKey( change ))
                             {
                                 result.Add( change, new List<IssueSet>() );
                             }
                             var reportFile = new SourceFile( sourceFile.Name );
-                            reportFile.TaskCount = change.GetMatchList().Count;
+                            // TODO: fix the tests that this breaks.  Eliminate SourceFile.TaskCount.
+                            //reportFile.TaskCount = change.GetMatchList().Count;
                             IssueSet issueSet = change.GetIssueSet( reportFile );
                             result[change].Add( issueSet );
                         }
