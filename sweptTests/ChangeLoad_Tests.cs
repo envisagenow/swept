@@ -32,14 +32,14 @@ namespace swept.Tests
         private void prep_left()
         {
             _leftLines = new List<int> { 1, 2 };
-            _leftIssues = new IssueSet( freshIndents, fooFile, ClauseMatchScope.Line, _leftLines );
+            _leftIssues = new IssueSet( freshIndents, fooFile, MatchScope.Line, _leftLines );
             _left.IssueSets.Add( fooFile, _leftIssues );
         }
 
         private void prep_right()
         {
             _rightLines = new List<int> { 1, 3 };
-            _rightIssues = new IssueSet( freshIndents, fooFile, ClauseMatchScope.Line, _rightLines );
+            _rightIssues = new IssueSet( freshIndents, fooFile, MatchScope.Line, _rightLines );
             _right.IssueSets.Add( fooFile, _rightIssues );
         }
 
@@ -87,7 +87,7 @@ namespace swept.Tests
             Assert.That( outcome.IssueSets, Has.Count.EqualTo( 1 ) );
 
             IssueSet fooIssues = outcome.IssueSets[fooFile];
-            var fooLines = fooIssues.MatchLineNumbers;
+            var fooLines = fooIssues.Matches;
             Assert.That( fooLines, Has.Count.EqualTo( 3 ) );
         }
         #endregion
@@ -132,7 +132,7 @@ namespace swept.Tests
             Assert.That( outcome.IssueSets, Has.Count.EqualTo( 1 ) );
 
             IssueSet fooIssues = outcome.IssueSets[fooFile];
-            var fooLines = fooIssues.MatchLineNumbers;
+            var fooLines = fooIssues.Matches;
             Assert.That( fooLines, Has.Count.EqualTo( 1 ) );
             Assert.That( fooLines[0], Is.EqualTo( 1 ) );
         }
@@ -168,14 +168,14 @@ namespace swept.Tests
             Assert.That( resultIssues.Clause, Is.SameAs( checkIssues.Clause ) );
             Assert.That( resultIssues.SourceFile, Is.SameAs( checkIssues.SourceFile ) );
 
-            foreach (int line in resultIssues.MatchLineNumbers)
+            foreach (int line in resultIssues.Matches)
             {
-                Assert.That( checkIssues.MatchLineNumbers.Contains( line ) );
+                Assert.That( checkIssues.Matches.Contains( line ) );
             }
 
-            foreach (int line in checkIssues.MatchLineNumbers)
+            foreach (int line in checkIssues.Matches)
             {
-                Assert.That( resultIssues.MatchLineNumbers.Contains( line ) );
+                Assert.That( resultIssues.Matches.Contains( line ) );
             }
         }
 
@@ -200,7 +200,7 @@ namespace swept.Tests
             Assert.That( outcome.IssueSets, Has.Count.EqualTo( 1 ) );
 
             IssueSet fooIssues = outcome.IssueSets[fooFile];
-            var fooLines = fooIssues.MatchLineNumbers;
+            var fooLines = fooIssues.Matches;
             Assert.That( fooLines, Has.Count.EqualTo( 1 ) );
             Assert.That( fooLines[0], Is.EqualTo( 2 ) );
         }

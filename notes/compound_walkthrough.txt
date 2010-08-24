@@ -1,6 +1,6 @@
 ===  Basic Operations and conjunctions
 
----  basic 'And' is intersection, 'Intersect'
+---  basic 'And' is intersection, 'Take'
 
 whole file set:  (foo.cs, bar.cs, baz.cs)
 when /a/
@@ -17,7 +17,7 @@ and  /b/  (foo.cs, bar.cs)
     sets progress to intersection of progess and result of match /b/ (bar.cs:10)
 
 
----  basic 'Or' is union, 'Add'
+---  basic 'Or' is union, 'Plus'
 
 whole file set:  (foo.cs, bar.cs, baz.cs)
 when /a/
@@ -34,7 +34,7 @@ or   /b/  (foo.cs, bar.cs)
     sets progress to union of progess and result of match /b/ (foo.cs:23;25,144, bar.cs:22)
 
 
----  basic 'AndNot' is subtraction, 'Subtract'
+---  basic 'AndNot' is subtraction, 'Minus'
 
 whole file set:  (foo.cs, bar.cs, baz.cs)
 when   /a/
@@ -57,12 +57,13 @@ andnot /b/  (foo.cs, bar.cs)
 
 ===  Scoping
 
----  Basics of scoping
+---  Match scoping
 
-    Language and FilePattern criteria are scoped to the file.  The file does or does not match as a whole.
+    Language and FilePattern criteria match the file.  The file does or does not match as a whole.
     ContentPattern criteria are scoped to each line they match on.  A ContentPattern might match five times in one file.
 
-    If necessary, a ContentPattern can be overridden to be file scoped, by adding Scope="file" to the ContentPattern element.  This is useful for cases where one mention of a piece of code means that the entire file needs rewriting, or where one mention of a piece of code means that a possible problem indicated by other matches has been entirely fixed.
+    [Future, from July 2010] If necessary, a ContentPattern can be overridden to be file scoped, by adding Scope="file" to the ContentPattern element.  This is useful for cases where one mention of a piece of code means that the entire file needs rewriting, or where one mention of a piece of code means that a possible problem indicated by other matches has been entirely fixed.
 
 ---  nesting
 
+    The notions of what a filter acts on, 'whole file set' and 'progress', are

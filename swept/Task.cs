@@ -10,12 +10,12 @@ namespace swept
     {
         public int LineNumber { get; private set; }
 
-        [Obsolete("Generate Tasks from an IssueSet instead")]
+        [Obsolete("Generate Tasks from an IssueSet instead.  Broken to ease refactoring.")]
         public static List<Task> FromChange( Change change )
         {
             List<Task> tasks = new List<Task>();
             //generate list of one task per spot
-            foreach (int line in change._matchList)
+            foreach (int line in /*change._matches*/ new List<int>())
             {
                 Task task = new Task
                 {
@@ -43,7 +43,7 @@ namespace swept
             if (set.Clause != null && !string.IsNullOrEmpty( set.Clause.Description ))
                 description = set.Clause.Description;
 
-            foreach (int line in set.MatchLineNumbers)
+            foreach (int line in set.Matches)
             {
                 tasks.Add( new Task
                 {

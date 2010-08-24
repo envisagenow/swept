@@ -28,7 +28,9 @@ namespace swept
                 if (union.IssueSets.ContainsKey( issueSet.SourceFile ))
                 {
                     //unify line numbers
-                    union.IssueSets[issueSet.SourceFile].UniteLines( issueSet.MatchLineNumbers );
+                    //union.IssueSets[issueSet.SourceFile].UniteLines( issueSet.Matches );
+#warning ChangeLoad union punted
+                    //union.IssueSets[issueSet.SourceFile] = union.IssueSets[issueSet.SourceFile].Union( issueSet );
                 }
                 else
                     union.IssueSets.Add( issueSet.SourceFile, issueSet );
@@ -47,8 +49,9 @@ namespace swept
                 {
                     var matchingSet = other.IssueSets[issueSet.SourceFile];
                     IssueSet intersectingSet = new IssueSet( issueSet );
-                    intersectingSet.IntersectLines( matchingSet.MatchLineNumbers );
-                    if (intersectingSet.MatchLineNumbers.Any())
+#warning ChangeLoad intersection punted
+                    //intersectingSet.IntersectLines( matchingSet.Matches );
+                    if (intersectingSet.Matches.Any())
                     {
                         intersection.IssueSets.Add( issueSet.SourceFile, intersectingSet );
                     }
@@ -68,9 +71,10 @@ namespace swept
                 if (other.IssueSets.ContainsKey( issueSet.SourceFile ))
                 {
                     var matchingSet = other.IssueSets[issueSet.SourceFile];
-                    subtractingSet.SubtractLines( matchingSet.MatchLineNumbers );
+#warning ChangeLoad subtraction punted
+                    //subtractingSet.SubtractLines( matchingSet.Matches );
                 }
-                if (subtractingSet.MatchLineNumbers.Any())
+                if (subtractingSet.Matches.Any())
                 {
                     subtraction.IssueSets.Add( issueSet.SourceFile, subtractingSet );
                 }

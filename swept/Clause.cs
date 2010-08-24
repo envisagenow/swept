@@ -1,11 +1,9 @@
 ﻿//  Swept:  Software Enhancement Progress Tracking.
 //  Copyright (c) 2010 Jason Cole and Envisage Technologies Corp.
 //  This software is open source, MIT license.  See the file LICENSE for details.
-using System.Text;
 using System;
 using System.Text.RegularExpressions;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace swept
 {
@@ -16,24 +14,13 @@ namespace swept
         Or,
     }
 
-    public enum ClauseMatchScope
+    public enum MatchScope
     {
         File,
         Line,
     }
 
-    public class ScopedMatches
-    {
-        public virtual ClauseMatchScope MatchScope { get; set; }
-        protected internal List<int> _matchList;
-        public virtual List<int> Matches 
-        {
-            get { return _matchList; } 
-        }
-    }
-
-
-    public class Clause : ScopedMatches
+    public class Clause
     {
         public string ID                { get; internal set; }
         public string Description       { get; internal set; }
@@ -44,6 +31,10 @@ namespace swept
         public string ContentPattern    { get; internal set; }
         public List<Clause> Children    { get; set; }
 
+        // TODO: eliminate
+        public List<int> _matches = new List<int>();
+
+
         public Clause()
         {
             ID = string.Empty;
@@ -52,40 +43,28 @@ namespace swept
             ContentPattern = string.Empty;
             Children = new List<Clause>();
             Operator = ClauseOperator.And;
-            _matchList = new List<int>();
         }
 
-        public IssueSet GetIssueSet( SourceFile file )
-        {
-            // TODO: smooth this out.
-            bool doesMatch = DoesMatch( file );
-            return new IssueSet( this, file, MatchScope, GetMatchList() );
-        }
-
-        public virtual ClauseMatchScope MatchScope
+        public virtual MatchScope Scope
         {
             get
             {
-                if (ForceFileScope) return ClauseMatchScope.File;
+                if (ForceFileScope) return MatchScope.File;
 
-                if (ContentPattern != string.Empty) return ClauseMatchScope.Line;
+                if (ContentPattern != string.Empty) return MatchScope.Line;
 
-                return ClauseMatchScope.File;
-            }
-            set
-            {
-                throw new Exception( "Clause match scope cannot be set directly, it is a result of the clause's criteria." );
+                return MatchScope.File;
             }
         }
 
-
+        // TODO: eliminate this wart.
         public bool FirstChild { get; set; }
 
-        public List<int> identifyMatchLineNumbers( SourceFile file, string pattern )
+        public ScopedMatches identifyMatchLineNumbers( SourceFile file, string pattern )
         {
             var matchList = new List<int>();
             if (string.IsNullOrEmpty( pattern ))
-                return matchList;
+                return new ScopedMatches( MatchScope.Line, new List<int>() );
 
             // TODO: Add attribute to allow case sensitive matching
             Regex rx = new Regex( pattern, RegexOptions.IgnoreCase );
@@ -97,12 +76,7 @@ namespace swept
                 matchList.Add( line );
             }
 
-            return matchList;
-        } 
-
-        public List<int> GetMatchList()
-        {
-            return _matchList;
+            return new ScopedMatches( MatchScope.Line, matchList );
         }
 
         internal int lineNumberOfMatch( int matchIndex, List<int> lineIndices )
@@ -123,14 +97,40 @@ namespace swept
             return currentLineNumber;
         }
 
-        public virtual bool DoesMatch( SourceFile file )
+        //public virtual bool DoesMatch( SourceFile file )
+        //{
+        //    //  breakpoint for tracing how a change matches a file.
+        //    bool didMatch = true;
+        //    didMatch = didMatch && Language == FileLanguage.None || Language == file.Language;
+        //    didMatch = didMatch && Regex.IsMatch( file.Name, NamePattern, RegexOptions.IgnoreCase );
+
+        //    if (Scope == MatchScope.Line)
+        //    {
+        //        if (ContentPattern != string.Empty)
+        //            didMatch = didMatch && MatchesContent( file );
+        //    }
+
+        //    didMatch = didMatch && MatchesChildren( file );
+
+        //    if (Operator == ClauseOperator.Not) didMatch = !didMatch;
+
+        //    return didMatch;
+        //}
+
+
+        public IssueSet GetIssueSet( SourceFile file )
+        {
+            return new IssueSet( this, file, Scope, GetMatchList( file ) );
+        }
+
+        public List<int> GetMatchList( SourceFile file )
         {
             //  breakpoint for tracing how a change matches a file.
             bool didMatch = true;
             didMatch = didMatch && Language == FileLanguage.None || Language == file.Language;
             didMatch = didMatch && Regex.IsMatch( file.Name, NamePattern, RegexOptions.IgnoreCase );
 
-            if (MatchScope == ClauseMatchScope.Line)
+            if (Scope == MatchScope.Line)
             {
                 if (ContentPattern != string.Empty)
                     didMatch = didMatch && MatchesContent( file );
@@ -140,17 +140,19 @@ namespace swept
 
             if (Operator == ClauseOperator.Not) didMatch = !didMatch;
 
-            if (didMatch && MatchScope == ClauseMatchScope.File)
-                _matchList = new List<int> { 1 };
+            return GetMatchList();
+        }
 
-            _matchList.Sort();
-            return didMatch;
+        // TODO: fix
+        public List<int> GetMatchList()
+        {
+            return new List<int>();
         }
 
         internal bool MatchesContent( SourceFile file )
         {
-            _matchList = identifyMatchLineNumbers( file, ContentPattern );
-            return _matchList.Count > 0;
+            var matches = identifyMatchLineNumbers( file, ContentPattern );
+            return matches.Matches.Count > 0;
         }
 
         public virtual bool MatchesChildren( SourceFile file )
@@ -159,26 +161,27 @@ namespace swept
                 return true;
 
             bool didMatch = true;
-            List<int> workingMatches = null;
-            foreach (Clause child in Children)
-            {
-                bool childMatched = child.DoesMatch( file );
-                if (workingMatches == null)
-                    workingMatches = child._matchList.ToList();
+            //List<int> workingMatches = null;
 
-                if (child.Operator == ClauseOperator.Or)
-                {
-                    didMatch = didMatch || childMatched;
-                    workingMatches = workingMatches.Union( child._matchList ).ToList();
-                }
-                else
-                {
-                    didMatch = didMatch && childMatched;
-                    workingMatches = workingMatches.Intersect( child._matchList ).ToList();
-                }
-            }
+            //foreach (Clause child in Children)
+            //{
+            //    bool childMatched = child.DoesMatch( file );
+            //    if (workingMatches == null)
+            //        workingMatches = child._matches.ToList();
 
-            _matchList = workingMatches;
+            //    if (child.Operator == ClauseOperator.Or)
+            //    {
+            //        didMatch = didMatch || childMatched;
+            //        workingMatches = workingMatches.Union( child._matches ).ToList();
+            //    }
+            //    else
+            //    {
+            //        didMatch = didMatch && childMatched;
+            //        workingMatches = workingMatches.Intersect( child._matches ).ToList();
+            //    }
+            //}
+
+            //_matches = workingMatches;
             
             ////  roll child changes appropriately up to the parent
             //if (ContentPattern != String.Empty)

@@ -35,7 +35,7 @@ cxxxxxxxxx
             SourceFile file = new SourceFile( "foo.cs" );
 
             file.Content = _multiLineFile;
-            List<int> matches = filter.identifyMatchLineNumbers( file, "b" );
+            List<int> matches = filter.identifyMatchLineNumbers( file, "b" ).Matches;
 
             Assert.That( matches.Count, Is.EqualTo( number_of_Bs ) );
             Assert.That( matches[0], Is.EqualTo( 3 ) );
@@ -58,8 +58,8 @@ cxxxxxxxxx
             SourceFile file = new SourceFile( "foo.cs" ) { Content = "using Foo;" };
             filter.ContentPattern = "Foo";
             Assert.That( filter.MatchesContent( file ) );
-            Assert.That( filter._matchList.Count, Is.EqualTo( 1 ) );
-            Assert.That( filter._matchList[0], Is.EqualTo( 1 ) );
+            //Assert.That( filter._matches.Count, Is.EqualTo( 1 ) );
+            //Assert.That( filter._matches[0], Is.EqualTo( 1 ) );
         }
 
         [Test]
@@ -68,7 +68,7 @@ cxxxxxxxxx
             SourceFile file = new SourceFile( "foo.cs" ) { Content = "using Foo;" };
             filter.ContentPattern = "Bar";
             Assert.That( filter.MatchesContent( file ), Is.False );
-            Assert.That( filter._matchList.Count, Is.EqualTo( 0 ) );
+            //Assert.That( filter._matches.Count, Is.EqualTo( 0 ) );
         }
 
 
@@ -211,10 +211,10 @@ cxxxxxxxxx
             or_sibling.ContentPattern = "a";
             parent.DoesMatch( file );
 
-            Assert.That( parent._matchList.Count, Is.EqualTo( 3 ) );
-            Assert.That( parent._matchList[0], Is.EqualTo( 2 ) );
-            Assert.That( parent._matchList[1], Is.EqualTo( 3 ) );
-            Assert.That( parent._matchList[2], Is.EqualTo( 4 ) );
+            Assert.That( parent._matches.Count, Is.EqualTo( 3 ) );
+            Assert.That( parent._matches[0], Is.EqualTo( 2 ) );
+            Assert.That( parent._matches[1], Is.EqualTo( 3 ) );
+            Assert.That( parent._matches[2], Is.EqualTo( 4 ) );
         }
         
         #endregion

@@ -2,7 +2,9 @@ Filtering growth, part two:  Compound filters
 
 More filtering
   When I finished with the first part of improving the filtering, I was able to create some useful changes for Swept to find in our main work product, but some possibilities I saw weren't practical until there was more power in the filtering.
-  There are perceptions that are extremely clear when you face the actual problem directly in your hands that aren't foreseen, considering the problem at a distance.  In my case, it was an entirely natural repercussion of one of the driving forces behind Swept in the first place:  Projects get so large that we need the leverage of automation.  When I faced a change that would show up on 300 files more than actually had the problem, and I considered all the practice that would give me at thinking of Swept as an annoyance to ignore, I knew we had to take further steps immediately.
+
+  There are perceptions that are extremely clear when you face the actual problem directly in your hands that aren't foreseen, considering the problem at a distance.  In my case, it was an entirely natural repercussion of one of the driving forces behind Swept in the first place:  Projects get so large that we need the leverage of automation.
+  I added an enhancement to our project's Swept library, started coding, and realize that this issue would show up on at least 300 files more than actually had the problem.  I imagined all the practice that would give me at thinking of Swept as an annoyance to ignore, and knew the code couldn't pause there.  We had to take further steps immediately.
   
 
 

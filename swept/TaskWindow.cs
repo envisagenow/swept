@@ -90,7 +90,6 @@ namespace swept
 
             foreach( Change change in changes )
             {
-                change.DoesMatch( sourceFile );
                 foreach (var task in Task.FromIssueSet( change.GetIssueSet( sourceFile ) ))
                 {
                     Tasks.Add(task);

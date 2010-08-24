@@ -2,6 +2,7 @@
 //  Copyright (c) 2010 Jason Cole and Envisage Technologies Corp.
 //  This software is open source, MIT license.  See the file LICENSE for details.
 using System;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace swept
@@ -51,7 +52,7 @@ namespace swept
 
         public List<Change> GetChangesForFile( SourceFile file )
         {
-            return _changes.FindAll( change => change.DoesMatch( file ) );
+            return _changes.FindAll( change => change.GetMatchList( file ).Any() );
         }
 
         public void Add( Change change )
