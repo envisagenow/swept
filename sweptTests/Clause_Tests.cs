@@ -81,7 +81,7 @@ cxxxxxxxxx
 
             child.ContentPattern = "b";
             and_sibling.ContentPattern = "a";
-            var matches = parent.GetMatchList( file );
+            var matches = parent.GetMatches( file );
 
             Assert.That( matches.Count, Is.EqualTo( 1 ) );
             Assert.That( matches[0], Is.EqualTo( 3 ) );
@@ -96,28 +96,44 @@ cxxxxxxxxx
             Clause parent = new Clause();
             parent.Children.Add( child );
 
-            Assert.That( parent.MatchesChildren( file ) );
+            var childMatches = parent.GetChildMatches( file );
+            Assert.That( childMatches.Any() );
+            Assert.That( childMatches.Count, Is.EqualTo( 2 ) );
 
-            Assert.That( child._matches.Count, Is.EqualTo( 2 ) );
-            Assert.That( parent._matches.Count, Is.EqualTo( 2 ) );
-            Assert.That( parent._matches[0], Is.EqualTo( 3 ) );
+            var parentMatches = parent.GetMatches( file );
+            Assert.That( parentMatches.Count, Is.EqualTo( 2 ) );
+            Assert.That( parentMatches[0], Is.EqualTo( 3 ) );
         }
 
         [Test]
         public void FileScoped_child_will_create_file_scoped_result_in_parent()
         {
             SourceFile file = new SourceFile( "bs_foo.cs" );
+
+            Clause child = new Clause { NamePattern = "foo" };
+            Clause parent = new Clause();
+            parent.Children.Add( child );
+
+            var childMatches = parent.GetChildMatches( file );
+            Assert.That( childMatches.Any() );
+
+            var parentMatches = parent.GetMatches( file );
+            Assert.That( parentMatches.Count, Is.EqualTo( 1 ) );
+            Assert.That( parentMatches[0], Is.EqualTo( 1 ) );
+            Assert.That( parent.Scope, Is.EqualTo( MatchScope.File ) );
+        }
+
+        [Test]
+        public void Forcing_File_Scope_sets_match_list_to_1()
+        {
+            SourceFile file = new SourceFile( "bs_foo.cs" );
             file.Content = _multiLineFile;
 
             Clause child = new Clause { ContentPattern = "b", ForceFileScope=true };
-            Clause parent = new Clause();
-            parent.Children.Add( child );
-    
-            Assert.That( parent.MatchesChildren( file ) );
 
-            Assert.That( parent._matches.Count, Is.EqualTo( 1 ) );
-            Assert.That( parent._matches[0], Is.EqualTo( 1 ) );
-            Assert.That( parent.Scope, Is.EqualTo( MatchScope.File ) );
+            var matches = child.GetMatches( file );
+            Assert.That( matches.Count, Is.EqualTo( 1 ) );
+            Assert.That( matches[0], Is.EqualTo( 1 ) );
         }
 
         [Test]
@@ -132,39 +148,15 @@ cxxxxxxxxx
             parent.Children.Add( child );
             parent.Children.Add( sibling );
 
-            Assert.That( parent.MatchesChildren( file ) );
+            var childMatches = parent.GetChildMatches( file );
+            Assert.That( childMatches.Any() );
 
-            Assert.That( sibling._matches.Count, Is.EqualTo( 1 ) );
-            Assert.That( parent._matches.Count, Is.EqualTo( 1 ) );
-            Assert.That( parent._matches[0], Is.EqualTo( 1 ) );
+            var parentMatches = parent.GetMatches( file );
+            Assert.That( parentMatches.Count, Is.EqualTo( 1 ) );
+            Assert.That( parentMatches[0], Is.EqualTo( 1 ) );
             Assert.That( parent.Scope, Is.EqualTo( MatchScope.File ) );
         }
 
-        private class ClauseHarness : Clause
-        {
-            private MatchScope _matchScope = MatchScope.File;
-
-            public override MatchScope Scope { get { return _matchScope; } }
-
-            public ClauseHarness( MatchScope matchScope )
-            {
-                _matchScope = matchScope;
-            }
-        }
-
-        [Test]
-        public void FileScoped_match_returned_when_intersected_with_nonmatching_LineScope_matches()
-        {
-            ClauseHarness fileScopedClause = new ClauseHarness(MatchScope.File){_matches = new List<int>() { 1 }};
-            ClauseHarness lineScopedClause = new ClauseHarness(MatchScope.Line){_matches = new List<int>() { 3,4 }};
-
-//            fileScopedClause.Intersect( lineScopedClause );
-
-//            Assert.That( fileScopedClause.MatchScope, Is.EqualTo() );
-//            Assert.That( fileScopedClause._matchList, Is.EqualTo() );
-
-        }
     }
-
 
 }

@@ -23,35 +23,22 @@ namespace swept
 
         public Dictionary<Change, List<IssueSet>> GetIssuesPerChange()
         {
-            List<string> troublemakers = new List<string>();
-
             var result = new Dictionary<Change, List<IssueSet>>();
 
             foreach (string fileName in _files)
             {
-                try
-                {
-                    var sourceFile = _storageAdapter.LoadFile( fileName );
+                var sourceFile = _storageAdapter.LoadFile( fileName );
 
-                    foreach (var change in _changes)
-                    {
-                        if (change.GetMatchList( sourceFile ).Any())
-                        {
-                            if (!result.ContainsKey( change ))
-                            {
-                                result.Add( change, new List<IssueSet>() );
-                            }
-                            var reportFile = new SourceFile( sourceFile.Name );
-                            // TODO: fix the tests that this breaks.  Eliminate SourceFile.TaskCount.
-                            //reportFile.TaskCount = change.GetMatchList().Count;
-                            IssueSet issueSet = change.GetIssueSet( reportFile );
-                            result[change].Add( issueSet );
-                        }
-                    }
-                }
-                catch
+                foreach (var change in _changes)
                 {
-                    troublemakers.Add( fileName );
+                    IssueSet set = change.GetIssueSet( sourceFile );
+                    if (set.Matches.Any())
+                    {
+                        if (!result.ContainsKey( change ))
+                            result.Add( change, new List<IssueSet>() );
+
+                        result[change].Add( set );
+                    }
                 }
             }
 

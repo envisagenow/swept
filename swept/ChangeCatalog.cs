@@ -52,7 +52,7 @@ namespace swept
 
         public List<Change> GetChangesForFile( SourceFile file )
         {
-            return _changes.FindAll( change => change.GetMatchList( file ).Any() );
+            return _changes.FindAll( change => change.GetMatches( file ).Any() );
         }
 
         public void Add( Change change )

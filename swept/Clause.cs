@@ -32,10 +32,6 @@ namespace swept
         public string ContentPattern    { get; internal set; }
         public List<Clause> Children    { get; set; }
 
-        // TODO: eliminate
-        public List<int> _matches = new List<int>();
-
-
         public Clause()
         {
             ID = string.Empty;
@@ -58,9 +54,6 @@ namespace swept
             }
         }
 
-        // TODO: eliminate this wart.
-        public bool FirstChild { get; set; }
-
         internal int lineNumberOfMatch( int matchIndex, List<int> lineIndices )
         {
             int currentLineNumber = 1;
@@ -81,84 +74,73 @@ namespace swept
 
         public IssueSet GetIssueSet( SourceFile file )
         {
-            return new IssueSet( this, file, Scope, GetMatchList( file ) );
+            return new IssueSet( this, file, Scope, GetMatches( file ) );
         }
 
-        private List<int> FilterOnLanguage( SourceFile file, List<int> returnList )
+        public List<int> GetMatches( SourceFile file )
         {
-            if (returnList.Any() && Language != FileLanguage.None)
-            {
-                if (Language != file.Language)
-                    return new List<int>();
-            }
-            return returnList;
-        }
+            var matches = new List<int> { 1 };
+            matches = MatchFileOnLanguage( matches, file, Language );
+            matches = MatchFileOnNamePattern( matches, file, NamePattern );
+            matches = MatchFileOnContentPattern( matches, file, ContentPattern );
 
-        public List<int> GetMatchList( SourceFile file )
-        {
-            var returnList = new List<int> { 1 };
-
-            returnList = FilterOnLanguage( file, returnList );
-
-            if (returnList.Any() && !(string.IsNullOrEmpty( NamePattern )))
-            {
-                if (!Regex.IsMatch( file.Name, NamePattern, RegexOptions.IgnoreCase ))
-                    returnList.Clear();
-            }
-
-            if (returnList.Any() && !string.IsNullOrEmpty( ContentPattern ))
-            {
-                returnList = identifyMatchList( file, ContentPattern );
-            }
-
-            if (returnList.Any() && Children.Any())
+            if (matches.Any() && Children.Any())
             {
                 List<int> childMatches = GetChildMatches( file );
-                
+
                 if (Operator == ClauseOperator.And)
-                    returnList = returnList.Intersect( childMatches).ToList();
+                    matches = matches.Intersect( childMatches ).ToList();
                 else if (Operator == ClauseOperator.Or)
-                    returnList = returnList.Union( childMatches).ToList();
+                    matches = matches.Union( childMatches ).ToList();
             }
 
+            if (ForceFileScope && matches.Any())
+                matches = new List<int> { 1 };
+
+            // TODO: determine if I ever use Not.  :D
             if (Operator == ClauseOperator.Not)
             {
-                if (returnList.Any())
+                if (matches.Any())
                 {
-                    returnList.Clear();
+                    matches.Clear();
                 }
                 else
                 {
-                    returnList.Add( 1 );
+                    matches.Add( 1 );
                 }
             }
 
-            return returnList;
+            return matches;
         }
 
-        internal bool MatchesContent( SourceFile file )
+        private List<int> MatchFileOnLanguage( List<int> matches, SourceFile file, FileLanguage language )
         {
-            var matches = identifyMatchLineNumbers( file, ContentPattern );
-            return matches.Matches.Count > 0;
+            if (!matches.Any() || language == FileLanguage.None)
+                return matches;
+
+            if (language == file.Language)
+                return matches;
+            else
+                return new List<int>();
         }
 
-        public ScopedMatches identifyMatchLineNumbers( SourceFile file, string pattern )
+        private List<int> MatchFileOnNamePattern( List<int> matches, SourceFile file, string namePattern )
         {
-            var matchList = new List<int>();
-            if (string.IsNullOrEmpty( pattern ))
-                return new ScopedMatches( MatchScope.Line, new List<int>() );
+            if (!matches.Any() || string.IsNullOrEmpty( namePattern ))
+                return matches;
 
-            // TODO: Add attribute to allow case sensitive matching
-            Regex rx = new Regex( pattern, RegexOptions.IgnoreCase );
-            MatchCollection matches = rx.Matches( file.Content );
+            if (Regex.IsMatch( file.Name, namePattern, RegexOptions.IgnoreCase ))
+                return matches;
+            else
+                return new List<int>();
+        }
 
-            foreach (Match match in matches)
-            {
-                int line = lineNumberOfMatch( match.Index, file.LineIndices );
-                matchList.Add( line );
-            }
+        private List<int> MatchFileOnContentPattern( List<int> matches, SourceFile file, string contentPattern )
+        {
+            if (!matches.Any() || string.IsNullOrEmpty( contentPattern ))
+                return matches;
 
-            return new ScopedMatches( MatchScope.Line, matchList );
+            return identifyMatchList( file, contentPattern ); ;
         }
 
         public List<int> identifyMatchList( SourceFile file, string pattern )
@@ -180,7 +162,6 @@ namespace swept
             return matchList;
         }
 
-
         public virtual List<int> GetChildMatches( SourceFile file )
         {
             List<int> workingMatches = new List<int>();
@@ -188,7 +169,7 @@ namespace swept
             bool first = true;
             foreach (Clause child in Children)
             {
-                var childMatches = child.GetMatchList( file );
+                var childMatches = child.GetMatches( file );
 
                 if (first)
                 {
@@ -202,78 +183,11 @@ namespace swept
                 {
                     workingMatches = workingMatches.Intersect( childMatches ).ToList();
                 }
-                //else if (child.Operator == ClauseOperator.Not)
-                //{
-                //    foreach (int match in childMatches)
-                //    {
-                //        if (workingMatches.Contains( match ))
-                //            workingMatches.Remove( match );
-                //    }
-                //}
 
                 first = false;
             }
 
             return workingMatches;
-        }
-
-        public virtual bool MatchesChildren( SourceFile file )
-        {
-            if (Children.Count == 0)
-                return true;
-
-            bool didMatch = true;
-            //List<int> workingMatches = null;
-
-            //foreach (Clause child in Children)
-            //{
-            //    bool childMatched = child.DoesMatch( file );
-            //    if (workingMatches == null)
-            //        workingMatches = child._matches.ToList();
-
-            //    if (child.Operator == ClauseOperator.Or)
-            //    {
-            //        didMatch = didMatch || childMatched;
-            //        workingMatches = workingMatches.Union( child._matches ).ToList();
-            //    }
-            //    else
-            //    {
-            //        didMatch = didMatch && childMatched;
-            //        workingMatches = workingMatches.Intersect( child._matches ).ToList();
-            //    }
-            //}
-
-            //_matches = workingMatches;
-
-            ////  roll child changes appropriately up to the parent
-            //if (ContentPattern != String.Empty)
-            //{
-            //    _matchList = _matchList.Intersect( workingMatches ).ToList();
-            //}
-            //else
-            //{
-            //    _matchList = workingMatches;
-            //}
-
-            return didMatch;
-        }
-
-        internal void markFirstChildren()
-        {
-            markGeneration( this, true );
-        }
-
-        private void markGeneration( Clause filter, bool isFirstChild )
-        {
-            filter.FirstChild = isFirstChild;
-
-            bool first = true;
-            filter.Children.ForEach( 
-                child => {
-            		markGeneration(child, first);
-            		first = false;
-                }
-            );
         }
 
         // TODO--0.3, DC: CompoundFilter.Equals( object )
