@@ -4,6 +4,7 @@ using NUnit.Framework;
 
 namespace swept.Tests
 {
+    [CoverageExclude]
     [TestFixture]
     public class ScopedMatches_Tests
     {

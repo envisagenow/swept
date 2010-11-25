@@ -8,6 +8,7 @@ using System.Collections.Generic;
 
 namespace swept.Tests
 {
+    [CoverageExclude]
     [TestFixture]
     public class SourceFileTests
     {

@@ -7,6 +7,7 @@ using swept;
 
 namespace swept.Tests
 {
+    [CoverageExclude]
     [TestFixture]
     public class SeeAlsoTests
     {

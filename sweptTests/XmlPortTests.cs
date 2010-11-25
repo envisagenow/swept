@@ -7,6 +7,7 @@ using System.Xml;
 
 namespace swept.Tests
 {
+    [CoverageExclude]
     [TestFixture]
     public class XmlPortTests
     {

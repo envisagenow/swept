@@ -7,6 +7,7 @@ using System.Collections.Generic;
 
 namespace swept.Tests
 {
+    [CoverageExclude]
     public class TestProbe
     {
         public static string SingleFileLibrary_text

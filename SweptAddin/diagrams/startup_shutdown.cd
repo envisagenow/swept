@@ -10,7 +10,7 @@
     <Position X="4.01" Y="3.208" Height="0.948" Width="2.138" />
   </Comment>
   <Comment CommentText="StudioEventListener.Connect()&#xD;&#xA;Subscribes to the Studio events Swept needs to do its job, and holds references to the Swept domain.">
-    <Position X="7.167" Y="4.844" Height="0.75" Width="2.138" />
+    <Position X="7.136" Y="5.844" Height="0.75" Width="2.138" />
   </Comment>
   <Comment CommentText="OnDisconnection, unloadSwept()&#xD;&#xA;Tells the StudioEventListener to Disconnect(),&#xD;&#xA;Tells the swept.Starter to Stop().">
     <Position X="1.073" Y="6.052" Height="0.75" Width="2.138" />
@@ -35,17 +35,15 @@
       <Method Name="describeException" Hidden="true" />
       <Method Name="hear_all_CommandEvents_after" Hidden="true" />
       <Method Name="hear_all_CommandEvents_before" Hidden="true" />
-      <Method Name="Hear_DocumentClosing" Hidden="true" />
       <Method Name="Hear_DocumentSaved" Hidden="true" />
       <Method Name="Hear_FilePasted" Hidden="true" />
-      <Method Name="Hear_ItemCheck" Hidden="true" />
       <Method Name="Hear_ItemRenamed" Hidden="true" />
       <Method Name="Hear_SolutionOpened" Hidden="true" />
       <Method Name="Hear_SolutionRenamed" Hidden="true" />
       <Method Name="Hear_WindowActivated" Hidden="true" />
     </Members>
     <TypeIdentifier>
-      <HashCode>AEUAAAAEBAAAAEAABABICIAQIAQQgAAMACHBQEQAARA=</HashCode>
+      <HashCode>AGQAAAAEAAACAEAABABgCMAQEAQQgAAMACnBQFQAARA=</HashCode>
       <FileName>StudioEventListener.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />

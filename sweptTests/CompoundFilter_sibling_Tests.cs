@@ -6,6 +6,7 @@ using NUnit.Framework;
 
 namespace swept.Tests
 {
+    [CoverageExclude]
     [TestFixture]
     public class CompoundFilter_sibling_Tests
     {

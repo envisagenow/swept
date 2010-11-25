@@ -8,6 +8,7 @@ using swept;
 namespace swept.Tests
 {
     [TestFixture]
+    [CoverageExclude]
     public class TaskWindowEventTests
     {
         private TestPreparer _preparer;

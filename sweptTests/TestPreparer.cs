@@ -5,6 +5,7 @@ using System;
 
 namespace swept.Tests
 {
+    [CoverageExclude]
     class TestPreparer
     {
         public MockUserAdapter MockGUI;

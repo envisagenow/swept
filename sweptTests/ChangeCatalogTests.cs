@@ -8,6 +8,7 @@ using System;
 
 namespace swept.Tests
 {
+    [CoverageExclude]
     [TestFixture]
     public class ChangeCatalogTests
     {

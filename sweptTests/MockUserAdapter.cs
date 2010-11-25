@@ -7,6 +7,7 @@ using System.Xml;
 
 namespace swept.Tests
 {
+    [CoverageExclude]
     class MockUserAdapter : IUserAdapter
     {
         public bool SentBadLibraryMessage;

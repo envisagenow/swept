@@ -7,6 +7,7 @@ using System.Collections.Generic;
 
 namespace swept.Tests
 {
+    [CoverageExclude]
     class MockStorageAdapter : IStorageAdapter
     {
         private List<string> _loadedFiles;

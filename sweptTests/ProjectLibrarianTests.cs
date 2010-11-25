@@ -10,6 +10,7 @@ using System.IO;
 
 namespace swept.Tests
 {
+    [CoverageExclude]
     [TestFixture]
     public class ProjectLibrarianTests
     {

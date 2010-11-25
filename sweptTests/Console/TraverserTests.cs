@@ -8,7 +8,7 @@ using NUnit.Framework;
 
 namespace swept.Tests
 {
-
+    [CoverageExclude]
     [TestFixture]
     public class TraverserTests
     {

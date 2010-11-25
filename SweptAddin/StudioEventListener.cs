@@ -252,18 +252,24 @@ namespace swept.Addin
         {
             try
             {
-                if (GotFocus == _taskWindowWindow)
+                if ((GotFocus == _taskWindowWindow)
+                    || (GotFocus.Object == null)
+                    || (GotFocus.Object.ToString() == "System.ComponentModel.Design.DesignerHost"))
+                {
                     return;
+                }
 
                 if (GotFocus.Document == null)
+                {
                     _adapter.Raise_NonSourceGetsFocus();
+                }
                 else
                 {
-                    var textDoc = GotFocus.Document.Object( "TextDocument" ) as TextDocument;
+                    var textDoc = GotFocus.Document.Object("TextDocument") as TextDocument;
                     if (textDoc != null)
                     {
-                        string content = textDoc.StartPoint.CreateEditPoint().GetText( textDoc.EndPoint );
-                        _adapter.Raise_FileGotFocus( GotFocus.Document.FullName, content );
+                        string content = textDoc.StartPoint.CreateEditPoint().GetText(textDoc.EndPoint);
+                        _adapter.Raise_FileGotFocus(GotFocus.Document.FullName, content);
                     }
                 }
             }

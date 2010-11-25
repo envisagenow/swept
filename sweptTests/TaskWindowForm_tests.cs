@@ -9,6 +9,7 @@ using swept.Addin;
 namespace swept.Tests
 {
     [TestFixture]
+    [CoverageExclude]
     public class TaskWindowForm_tests
     {
         TaskWindow_GUI _form;

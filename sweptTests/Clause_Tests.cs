@@ -9,6 +9,7 @@ using NUnit.Framework;
 
 namespace swept.Tests
 {
+    [CoverageExclude]
     [TestFixture]
     public class Clause_Tests
     {

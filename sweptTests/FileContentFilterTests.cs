@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 
 namespace swept.Tests
 {
+    [CoverageExclude]
     [TestFixture]
     public class FileContentFilterTests
     {
