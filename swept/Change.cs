@@ -15,7 +15,9 @@ namespace swept
         CSS,
         XSLT,
         VBNet,
-        Unknown
+        Project,
+        Solution,
+        Unknown,
     }
 
     public class Change : Clause

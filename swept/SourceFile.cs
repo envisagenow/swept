@@ -60,6 +60,9 @@ namespace swept
                     extensionLanguage[".css"] = FileLanguage.CSS;
                     extensionLanguage[".xsl"] = FileLanguage.XSLT;
                     extensionLanguage[".xslt"] = FileLanguage.XSLT;
+                    extensionLanguage[".csproj"] = FileLanguage.Project;
+                    extensionLanguage[".vbproj"] = FileLanguage.Project;
+                    extensionLanguage[".sln"] = FileLanguage.Solution;
                     extensionLanguage[""] = FileLanguage.None;
                 }
                 return extensionLanguage;
