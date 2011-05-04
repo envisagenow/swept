@@ -9,35 +9,12 @@ namespace swept.Tests
     public class ScopedMatches_Tests
     {
         #region The scope of matches resulting from a set operation depends on the scopes of the source sets.
-        [Test]
-        public void Union_Scope_correct()
-        {
-            Check_Union_Scope( MatchScope.Line, MatchScope.Line, MatchScope.Line );
-            Check_Union_Scope( MatchScope.Line, MatchScope.File, MatchScope.Line );
-            Check_Union_Scope( MatchScope.File, MatchScope.Line, MatchScope.Line );
-            Check_Union_Scope( MatchScope.File, MatchScope.File, MatchScope.File );
-        }
 
-        [Test]
-        public void Intersection_Scope_correct()
-        {
-            Check_Intersection_Scope( MatchScope.Line, MatchScope.Line, MatchScope.Line );
-            Check_Intersection_Scope( MatchScope.Line, MatchScope.File, MatchScope.Line );
-            Check_Intersection_Scope( MatchScope.File, MatchScope.Line, MatchScope.Line );
-            Check_Intersection_Scope( MatchScope.File, MatchScope.File, MatchScope.File );
-        }
-
-        [Test]
-        public void Subtraction_Scope_correct()
-        {
-            Check_Subtraction_Scope( MatchScope.Line, MatchScope.Line, MatchScope.Line );
-            Check_Subtraction_Scope( MatchScope.Line, MatchScope.File, MatchScope.Line );
-            Check_Subtraction_Scope( MatchScope.File, MatchScope.Line, MatchScope.File );
-            Check_Subtraction_Scope( MatchScope.File, MatchScope.File, MatchScope.File );
-        }
-
-        #region Check scope
-        private void Check_Union_Scope( MatchScope leftScope, MatchScope rightScope, MatchScope resultScope )
+        [TestCase( MatchScope.Line, MatchScope.Line, MatchScope.Line )]
+        [TestCase( MatchScope.Line, MatchScope.File, MatchScope.Line )]
+        [TestCase( MatchScope.File, MatchScope.Line, MatchScope.Line )]
+        [TestCase( MatchScope.File, MatchScope.File, MatchScope.File )]
+        public void Test_scope_produced_by_scope_union( MatchScope leftScope, MatchScope rightScope, MatchScope resultScope )
         {
             var left = new ScopedMatches( leftScope, new List<int>() );
             var right = new ScopedMatches( rightScope, new List<int>() );
@@ -45,8 +22,12 @@ namespace swept.Tests
             ScopedMatches result = left.Union( right );
             Assert.That( result.Scope == resultScope );
         }
-
-        private void Check_Intersection_Scope( MatchScope leftScope, MatchScope rightScope, MatchScope resultScope )
+        
+        [TestCase( MatchScope.Line, MatchScope.Line, MatchScope.Line )]
+        [TestCase( MatchScope.Line, MatchScope.File, MatchScope.Line )]
+        [TestCase( MatchScope.File, MatchScope.Line, MatchScope.Line )]
+        [TestCase( MatchScope.File, MatchScope.File, MatchScope.File )]
+        public void Check_Intersection_Scope( MatchScope leftScope, MatchScope rightScope, MatchScope resultScope )
         {
             var left = new ScopedMatches( leftScope, new List<int>() );
             var right = new ScopedMatches( rightScope, new List<int>() );
@@ -55,7 +36,11 @@ namespace swept.Tests
             Assert.That( result.Scope == resultScope );
         }
 
-        private void Check_Subtraction_Scope( MatchScope leftScope, MatchScope rightScope, MatchScope resultScope )
+        [TestCase( MatchScope.Line, MatchScope.Line, MatchScope.Line )]
+        [TestCase( MatchScope.Line, MatchScope.File, MatchScope.Line )]
+        [TestCase( MatchScope.File, MatchScope.Line, MatchScope.File )]
+        [TestCase( MatchScope.File, MatchScope.File, MatchScope.File )]
+        public void Check_Subtraction_Scope( MatchScope leftScope, MatchScope rightScope, MatchScope resultScope )
         {
             var left = new ScopedMatches( leftScope, new List<int>() );
             var right = new ScopedMatches( rightScope, new List<int>() );
@@ -63,10 +48,10 @@ namespace swept.Tests
             ScopedMatches result = left.Subtraction( right );
             Assert.That( result.Scope == resultScope );
         }
-        #endregion
+
         #endregion
 
-        #region File scoped matches have a match entry for line 1.  We don't want to mix it with line-scoped operations.
+        #region File scoped matches have a (somewhat cheesy) match entry for line 1.  We don't want to mix that entry with line-scoped operations.
 
         [Test]
         public void Mixed_Scope_Union_has_correct_line_matches()

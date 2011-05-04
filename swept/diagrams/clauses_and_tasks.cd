@@ -1,60 +1,81 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<ClassDiagram MajorVersion="1" MinorVersion="1">
+<ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="NameAndType">
   <Class Name="swept.Clause">
-    <Position X="11.25" Y="0.5" Width="1.75" />
+    <Position X="6.5" Y="2.5" Width="2.25" />
+    <Members>
+      <Method Name="Clause" Hidden="true" />
+    </Members>
     <TypeIdentifier>
-      <HashCode>RIAAAIAACAAggCSCgAAEAAgAAAgIAAAAiIAACAAAIBA=</HashCode>
+      <HashCode>BgAAAAAACIAgiCQCgAAEAAgQgAgAAAAAAAAACAAAIBA=</HashCode>
       <FileName>Clause.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="swept.Task">
-    <Position X="7.25" Y="0.5" Width="1.5" />
+    <Position X="4.5" Y="0.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAEAAEAAAIAAAAAAAAAAAAABAAAAAAAAA=</HashCode>
       <FileName>Task.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="swept.IssueSet">
-    <Position X="3.75" Y="5" Width="1.5" />
+    <Position X="2" Y="2.75" Width="1.75" />
+    <Members>
+      <Method Name="IssueSet" Hidden="true" />
+    </Members>
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAgAAgAAAAQAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>IssueSet.cs</FileName>
     </TypeIdentifier>
-  </Class>
-  <Class Name="swept.TaskWindow">
-    <Position X="0.5" Y="0.5" Width="2" />
-    <TypeIdentifier>
-      <HashCode>gCAAAEQAAAACAEBgABAARAAwEAAAAABIAAApAAAwCIc=</HashCode>
-      <FileName>TaskWindow.cs</FileName>
-    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="SourceFile" />
+      <Property Name="Clause" />
+    </ShowAsAssociation>
   </Class>
   <Class Name="swept.ChangeLoad">
-    <Position X="3.75" Y="2.75" Width="1.5" />
+    <Position X="0.5" Y="0.5" Width="3" />
+    <Members>
+      <Method Name="ChangeLoad" Hidden="true" />
+    </Members>
     <TypeIdentifier>
       <HashCode>QAAAAAAAAAACAAAAAAAAAABAAAAAAAAAAAAAAQAAAAA=</HashCode>
       <FileName>ChangeLoad.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="swept.SourceFile">
-    <Position X="5.75" Y="3.25" Width="1.5" />
+    <Position X="4.5" Y="4.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAABAACgACAACBgEAAAAQAAAAAAAAAAAEgAAAQABA=</HashCode>
       <FileName>SourceFile.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="swept.Change">
-    <Position X="9.25" Y="0.5" Width="1.5" />
+    <Position X="6.75" Y="0.5" Width="1.75" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAABA=</HashCode>
       <FileName>Change.cs</FileName>
     </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Property Name="SeeAlsos" />
+    </ShowAsCollectionAssociation>
   </Class>
-  <Enum Name="swept.FileLanguage" Collapsed="true">
-    <Position X="13.25" Y="0.5" Width="1.5" />
+  <Class Name="swept.ScopedMatches">
+    <Position X="1.75" Y="5.25" Width="2.25" />
+    <Members>
+      <Field Name="_matches" Hidden="true" />
+      <Method Name="ScopedMatches" Hidden="true" />
+    </Members>
     <TypeIdentifier>
-      <HashCode>AAAACAAEAAAAAAAAAAAAAAAAAAAAAAAABACgAAEAEBA=</HashCode>
-      <FileName>Change.cs</FileName>
+      <HashCode>QBAAAAAAAAAAACAAAAAAAABAAAAAAAAACAAAAQAAAAA=</HashCode>
+      <FileName>ScopedMatches.cs</FileName>
     </TypeIdentifier>
-  </Enum>
+  </Class>
+  <Class Name="swept.SeeAlso" Collapsed="true">
+    <Position X="9.75" Y="1" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAEAAAAAgAAAAgAAAACAAQAAAAIAAAAAAgAAAABA=</HashCode>
+      <FileName>SeeAlso.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
   <Font Name="Tahoma" Size="8.25" />
 </ClassDiagram>

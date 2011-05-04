@@ -14,43 +14,41 @@ namespace swept
             IssueSets = new Dictionary<SourceFile, IssueSet>();
         }
 
-        public ChangeLoad Union( ChangeLoad other )
+        public ChangeLoad Union( ChangeLoad rhs )
         {
             var union = new ChangeLoad();
 
             foreach (IssueSet issueSet in IssueSets.Values)
             {
-                union.IssueSets.Add( issueSet.SourceFile, issueSet );
+                union.IssueSets[issueSet.SourceFile] = new IssueSet( issueSet );
             }
 
-            foreach (IssueSet issueSet in other.IssueSets.Values)
+            foreach (IssueSet issueSet in rhs.IssueSets.Values)
             {
                 if (union.IssueSets.ContainsKey( issueSet.SourceFile ))
                 {
-                    //unify line numbers
-                    //union.IssueSets[issueSet.SourceFile].UniteLines( issueSet.Matches );
-#warning ChangeLoad union punted
-                    //union.IssueSets[issueSet.SourceFile] = union.IssueSets[issueSet.SourceFile].Union( issueSet );
+                    var matchingSet = union.IssueSets[issueSet.SourceFile];
+                    union.IssueSets[issueSet.SourceFile] = issueSet.Union( matchingSet );
                 }
                 else
-                    union.IssueSets.Add( issueSet.SourceFile, issueSet );
+                {
+                    union.IssueSets[issueSet.SourceFile] = new IssueSet( issueSet );
+                }
             }
 
             return union;
         }
 
-        public ChangeLoad Intersection( ChangeLoad other )
+        public ChangeLoad Intersection( ChangeLoad rhs )
         {
             var intersection = new ChangeLoad();
 
             foreach (IssueSet issueSet in IssueSets.Values)
             {
-                if (other.IssueSets.ContainsKey( issueSet.SourceFile ))
+                if (rhs.IssueSets.ContainsKey( issueSet.SourceFile ))
                 {
-                    var matchingSet = other.IssueSets[issueSet.SourceFile];
-                    IssueSet intersectingSet = new IssueSet( issueSet );
-#warning ChangeLoad intersection punted
-                    //intersectingSet.IntersectLines( matchingSet.Matches );
+                    var matchingSet = rhs.IssueSets[issueSet.SourceFile];
+                    IssueSet intersectingSet = issueSet.Intersection( matchingSet );
                     if (intersectingSet.Matches.Any())
                     {
                         intersection.IssueSets.Add( issueSet.SourceFile, intersectingSet );
@@ -61,22 +59,20 @@ namespace swept
             return intersection;
         }
 
-        public ChangeLoad Subtraction( ChangeLoad other )
+        public ChangeLoad Subtraction( ChangeLoad rhs )
         {
             var subtraction = new ChangeLoad();
 
             foreach (IssueSet issueSet in IssueSets.Values)
             {
-                IssueSet subtractingSet = new IssueSet( issueSet );
-                if (other.IssueSets.ContainsKey( issueSet.SourceFile ))
+                if (rhs.IssueSets.ContainsKey( issueSet.SourceFile ))
                 {
-                    var matchingSet = other.IssueSets[issueSet.SourceFile];
-#warning ChangeLoad subtraction punted
-                    //subtractingSet.SubtractLines( matchingSet.Matches );
-                }
-                if (subtractingSet.Matches.Any())
-                {
-                    subtraction.IssueSets.Add( issueSet.SourceFile, subtractingSet );
+                    var matchingSet = rhs.IssueSets[issueSet.SourceFile];
+                    IssueSet subtractedSet = issueSet.Subtraction( matchingSet );
+                    if (subtractedSet.Matches.Any())
+                    {
+                        subtraction.IssueSets.Add( issueSet.SourceFile, subtractedSet );
+                    }
                 }
             }
 

@@ -16,18 +16,6 @@ namespace swept
             SourceFile = sourceFile;
         }
 
-        // TODO: yeluminate
-        //public IssueSet( Clause clause, SourceFile file )
-        //{
-        //    clause.DoesMatch( file );
-
-        //    Clause = clause;
-        //    SourceFile = file;
-
-        //    Scope = clause.MatchScope;
-        //    Matches = clause.GetMatchList();
-        //}
-
         // TODO: make MatchLineNumbers independent
         public IssueSet( IssueSet clone ) : this( clone.Clause, clone.SourceFile, clone.Scope, clone.Matches )
         {
@@ -38,31 +26,27 @@ namespace swept
         public SourceFile SourceFile { get; private set; }
         public bool DoesMatch
         {
-            get
-            {
-                return Matches.Any();
-            }
+            get { return Matches.Any(); }
         }
 
-        //public void UniteLines( IList<int> lines )
-        //{
-        //    Matches = Matches.Union( lines ).ToList();
-        //}
 
-        //public void IntersectLines( IList<int> lines )
-        //{
-        //    Matches = Matches.Intersect( lines ).ToList();
-        //}
+        public IssueSet Intersection( IssueSet rhs )
+        {
+            ScopedMatches matches = base.Intersection( rhs );
+            return new IssueSet( Clause, SourceFile, matches.Scope, matches.Matches );
+        }
 
-        //public void SubtractLines( IList<int> lines )
-        //{
-        //    Matches = Matches.ToList();
-        //    foreach (int line in lines)
-        //    {
-        //        if (Matches.Contains( line ))
-        //            Matches.Remove( line );
-        //    }
-        //}
+        public IssueSet Subtraction( IssueSet rhs )
+        {
+            ScopedMatches matches = base.Subtraction( rhs );
+            return new IssueSet( Clause, SourceFile, matches.Scope, matches.Matches );
+        }
+
+        public IssueSet Union( IssueSet rhs )
+        {
+            ScopedMatches matches = base.Union( rhs );
+            return new IssueSet( Clause, SourceFile, matches.Scope, matches.Matches );
+        }
 
     }
 }

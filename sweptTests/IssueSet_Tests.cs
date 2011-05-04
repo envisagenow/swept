@@ -86,14 +86,37 @@ barbar
             Assert.That( issue.Clause, Is.EqualTo( change ) );
         }
 
-        [Test, Ignore( "Set ops update")]
-        public void Can_unite_MatchLineNumbers()
+        [Test]
+        public void IssueSet_Intersection_creates_new_IssueSet()
         {
-            var issueSet = new IssueSet( null, null, MatchScope.Line, new List<int> { 1, 2 } );
-            //issueSet.UniteLines( new List<int> { 1, 3 } );
-
-            Assert.That( issueSet.Matches, Has.Count.EqualTo( 3 ) );
+            IssueSet left = new IssueSet( null, null, MatchScope.Line, new List<int> { 2, 4, 8 } );
+            IssueSet rght = new IssueSet( null, null, MatchScope.Line, new List<int> { 2, 4, 6 } );
+            IssueSet result = left.Intersection( rght );
+            Assert.That( result, Is.Not.SameAs( left ) );
+            Assert.That( left.Matches, Has.Count.EqualTo( 3 ) );
+            Assert.That( result.Matches, Has.Count.EqualTo( 2 ) );
         }
 
+        [Test]
+        public void IssueSet_Subtraction_creates_new_IssueSet()
+        {
+            IssueSet left = new IssueSet( null, null, MatchScope.Line, new List<int> { 2, 4, 8 } );
+            IssueSet rght = new IssueSet( null, null, MatchScope.Line, new List<int> { 2, 4, 6 } );
+            IssueSet result = left.Subtraction( rght );
+            Assert.That( result, Is.Not.SameAs( left ) );
+            Assert.That( left.Matches, Has.Count.EqualTo( 3 ) );
+            Assert.That( result.Matches, Has.Count.EqualTo( 1 ) );
+        }
+
+        [Test]
+        public void IssueSet_Union_creates_new_IssueSet()
+        {
+            IssueSet left = new IssueSet( null, null, MatchScope.Line, new List<int> { 2, 4, 8 } );
+            IssueSet rght = new IssueSet( null, null, MatchScope.Line, new List<int> { 2, 4, 6 } );
+            IssueSet result = left.Union( rght );
+            Assert.That( result, Is.Not.SameAs( left ) );
+            Assert.That( left.Matches, Has.Count.EqualTo( 3 ) );
+            Assert.That( result.Matches, Has.Count.EqualTo( 4 ) );
+        }
     }            
 }
