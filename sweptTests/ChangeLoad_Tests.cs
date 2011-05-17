@@ -62,7 +62,7 @@ namespace swept.Tests
 
             Assert.That( outcome.IssueSets, Is.Not.Empty );
             Assert.That( outcome.IssueSets, Has.Count.EqualTo( 1 ) );
-            Assert.That( outcome.IssueSets[fooFile], Is.SameAs( _leftIssues ) );
+            Assert.That( outcome.IssueSets[fooFile], Is.Not.SameAs( _leftIssues ) );
         }
 
         [Test]
@@ -73,7 +73,7 @@ namespace swept.Tests
 
             Assert.That( outcome.IssueSets, Is.Not.Empty );
             Assert.That( outcome.IssueSets, Has.Count.EqualTo( 1 ) );
-            Assert.That( outcome.IssueSets[fooFile], Is.SameAs( _rightIssues ) );
+            Assert.That( outcome.IssueSets[fooFile], Is.Not.SameAs( _rightIssues ) );
         }
 
         [Test]
