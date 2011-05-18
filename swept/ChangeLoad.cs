@@ -49,7 +49,7 @@ namespace swept
                 {
                     var matchingSet = rhs.IssueSets[issueSet.SourceFile];
                     IssueSet intersectingSet = issueSet.Intersection( matchingSet );
-                    if (intersectingSet.Matches.Any())
+                    if (intersectingSet.Any())
                     {
                         intersection.IssueSets.Add( issueSet.SourceFile, intersectingSet );
                     }
@@ -69,10 +69,14 @@ namespace swept
                 {
                     var matchingSet = rhs.IssueSets[issueSet.SourceFile];
                     IssueSet subtractedSet = issueSet.Subtraction( matchingSet );
-                    if (subtractedSet.Matches.Any())
+                    if (subtractedSet.Any())
                     {
                         subtraction.IssueSets.Add( issueSet.SourceFile, subtractedSet );
                     }
+                }
+                else
+                {
+                    subtraction.IssueSets.Add( issueSet.SourceFile, new IssueSet( issueSet ) );
                 }
             }
 

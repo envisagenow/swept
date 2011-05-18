@@ -17,7 +17,7 @@ namespace swept
         }
 
         // TODO: make MatchLineNumbers independent
-        public IssueSet( IssueSet clone ) : this( clone.Clause, clone.SourceFile, clone.Scope, clone.Matches )
+        public IssueSet( IssueSet clone ) : this( clone.Clause, clone.SourceFile, clone.Scope, clone )
         {
         }
 
@@ -26,26 +26,26 @@ namespace swept
         public SourceFile SourceFile { get; private set; }
         public bool DoesMatch
         {
-            get { return Matches.Any(); }
+            get { return this.Any(); }
         }
 
 
         public IssueSet Intersection( IssueSet rhs )
         {
             ScopedMatches matches = base.Intersection( rhs );
-            return new IssueSet( Clause, SourceFile, matches.Scope, matches.Matches );
+            return new IssueSet( Clause, SourceFile, matches.Scope, matches );
         }
 
         public IssueSet Subtraction( IssueSet rhs )
         {
             ScopedMatches matches = base.Subtraction( rhs );
-            return new IssueSet( Clause, SourceFile, matches.Scope, matches.Matches );
+            return new IssueSet( Clause, SourceFile, matches.Scope, matches );
         }
 
         public IssueSet Union( IssueSet rhs )
         {
             ScopedMatches matches = base.Union( rhs );
-            return new IssueSet( Clause, SourceFile, matches.Scope, matches.Matches );
+            return new IssueSet( Clause, SourceFile, matches.Scope, matches );
         }
 
     }

@@ -43,7 +43,7 @@ namespace swept
             if (set.Clause != null && !string.IsNullOrEmpty( set.Clause.Description ))
                 description = set.Clause.Description;
 
-            foreach (int line in set.Matches)
+            foreach (int line in set)
             {
                 tasks.Add( new Task
                 {

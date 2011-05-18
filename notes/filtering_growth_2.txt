@@ -34,3 +34,9 @@ Repercussions
         and not Subpath in "GUI\"
 
 ---
+
+XPath instead of regex for XML files?
+Some other schema checking?
+
+---
+

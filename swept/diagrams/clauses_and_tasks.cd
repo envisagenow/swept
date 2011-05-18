@@ -23,12 +23,12 @@
       <Method Name="IssueSet" Hidden="true" />
     </Members>
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAgAAgAAAAQAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>QAAAAAAAAAAAAAAAAAgAAgBAAAQAAAAAAAAAAQAAAAA=</HashCode>
       <FileName>IssueSet.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
-      <Property Name="SourceFile" />
       <Property Name="Clause" />
+      <Property Name="SourceFile" />
     </ShowAsAssociation>
   </Class>
   <Class Name="swept.ChangeLoad">
@@ -61,11 +61,10 @@
   <Class Name="swept.ScopedMatches">
     <Position X="1.75" Y="5.25" Width="2.25" />
     <Members>
-      <Field Name="_matches" Hidden="true" />
       <Method Name="ScopedMatches" Hidden="true" />
     </Members>
     <TypeIdentifier>
-      <HashCode>QBAAAAAAAAAAACAAAAAAAABAAAAAAAAACAAAAQAAAAA=</HashCode>
+      <HashCode>QAAAAAAAAAAAACAAAAAAAABAAAAAAAAAAAAAAQAAAAA=</HashCode>
       <FileName>ScopedMatches.cs</FileName>
     </TypeIdentifier>
   </Class>

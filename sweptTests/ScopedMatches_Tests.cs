@@ -8,6 +8,18 @@ namespace swept.Tests
     [TestFixture]
     public class ScopedMatches_Tests
     {
+        [Test]
+        public void Construction_sets_line_numbers_correctly()
+        {
+            ScopedMatches matches = new ScopedMatches( MatchScope.Line, new List<int> { 17, 23 } );
+
+            Assert.That( matches.Count, Is.EqualTo( 2 ) );
+            Assert.That( matches[0], Is.EqualTo( 17 ) );
+            Assert.That( matches[1], Is.EqualTo( 23 ) );
+        }
+
+
+
         #region The scope of matches resulting from a set operation depends on the scopes of the source sets.
 
         [TestCase( MatchScope.Line, MatchScope.Line, MatchScope.Line )]
@@ -61,15 +73,15 @@ namespace swept.Tests
 
             ScopedMatches result = left.Union( right );
 
-            Assert.That( result.Matches.Count, Is.EqualTo( 2 ) );
-            Assert.That( result.Matches[0], Is.EqualTo( 2 ) );
-            Assert.That( result.Matches[1], Is.EqualTo( 3 ) );
+            Assert.That( result.Count, Is.EqualTo( 2 ) );
+            Assert.That( result[0], Is.EqualTo( 2 ) );
+            Assert.That( result[1], Is.EqualTo( 3 ) );
 
             result = right.Union( left );
 
-            Assert.That( result.Matches.Count, Is.EqualTo( 2 ) );
-            Assert.That( result.Matches[0], Is.EqualTo( 2 ) );
-            Assert.That( result.Matches[1], Is.EqualTo( 3 ) );
+            Assert.That( result.Count, Is.EqualTo( 2 ) );
+            Assert.That( result[0], Is.EqualTo( 2 ) );
+            Assert.That( result[1], Is.EqualTo( 3 ) );
         }
 
         [Test]
@@ -80,15 +92,15 @@ namespace swept.Tests
 
             ScopedMatches result = left.Intersection( right );
 
-            Assert.That( result.Matches.Count, Is.EqualTo( 2 ) );
-            Assert.That( result.Matches[0], Is.EqualTo( 1 ) );
-            Assert.That( result.Matches[1], Is.EqualTo( 3 ) );
+            Assert.That( result.Count, Is.EqualTo( 2 ) );
+            Assert.That( result[0], Is.EqualTo( 1 ) );
+            Assert.That( result[1], Is.EqualTo( 3 ) );
 
             result = right.Intersection( left );
 
-            Assert.That( result.Matches.Count, Is.EqualTo( 2 ) );
-            Assert.That( result.Matches[0], Is.EqualTo( 1 ) );
-            Assert.That( result.Matches[1], Is.EqualTo( 3 ) );
+            Assert.That( result.Count, Is.EqualTo( 2 ) );
+            Assert.That( result[0], Is.EqualTo( 1 ) );
+            Assert.That( result[1], Is.EqualTo( 3 ) );
         }
 
         [Test]
@@ -99,11 +111,11 @@ namespace swept.Tests
 
             ScopedMatches result = left.Subtraction( right );
 
-            Assert.That( result.Matches.Count, Is.EqualTo( 0 ) );
+            Assert.That( result.Count, Is.EqualTo( 0 ) );
 
             result = right.Subtraction( left );
 
-            Assert.That( result.Matches.Count, Is.EqualTo( 0 ) );
+            Assert.That( result.Count, Is.EqualTo( 0 ) );
         }
 
         #endregion
@@ -118,16 +130,16 @@ namespace swept.Tests
             var empty_file = new ScopedMatches( MatchScope.File, new List<int>() );
 
             ScopedMatches result = lines.Subtraction( empty_lines );
-            Assert.That( result.Matches.Count, Is.EqualTo( 2 ) );
+            Assert.That( result.Count, Is.EqualTo( 2 ) );
 
             result = lines.Subtraction( empty_file );
-            Assert.That( result.Matches.Count, Is.EqualTo( 2 ) );
+            Assert.That( result.Count, Is.EqualTo( 2 ) );
 
             result = file.Subtraction( empty_lines );
-            Assert.That( result.Matches.Count, Is.EqualTo( 1 ) );
+            Assert.That( result.Count, Is.EqualTo( 1 ) );
 
             result = file.Subtraction( empty_file );
-            Assert.That( result.Matches.Count, Is.EqualTo( 1 ) );
+            Assert.That( result.Count, Is.EqualTo( 1 ) );
         }
 
         [Test]
@@ -139,16 +151,16 @@ namespace swept.Tests
             var empty_file = new ScopedMatches( MatchScope.File, new List<int>() );
 
             ScopedMatches result = empty_lines.Subtraction( lines );
-            Assert.That( result.Matches.Count, Is.EqualTo( 0 ) );
+            Assert.That( result.Count, Is.EqualTo( 0 ) );
 
             result = empty_lines.Subtraction( file );
-            Assert.That( result.Matches.Count, Is.EqualTo( 0 ) );
+            Assert.That( result.Count, Is.EqualTo( 0 ) );
 
             result = empty_file.Subtraction( lines );
-            Assert.That( result.Matches.Count, Is.EqualTo( 0 ) );
+            Assert.That( result.Count, Is.EqualTo( 0 ) );
 
             result = empty_file.Subtraction( file );
-            Assert.That( result.Matches.Count, Is.EqualTo( 0 ) );
+            Assert.That( result.Count, Is.EqualTo( 0 ) );
         }
 
         [Test]
@@ -158,7 +170,7 @@ namespace swept.Tests
             var right = new ScopedMatches( MatchScope.File, new List<int> { 1 } );
 
             var result = left.Subtraction( right );
-            Assert.That( result.Matches.Count, Is.EqualTo( 0 ) );
+            Assert.That( result.Count, Is.EqualTo( 0 ) );
         }
 
         [Test]
@@ -168,8 +180,8 @@ namespace swept.Tests
             var right = new ScopedMatches( MatchScope.Line, new List<int> { 2, 4, 5, 6, 7 } );
 
             var result = left.Subtraction( right );
-            Assert.That( result.Matches.Count, Is.EqualTo( 1 ) );
-            Assert.That( result.Matches[0], Is.EqualTo( 3 ) );
+            Assert.That( result.Count, Is.EqualTo( 1 ) );
+            Assert.That( result[0], Is.EqualTo( 3 ) );
         }
 
         #endregion

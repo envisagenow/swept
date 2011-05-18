@@ -4,20 +4,14 @@ using System.Linq;
 
 namespace swept
 {
-    public class ScopedMatches
+    public class ScopedMatches : List<int>
     {
-        public ScopedMatches( MatchScope scope, List<int> matches )
+        public ScopedMatches( MatchScope scope, List<int> matches ) : base( matches )
         {
             Scope = scope;
-            _matches = matches;
         }
 
         public virtual MatchScope Scope { get; set; }
-        protected internal List<int> _matches;
-        public virtual List<int> Matches
-        {
-            get { return _matches; }
-        }
 
         public ScopedMatches Union( ScopedMatches other )
         {
@@ -25,21 +19,22 @@ namespace swept
             if (Scope == MatchScope.File && other.Scope == MatchScope.File)
                 resultScope = MatchScope.File;
 
-            List<int> resultMatches = new List<int>();
+            IEnumerable<int> resultMatches = new List<int>();
 
             if (Scope == other.Scope)
             {
-                resultMatches = Matches.Union( other.Matches ).ToList();
+                resultMatches = resultMatches.Union( this );
+                resultMatches = resultMatches.Union( other );
             }
             else
             {
                 if (Scope == MatchScope.Line)
-                    resultMatches = Matches.ToList();
+                    resultMatches = this;
                 else
-                    resultMatches = other.Matches.ToList();
+                    resultMatches = other;
             }
 
-            return new ScopedMatches( resultScope, resultMatches );
+            return new ScopedMatches( resultScope, resultMatches.ToList() );
         }
 
         public ScopedMatches Intersection( ScopedMatches other )
@@ -48,31 +43,31 @@ namespace swept
             if (Scope == MatchScope.File && other.Scope == MatchScope.File)
                 resultScope = MatchScope.File;
 
-            List<int> resultMatches = new List<int>();
+            IEnumerable<int> resultMatches = new List<int>( this );
 
             if (Scope == other.Scope)
             {
-                resultMatches = Matches.Intersect( other.Matches ).ToList();
+                resultMatches = resultMatches.Intersect( other );
             }
             else
             {
                 if (Scope == MatchScope.Line)
-                    resultMatches = Matches.ToList();
+                    resultMatches = this;
                 else
-                    resultMatches = other.Matches.ToList();
+                    resultMatches = other;
             }
 
-            return new ScopedMatches( resultScope, resultMatches );
+            return new ScopedMatches( resultScope, resultMatches.ToList() );
         }
 
         public ScopedMatches Subtraction( ScopedMatches other )
         {
-            List<int> resultMatches = Matches.ToList();
+            List<int> resultMatches = new List<int>(this);
 
             if (Scope == MatchScope.Line && other.Scope == MatchScope.Line)
-                resultMatches.RemoveAll( m => other.Matches.Contains( m ) );
+                resultMatches.RemoveAll( m => other.Contains( m ) );
             else
-                if (other.Matches.Any())
+                if (other.Any())
                     resultMatches.Clear();
             
             return new ScopedMatches( Scope, resultMatches );

@@ -88,8 +88,7 @@ namespace swept.Tests
             Assert.That( outcome.IssueSets, Has.Count.EqualTo( 1 ) );
 
             IssueSet fooIssues = outcome.IssueSets[fooFile];
-            var fooLines = fooIssues.Matches;
-            Assert.That( fooLines, Has.Count.EqualTo( 3 ) );
+            Assert.That( fooIssues, Has.Count.EqualTo( 3 ) );
         }
         #endregion
 
@@ -133,9 +132,8 @@ namespace swept.Tests
             Assert.That( outcome.IssueSets, Has.Count.EqualTo( 1 ) );
 
             IssueSet fooIssues = outcome.IssueSets[fooFile];
-            var fooLines = fooIssues.Matches;
-            Assert.That( fooLines, Has.Count.EqualTo( 1 ) );
-            Assert.That( fooLines[0], Is.EqualTo( 1 ) );
+            Assert.That( fooIssues, Has.Count.EqualTo( 1 ) );
+            Assert.That( fooIssues[0], Is.EqualTo( 1 ) );
         }
         #endregion
 
@@ -169,14 +167,14 @@ namespace swept.Tests
             Assert.That( resultIssues.Clause, Is.SameAs( checkIssues.Clause ) );
             Assert.That( resultIssues.SourceFile, Is.SameAs( checkIssues.SourceFile ) );
 
-            foreach (int line in resultIssues.Matches)
+            foreach (int line in resultIssues)
             {
-                Assert.That( checkIssues.Matches.Contains( line ) );
+                Assert.That( checkIssues.Contains( line ) );
             }
 
-            foreach (int line in checkIssues.Matches)
+            foreach (int line in checkIssues)
             {
-                Assert.That( resultIssues.Matches.Contains( line ) );
+                Assert.That( resultIssues.Contains( line ) );
             }
         }
 
@@ -201,9 +199,8 @@ namespace swept.Tests
             Assert.That( outcome.IssueSets, Has.Count.EqualTo( 1 ) );
 
             IssueSet fooIssues = outcome.IssueSets[fooFile];
-            var fooLines = fooIssues.Matches;
-            Assert.That( fooLines, Has.Count.EqualTo( 1 ) );
-            Assert.That( fooLines[0], Is.EqualTo( 2 ) );
+            Assert.That( fooIssues, Has.Count.EqualTo( 1 ) );
+            Assert.That( fooIssues[0], Is.EqualTo( 2 ) );
         }
         #endregion
     }

@@ -77,25 +77,25 @@ namespace swept
             return new IssueSet( this, file, Scope, GetMatches( file ) );
         }
 
-        public List<int> GetMatches( SourceFile file )
+        public ScopedMatches GetMatches( SourceFile file )
         {
-            var matches = new List<int> { 1 };
+            var matches = new ScopedMatches( MatchScope.File, new List<int>() { 1 } );
             matches = MatchFileOnLanguage( matches, file, Language );
             matches = MatchFileOnNamePattern( matches, file, NamePattern );
             matches = MatchFileOnContentPattern( matches, file, ContentPattern );
 
             if (matches.Any() && Children.Any())
             {
-                List<int> childMatches = GetChildMatches( file );
+                ScopedMatches childMatches = GetChildMatches( file );
 
                 if (Operator == ClauseOperator.And)
-                    matches = matches.Intersect( childMatches ).ToList();
+                    matches = matches.Intersection( childMatches );
                 else if (Operator == ClauseOperator.Or)
-                    matches = matches.Union( childMatches ).ToList();
+                    matches = matches.Union( childMatches );
             }
 
             if (ForceFileScope && matches.Any())
-                matches = new List<int> { 1 };
+                matches = new ScopedMatches( MatchScope.File, new List<int> { 1 } );
 
             // TODO: determine if I ever use Not.  :D
             if (Operator == ClauseOperator.Not)
@@ -113,7 +113,7 @@ namespace swept
             return matches;
         }
 
-        private List<int> MatchFileOnLanguage( List<int> matches, SourceFile file, FileLanguage language )
+        private ScopedMatches MatchFileOnLanguage( ScopedMatches matches, SourceFile file, FileLanguage language )
         {
             if (!matches.Any() || language == FileLanguage.None)
                 return matches;
@@ -121,10 +121,10 @@ namespace swept
             if (language == file.Language)
                 return matches;
             else
-                return new List<int>();
+                return new ScopedMatches( MatchScope.File, new List<int>() );
         }
 
-        private List<int> MatchFileOnNamePattern( List<int> matches, SourceFile file, string namePattern )
+        private ScopedMatches MatchFileOnNamePattern( ScopedMatches matches, SourceFile file, string namePattern )
         {
             if (!matches.Any() || string.IsNullOrEmpty( namePattern ))
                 return matches;
@@ -132,10 +132,10 @@ namespace swept
             if (Regex.IsMatch( file.Name, namePattern, RegexOptions.IgnoreCase ))
                 return matches;
             else
-                return new List<int>();
+                return new ScopedMatches( MatchScope.File, new List<int>() );
         }
 
-        private List<int> MatchFileOnContentPattern( List<int> matches, SourceFile file, string contentPattern )
+        private ScopedMatches MatchFileOnContentPattern( ScopedMatches matches, SourceFile file, string contentPattern )
         {
             if (!matches.Any() || string.IsNullOrEmpty( contentPattern ))
                 return matches;
@@ -143,11 +143,11 @@ namespace swept
             return identifyMatchList( file, contentPattern ); ;
         }
 
-        public List<int> identifyMatchList( SourceFile file, string pattern )
+        public ScopedMatches identifyMatchList( SourceFile file, string pattern )
         {
-            var matchList = new List<int>();
+            var matchList = new ScopedMatches( MatchScope.Line, new List<int>() );
             if (string.IsNullOrEmpty( pattern ))
-                return new List<int>();
+                return new ScopedMatches( MatchScope.Line, new List<int>() );
 
             // TODO: Add attribute to allow case sensitive matching
             Regex rx = new Regex( pattern, RegexOptions.IgnoreCase );
@@ -162,14 +162,14 @@ namespace swept
             return matchList;
         }
 
-        public virtual List<int> GetChildMatches( SourceFile file )
+        public virtual ScopedMatches GetChildMatches( SourceFile file )
         {
-            List<int> workingMatches = new List<int>();
+            ScopedMatches workingMatches = new ScopedMatches( MatchScope.File, new List<int>() );
 
             bool first = true;
             foreach (Clause child in Children)
             {
-                var childMatches = child.GetMatches( file );
+                ScopedMatches childMatches = child.GetMatches( file );
 
                 if (first)
                 {
@@ -177,11 +177,11 @@ namespace swept
                 }
                 else if (child.Operator == ClauseOperator.Or)
                 {
-                    workingMatches = workingMatches.Union( childMatches ).ToList();
+                    workingMatches = workingMatches.Union( childMatches );
                 }
                 else if (child.Operator == ClauseOperator.And)
                 {
-                    workingMatches = workingMatches.Intersect( childMatches ).ToList();
+                    workingMatches = workingMatches.Intersection( childMatches );
                 }
 
                 first = false;

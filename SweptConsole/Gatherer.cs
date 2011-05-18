@@ -32,7 +32,7 @@ namespace swept
                 foreach (var change in _changes)
                 {
                     IssueSet set = change.GetIssueSet( sourceFile );
-                    if (set.Matches.Any())
+                    if (set.Any())
                     {
                         if (!result.ContainsKey( change ))
                             result.Add( change, new List<IssueSet>() );
