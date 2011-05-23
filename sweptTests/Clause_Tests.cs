@@ -138,8 +138,8 @@ cxxxxxxxxx
             Assert.That( matches[0], Is.EqualTo( 1 ) );
         }
 
-        [Test, Ignore("I think this is neither correct nor up to date")]
-        public void FileScoped_sibling_will_create_file_scoped_result_in_parent()
+        [Test, Ignore("Another portion of the evaluation that needs rethinking")]
+        public void LineScoped_childMatches_communicate_line_scope_to_parent()
         {
             SourceFile file = new SourceFile( "bs_foo.cs" );
             file.Content = _multiLineFile;
@@ -153,10 +153,10 @@ cxxxxxxxxx
             ScopedMatches childMatches = parent.GetChildMatches( file );
             Assert.That( childMatches.Any() );
 
-            var parentMatches = parent.GetMatches( file );
+            ScopedMatches parentMatches = parent.GetMatches( file );
             Assert.That( parentMatches.Count, Is.EqualTo( 1 ) );
             Assert.That( parentMatches[0], Is.EqualTo( 1 ) );
-            Assert.That( parent.Scope, Is.EqualTo( MatchScope.File ) );
+            Assert.That( parentMatches.Scope, Is.EqualTo( MatchScope.Line ) );
         }
 
     }

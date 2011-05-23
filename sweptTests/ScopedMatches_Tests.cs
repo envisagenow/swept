@@ -18,15 +18,87 @@ namespace swept.Tests
             Assert.That( matches[1], Is.EqualTo( 23 ) );
         }
 
+#region Equality
+
+        [Test]
+        public void test_scopedMatches_equal()
+        {
+            ScopedMatches ScopedMatches1 = new ScopedMatches( MatchScope.Line, new List<int> { 1, 2 } );
+            ScopedMatches ScopedMatches2 = new ScopedMatches( MatchScope.Line, new List<int> { 1, 2 } );
+
+            Assert.True( ScopedMatches1.Equals(ScopedMatches2) );
+        }
+
+        [Test]
+        public void test_scopedMatches_inequal()
+        {
+            ScopedMatches ScopedMatches1 = new ScopedMatches( MatchScope.Line, new List<int> { 1, 2 } );
+            ScopedMatches ScopedMatches2 = new ScopedMatches( MatchScope.Line, new List<int> { 1, 3 } );
+
+            Assert.False( ScopedMatches1.Equals( ScopedMatches2 ) );
+        }
+
+        [Test]
+        public void test_scopedMatches_inequal_null()
+        {
+            Assert.False( new ScopedMatches( MatchScope.Line, new List<int>() ).Equals( null ) );
+        }
+
+        [Test]
+        public void test_scopedMatches_inequal_length()
+        {
+            ScopedMatches ScopedMatches1 = new ScopedMatches( MatchScope.Line, new List<int> { 1, 2, 3 } );
+            ScopedMatches ScopedMatches2 = new ScopedMatches( MatchScope.Line, new List<int> { 1, 2 } );
+
+            Assert.False( ScopedMatches1.Equals( ScopedMatches2 ) );
+        }
+
+#endregion
+
+
+        #region The new look of Union Testing
+
+        [Test]
+        public void union_line_12_to_line_23_makes_line_123()
+        {
+            var left = new ScopedMatches( MatchScope.Line, new List<int> { 1, 2 } );
+            var right = new ScopedMatches( MatchScope.Line, new List<int> { 2, 3 } );
+            var expected = new ScopedMatches( MatchScope.Line, new List<int> { 1, 2, 3 } );
+
+            ScopedMatches result = left.Union( right );
+            Assert.That( result.Equals(expected) );
+        }
+
+        [Test]
+        public void union_line_12_to_line_empty_makes_line_12()
+        {
+            var left = new ScopedMatches( MatchScope.Line, new List<int> { 1, 2 } );
+            var right = new ScopedMatches( MatchScope.Line, new List<int> { } );
+            var expected = new ScopedMatches( MatchScope.Line, new List<int> { 1, 2 } );
+
+            ScopedMatches result = left.Union( right );
+            Assert.That( result.Equals( expected ) );
+        }
+
+        [Test]
+        public void union_file_true_to_line_empty_makes_file_true()
+        {
+            var left = new ScopedMatches( MatchScope.File, new List<int> { 1 } );
+            var right = new ScopedMatches( MatchScope.Line, new List<int> { } );
+            var expected = new ScopedMatches( MatchScope.File, new List<int> { 1 } );
+
+            ScopedMatches result = left.Union( right );
+            Assert.That( result.Equals( expected ) );
+        }
+        #endregion
 
 
         #region The scope of matches resulting from a set operation depends on the scopes of the source sets.
-
         [TestCase( MatchScope.Line, MatchScope.Line, MatchScope.Line )]
         [TestCase( MatchScope.Line, MatchScope.File, MatchScope.Line )]
         [TestCase( MatchScope.File, MatchScope.Line, MatchScope.Line )]
         [TestCase( MatchScope.File, MatchScope.File, MatchScope.File )]
-        public void Test_scope_produced_by_scope_union( MatchScope leftScope, MatchScope rightScope, MatchScope resultScope )
+        public void copied( MatchScope leftScope, MatchScope rightScope, MatchScope resultScope )
         {
             var left = new ScopedMatches( leftScope, new List<int>() );
             var right = new ScopedMatches( rightScope, new List<int>() );
