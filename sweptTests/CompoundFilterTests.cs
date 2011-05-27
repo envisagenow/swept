@@ -36,7 +36,7 @@ cxxxxxxxxx
             SourceFile file = new SourceFile( "foo.cs" );
 
             file.Content = _multiLineFile;
-            List<int> matches = filter.identifyMatchList( file, "b" );
+            List<int> matches = filter.identifyMatchList( file, "b" ).LinesWhichMatch;
 
             Assert.That( matches.Count, Is.EqualTo( number_of_Bs ) );
             Assert.That( matches[0], Is.EqualTo( 3 ) );
@@ -77,7 +77,7 @@ cxxxxxxxxx
 
             filter.ContentPattern = "b";
 
-            List<int> matches = filter.GetMatches( file );
+            List<int> matches = filter.GetMatches( file ).LinesWhichMatch;
 
             Assert.That( matches.Count, Is.EqualTo( 2 ) );
             Assert.That( matches[0], Is.EqualTo( 3 ) );
@@ -179,7 +179,7 @@ cxxxxxxxxx
 
             child.ContentPattern = "b";
             or_sibling.ContentPattern = "a";
-            List<int> matches = parent.GetMatches( file );
+            List<int> matches = parent.GetMatches( file ).LinesWhichMatch;
 
             Assert.That( matches.Count, Is.EqualTo( 3 ) );
             Assert.That( matches[0], Is.EqualTo( 2 ) );
@@ -202,9 +202,9 @@ cxxxxxxxxx
             filter.Children.Add( child1 );
             filter.Children.Add( child2 );
 
-            Assert.IsEmpty( filter.GetMatches( new SourceFile( "my.cs" ) ) );
-            Assert.IsEmpty( filter.GetMatches( new SourceFile( "blue.html" ) ) );
-            Assert.IsNotEmpty( filter.GetMatches( new SourceFile( "blue.cs" ) ) );
+            Assert.IsEmpty( filter.GetMatches( new SourceFile( "my.cs" ) ).LinesWhichMatch );
+            Assert.IsEmpty( filter.GetMatches( new SourceFile( "blue.html" ) ).LinesWhichMatch );
+            Assert.IsNotEmpty( filter.GetMatches( new SourceFile( "blue.cs" ) ).LinesWhichMatch );
         }
 
         [Test]
@@ -217,10 +217,10 @@ cxxxxxxxxx
             filter.Children.Add( child1 );
             filter.Children.Add( child2 );
 
-            Assert.IsNotEmpty( filter.GetMatches( new SourceFile( "my.cs" ) ) );
-            Assert.IsNotEmpty( filter.GetMatches( new SourceFile( "blue.html" ) ) );
-            Assert.IsNotEmpty( filter.GetMatches( new SourceFile( "blue.cs" ) ) );
-            Assert.IsEmpty( filter.GetMatches( new SourceFile( "bluuue.css" ) ) );
+            Assert.IsNotEmpty( filter.GetMatches( new SourceFile( "my.cs" ) ).LinesWhichMatch );
+            Assert.IsNotEmpty( filter.GetMatches( new SourceFile( "blue.html" ) ).LinesWhichMatch );
+            Assert.IsNotEmpty( filter.GetMatches( new SourceFile( "blue.cs" ) ).LinesWhichMatch );
+            Assert.IsEmpty( filter.GetMatches( new SourceFile( "bluuue.css" ) ).LinesWhichMatch );
         }
 
 
@@ -235,9 +235,9 @@ cxxxxxxxxx
                 Operator = ClauseOperator.Not,
             };
 
-            Assert.IsEmpty( filter.GetMatches( new SourceFile( "my.cs" ) ) );
-            Assert.IsNotEmpty( filter.GetMatches( new SourceFile( "my.html" ) ) );
-            Assert.IsNotEmpty( filter.GetMatches( new SourceFile( "my.unknownextension" ) ) );
+            Assert.IsEmpty( filter.GetMatches( new SourceFile( "my.cs" ) ).LinesWhichMatch );
+            Assert.IsNotEmpty( filter.GetMatches( new SourceFile( "my.html" ) ).LinesWhichMatch );
+            Assert.IsNotEmpty( filter.GetMatches( new SourceFile( "my.unknownextension" ) ).LinesWhichMatch );
         }
 
         [Test]
@@ -251,8 +251,8 @@ cxxxxxxxxx
                 Operator = ClauseOperator.Not
             };
 
-            Assert.IsNotEmpty( filter.GetMatches( new SourceFile( @"my_test.cs" ) ) );
-            Assert.IsEmpty( filter.GetMatches( new SourceFile( @"Tests.cs" ) ) );
+            Assert.IsNotEmpty( filter.GetMatches( new SourceFile( @"my_test.cs" ) ).LinesWhichMatch );
+            Assert.IsEmpty( filter.GetMatches( new SourceFile( @"Tests.cs" ) ).LinesWhichMatch );
         }
 
         [Test]
@@ -270,8 +270,8 @@ cxxxxxxxxx
                 Children = new List<Clause> { child }
             };
 
-            Assert.IsEmpty( filter.GetMatches( new SourceFile( @"my_test.cs" ) ) );
-            Assert.IsNotEmpty( filter.GetMatches( new SourceFile( @"Tests.cs" ) ) );
+            Assert.IsEmpty( filter.GetMatches( new SourceFile( @"my_test.cs" ) ).LinesWhichMatch );
+            Assert.IsNotEmpty( filter.GetMatches( new SourceFile( @"Tests.cs" ) ).LinesWhichMatch );
         }
 
         [Test]
@@ -297,10 +297,10 @@ cxxxxxxxxx
                 Children = new List<Clause> { one, two }
             };
 
-            Assert.IsNotEmpty( filter.GetMatches( new SourceFile( @"my_one.cs" ) ) );
-            Assert.IsNotEmpty( filter.GetMatches( new SourceFile( @"my_two.cs" ) ) );
-            Assert.IsEmpty( filter.GetMatches( new SourceFile( @"my_three.cs" ) ) );
-            Assert.IsNotEmpty( filter.GetMatches( new SourceFile( @"my_one_two.cs" ) ) );
+            Assert.IsNotEmpty( filter.GetMatches( new SourceFile( @"my_one.cs" ) ).LinesWhichMatch );
+            Assert.IsNotEmpty( filter.GetMatches( new SourceFile( @"my_two.cs" ) ).LinesWhichMatch );
+            Assert.IsEmpty( filter.GetMatches( new SourceFile( @"my_three.cs" ) ).LinesWhichMatch );
+            Assert.IsNotEmpty( filter.GetMatches( new SourceFile( @"my_one_two.cs" ) ).LinesWhichMatch );
         }
 
         #endregion
@@ -312,7 +312,7 @@ cxxxxxxxxx
         {
             var clause = new Clause();
             var file = new SourceFile( @"\path\file.ext" );
-            Assert.That( clause.GetMatches( file ), Is.Not.Empty );
+            Assert.That( clause.GetMatches( file ).LinesWhichMatch, Is.Not.Empty );
         }
 
         [Test]
@@ -325,9 +325,9 @@ cxxxxxxxxx
                 Language = FileLanguage.None
             };
 
-            Assert.That( filter.GetMatches( new SourceFile( "my.cs" ) ), Is.Not.Empty );
-            Assert.That( filter.GetMatches( new SourceFile( "my.html" ) ), Is.Not.Empty );
-            Assert.That( filter.GetMatches( new SourceFile( "my.unknownextension" ) ), Is.Not.Empty );
+            Assert.That( filter.GetMatches( new SourceFile( "my.cs" ) ).LinesWhichMatch, Is.Not.Empty );
+            Assert.That( filter.GetMatches( new SourceFile( "my.html" ) ).LinesWhichMatch, Is.Not.Empty );
+            Assert.That( filter.GetMatches( new SourceFile( "my.unknownextension" ) ).LinesWhichMatch, Is.Not.Empty );
         }
 
         [Test]
@@ -340,9 +340,9 @@ cxxxxxxxxx
                 Language = FileLanguage.CSharp
             };
 
-            Assert.IsNotEmpty( filter.GetMatches( new SourceFile( "my.cs" ) ) );
-            Assert.IsEmpty( filter.GetMatches( new SourceFile( "my.html" ) ) );
-            Assert.IsEmpty( filter.GetMatches( new SourceFile( "my.unknownextension" ) ) );
+            Assert.IsNotEmpty( filter.GetMatches( new SourceFile( "my.cs" ) ).LinesWhichMatch );
+            Assert.IsEmpty( filter.GetMatches( new SourceFile( "my.html" ) ).LinesWhichMatch );
+            Assert.IsEmpty( filter.GetMatches( new SourceFile( "my.unknownextension" ) ).LinesWhichMatch );
         }
 
         [Test]
@@ -355,10 +355,10 @@ cxxxxxxxxx
                 NamePattern = @"^specified\\subpath\\.*"
             };
 
-            Assert.IsEmpty( filter.GetMatches( new SourceFile( @"my.cs" ) ) );
-            Assert.IsNotEmpty( filter.GetMatches( new SourceFile( @"specified\subpath\my.cs" ) ) );
-            Assert.IsNotEmpty( filter.GetMatches( new SourceFile( @"specified\subpath\and\deeper\my.cs" ) ) );
-            Assert.IsEmpty( filter.GetMatches( new SourceFile( @"another\subpath\my.cs" ) ) );
+            Assert.IsEmpty( filter.GetMatches( new SourceFile( @"my.cs" ) ).LinesWhichMatch );
+            Assert.IsNotEmpty( filter.GetMatches( new SourceFile( @"specified\subpath\my.cs" ) ).LinesWhichMatch );
+            Assert.IsNotEmpty( filter.GetMatches( new SourceFile( @"specified\subpath\and\deeper\my.cs" ) ).LinesWhichMatch );
+            Assert.IsEmpty( filter.GetMatches( new SourceFile( @"another\subpath\my.cs" ) ).LinesWhichMatch );
         }
 
         [Test]
@@ -371,10 +371,10 @@ cxxxxxxxxx
                 NamePattern = ""
             };
 
-            Assert.IsNotEmpty( filter.GetMatches( new SourceFile( @"myCode.cs" ) ) );
-            Assert.IsNotEmpty( filter.GetMatches( new SourceFile( @"Tests.cs" ) ) );
-            Assert.IsNotEmpty( filter.GetMatches( new SourceFile( @"myTests.cs" ) ) );
-            Assert.IsNotEmpty( filter.GetMatches( new SourceFile( @"my_tests.js" ) ) );
+            Assert.IsNotEmpty( filter.GetMatches( new SourceFile( @"myCode.cs" ) ).LinesWhichMatch );
+            Assert.IsNotEmpty( filter.GetMatches( new SourceFile( @"Tests.cs" ) ).LinesWhichMatch );
+            Assert.IsNotEmpty( filter.GetMatches( new SourceFile( @"myTests.cs" ) ).LinesWhichMatch );
+            Assert.IsNotEmpty( filter.GetMatches( new SourceFile( @"my_tests.js" ) ).LinesWhichMatch );
         }
 
         [Test]
@@ -387,10 +387,10 @@ cxxxxxxxxx
                 NamePattern = "tests"
             };
 
-            Assert.IsEmpty( filter.GetMatches( new SourceFile( @"my_test.cs" ) ) );
-            Assert.IsNotEmpty( filter.GetMatches( new SourceFile( @"Tests.cs" ) ) );
-            Assert.IsNotEmpty( filter.GetMatches( new SourceFile( @"myTests.cs" ) ) );
-            Assert.IsNotEmpty( filter.GetMatches( new SourceFile( @"my_tests.js" ) ) );
+            Assert.IsEmpty( filter.GetMatches( new SourceFile( @"my_test.cs" ) ).LinesWhichMatch );
+            Assert.IsNotEmpty( filter.GetMatches( new SourceFile( @"Tests.cs" ) ).LinesWhichMatch );
+            Assert.IsNotEmpty( filter.GetMatches( new SourceFile( @"myTests.cs" ) ).LinesWhichMatch );
+            Assert.IsNotEmpty( filter.GetMatches( new SourceFile( @"my_tests.js" ) ).LinesWhichMatch );
         }
 
         #endregion
@@ -403,7 +403,7 @@ cxxxxxxxxx
             var filter = new Clause { ContentPattern = "(foo|bar)" };
             var file = new SourceFile( "foo.cs" );
             file.Content = "using System;";
-            Assert.That( filter.GetMatches( file ), Is.Empty );
+            Assert.That( filter.GetMatches( file ).LinesWhichMatch, Is.Empty );
         }
 
         [Test]
@@ -412,7 +412,7 @@ cxxxxxxxxx
             var filter = new Clause { ContentPattern = "(foo|bar)" };
             var file = new SourceFile( "foo.cs" );
             file.Content = "using System.foo;";
-            Assert.That( filter.GetMatches( file ), Is.Not.Empty );
+            Assert.That( filter.GetMatches( file ).LinesWhichMatch.Any() );
         }
 
         #endregion

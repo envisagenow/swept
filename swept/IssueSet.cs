@@ -17,35 +17,37 @@ namespace swept
         }
 
         // TODO: make MatchLineNumbers independent
-        public IssueSet( IssueSet clone ) : this( clone.Clause, clone.SourceFile, clone.Scope, clone )
+        public IssueSet( IssueSet clone )
+            : this( clone.Clause, clone.SourceFile, clone.Scope, clone.LinesWhichMatch )
         {
         }
 
 
         public Clause Clause { get; private set; }
         public SourceFile SourceFile { get; private set; }
+        // TODO: Push down into ScopedMatches, along with the tests for DoesMatch
         public bool DoesMatch
         {
-            get { return this.Any(); }
+            get { return LinesWhichMatch.Any(); }
         }
 
 
         public IssueSet Intersection( IssueSet rhs )
         {
             ScopedMatches matches = base.Intersection( rhs );
-            return new IssueSet( Clause, SourceFile, matches.Scope, matches );
+            return new IssueSet( Clause, SourceFile, matches.Scope, matches.LinesWhichMatch );
         }
 
         public IssueSet Subtraction( IssueSet rhs )
         {
             ScopedMatches matches = base.Subtraction( rhs );
-            return new IssueSet( Clause, SourceFile, matches.Scope, matches );
+            return new IssueSet( Clause, SourceFile, matches.Scope, matches.LinesWhichMatch );
         }
 
         public IssueSet Union( IssueSet rhs )
         {
             ScopedMatches matches = base.Union( rhs );
-            return new IssueSet( Clause, SourceFile, matches.Scope, matches );
+            return new IssueSet( Clause, SourceFile, matches.Scope, matches.LinesWhichMatch );
         }
 
     }

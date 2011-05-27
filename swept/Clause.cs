@@ -74,17 +74,17 @@ namespace swept
 
         public IssueSet GetIssueSet( SourceFile file )
         {
-            return new IssueSet( this, file, Scope, GetMatches( file ) );
+            return new IssueSet( this, file, Scope, GetMatches( file ).LinesWhichMatch );
         }
 
         public ScopedMatches GetMatches( SourceFile file )
         {
             var matches = new ScopedMatches( MatchScope.File, new List<int>() { 1 } );
-            matches = MatchFileOnLanguage( matches, file, Language );
-            matches = MatchFileOnNamePattern( matches, file, NamePattern );
-            matches = MatchFileOnContentPattern( matches, file, ContentPattern );
+            matches = MatchFileOnLanguage( matches, file, this.Language );
+            matches = MatchFileOnNamePattern( matches, file, this.NamePattern );
+            matches = MatchFileOnContentPattern( matches, file, this.ContentPattern );
 
-            if (matches.Any() && Children.Any())
+            if (matches.LinesWhichMatch.Any() && Children.Any())
             {
                 ScopedMatches childMatches = GetChildMatches( file );
 
@@ -94,19 +94,19 @@ namespace swept
                     matches = matches.Union( childMatches );
             }
 
-            if (ForceFileScope && matches.Any())
+            if (ForceFileScope && matches.LinesWhichMatch.Any())
                 matches = new ScopedMatches( MatchScope.File, new List<int> { 1 } );
 
-            // TODO: determine if I ever use Not.  :D
+            // TODO: Better tests.
             if (Operator == ClauseOperator.Not)
             {
-                if (matches.Any())
+                if (matches.LinesWhichMatch.Any())
                 {
-                    matches.Clear();
+                    matches.LinesWhichMatch.Clear();
                 }
                 else
                 {
-                    matches.Add( 1 );
+                    matches.LinesWhichMatch.Add( 1 );
                 }
             }
 
@@ -115,7 +115,7 @@ namespace swept
 
         private ScopedMatches MatchFileOnLanguage( ScopedMatches matches, SourceFile file, FileLanguage language )
         {
-            if (!matches.Any() || language == FileLanguage.None)
+            if (!matches.LinesWhichMatch.Any() || language == FileLanguage.None)
                 return matches;
 
             if (language == file.Language)
@@ -126,7 +126,7 @@ namespace swept
 
         private ScopedMatches MatchFileOnNamePattern( ScopedMatches matches, SourceFile file, string namePattern )
         {
-            if (!matches.Any() || string.IsNullOrEmpty( namePattern ))
+            if (!matches.LinesWhichMatch.Any() || string.IsNullOrEmpty( namePattern ))
                 return matches;
 
             if (Regex.IsMatch( file.Name, namePattern, RegexOptions.IgnoreCase ))
@@ -137,7 +137,7 @@ namespace swept
 
         private ScopedMatches MatchFileOnContentPattern( ScopedMatches matches, SourceFile file, string contentPattern )
         {
-            if (!matches.Any() || string.IsNullOrEmpty( contentPattern ))
+            if (!matches.LinesWhichMatch.Any() || string.IsNullOrEmpty( contentPattern ))
                 return matches;
 
             return identifyMatchList( file, contentPattern ); ;
@@ -156,7 +156,7 @@ namespace swept
             foreach (Match match in matches)
             {
                 int line = lineNumberOfMatch( match.Index, file.LineIndices );
-                matchList.Add( line );
+                matchList.LinesWhichMatch.Add( line );
             }
 
             return matchList;

@@ -88,7 +88,7 @@ namespace swept.Tests
             Assert.That( outcome.IssueSets, Has.Count.EqualTo( 1 ) );
 
             IssueSet fooIssues = outcome.IssueSets[fooFile];
-            Assert.That( fooIssues, Has.Count.EqualTo( 3 ) );
+            Assert.That( fooIssues.LinesWhichMatch.Count, Is.EqualTo( 3 ) );
         }
         #endregion
 
@@ -132,8 +132,8 @@ namespace swept.Tests
             Assert.That( outcome.IssueSets, Has.Count.EqualTo( 1 ) );
 
             IssueSet fooIssues = outcome.IssueSets[fooFile];
-            Assert.That( fooIssues, Has.Count.EqualTo( 1 ) );
-            Assert.That( fooIssues[0], Is.EqualTo( 1 ) );
+            Assert.That( fooIssues.LinesWhichMatch.Count, Is.EqualTo( 1 ) );
+            Assert.That( fooIssues.LinesWhichMatch[0], Is.EqualTo( 1 ) );
         }
         #endregion
 
@@ -167,14 +167,14 @@ namespace swept.Tests
             Assert.That( resultIssues.Clause, Is.SameAs( checkIssues.Clause ) );
             Assert.That( resultIssues.SourceFile, Is.SameAs( checkIssues.SourceFile ) );
 
-            foreach (int line in resultIssues)
+            foreach (int line in resultIssues.LinesWhichMatch)
             {
-                Assert.That( checkIssues.Contains( line ) );
+                Assert.That( checkIssues.LinesWhichMatch.Contains( line ) );
             }
 
-            foreach (int line in checkIssues)
+            foreach (int line in checkIssues.LinesWhichMatch)
             {
-                Assert.That( resultIssues.Contains( line ) );
+                Assert.That( resultIssues.LinesWhichMatch.Contains( line ) );
             }
         }
 
@@ -199,8 +199,8 @@ namespace swept.Tests
             Assert.That( outcome.IssueSets, Has.Count.EqualTo( 1 ) );
 
             IssueSet fooIssues = outcome.IssueSets[fooFile];
-            Assert.That( fooIssues, Has.Count.EqualTo( 1 ) );
-            Assert.That( fooIssues[0], Is.EqualTo( 2 ) );
+            Assert.That( fooIssues.LinesWhichMatch.Count, Is.EqualTo( 1 ) );
+            Assert.That( fooIssues.LinesWhichMatch[0], Is.EqualTo( 2 ) );
         }
         #endregion
     }

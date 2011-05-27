@@ -4,13 +4,30 @@ using System.Linq;
 
 namespace swept
 {
-    public class ScopedMatches : List<int>
+    public class ScopedMatches
     {
-        public ScopedMatches( MatchScope scope, List<int> matches ) : base( matches )
+        // TODO: Remove this, and split the IssueSet ctors that delegate to this one, to delegate to the below ctors
+        public ScopedMatches( MatchScope scope, List<int> matches )
         {
             Scope = scope;
+            LinesWhichMatch = new List<int>( matches );
         }
 
+        public ScopedMatches( bool matchesFile )
+        {
+            Scope = MatchScope.File;
+            FileDoesMatch = matchesFile;
+        }
+
+        public ScopedMatches( List<int> matchedLines )
+        {
+            Scope = MatchScope.Line;
+            LinesWhichMatch = new List<int>( matchedLines );
+        }
+
+
+        public bool FileDoesMatch { get; private set; }
+        public List<int> LinesWhichMatch { get; private set; }
         public virtual MatchScope Scope { get; set; }
 
         public ScopedMatches Union( ScopedMatches other )
@@ -18,14 +35,16 @@ namespace swept
             MatchScope resultScope = MatchScope.Line;
             if (Scope == MatchScope.File && other.Scope == MatchScope.File)
                 resultScope = MatchScope.File;
-            else if (Scope == MatchScope.Line && this.Count == 0 && other.Scope == MatchScope.File && other.Count == 1)
+            else if (Scope == MatchScope.Line && LinesWhichMatch.Count == 0 && other.Scope == MatchScope.File && other.FileDoesMatch)
                 resultScope = MatchScope.File;
-            else if (Scope == MatchScope.File && this.Count == 1 && other.Scope == MatchScope.Line && other.Count == 0)
+            else if (Scope == MatchScope.File && FileDoesMatch && other.Scope == MatchScope.Line && other.LinesWhichMatch.Count == 0)
                 resultScope = MatchScope.File;
 
             IEnumerable<int> resultMatches = new List<int>();
-            resultMatches = resultMatches.Union( this );
-            resultMatches = resultMatches.Union( other );
+            if (Scope == MatchScope.Line)
+                resultMatches = resultMatches.Union( this.LinesWhichMatch );
+            if (other.Scope == MatchScope.Line)
+                resultMatches = resultMatches.Union( other.LinesWhichMatch );
 
             if (resultScope == MatchScope.File && resultMatches.Any())
                 resultMatches = new List<int> { 1 };
@@ -39,18 +58,18 @@ namespace swept
             if (Scope == MatchScope.File && other.Scope == MatchScope.File)
                 resultScope = MatchScope.File;
 
-            IEnumerable<int> resultMatches = new List<int>( this );
+            IEnumerable<int> resultMatches = new List<int>( this.LinesWhichMatch );
 
             if (Scope == other.Scope)
             {
-                resultMatches = resultMatches.Intersect( other );
+                resultMatches = resultMatches.Intersect( other.LinesWhichMatch );
             }
             else
             {
                 if (Scope == MatchScope.Line)
-                    resultMatches = this;
+                    resultMatches = LinesWhichMatch;
                 else
-                    resultMatches = other;
+                    resultMatches = other.LinesWhichMatch;
             }
 
             return new ScopedMatches( resultScope, resultMatches.ToList() );
@@ -58,15 +77,15 @@ namespace swept
 
         public ScopedMatches Subtraction( ScopedMatches other )
         {
-            List<int> resultMatches = new List<int>(this);
+            List<int> resultMatches = new List<int>( this.LinesWhichMatch );
 
             if (Scope == MatchScope.Line && other.Scope == MatchScope.Line)
             {
-                resultMatches.RemoveAll( m => other.Contains( m ) );
+                resultMatches.RemoveAll( m => other.LinesWhichMatch.Contains( m ) );
             }
             else
             {
-                if (other.Any())
+                if (other.LinesWhichMatch.Any())
                     resultMatches.Clear();
             }
 
@@ -88,16 +107,22 @@ namespace swept
             if (other.Scope != Scope)
                 return false;
 
-            if (other.Count != Count)
+            if (other.LinesWhichMatch.Count != LinesWhichMatch.Count)
                 return false;
 
-            for (int i = 0; i < other.Count; i++)
+            for (int i = 0; i < other.LinesWhichMatch.Count; i++)
             {
-                if (!other[i].Equals( this[i] ))
+                if (!other.LinesWhichMatch[i].Equals( this.LinesWhichMatch[i] ))
                     return false;
             }
 
             return true;
         }
+
+        public override int GetHashCode()
+        {
+            return LinesWhichMatch.Count;
+        }
+
     }
 }

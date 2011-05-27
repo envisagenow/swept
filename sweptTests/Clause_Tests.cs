@@ -41,8 +41,8 @@ namespace swept.Tests
             Assert.That( set, Is.Not.Null );
             Assert.That( set.Scope, Is.EqualTo( MatchScope.File ) );
 
-            Assert.That( set, Has.Count.EqualTo( 1 ) );
-            Assert.That( set[0], Is.EqualTo( 1 ) );
+            Assert.That( set.LinesWhichMatch.Count, Is.EqualTo( 1 ) );
+            Assert.That( set.LinesWhichMatch[0], Is.EqualTo( 1 ) );
         }
 
         [Test]
@@ -55,7 +55,7 @@ namespace swept.Tests
             SourceFile file = new SourceFile( "foo.html" );
             set = isCSharp.GetIssueSet( file );
 
-            Assert.That( set, Has.Count.EqualTo( 0 ) );
+            Assert.That( set.LinesWhichMatch.Count, Is.EqualTo( 0 ) );
         }
 
 
@@ -82,10 +82,10 @@ cxxxxxxxxx
 
             child.ContentPattern = "b";
             and_sibling.ContentPattern = "a";
-            var matches = parent.GetMatches( file );
+            ScopedMatches matches = parent.GetMatches( file );
 
-            Assert.That( matches.Count, Is.EqualTo( 1 ) );
-            Assert.That( matches[0], Is.EqualTo( 3 ) );
+            Assert.That( matches.LinesWhichMatch.Count, Is.EqualTo( 1 ) );
+            Assert.That( matches.LinesWhichMatch[0], Is.EqualTo( 3 ) );
         }
 
         [Test]
@@ -98,13 +98,13 @@ cxxxxxxxxx
             parent.Children.Add( child );
 
             // TODO: upgrade to ScopedMatches
-            List<int> childMatches = parent.GetChildMatches( file );
+            List<int> childMatches = parent.GetChildMatches( file ).LinesWhichMatch;
             Assert.That( childMatches.Any() );
             Assert.That( childMatches.Count, Is.EqualTo( 2 ) );
 
             var parentMatches = parent.GetMatches( file );
-            Assert.That( parentMatches.Count, Is.EqualTo( 2 ) );
-            Assert.That( parentMatches[0], Is.EqualTo( 3 ) );
+            Assert.That( parentMatches.LinesWhichMatch.Count, Is.EqualTo( 2 ) );
+            Assert.That( parentMatches.LinesWhichMatch[0], Is.EqualTo( 3 ) );
         }
 
         [Test]
@@ -117,11 +117,11 @@ cxxxxxxxxx
             parent.Children.Add( child );
 
             var childMatches = parent.GetChildMatches( file );
-            Assert.That( childMatches.Any() );
+            Assert.That( childMatches.LinesWhichMatch.Any() );
 
             var parentMatches = parent.GetMatches( file );
-            Assert.That( parentMatches.Count, Is.EqualTo( 1 ) );
-            Assert.That( parentMatches[0], Is.EqualTo( 1 ) );
+            Assert.That( parentMatches.LinesWhichMatch.Count, Is.EqualTo( 1 ) );
+            Assert.That( parentMatches.LinesWhichMatch[0], Is.EqualTo( 1 ) );
             Assert.That( parent.Scope, Is.EqualTo( MatchScope.File ) );
         }
 
@@ -134,8 +134,8 @@ cxxxxxxxxx
             Clause child = new Clause { ContentPattern = "b", ForceFileScope=true };
 
             var matches = child.GetMatches( file );
-            Assert.That( matches.Count, Is.EqualTo( 1 ) );
-            Assert.That( matches[0], Is.EqualTo( 1 ) );
+            Assert.That( matches.LinesWhichMatch.Count, Is.EqualTo( 1 ) );
+            Assert.That( matches.LinesWhichMatch[0], Is.EqualTo( 1 ) );
         }
 
         [Test, Ignore("Another portion of the evaluation that needs rethinking")]
@@ -151,11 +151,11 @@ cxxxxxxxxx
             parent.Children.Add( sibling );
 
             ScopedMatches childMatches = parent.GetChildMatches( file );
-            Assert.That( childMatches.Any() );
+            Assert.That( childMatches.LinesWhichMatch.Any() );
 
             ScopedMatches parentMatches = parent.GetMatches( file );
-            Assert.That( parentMatches.Count, Is.EqualTo( 1 ) );
-            Assert.That( parentMatches[0], Is.EqualTo( 1 ) );
+            Assert.That( parentMatches.LinesWhichMatch.Count, Is.EqualTo( 1 ) );
+            Assert.That( parentMatches.LinesWhichMatch[0], Is.EqualTo( 1 ) );
             Assert.That( parentMatches.Scope, Is.EqualTo( MatchScope.Line ) );
         }
 
