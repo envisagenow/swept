@@ -69,7 +69,6 @@
     <Compile Include="ClauseMatch.cs" />
     <Compile Include="CoverageExcludeAttribute.cs" />
     <Compile Include="IssueSet.cs" />
-    <Compile Include="ScopedMatches.cs" />
     <Compile Include="SeeAlso.cs" />
     <Compile Include="SourceFileCatalog.cs" />
     <Compile Include="UserGUIAdapter.cs" />

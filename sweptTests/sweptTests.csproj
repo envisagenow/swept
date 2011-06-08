@@ -75,7 +75,6 @@
     <Compile Include="CompoundFilterTests.cs" />
     <Compile Include="Console\GathererTests.cs" />
     <Compile Include="IssueSet_Tests.cs" />
-    <Compile Include="ScopedMatches_Tests.cs" />
     <Compile Include="SeeAlsoTests.cs" />
     <Compile Include="Console\TraverserTests.cs" />
     <Compile Include="XmlPort_CompoundFilter_Tests.cs" />

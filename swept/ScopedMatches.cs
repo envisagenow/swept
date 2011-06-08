@@ -4,22 +4,22 @@ using System.Linq;
 
 namespace swept
 {
-    public class ScopedMatches
+    public class ClauseMatch
     {
         // TODO: Remove this, and split the IssueSet ctors that delegate to this one, to delegate to the below ctors
-        public ScopedMatches( MatchScope scope, List<int> matches )
+        public ClauseMatch( MatchScope scope, List<int> matches )
         {
             Scope = scope;
             LinesWhichMatch = new List<int>( matches );
         }
 
-        public ScopedMatches( bool matchesFile )
+        public ClauseMatch( bool matchesFile )
         {
             Scope = MatchScope.File;
             FileDoesMatch = matchesFile;
         }
 
-        public ScopedMatches( List<int> matchedLines )
+        public ClauseMatch( List<int> matchedLines )
         {
             Scope = MatchScope.Line;
             LinesWhichMatch = new List<int>( matchedLines );
@@ -30,7 +30,7 @@ namespace swept
         public List<int> LinesWhichMatch { get; private set; }
         public virtual MatchScope Scope { get; set; }
 
-        public ScopedMatches Union( ScopedMatches other )
+        public ClauseMatch Union( ClauseMatch other )
         {
             MatchScope resultScope = MatchScope.Line;
             if (Scope == MatchScope.File && other.Scope == MatchScope.File)
@@ -49,10 +49,10 @@ namespace swept
             if (resultScope == MatchScope.File && resultMatches.Any())
                 resultMatches = new List<int> { 1 };
 
-            return new ScopedMatches( resultScope, resultMatches.ToList() );
+            return new ClauseMatch( resultScope, resultMatches.ToList() );
         }
 
-        public ScopedMatches Intersection( ScopedMatches other )
+        public ClauseMatch Intersection( ClauseMatch other )
         {
             MatchScope resultScope = MatchScope.Line;
             if (Scope == MatchScope.File && other.Scope == MatchScope.File)
@@ -72,10 +72,10 @@ namespace swept
                     resultMatches = other.LinesWhichMatch;
             }
 
-            return new ScopedMatches( resultScope, resultMatches.ToList() );
+            return new ClauseMatch( resultScope, resultMatches.ToList() );
         }
 
-        public ScopedMatches Subtraction( ScopedMatches other )
+        public ClauseMatch Subtraction( ClauseMatch other )
         {
             List<int> resultMatches = new List<int>( this.LinesWhichMatch );
 
@@ -89,18 +89,18 @@ namespace swept
                     resultMatches.Clear();
             }
 
-            return new ScopedMatches( Scope, resultMatches );
+            return new ClauseMatch( Scope, resultMatches );
         }
 
 
 
         public override bool Equals( object obj )
         {
-            ScopedMatches other = obj as ScopedMatches;
+            ClauseMatch other = obj as ClauseMatch;
             return Equals( other );
         }
 
-        public bool Equals( ScopedMatches other )
+        public bool Equals( ClauseMatch other )
         {
             if (other == null) return false;
 

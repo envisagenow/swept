@@ -31,21 +31,6 @@ namespace swept.Tests
         }
 
         [Test]
-        public void IssueSet_for_file_scoped_match_has_one_match_line()
-        {
-            Clause isCSharp = new Clause { Language = FileLanguage.CSharp };
-            SourceFile file = new SourceFile( "foo.cs" );
-
-            IssueSet set = isCSharp.GetIssueSet( file );
-
-            Assert.That( set, Is.Not.Null );
-            Assert.That( set.Scope, Is.EqualTo( MatchScope.File ) );
-
-            Assert.That( set.LinesWhichMatch.Count, Is.EqualTo( 1 ) );
-            Assert.That( set.LinesWhichMatch[0], Is.EqualTo( 1 ) );
-        }
-
-        [Test]
         public void Non_matching_IssueSet_exists_with_DoesMatch_false()
         {
             IssueSet set = null;
@@ -55,7 +40,7 @@ namespace swept.Tests
             SourceFile file = new SourceFile( "foo.html" );
             set = isCSharp.GetIssueSet( file );
 
-            Assert.That( set.LinesWhichMatch.Count, Is.EqualTo( 0 ) );
+            Assert.That( set.DoesMatch, Is.False );
         }
 
 
@@ -82,82 +67,83 @@ cxxxxxxxxx
 
             child.ContentPattern = "b";
             and_sibling.ContentPattern = "a";
-            ScopedMatches matches = parent.GetMatches( file );
+            ClauseMatch matches = parent.GetMatches( file );
 
-            Assert.That( matches.LinesWhichMatch.Count, Is.EqualTo( 1 ) );
-            Assert.That( matches.LinesWhichMatch[0], Is.EqualTo( 3 ) );
+            var lines = ((LineMatch)matches).Lines;
+            Assert.That( lines.Count, Is.EqualTo( 1 ) );
+            Assert.That( lines[0], Is.EqualTo( 3 ) );
         }
 
-        [Test]
-        public void LineScoped_child_will_create_line_scoped_result()
-        {
-            SourceFile file = new SourceFile( "bs_foo.cs" ) { Content = _multiLineFile };
+        //[Test]
+        //public void LineScoped_child_will_create_line_scoped_result()
+        //{
+        //    SourceFile file = new SourceFile( "bs_foo.cs" ) { Content = _multiLineFile };
 
-            Clause child = new Clause { ContentPattern = "b" };
-            Clause parent = new Clause();
-            parent.Children.Add( child );
+        //    Clause child = new Clause { ContentPattern = "b" };
+        //    Clause parent = new Clause();
+        //    parent.Children.Add( child );
 
-            // TODO: upgrade to ScopedMatches
-            List<int> childMatches = parent.GetChildMatches( file ).LinesWhichMatch;
-            Assert.That( childMatches.Any() );
-            Assert.That( childMatches.Count, Is.EqualTo( 2 ) );
+        //    // TODO: upgrade to ScopedMatches
+        //    List<int> childMatches = parent.GetChildMatches( file ).LinesWhichMatch;
+        //    Assert.That( childMatches.Any() );
+        //    Assert.That( childMatches.Count, Is.EqualTo( 2 ) );
 
-            var parentMatches = parent.GetMatches( file );
-            Assert.That( parentMatches.LinesWhichMatch.Count, Is.EqualTo( 2 ) );
-            Assert.That( parentMatches.LinesWhichMatch[0], Is.EqualTo( 3 ) );
-        }
+        //    var parentMatches = parent.GetMatches( file );
+        //    Assert.That( parentMatches.LinesWhichMatch.Count, Is.EqualTo( 2 ) );
+        //    Assert.That( parentMatches.LinesWhichMatch[0], Is.EqualTo( 3 ) );
+        //}
 
-        [Test]
-        public void FileScoped_child_will_create_file_scoped_result_in_parent()
-        {
-            SourceFile file = new SourceFile( "bs_foo.cs" );
+        //[Test]
+        //public void FileScoped_child_will_create_file_scoped_result_in_parent()
+        //{
+        //    SourceFile file = new SourceFile( "bs_foo.cs" );
 
-            Clause child = new Clause { NamePattern = "foo" };
-            Clause parent = new Clause();
-            parent.Children.Add( child );
+        //    Clause child = new Clause { NamePattern = "foo" };
+        //    Clause parent = new Clause();
+        //    parent.Children.Add( child );
 
-            var childMatches = parent.GetChildMatches( file );
-            Assert.That( childMatches.LinesWhichMatch.Any() );
+        //    var childMatches = parent.GetChildMatches( file );
+        //    Assert.That( childMatches.DoesMatch );
 
-            var parentMatches = parent.GetMatches( file );
-            Assert.That( parentMatches.LinesWhichMatch.Count, Is.EqualTo( 1 ) );
-            Assert.That( parentMatches.LinesWhichMatch[0], Is.EqualTo( 1 ) );
-            Assert.That( parent.Scope, Is.EqualTo( MatchScope.File ) );
-        }
+        //    var parentMatches = parent.GetMatches( file );
+        //    Assert.That( parentMatches.LinesWhichMatch.Count, Is.EqualTo( 1 ) );
+        //    Assert.That( parentMatches.LinesWhichMatch[0], Is.EqualTo( 1 ) );
+        //    Assert.That( parent.Scope, Is.EqualTo( MatchScope.File ) );
+        //}
 
-        [Test]
-        public void Forcing_File_Scope_sets_match_list_to_1()
-        {
-            SourceFile file = new SourceFile( "bs_foo.cs" );
-            file.Content = _multiLineFile;
+        //[Test]
+        //public void Forcing_File_Scope_sets_match_list_to_1()
+        //{
+        //    SourceFile file = new SourceFile( "bs_foo.cs" );
+        //    file.Content = _multiLineFile;
 
-            Clause child = new Clause { ContentPattern = "b", ForceFileScope=true };
+        //    Clause child = new Clause { ContentPattern = "b", ForceFileScope=true };
 
-            var matches = child.GetMatches( file );
-            Assert.That( matches.LinesWhichMatch.Count, Is.EqualTo( 1 ) );
-            Assert.That( matches.LinesWhichMatch[0], Is.EqualTo( 1 ) );
-        }
+        //    var matches = child.GetMatches( file );
+        //    Assert.That( matches.LinesWhichMatch.Count, Is.EqualTo( 1 ) );
+        //    Assert.That( matches.LinesWhichMatch[0], Is.EqualTo( 1 ) );
+        //}
 
-        [Test, Ignore("Another portion of the evaluation that needs rethinking")]
-        public void LineScoped_childMatches_communicate_line_scope_to_parent()
-        {
-            SourceFile file = new SourceFile( "bs_foo.cs" );
-            file.Content = _multiLineFile;
+        //[Test, Ignore("Another portion of the evaluation that needs rethinking")]
+        //public void LineScoped_childMatches_communicate_line_scope_to_parent()
+        //{
+        //    SourceFile file = new SourceFile( "bs_foo.cs" );
+        //    file.Content = _multiLineFile;
 
-            Clause child = new Clause { ContentPattern = "b", };
-            Clause sibling = new Clause { NamePattern = ".*foo.*", Operator = ClauseOperator.And };
-            Clause parent = new Clause( );
-            parent.Children.Add( child );
-            parent.Children.Add( sibling );
+        //    Clause child = new Clause { ContentPattern = "b", };
+        //    Clause sibling = new Clause { NamePattern = ".*foo.*", Operator = ClauseOperator.And };
+        //    Clause parent = new Clause( );
+        //    parent.Children.Add( child );
+        //    parent.Children.Add( sibling );
 
-            ScopedMatches childMatches = parent.GetChildMatches( file );
-            Assert.That( childMatches.LinesWhichMatch.Any() );
+        //    ClauseMatch childMatches = parent.GetChildMatches( file );
+        //    Assert.That( childMatches.DoesMatch );
 
-            ScopedMatches parentMatches = parent.GetMatches( file );
-            Assert.That( parentMatches.LinesWhichMatch.Count, Is.EqualTo( 1 ) );
-            Assert.That( parentMatches.LinesWhichMatch[0], Is.EqualTo( 1 ) );
-            Assert.That( parentMatches.Scope, Is.EqualTo( MatchScope.Line ) );
-        }
+        //    ClauseMatch parentMatches = parent.GetMatches( file );
+        //    Assert.That( parentMatches.LinesWhichMatch.Count, Is.EqualTo( 1 ) );
+        //    Assert.That( parentMatches.LinesWhichMatch[0], Is.EqualTo( 1 ) );
+        //    Assert.That( parentMatches.Scope, Is.EqualTo( MatchScope.Line ) );
+        //}
 
     }
 

@@ -14,6 +14,8 @@ namespace swept
 
         public abstract ClauseMatch Subtraction( ClauseMatch other );
         public abstract ClauseMatch Subtraction( bool does );
+
+        public abstract bool DoesMatch { get; }
     }
 
     public class LineMatch : ClauseMatch
@@ -32,10 +34,10 @@ namespace swept
             if (other is LineMatch)
                 return Union( ((LineMatch)other).Lines );
             else
-                return Union( ((FileMatch)other).Does );
+                return Union( ((FileMatch)other).DoesMatch );
         }
 
-        public override ClauseMatch Union( IEnumerable<int> lines )
+        public ClauseMatch Union( IEnumerable<int> lines )
         {
             return new LineMatch( lines.Union( Lines ) );
         }
@@ -53,7 +55,7 @@ namespace swept
             if (other is LineMatch)
                 return Intersection( ((LineMatch)other).Lines );
             else
-                return Intersection( ((FileMatch)other).Does );
+                return Intersection( ((FileMatch)other).DoesMatch );
         }
         public ClauseMatch Intersection( IEnumerable<int> lines )
         {
@@ -69,7 +71,7 @@ namespace swept
             if (other is LineMatch)
                 return Subtraction( ((LineMatch)other).Lines );
             else
-                return Subtraction( ((FileMatch)other).Does );
+                return Subtraction( ((FileMatch)other).DoesMatch );
         }
 
         private ClauseMatch Subtraction( IEnumerable<int> lines )
@@ -80,43 +82,56 @@ namespace swept
         {
             return new LineMatch( does ? new List<int>() : Lines );
         }
+
+        public override bool DoesMatch
+        {
+            get { return Lines.Any(); }
+        }
     }
 
     public class FileMatch : ClauseMatch
     {
         public FileMatch( bool does )
         {
-            Does = does;
+            this.does = does;
         }
 
-        public bool Does { get; private set; }
+        private bool does;
+        public override bool DoesMatch
+        {
+            get
+            {
+                return does;
+            }
+        }
 
         public override ClauseMatch Union( ClauseMatch other )
         {
-            return other.Union( Does );
+            return other.Union( DoesMatch );
         }
         public override ClauseMatch Union( bool does )
         {
-            return new FileMatch( Does || does );
+            return new FileMatch( DoesMatch || does );
         }
 
         public override ClauseMatch Intersection( ClauseMatch other )
         {
-            return other.Intersection( Does );
+            return other.Intersection( DoesMatch );
         }
         public override ClauseMatch Intersection( bool does )
         {
-            return new FileMatch( Does && does );
+            return new FileMatch( DoesMatch && does );
         }
 
         public override ClauseMatch Subtraction( ClauseMatch other )
         {
-            bool does = other is LineMatch ? ((LineMatch)other).Lines.Any() : ((FileMatch)other).Does;
+            bool does = other is LineMatch ? ((LineMatch)other).Lines.Any() : ((FileMatch)other).DoesMatch;
             return Subtraction( does );
         }
         public override ClauseMatch Subtraction( bool does )
         {
-            return new FileMatch( Does && !does );
+            return new FileMatch( DoesMatch && !does );
         }
+
     }
 }

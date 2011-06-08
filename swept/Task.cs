@@ -43,14 +43,27 @@ namespace swept
             if (set.Clause != null && !string.IsNullOrEmpty( set.Clause.Description ))
                 description = set.Clause.Description;
 
-            foreach (int line in set.LinesWhichMatch)
+            // TODO: fix typesnort
+            if (set.Match is LineMatch)
             {
-                tasks.Add( new Task
+                LineMatch lineMatch = set.Match as LineMatch;
+                foreach (int line in lineMatch.Lines)
                 {
+                    tasks.Add( new Task
+                    {
+                        Description = description,
+                        LineNumber = line,
+                    } );
+                }
+            }
+            else if (set.DoesMatch)
+            {
+                tasks.Add( new Task {
                     Description = description,
-                    LineNumber = line,
+                    LineNumber = 1,
                 } );
             }
+
 
             return tasks;
         }

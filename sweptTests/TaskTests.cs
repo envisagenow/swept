@@ -15,7 +15,7 @@ namespace swept.Tests
         public void FromIssueSet_gets_one_task_on_matching_File_scope()
         {
             Clause clause = new Clause { Language = FileLanguage.CSharp };
-            IssueSet set = new IssueSet( clause, new SourceFile( "foo.cs" ), MatchScope.File, new List<int> { 1 } );
+            IssueSet set = new IssueSet( clause, new SourceFile( "foo.cs" ), new FileMatch( true ) );
             List<Task> tasks = Task.FromIssueSet( set );
             Assert.That( tasks.Count, Is.EqualTo( 1 ) );
             Assert.That( tasks[0].LineNumber, Is.EqualTo( 1 ) );
@@ -24,15 +24,15 @@ namespace swept.Tests
         [Test]
         public void FromIssueSet_gets_no_tasks_on_unmatching_File_scope()
         {
-            IssueSet set = new IssueSet( null, null, MatchScope.File, new List<int>() );
+            IssueSet set = new IssueSet( null, null, new FileMatch(false) );
             List<Task> tasks = Task.FromIssueSet( set );
             Assert.That( tasks.Count, Is.EqualTo( 0 ) );
         }
 
         [Test]
         public void FromIssueSet_gets_one_Task_per_match_location()
-        {
-            IssueSet set = new IssueSet( null, null, MatchScope.Line, new List<int> { 4, 8, 9 } );
+        {//
+            IssueSet set = new IssueSet( null, null, new LineMatch( new List<int> { 4, 8, 9 } ) );
 
             List<Task> tasks = Task.FromIssueSet( set );
 
@@ -45,7 +45,7 @@ namespace swept.Tests
         [Test]
         public void FromIssueSet_gets_no_Tasks_when_does_not_match()
         {
-            IssueSet set = new IssueSet( null, null, MatchScope.Line, new List<int>() );
+            IssueSet set = new IssueSet( null, null, new LineMatch(new List<int>()) );
 
             List<Task> tasks = Task.FromIssueSet( set );
 

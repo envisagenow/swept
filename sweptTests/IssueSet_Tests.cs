@@ -13,12 +13,15 @@ namespace swept.Tests
         {
             Clause clause = new Clause();
             SourceFile fooFile = new SourceFile( "foo.cs" );
-            IssueSet set = new IssueSet( clause, fooFile, MatchScope.Line, new List<int>() { 1 });
+            IssueSet set = new IssueSet( clause, fooFile, new LineMatch( new List<int>() { 3 } ) );
             Assert.That( set, Is.Not.Null );
             Assert.That( set.Clause, Is.EqualTo( clause ) );
             Assert.That( set.SourceFile, Is.EqualTo( fooFile ) );
-            Assert.That( set.Scope, Is.EqualTo( MatchScope.Line ) );
-            Assert.That( set.LinesWhichMatch[0], Is.EqualTo( 1 ) );
+
+            Assert.That( set.Match, Is.InstanceOf<LineMatch>() );
+
+            var lines = ((LineMatch)set.Match).Lines;
+            Assert.That( lines[0], Is.EqualTo( 3 ) );
 
             Assert.That( set.DoesMatch );
         }
@@ -28,16 +31,19 @@ namespace swept.Tests
         {
             Clause clause = new Clause();
             SourceFile fooFile = new SourceFile( "foo.cs" );
-            
-            IssueSet set = new IssueSet( clause, fooFile, MatchScope.Line, new List<int>() { 1 });
+
+            IssueSet set = new IssueSet( clause, fooFile, new LineMatch( new List<int>() { 8 } ) );
 
             IssueSet clone = new IssueSet(set);
 
             Assert.That( clone, Is.Not.Null );
             Assert.That( clone.Clause, Is.EqualTo( clause ) );
             Assert.That( clone.SourceFile, Is.EqualTo( fooFile ) );
-            Assert.That( clone.Scope, Is.EqualTo( MatchScope.Line ) );
-            Assert.That( clone.LinesWhichMatch[0], Is.EqualTo( 1 ) );
+            Assert.That( clone.Match, Is.InstanceOf<LineMatch>() );
+
+            var lines = ((LineMatch)clone.Match).Lines;
+            Assert.That( lines.Count, Is.EqualTo( 1 ) );
+            Assert.That( lines[0], Is.EqualTo( 8 ) );
 
             Assert.That( set.DoesMatch );
         }
@@ -50,8 +56,8 @@ namespace swept.Tests
 
             IssueSet set = change.GetIssueSet( file );
 
-            IList<int> matchLineNumbers = set.LinesWhichMatch;
-            Assert.That( matchLineNumbers.Count, Is.EqualTo( 2 ) );
+            var lines = ((LineMatch)set.Match).Lines;
+            Assert.That( lines.Count, Is.EqualTo( 2 ) );
         }
 
         [Test]
@@ -70,8 +76,10 @@ barbar
             SourceFile barFile = new SourceFile( "bar.cs" ) { Content = barContent };
             IssueSet barIssue = change.GetIssueSet( barFile );
 
-            Assert.That( barIssue.LinesWhichMatch.Count, Is.EqualTo( 5 ) );
-            Assert.That( fooIssue.LinesWhichMatch.Count, Is.EqualTo( 2 ) );
+            var barLines = ((LineMatch)barIssue.Match).Lines;
+            var fooLines = ((LineMatch)fooIssue.Match).Lines;
+            Assert.That( barLines.Count, Is.EqualTo( 5 ) );
+            Assert.That( fooLines.Count, Is.EqualTo( 2 ) );
         }
 
         [Test]
@@ -89,34 +97,43 @@ barbar
         [Test]
         public void IssueSet_Intersection_creates_new_IssueSet()
         {
-            IssueSet left = new IssueSet( null, null, MatchScope.Line, new List<int> { 2, 4, 8 } );
-            IssueSet rght = new IssueSet( null, null, MatchScope.Line, new List<int> { 2, 4, 6 } );
+            IssueSet left = new IssueSet( null, null, new LineMatch( new List<int>() { 2, 4, 8 } ) );
+            IssueSet rght = new IssueSet( null, null, new LineMatch( new List<int>() { 2, 4, 6 } ) );
             IssueSet result = left.Intersection( rght );
             Assert.That( result, Is.Not.SameAs( left ) );
-            Assert.That( left.LinesWhichMatch.Count, Is.EqualTo( 3 ) );
-            Assert.That( result.LinesWhichMatch.Count, Is.EqualTo( 2 ) );
+
+            var leftLines = ((LineMatch)left.Match).Lines;
+            var resultLines = ((LineMatch)result.Match).Lines;
+            Assert.That( leftLines.Count, Is.EqualTo( 3 ) );
+            Assert.That( resultLines.Count, Is.EqualTo( 2 ) );
         }
 
         [Test]
         public void IssueSet_Subtraction_creates_new_IssueSet()
         {
-            IssueSet left = new IssueSet( null, null, MatchScope.Line, new List<int> { 2, 4, 8 } );
-            IssueSet rght = new IssueSet( null, null, MatchScope.Line, new List<int> { 2, 4, 6 } );
+            IssueSet left = new IssueSet( null, null, new LineMatch( new List<int>() { 2, 4, 8 } ) );
+            IssueSet rght = new IssueSet( null, null, new LineMatch( new List<int>() { 2, 4, 6 } ) );
             IssueSet result = left.Subtraction( rght );
             Assert.That( result, Is.Not.SameAs( left ) );
-            Assert.That( left.LinesWhichMatch.Count, Is.EqualTo( 3 ) );
-            Assert.That( result.LinesWhichMatch.Count, Is.EqualTo( 1 ) );
+
+            var leftLines = ((LineMatch)left.Match).Lines;
+            var resultLines = ((LineMatch)result.Match).Lines;
+            Assert.That( leftLines.Count, Is.EqualTo( 3 ) );
+            Assert.That( resultLines.Count, Is.EqualTo( 1 ) );
         }
 
         [Test]
         public void IssueSet_Union_creates_new_IssueSet()
         {
-            IssueSet left = new IssueSet( null, null, MatchScope.Line, new List<int> { 2, 4, 8 } );
-            IssueSet rght = new IssueSet( null, null, MatchScope.Line, new List<int> { 2, 4, 6 } );
+            IssueSet left = new IssueSet( null, null, new LineMatch( new List<int>() { 2, 4, 8 } ) );
+            IssueSet rght = new IssueSet( null, null, new LineMatch( new List<int>() { 2, 4, 6 } ) );
             IssueSet result = left.Union( rght );
             Assert.That( result, Is.Not.SameAs( left ) );
-            Assert.That( left.LinesWhichMatch.Count, Is.EqualTo( 3 ) );
-            Assert.That( result.LinesWhichMatch.Count, Is.EqualTo( 4 ) );
+
+            var leftLines = ((LineMatch)left.Match).Lines;
+            var resultLines = ((LineMatch)result.Match).Lines;
+            Assert.That( leftLines.Count, Is.EqualTo( 3 ) );
+            Assert.That( resultLines.Count, Is.EqualTo( 4 ) );
         }
     }            
 }
