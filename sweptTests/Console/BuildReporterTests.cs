@@ -1,11 +1,12 @@
 ﻿//  Swept:  Software Enhancement Progress Tracking.
-//  Copyright (c) 2010 Jason Cole and Envisage Technologies Corp.
+//  Copyright (c) 2011 Jason Cole and Envisage Technologies Corp.
 //  This software is open source, MIT license.  See the file LICENSE for details.
 using System;
 using System.Collections.Generic;
 using NUnit.Framework;
 using System.Xml.Linq;
 using swept;
+using swept.DSL;
 
 namespace swept.Tests
 {
@@ -20,7 +21,7 @@ namespace swept.Tests
         {
             BuildReporter reporter = new BuildReporter();
 
-            string report = reporter.ReportOn( new Dictionary<Change, List<IssueSet>>() );
+            string report = reporter.ReportOn( new Dictionary<Change, Dictionary<SourceFile, ClauseMatch>>() );
 
             Assert.That( report, Is.EqualTo( empty_report ) );
         }
@@ -38,19 +39,20 @@ namespace swept.Tests
 
             BuildReporter reporter = new BuildReporter();
 
-            var changes = new Dictionary<Change, List<IssueSet>>();
+            var changes = new Dictionary<Change, Dictionary<SourceFile,ClauseMatch>>();
 
             var change = new Change
             {
                 ID = "HTML 01",
-                Language = FileLanguage.HTML,
+                Subquery = new QueryLanguageNode { Language = FileLanguage.HTML },
                 Description = "Improve browser compatibility"
             };
 
-            var bar = new SourceFile( "bar.htm" ) { TaskCount = 4 };
-            var set = change.GetIssueSet( bar );
+            var bar = new SourceFile( "bar.htm" );
 
-            changes.Add( change, new List<IssueSet> { set } );
+            var fileMatches = new Dictionary<SourceFile, ClauseMatch>();
+            fileMatches[bar] = new LineMatch( new List<int> { 1, 12, 123, 1234 } ); //change.Subquery.Answer( bar );
+            changes.Add( change, fileMatches );
 
             string report = reporter.ReportOn( changes );
 
@@ -83,7 +85,7 @@ namespace swept.Tests
 "
             );
 
-            var changes = new Dictionary<Change, List<IssueSet>>();
+            var changes = new Dictionary<Change, Dictionary<SourceFile,ClauseMatch>>();
 
             var csharpChange = new Change
             {
@@ -91,29 +93,32 @@ namespace swept.Tests
                 Description = "Use DomainEvents instead of AcadisUserPersister and AuditRecordPersister"
             };
 
-            var csharpFiles = new List<IssueSet>();
+            var csharpFiles = new Dictionary<SourceFile,ClauseMatch>();
 
-            SourceFile foo = new SourceFile( "foo.cs" ) { TaskCount = 1 };
-            SourceFile goo = new SourceFile( "goo.cs" ) { TaskCount = 3 };
-            csharpFiles.Add( csharpChange.GetIssueSet( foo ) );
-            csharpFiles.Add( csharpChange.GetIssueSet( goo ) );
+            // TODO: sensible flexibility point for generating tests--but .TaskCount is m'lark.
+            SourceFile foo = new SourceFile( "foo.cs" ); // { TaskCount = 1 };
+            SourceFile goo = new SourceFile( "goo.cs" ); // { TaskCount = 3 };
 
-            changes.Add( csharpChange, csharpFiles );
+            csharpFiles[foo] = new FileMatch( true );
+            csharpFiles[goo] = new LineMatch( new List<int> { 1, 2, 3 } );
+
+            changes[csharpChange] = csharpFiles;
 
             var htmlChange = new Change
             {
                 ID = "HTML 01",
-                Language = FileLanguage.HTML,
+                Subquery = new QueryLanguageNode { Language = FileLanguage.HTML },
                 Description = "Improve browser compatibility across IE versions"
             };
 
-            var htmlFiles = new List<IssueSet>();
-            SourceFile bar = new SourceFile( "bar.htm" ) { TaskCount = 4 };
-            SourceFile shmoo = new SourceFile( "shmoo.aspx" ) { TaskCount = 2 };
-            htmlFiles.Add( htmlChange.GetIssueSet( bar ) );
-            htmlFiles.Add( htmlChange.GetIssueSet( shmoo ) );
+            var htmlFiles = new Dictionary<SourceFile,ClauseMatch>();
+            SourceFile bar = new SourceFile( "bar.htm" ); // { TaskCount = 4 };
+            SourceFile shmoo = new SourceFile( "shmoo.aspx" ); // { TaskCount = 2 };
 
-            changes.Add( htmlChange, htmlFiles );
+            htmlFiles[bar] = new LineMatch( new List<int> { 1, 2, 3, 4 } );
+            htmlFiles[shmoo] = new LineMatch( new List<int> { 8, 12 } );
+
+            changes[htmlChange] = htmlFiles;
 
             BuildReporter reporter = new BuildReporter();
             string report = reporter.ReportOn( changes );

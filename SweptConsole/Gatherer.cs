@@ -21,9 +21,9 @@ namespace swept
             _storageAdapter = storageAdapter;
         }
 
-        public Dictionary<Change, List<IssueSet>> GetIssuesPerChange()
+        public Dictionary<Change, Dictionary<SourceFile, ClauseMatch>> GetMatchesPerChange()
         {
-            var result = new Dictionary<Change, List<IssueSet>>();
+            var result = new Dictionary<Change, Dictionary<SourceFile,ClauseMatch>>();
 
             foreach (string fileName in _files)
             {
@@ -31,14 +31,12 @@ namespace swept
 
                 foreach (var change in _changes)
                 {
-                    IssueSet set = change.GetIssueSet( sourceFile );
-                    if (set.DoesMatch)
-                    {
-                        if (!result.ContainsKey( change ))
-                            result.Add( change, new List<IssueSet>() );
+                    var match = change.Subquery.Answer( sourceFile );
 
-                        result[change].Add( set );
-                    }
+                    if (!result.ContainsKey( change ))
+                        result[change] = new Dictionary<SourceFile, ClauseMatch>();
+
+                    result[change][sourceFile] = match;
                 }
             }
 

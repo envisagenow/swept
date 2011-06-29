@@ -16,15 +16,6 @@ namespace swept
             _changes = new List<Change>();
         }
 
-        private ChangeCatalog( List<Change> changes ) : this()
-        {
-            changes.ForEach( change => _changes.Add( change.Clone() ) );
-        }
-
-        public ChangeCatalog Clone()
-        {
-            return new ChangeCatalog( _changes );
-        }
 
         public bool Equals( ChangeCatalog other )
         {

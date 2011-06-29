@@ -1,5 +1,5 @@
 ﻿//  Swept:  Software Enhancement Progress Tracking.
-//  Copyright (c) 2010 Jason Cole and Envisage Technologies Corp.
+//  Copyright (c) 2011 Jason Cole and Envisage Technologies Corp.
 //  This software is open source, MIT license.  See the file LICENSE for details.
 using System;
 using NUnit.Framework;
@@ -12,29 +12,20 @@ namespace swept.Tests
     public class TaskTests
     {
         [Test]
-        public void FromIssueSet_gets_one_task_on_matching_File_scope()
+        public void FromMatch_gets_one_task_on_matching_File_scope()
         {
-            Clause clause = new Clause { Language = FileLanguage.CSharp };
-            IssueSet set = new IssueSet( clause, new SourceFile( "foo.cs" ), new FileMatch( true ) );
-            List<Task> tasks = Task.FromIssueSet( set );
+            var match = new FileMatch( true );  //  This file matches
+            List<Task> tasks = Task.FromMatch( match, null );
             Assert.That( tasks.Count, Is.EqualTo( 1 ) );
             Assert.That( tasks[0].LineNumber, Is.EqualTo( 1 ) );
         }
 
         [Test]
-        public void FromIssueSet_gets_no_tasks_on_unmatching_File_scope()
-        {
-            IssueSet set = new IssueSet( null, null, new FileMatch(false) );
-            List<Task> tasks = Task.FromIssueSet( set );
-            Assert.That( tasks.Count, Is.EqualTo( 0 ) );
-        }
-
-        [Test]
         public void FromIssueSet_gets_one_Task_per_match_location()
-        {//
-            IssueSet set = new IssueSet( null, null, new LineMatch( new List<int> { 4, 8, 9 } ) );
+        {
+            var match = new LineMatch( new List<int> { 4, 8, 9 } );
 
-            List<Task> tasks = Task.FromIssueSet( set );
+            List<Task> tasks = Task.FromMatch( match, null );
 
             Assert.That( tasks.Count, Is.EqualTo( 3 ) );
             Assert.That( tasks[0].LineNumber, Is.EqualTo( 4 ) );
@@ -43,24 +34,39 @@ namespace swept.Tests
         }
 
         [Test]
-        public void FromIssueSet_gets_no_Tasks_when_does_not_match()
+        public void FromMatch_gets_no_tasks_from_LineMatch_with_no_lines()
         {
-            IssueSet set = new IssueSet( null, null, new LineMatch(new List<int>()) );
-
-            List<Task> tasks = Task.FromIssueSet( set );
-
+            var match = new LineMatch( new List<int>() );
+            List<Task> tasks = Task.FromMatch( match, null );
             Assert.That( tasks.Count, Is.EqualTo( 0 ) );
         }
 
+        [Test]
+        public void FromMatch_gets_no_Tasks_from_FileMatch_with_DoesMatch_false()
+        {
+            var match = new FileMatch(false);
+            List<Task> tasks = Task.FromMatch( match, null );
+            Assert.That( tasks.Count, Is.EqualTo( 0 ) );
+        }
 
+        [Test]
+        public void ToString_shows_description_for_GUI()
+        {
+            var match = new FileMatch( true );
+            string description = "XML must have correct namespace.";
+            var change = new Change { Description = description };
 
+            List<Task> tasks = Task.FromMatch( match, change );
+            Assert.That( tasks.Count, Is.EqualTo( 1 ) );
 
+            var task = tasks[0];
+            Assert.That( task.ToString(), Is.EqualTo( description ) );
+        }
 
-        //[Test]
-        //public void ToString_shows_description_for_GUI()
-        //{
-        //    Assert.That( _task.ToString(), Is.EqualTo( _Description ) );
-        //}
+        //  So FromMatch we don't have SeeAlsos--which live on the Change.
+        //  We can pass SeeAlsos as we now pass description.
+        //  We can pass Change, then copy desc and SAs
+        //  We can pass Change, and keep ref to change, and delegate values from change
 
         //[Test]
         //public void SeeAlsos_are_copied()

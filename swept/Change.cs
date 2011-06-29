@@ -1,8 +1,9 @@
 //  Swept:  Software Enhancement Progress Tracking.
-//  Copyright (c) 2010 Jason Cole and Envisage Technologies Corp.
+//  Copyright (c) 2011 Jason Cole and Envisage Technologies Corp.
 //  This software is open source, MIT license.  See the file LICENSE for details.
 using System;
 using System.Collections.Generic;
+using swept.DSL;
 
 namespace swept
 {
@@ -20,18 +21,35 @@ namespace swept
         Unknown,
     }
 
-    public class Change : Clause
+    public class Change
     {
         public List<SeeAlso> SeeAlsos { get; set; }
-        public Change() : base() 
+        public string ID { get; internal set; }
+        public string Description { get; internal set; }
+
+        public Change()
         {
             SeeAlsos = new List<SeeAlso>();
         }
 
-        public new Change Clone()
+        public ISubquery Subquery { get; set; }
+
+        public ClauseMatch GetMatches( SourceFile file )
         {
-            return (Change)base.CloneInto( new Change() );
-            // TODO: also the SeeAlsos
+            ClauseMatch match = Subquery.Answer( file );
+            match.Change = this;
+            return match;
         }
+
+        //public IssueSet GetIssueSet( SourceFile file )
+        //{
+        //    return new IssueSet( this, file, GetMatches( file ) );
+        //}
+
+        //public new Change Clone()
+        //{
+        //    return (Change)base.CloneInto( new Change() );
+        //    // TODO: also the SeeAlsos
+        //}
     }
 }

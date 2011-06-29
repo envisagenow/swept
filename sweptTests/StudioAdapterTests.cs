@@ -4,6 +4,7 @@
 using NUnit.Framework;
 using swept;
 using System;
+using swept.DSL;
 
 namespace swept.Tests
 {
@@ -34,7 +35,7 @@ namespace swept.Tests
 
             changeCat = starter.ChangeCatalog;
             string indentID = "14";
-            changeCat.Add( new Change { ID = indentID, Description = "indentation cleanup", Language = FileLanguage.CSharp } );
+            changeCat.Add( new Change { ID = indentID, Description = "indentation cleanup", Subquery = new QueryLanguageNode { Language = FileLanguage.CSharp } } );
 
             fileCat = librarian._sourceCatalog;
 

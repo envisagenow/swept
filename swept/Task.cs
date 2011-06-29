@@ -6,67 +6,79 @@ using System.Collections.Generic;
 
 namespace swept
 {
-    public class Task : Change
+    public class Task
     {
         public int LineNumber { get; private set; }
+        private Change _Change;
+        public IEnumerable<SeeAlso> SeeAlsos { get { return _Change.SeeAlsos; } }
+        public string Description { get { return _Change.Description; } }
 
-        [Obsolete("Generate Tasks from an IssueSet instead.  Broken to ease refactoring.")]
-        public static List<Task> FromChange( Change change )
+        public Task( Change change, int line )
         {
-            List<Task> tasks = new List<Task>();
-            //generate list of one task per spot
-            foreach (int line in /*change._matches*/ new List<int>())
-            {
-                Task task = new Task
-                {
-                    ID = change.ID,
-                    Description = change.Description,
-                    LineNumber = line,
-                };
-
-                foreach (var seeAlso in change.SeeAlsos)
-                {
-                    task.SeeAlsos.Add( seeAlso.Clone() );
-                }
-                tasks.Add( task );
-            }
-
-            return tasks;
+            _Change = change;
+            LineNumber = line;
         }
 
-        public static List<Task> FromIssueSet( IssueSet set )
+        public static List<Task> FromChangesForFile( Change change, SourceFile sourceFile )
+        {
+            return FromMatch( change.GetMatches( sourceFile ), change );
+        }
+
+        public static List<Task> FromMatch( ClauseMatch match, Change change )
         {
             List<Task> tasks = new List<Task>();
-            if (!set.DoesMatch) return tasks;
-
-            string description = string.Empty;
-            if (set.Clause != null && !string.IsNullOrEmpty( set.Clause.Description ))
-                description = set.Clause.Description;
+            if (!match.DoesMatch) return tasks;
 
             // TODO: fix typesnort
-            if (set.Match is LineMatch)
+            if (match is LineMatch)
             {
-                LineMatch lineMatch = set.Match as LineMatch;
+                LineMatch lineMatch = match as LineMatch;
                 foreach (int line in lineMatch.Lines)
                 {
-                    tasks.Add( new Task
-                    {
-                        Description = description,
-                        LineNumber = line,
-                    } );
+                    tasks.Add( new Task( change, line ) );
                 }
             }
-            else if (set.DoesMatch)
+            else
             {
-                tasks.Add( new Task {
-                    Description = description,
-                    LineNumber = 1,
-                } );
+                tasks.Add( new Task( change, 1 ) );
             }
-
 
             return tasks;
         }
+
+        //public static List<Task> FromIssueSet( IssueSet set )
+        //{
+        //    List<Task> tasks = new List<Task>();
+        //    if (!set.DoesMatch) return tasks;
+
+        //    string description = string.Empty;
+        //    if (set.Change != null && !string.IsNullOrEmpty( set.Change.Description ))
+        //        description = set.Change.Description;
+
+        //    // TODO: fix typesnort
+        //    if (set.Match is LineMatch)
+        //    {
+        //        LineMatch lineMatch = set.Match as LineMatch;
+        //        foreach (int line in lineMatch.Lines)
+        //        {
+        //            tasks.Add( new Task
+        //            {
+        //                Description = description,
+        //                LineNumber = line,
+        //            } );
+        //        }
+        //    }
+        //    else if (set.DoesMatch)
+        //    {
+        //        tasks.Add( new Task
+        //        {
+        //            Description = description,
+        //            LineNumber = 1,
+        //        } );
+        //    }
+
+        //    return tasks;
+        //}
 
 
         public override string ToString()

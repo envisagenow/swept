@@ -7,6 +7,7 @@ using System;
 using System.Xml;
 using System.Collections.Generic;
 using System.IO;
+using swept.DSL;
 
 namespace swept.Tests
 {
@@ -102,7 +103,8 @@ namespace swept.Tests
             Assert.AreEqual( 1, Horace._changeCatalog._changes.Count );
             Change change = Horace._changeCatalog._changes[0];
             Assert.AreEqual( "Update to use persister", change.Description );
-            Assert.AreEqual( FileLanguage.CSharp, change.Language );
+            var dq = change.Subquery as QueryLanguageNode;
+            Assert.AreEqual( FileLanguage.CSharp, dq.Language );
         }
 
         [Test]

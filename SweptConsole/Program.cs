@@ -41,7 +41,7 @@ namespace swept
 
             var gatherer = new Gatherer( changes, fileNames, storageAdapter );
 
-            Dictionary<Change, List<IssueSet>> results = gatherer.GetIssuesPerChange();
+            Dictionary<Change, Dictionary<SourceFile, ClauseMatch>> results = gatherer.GetMatchesPerChange();
 
             var buildReporter = new BuildReporter();
             var reportXML = buildReporter.ReportOn( results );

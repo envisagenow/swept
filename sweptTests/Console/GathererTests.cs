@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using swept;
+using swept.DSL;
 
 namespace swept.Tests
 {
@@ -13,6 +14,10 @@ namespace swept.Tests
     [TestFixture]
     public class GathererTests
     {
+
+        private const string FILEONE = @"c:\work\one.cs";
+        private const string FILETWO = @"c:\work\two.cs";
+
         [Test]
         public void Empty_inputs_lead_to_empty_results()
         {
@@ -21,7 +26,7 @@ namespace swept.Tests
             MockStorageAdapter storage = new MockStorageAdapter();
             Gatherer gatherer = new Gatherer( changes, files, storage );
 
-            var results = gatherer.GetIssuesPerChange();
+            var results = gatherer.GetMatchesPerChange();
 
             Assert.That( results, Is.Not.Null );
             Assert.That( results.Count, Is.EqualTo( 0 ) );
@@ -35,7 +40,7 @@ namespace swept.Tests
             MockStorageAdapter storage = new MockStorageAdapter();
             Gatherer gatherer = new Gatherer( changes, files, storage );
 
-            var results = gatherer.GetIssuesPerChange();
+            var results = gatherer.GetMatchesPerChange();
 
             Assert.That( results, Is.Not.Null );
             Assert.That( results.Count, Is.EqualTo( 0 ) );
@@ -48,7 +53,7 @@ namespace swept.Tests
             MockStorageAdapter storage = new MockStorageAdapter();
             Gatherer gatherer = new Gatherer( new List<Change>(), files, storage );
 
-            var results = gatherer.GetIssuesPerChange();
+            var results = gatherer.GetMatchesPerChange();
 
             Assert.That( storage.DidLoad( FILEONE ) );
             Assert.That( storage.DidLoad( FILETWO ) );
@@ -59,21 +64,20 @@ namespace swept.Tests
         public void Gatherer_one_change_one_file_leads_to_one_result()
         {
             List<Change> changes = new List<Change>();
-            Change change = new Change();
+            Change change = new Change() { Subquery = new QueryLanguageNode { Language = FileLanguage.CSharp } };
             changes.Add( change );
             List<string> files = new List<string> { FILEONE };
             MockStorageAdapter storage = new MockStorageAdapter();
             Gatherer gatherer = new Gatherer( changes, files, storage );
 
-            Dictionary<Change, List<IssueSet>> results = gatherer.GetIssuesPerChange();
+            Dictionary<Change, Dictionary<SourceFile,ClauseMatch>> results = gatherer.GetMatchesPerChange();
 
             Assert.That( results.Count, Is.EqualTo( 1 ) );
             Assert.That( results.Keys.First(), Is.SameAs( change ) );
-            
-            List<IssueSet> issueSets = results[change];
-            var issueSet = issueSets[0];
-            Assert.That( issueSet.Clause, Is.EqualTo( change ) );
-            Assert.That( issueSet.SourceFile.Name, Is.EqualTo( FILEONE ) );
+
+            var fileMatches = results[change];
+            var match = fileMatches[fileMatches.Keys.First()];
+            Assert.That( match.DoesMatch );
         }
 
 
@@ -81,45 +85,42 @@ namespace swept.Tests
         public void Gatherer_one_change_two_files_leads_to_one_key_with_list_of_two()
         {
             List<Change> changes = new List<Change>();
-            Change change = new Change();
+            Change change = new Change() { Subquery = new QueryFileNameNode { NamePattern = "one" } };
             changes.Add( change );
             List<string> files = new List<string> { FILEONE, FILETWO };
             MockStorageAdapter storage = new MockStorageAdapter();
             Gatherer gatherer = new Gatherer( changes, files, storage );
 
-            var results = gatherer.GetIssuesPerChange();
+            var results = gatherer.GetMatchesPerChange();
 
             Assert.That( results.Count, Is.EqualTo( 1 ) );
             Assert.That( results.Keys.First(), Is.SameAs( change ) );
-            Assert.That( results[change].Count, Is.EqualTo( 2 ) );
-            Assert.That( results[change][0].SourceFile.Name, Is.SameAs( FILEONE ) );
-            Assert.That( results[change][1].SourceFile.Name, Is.SameAs( FILETWO ) );
+
+            var fileMatches = results[change];
+            Assert.That( fileMatches.Count, Is.EqualTo( 2 ) );
         }
 
         [Test]
         public void Gatherer_two_changes_one_file_leads_to_two_results()
         {
             List<Change> changes = new List<Change>();
-            Change change1 = new Change();
-            Change change2 = new Change();
+            Change change1 = new Change() { Subquery = new QueryContentNode { ContentPattern = "woof" } };
+            Change change2 = new Change() { Subquery = new QueryFileNameNode { NamePattern = "one" } };
             changes.Add( change1 );
             changes.Add( change2 );
             List<string> files = new List<string> { FILEONE };
             MockStorageAdapter storage = new MockStorageAdapter();
             Gatherer gatherer = new Gatherer( changes, files, storage );
 
-            var results = gatherer.GetIssuesPerChange();
+            var results = gatherer.GetMatchesPerChange();
 
             Assert.That( results.Count, Is.EqualTo( 2 ) );
             Assert.That( results.Keys.ElementAt( 0 ), Is.SameAs( change1 ) );
             Assert.That( results.Keys.ElementAt( 1 ), Is.SameAs( change2 ) );
             Assert.That( results[change1].Count, Is.EqualTo( 1 ) );
             Assert.That( results[change2].Count, Is.EqualTo( 1 ) );
-            Assert.That( results[change1][0].SourceFile.Name, Is.SameAs( FILEONE ) );
-            Assert.That( results[change2][0].SourceFile.Name, Is.SameAs( FILEONE ) );
+            //Assert.That( results[change1][0].SourceFile.Name, Is.SameAs( FILEONE ) );
+            //Assert.That( results[change2][0].SourceFile.Name, Is.SameAs( FILEONE ) );
         }
-
-        private const string FILEONE = @"c:\work\one.cs";
-        private const string FILETWO = @"c:\work\two.cs";
     }
 }

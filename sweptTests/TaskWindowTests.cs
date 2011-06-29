@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using NUnit.Framework;
 using swept;
+using swept.DSL;
 
 namespace swept.Tests
 {
@@ -22,8 +23,8 @@ namespace swept.Tests
             window = new TaskWindow();
 
             changes = new List<Change>();
-            changes.Add( new Change{ ID = "id1", Description = "sticky", Language = FileLanguage.CSharp } );
-            changes.Add( new Change { ID = "id2", Description = "mop-up", Language = FileLanguage.CSharp } );
+            changes.Add( new Change { ID = "id1", Description = "sticky", Subquery = new QueryLanguageNode { Language = FileLanguage.CSharp } } );
+            changes.Add( new Change { ID = "id2", Description = "mop-up", Subquery = new QueryLanguageNode { Language = FileLanguage.CSharp } } );
 
             file = new SourceFile( "glue.cs" );
 

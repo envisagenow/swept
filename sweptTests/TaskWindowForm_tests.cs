@@ -34,7 +34,8 @@ namespace swept.Tests
         [Test]
         public void form_list_updated_on_Reset_events()
         {
-            List<swept.Task> tasks = new List<Task> { new Task { ID = "1", Description = "short" } };
+            var change = new Change();
+            List<swept.Task> tasks = new List<Task> { new Task( change, 1 ) };
             _form.Hear_TaskListReset( tasks, null );
             Assert.That( _form._taskGridView.RowCount, Is.EqualTo( 1 ) );
 

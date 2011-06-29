@@ -25,7 +25,7 @@ namespace swept
         public string Name;
 
         // TODO: clean out this statefullness
-        public int TaskCount;
+        //public int TaskCount;
         public bool IsRemoved { get; set; }
 
         public List<int> LineIndices { get; private set; }

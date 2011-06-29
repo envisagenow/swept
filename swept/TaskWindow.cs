@@ -90,10 +90,7 @@ namespace swept
 
             foreach( Change change in changes )
             {
-                foreach (var task in Task.FromIssueSet( change.GetIssueSet( sourceFile ) ))
-                {
-                    Tasks.Add(task);
-                }
+                Tasks.AddRange( Task.FromChangesForFile( change, sourceFile ) );
             }
 
             Raise_TaskListReset();

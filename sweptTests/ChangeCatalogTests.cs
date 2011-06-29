@@ -5,6 +5,7 @@ using NUnit.Framework;
 using swept;
 using System.Collections.Generic;
 using System;
+using swept.DSL;
 
 namespace swept.Tests
 {
@@ -18,12 +19,12 @@ namespace swept.Tests
         {
             cat = new ChangeCatalog();
 
-            Change avoidAliasUsing = new Change { ID = "e1", Description = "Don't use 'using' to alias.", Language = FileLanguage.CSharp };
+            Change avoidAliasUsing = new Change { ID = "e1", Description = "Don't use 'using' to alias.", Subquery = new QueryLanguageNode { Language = FileLanguage.CSharp } };
             // TODO--0.3: figure out contentPattern for avoidAliasUsing.
             cat.Add( avoidAliasUsing );
 
-            cat.Add( new Change { ID = "e2", Description = "Upgrade to XHTML", Language = FileLanguage.HTML } );
-            cat.Add( new Change { ID = "e3", Description = "Put <title> on all pages", Language = FileLanguage.HTML } );
+            cat.Add( new Change { ID = "e2", Description = "Upgrade to XHTML", Subquery = new QueryLanguageNode { Language = FileLanguage.HTML }  } );
+            cat.Add( new Change { ID = "e3", Description = "Put <title> on all pages", Subquery = new QueryLanguageNode { Language = FileLanguage.HTML } } );
         }
 
         //[Test]
@@ -46,15 +47,6 @@ namespace swept.Tests
         [Test]
         public void GetChanges_returns_no_Changes_when_language_filters_enough()
         {
-            List<Change> changes = cat.GetChangesForFile( new SourceFile( "hello_style.css" ) );
-            Assert.AreEqual( 0, changes.Count );
-        }
-
-        [Test]
-        public void GetChanges_returns_Appropriate_CompoundChanges()
-        {
-            Clause filter = new Clause();
-
             List<Change> changes = cat.GetChangesForFile( new SourceFile( "hello_style.css" ) );
             Assert.AreEqual( 0, changes.Count );
         }
@@ -127,11 +119,11 @@ namespace swept.Tests
             ChangeCatalog cat1 = new ChangeCatalog();
             ChangeCatalog cat2 = new ChangeCatalog();
 
-            Change change = new Change { ID = "SomeID", Description = "A really groovy change", Language = FileLanguage.CSharp };
+            Change change = new Change { ID = "SomeID", Description = "A really groovy change", Subquery = new QueryLanguageNode { Language = FileLanguage.CSharp } };
             cat1.Add( change );
             cat2.Add( change );
 
-            change = new Change { ID = "testId", Description = "Test Change", Language = FileLanguage.CSharp };
+            change = new Change { ID = "testId", Description = "Test Change", Subquery = new QueryLanguageNode { Language = FileLanguage.CSharp } };
             cat1.Add( change );
             cat2.Add( change );
 
@@ -177,43 +169,5 @@ namespace swept.Tests
             cat.Add( a_17b );
         }
 
-        [Test]
-        public void Clone_works_on_empty_Catalog()
-        {
-            ChangeCatalog cat = new ChangeCatalog();
-
-            ChangeCatalog catClone = cat.Clone();
-            Assert.AreNotSame( cat, catClone );
-            Assert.IsEmpty( cat._changes );
-        }
-
-        [Test]
-        public void Clone_works_on_populated_Catalog()
-        {
-            ChangeCatalog catClone = cat.Clone();
-            Assert.AreNotSame( cat, catClone );
-            Assert.AreEqual( 3, catClone._changes.Count );
-        }
-
-        [Test]
-        public void Clone_brings_across_CompoundFilters()
-        {
-            Change change = new Change {
-                ID = "This",
-                Children = new List<Clause> {
-                    new Clause {
-                        ID = "Child",
-                        NamePattern = "hidden"
-                    }
-                }
-            };
-            cat.Add( change );
-            ChangeCatalog catClone = cat.Clone();
-            Assert.AreNotSame( cat, catClone );
-            Assert.AreEqual( 4, catClone._changes.Count );
-            var hiddenChild = catClone._changes[3].Children[0];
-            Assert.That( hiddenChild.ID, Is.EqualTo( "Child" ) );
-            Assert.That( hiddenChild.NamePattern, Is.EqualTo( "hidden" ) );
-        }
     }
 }

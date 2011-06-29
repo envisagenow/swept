@@ -12,6 +12,13 @@ namespace swept.Tests
     [TestFixture]
     public class SourceFileTests
     {
+        public static string _multiLineFile =
+@"
+axxxxxx
+abxx
+bcxxxx
+cxxxxxxxxx
+";
         private SourceFile file;
         private SourceFile bargle;
         private SourceFile bargle2;
@@ -53,14 +60,6 @@ namespace swept.Tests
         }
 
         #region Line matching
-        public static string _multiLineFile =
-@"
-axxxxxx
-abxx
-bcxxxx
-cxxxxxxxxx
-";
-
         [Test]
         public void can_return_list_of_line_start_positions()
         {

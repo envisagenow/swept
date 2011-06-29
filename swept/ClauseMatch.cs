@@ -6,6 +6,8 @@ namespace swept
 {
     public abstract class ClauseMatch
     {
+        public Change Change { get; set; }
+
         public abstract ClauseMatch Union( ClauseMatch other );
         public abstract ClauseMatch Union( bool does );
 

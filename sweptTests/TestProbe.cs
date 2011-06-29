@@ -4,29 +4,13 @@
 using System;
 using NUnit.Framework;
 using System.Collections.Generic;
+using swept.DSL;
 
 namespace swept.Tests
 {
     [CoverageExclude]
     public class TestProbe
     {
-        public static string SingleFileLibrary_text
-        {
-            get
-            {
-                return
-@"<SweptProjectData>
-<ChangeCatalog>
-</ChangeCatalog>
-<SourceFileCatalog>
-    <SourceFile Name='some_file.cs'>
-    </SourceFile>
-</SourceFileCatalog>
-</SweptProjectData>";
-            }
-        }
-
-
         public static string SingleChangeLibrary_text
         {
             get
@@ -34,30 +18,8 @@ namespace swept.Tests
                 return
 @"<SweptProjectData>
 <ChangeCatalog>
-    <Change ID='30-Persist' Description='Update to use persister' Language='CSharp' />
+    <Change ID='30-Persist' Description='Update to use persister'> ^CSharp </Change>
 </ChangeCatalog>
-<SourceFileCatalog>
-</SourceFileCatalog>
-</SweptProjectData>";
-            }
-        }
-
-
-        public static string SeveralFileCatalog_text
-        {
-            get
-            {
-                return
-@"<SweptProjectData>
-<SourceFileCatalog>
-    <SourceFile Name='bar.cs'>
-        <Completion ID='AB1' />
-        <Completion ID='AB2' />
-    </SourceFile>
-    <SourceFile Name='foo.cs'>
-        <Completion ID='anotherID' />
-    </SourceFile>
-</SourceFileCatalog>
 </SweptProjectData>";
             }
         }
@@ -98,12 +60,7 @@ namespace swept.Tests
 
         private Task slightlyRandomTask( string id, string description, Random r )
         {
-            return new Task
-            {
-                ID = id,
-                Description = description,
-                Language = FileLanguage.CSharp,
-            };
+            return new Task( new Change { ID = id, Description = description }, r.Next(1, 250) );
         }
 
     }
