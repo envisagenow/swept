@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-// $ANTLR 3.3.1.7705 ..\\..\\DSL\\ChangeRule.g 2011-06-25 06:18:35
+// $ANTLR 3.3.1.7705 ..\\..\\DSL\\ChangeRule.g 2011-07-05 20:35:52
 
 // The variable 'variable' is assigned but its value is never used.
 #pragma warning disable 219
@@ -30,24 +30,23 @@ public partial class ChangeRuleLexer : Antlr.Runtime.Lexer
 {
 	public const int EOF=-1;
 	public const int AND=4;
-	public const int CHARACTER_LITERAL=5;
-	public const int DECIMAL_LITERAL=6;
-	public const int DIFFERENCE=7;
-	public const int EscapeSequence=8;
-	public const int FILE_LANGUAGE=9;
-	public const int FILE_NAME=10;
-	public const int IDENTIFIER=11;
-	public const int LANGUAGE=12;
-	public const int LETTER=13;
-	public const int LINES_MATCH=14;
-	public const int LINE_COMMENT=15;
-	public const int OR=16;
-	public const int STRING_BODY_DQ=17;
-	public const int STRING_BODY_SQ=18;
-	public const int STRING_LITERAL=19;
-	public const int WS=20;
+	public const int DECIMAL_LITERAL=5;
+	public const int DIFFERENCE=6;
+	public const int EscapeSequence=7;
+	public const int FILE_LANGUAGE=8;
+	public const int FILE_NAME=9;
+	public const int LANGUAGE=10;
+	public const int LINES_MATCH=11;
+	public const int LINE_COMMENT=12;
+	public const int OR=13;
+	public const int REGEX_MODIFIERS=14;
+	public const int STRING_BODY_DQ=15;
+	public const int STRING_BODY_RQ=16;
+	public const int STRING_BODY_SQ=17;
+	public const int STRING_LITERAL=18;
+	public const int WS=19;
+	public const int T__20=20;
 	public const int T__21=21;
-	public const int T__22=22;
 
 	const int HIDDEN = Hidden;
 
@@ -79,19 +78,19 @@ public partial class ChangeRuleLexer : Antlr.Runtime.Lexer
 	partial void EnterRule(string ruleName, int ruleIndex);
 	partial void LeaveRule(string ruleName, int ruleIndex);
 
-	partial void EnterRule_T__21();
-	partial void LeaveRule_T__21();
+	partial void EnterRule_T__20();
+	partial void LeaveRule_T__20();
 
-	// $ANTLR start "T__21"
-	[GrammarRule("T__21")]
-	private void mT__21()
+	// $ANTLR start "T__20"
+	[GrammarRule("T__20")]
+	private void mT__20()
 	{
-		EnterRule_T__21();
-		EnterRule("T__21", 1);
-		TraceIn("T__21", 1);
+		EnterRule_T__20();
+		EnterRule("T__20", 1);
+		TraceIn("T__20", 1);
 		try
 		{
-			int _type = T__21;
+			int _type = T__20;
 			int _channel = DefaultTokenChannel;
 			// ..\\..\\DSL\\ChangeRule.g:15:7: ( '(' )
 			DebugEnterAlt(1);
@@ -107,26 +106,26 @@ public partial class ChangeRuleLexer : Antlr.Runtime.Lexer
 		}
 		finally
 		{
-			TraceOut("T__21", 1);
-			LeaveRule("T__21", 1);
-			LeaveRule_T__21();
+			TraceOut("T__20", 1);
+			LeaveRule("T__20", 1);
+			LeaveRule_T__20();
 		}
 	}
-	// $ANTLR end "T__21"
+	// $ANTLR end "T__20"
 
-	partial void EnterRule_T__22();
-	partial void LeaveRule_T__22();
+	partial void EnterRule_T__21();
+	partial void LeaveRule_T__21();
 
-	// $ANTLR start "T__22"
-	[GrammarRule("T__22")]
-	private void mT__22()
+	// $ANTLR start "T__21"
+	[GrammarRule("T__21")]
+	private void mT__21()
 	{
-		EnterRule_T__22();
-		EnterRule("T__22", 2);
-		TraceIn("T__22", 2);
+		EnterRule_T__21();
+		EnterRule("T__21", 2);
+		TraceIn("T__21", 2);
 		try
 		{
-			int _type = T__22;
+			int _type = T__21;
 			int _channel = DefaultTokenChannel;
 			// ..\\..\\DSL\\ChangeRule.g:16:7: ( ')' )
 			DebugEnterAlt(1);
@@ -142,12 +141,12 @@ public partial class ChangeRuleLexer : Antlr.Runtime.Lexer
 		}
 		finally
 		{
-			TraceOut("T__22", 2);
-			LeaveRule("T__22", 2);
-			LeaveRule_T__22();
+			TraceOut("T__21", 2);
+			LeaveRule("T__21", 2);
+			LeaveRule_T__21();
 		}
 	}
-	// $ANTLR end "T__22"
+	// $ANTLR end "T__21"
 
 	partial void EnterRule_OR();
 	partial void LeaveRule_OR();
@@ -163,12 +162,12 @@ public partial class ChangeRuleLexer : Antlr.Runtime.Lexer
 		{
 			int _type = OR;
 			int _channel = DefaultTokenChannel;
-			// ..\\..\\DSL\\ChangeRule.g:29:3: ( ( '||' | 'or' ) )
+			// ..\\..\\DSL\\ChangeRule.g:30:3: ( ( '||' | 'or' ) )
 			DebugEnterAlt(1);
-			// ..\\..\\DSL\\ChangeRule.g:29:5: ( '||' | 'or' )
+			// ..\\..\\DSL\\ChangeRule.g:30:5: ( '||' | 'or' )
 			{
-			DebugLocation(29, 5);
-			// ..\\..\\DSL\\ChangeRule.g:29:5: ( '||' | 'or' )
+			DebugLocation(30, 5);
+			// ..\\..\\DSL\\ChangeRule.g:30:5: ( '||' | 'or' )
 			int alt1=2;
 			try { DebugEnterSubRule(1);
 			try { DebugEnterDecision(1, false);
@@ -193,9 +192,9 @@ public partial class ChangeRuleLexer : Antlr.Runtime.Lexer
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// ..\\..\\DSL\\ChangeRule.g:29:6: '||'
+				// ..\\..\\DSL\\ChangeRule.g:30:6: '||'
 				{
-				DebugLocation(29, 6);
+				DebugLocation(30, 6);
 				Match("||"); 
 
 
@@ -203,9 +202,9 @@ public partial class ChangeRuleLexer : Antlr.Runtime.Lexer
 				break;
 			case 2:
 				DebugEnterAlt(2);
-				// ..\\..\\DSL\\ChangeRule.g:29:13: 'or'
+				// ..\\..\\DSL\\ChangeRule.g:30:13: 'or'
 				{
-				DebugLocation(29, 13);
+				DebugLocation(30, 13);
 				Match("or"); 
 
 
@@ -244,12 +243,12 @@ public partial class ChangeRuleLexer : Antlr.Runtime.Lexer
 		{
 			int _type = DIFFERENCE;
 			int _channel = DefaultTokenChannel;
-			// ..\\..\\DSL\\ChangeRule.g:30:11: ( ( '-' | 'except' ) )
+			// ..\\..\\DSL\\ChangeRule.g:31:11: ( ( '-' | 'except' ) )
 			DebugEnterAlt(1);
-			// ..\\..\\DSL\\ChangeRule.g:30:13: ( '-' | 'except' )
+			// ..\\..\\DSL\\ChangeRule.g:31:13: ( '-' | 'except' )
 			{
-			DebugLocation(30, 13);
-			// ..\\..\\DSL\\ChangeRule.g:30:13: ( '-' | 'except' )
+			DebugLocation(31, 13);
+			// ..\\..\\DSL\\ChangeRule.g:31:13: ( '-' | 'except' )
 			int alt2=2;
 			try { DebugEnterSubRule(2);
 			try { DebugEnterDecision(2, false);
@@ -274,18 +273,18 @@ public partial class ChangeRuleLexer : Antlr.Runtime.Lexer
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// ..\\..\\DSL\\ChangeRule.g:30:14: '-'
+				// ..\\..\\DSL\\ChangeRule.g:31:14: '-'
 				{
-				DebugLocation(30, 14);
+				DebugLocation(31, 14);
 				Match('-'); 
 
 				}
 				break;
 			case 2:
 				DebugEnterAlt(2);
-				// ..\\..\\DSL\\ChangeRule.g:30:20: 'except'
+				// ..\\..\\DSL\\ChangeRule.g:31:20: 'except'
 				{
-				DebugLocation(30, 20);
+				DebugLocation(31, 20);
 				Match("except"); 
 
 
@@ -324,12 +323,12 @@ public partial class ChangeRuleLexer : Antlr.Runtime.Lexer
 		{
 			int _type = AND;
 			int _channel = DefaultTokenChannel;
-			// ..\\..\\DSL\\ChangeRule.g:35:4: ( ( '&&' | 'and' ) )
+			// ..\\..\\DSL\\ChangeRule.g:36:4: ( ( '&&' | 'and' ) )
 			DebugEnterAlt(1);
-			// ..\\..\\DSL\\ChangeRule.g:35:6: ( '&&' | 'and' )
+			// ..\\..\\DSL\\ChangeRule.g:36:6: ( '&&' | 'and' )
 			{
-			DebugLocation(35, 6);
-			// ..\\..\\DSL\\ChangeRule.g:35:6: ( '&&' | 'and' )
+			DebugLocation(36, 6);
+			// ..\\..\\DSL\\ChangeRule.g:36:6: ( '&&' | 'and' )
 			int alt3=2;
 			try { DebugEnterSubRule(3);
 			try { DebugEnterDecision(3, false);
@@ -354,9 +353,9 @@ public partial class ChangeRuleLexer : Antlr.Runtime.Lexer
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// ..\\..\\DSL\\ChangeRule.g:35:7: '&&'
+				// ..\\..\\DSL\\ChangeRule.g:36:7: '&&'
 				{
-				DebugLocation(35, 7);
+				DebugLocation(36, 7);
 				Match("&&"); 
 
 
@@ -364,9 +363,9 @@ public partial class ChangeRuleLexer : Antlr.Runtime.Lexer
 				break;
 			case 2:
 				DebugEnterAlt(2);
-				// ..\\..\\DSL\\ChangeRule.g:35:14: 'and'
+				// ..\\..\\DSL\\ChangeRule.g:36:14: 'and'
 				{
-				DebugLocation(35, 14);
+				DebugLocation(36, 14);
 				Match("and"); 
 
 
@@ -405,7 +404,7 @@ public partial class ChangeRuleLexer : Antlr.Runtime.Lexer
 		{
 			int _type = FILE_NAME;
 			int _channel = DefaultTokenChannel;
-			// ..\\..\\DSL\\ChangeRule.g:45:10: ( 'file.name' | 'f.n' | '@' )
+			// ..\\..\\DSL\\ChangeRule.g:46:10: ( 'file.name' | 'f.n' | '@' )
 			int alt4=3;
 			try { DebugEnterDecision(4, false);
 			int LA4_0 = input.LA(1);
@@ -444,9 +443,9 @@ public partial class ChangeRuleLexer : Antlr.Runtime.Lexer
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// ..\\..\\DSL\\ChangeRule.g:45:13: 'file.name'
+				// ..\\..\\DSL\\ChangeRule.g:46:13: 'file.name'
 				{
-				DebugLocation(45, 13);
+				DebugLocation(46, 13);
 				Match("file.name"); 
 
 
@@ -454,9 +453,9 @@ public partial class ChangeRuleLexer : Antlr.Runtime.Lexer
 				break;
 			case 2:
 				DebugEnterAlt(2);
-				// ..\\..\\DSL\\ChangeRule.g:45:28: 'f.n'
+				// ..\\..\\DSL\\ChangeRule.g:46:28: 'f.n'
 				{
-				DebugLocation(45, 28);
+				DebugLocation(46, 28);
 				Match("f.n"); 
 
 
@@ -464,9 +463,9 @@ public partial class ChangeRuleLexer : Antlr.Runtime.Lexer
 				break;
 			case 3:
 				DebugEnterAlt(3);
-				// ..\\..\\DSL\\ChangeRule.g:45:36: '@'
+				// ..\\..\\DSL\\ChangeRule.g:46:36: '@'
 				{
-				DebugLocation(45, 36);
+				DebugLocation(46, 36);
 				Match('@'); 
 
 				}
@@ -499,7 +498,7 @@ public partial class ChangeRuleLexer : Antlr.Runtime.Lexer
 		{
 			int _type = LINES_MATCH;
 			int _channel = DefaultTokenChannel;
-			// ..\\..\\DSL\\ChangeRule.g:46:12: ( 'lines.match' | 'l.m' | '~' )
+			// ..\\..\\DSL\\ChangeRule.g:47:12: ( 'lines.match' | 'l.m' | '~' )
 			int alt5=3;
 			try { DebugEnterDecision(5, false);
 			int LA5_0 = input.LA(1);
@@ -538,9 +537,9 @@ public partial class ChangeRuleLexer : Antlr.Runtime.Lexer
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// ..\\..\\DSL\\ChangeRule.g:46:14: 'lines.match'
+				// ..\\..\\DSL\\ChangeRule.g:47:14: 'lines.match'
 				{
-				DebugLocation(46, 14);
+				DebugLocation(47, 14);
 				Match("lines.match"); 
 
 
@@ -548,9 +547,9 @@ public partial class ChangeRuleLexer : Antlr.Runtime.Lexer
 				break;
 			case 2:
 				DebugEnterAlt(2);
-				// ..\\..\\DSL\\ChangeRule.g:46:30: 'l.m'
+				// ..\\..\\DSL\\ChangeRule.g:47:30: 'l.m'
 				{
-				DebugLocation(46, 30);
+				DebugLocation(47, 30);
 				Match("l.m"); 
 
 
@@ -558,9 +557,9 @@ public partial class ChangeRuleLexer : Antlr.Runtime.Lexer
 				break;
 			case 3:
 				DebugEnterAlt(3);
-				// ..\\..\\DSL\\ChangeRule.g:46:38: '~'
+				// ..\\..\\DSL\\ChangeRule.g:47:38: '~'
 				{
-				DebugLocation(46, 38);
+				DebugLocation(47, 38);
 				Match('~'); 
 
 				}
@@ -593,7 +592,7 @@ public partial class ChangeRuleLexer : Antlr.Runtime.Lexer
 		{
 			int _type = FILE_LANGUAGE;
 			int _channel = DefaultTokenChannel;
-			// ..\\..\\DSL\\ChangeRule.g:47:14: ( 'file.language' | 'f.l' | '^' )
+			// ..\\..\\DSL\\ChangeRule.g:48:14: ( 'file.language' | 'f.l' | '^' )
 			int alt6=3;
 			try { DebugEnterDecision(6, false);
 			int LA6_0 = input.LA(1);
@@ -632,9 +631,9 @@ public partial class ChangeRuleLexer : Antlr.Runtime.Lexer
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// ..\\..\\DSL\\ChangeRule.g:47:16: 'file.language'
+				// ..\\..\\DSL\\ChangeRule.g:48:16: 'file.language'
 				{
-				DebugLocation(47, 16);
+				DebugLocation(48, 16);
 				Match("file.language"); 
 
 
@@ -642,9 +641,9 @@ public partial class ChangeRuleLexer : Antlr.Runtime.Lexer
 				break;
 			case 2:
 				DebugEnterAlt(2);
-				// ..\\..\\DSL\\ChangeRule.g:47:34: 'f.l'
+				// ..\\..\\DSL\\ChangeRule.g:48:34: 'f.l'
 				{
-				DebugLocation(47, 34);
+				DebugLocation(48, 34);
 				Match("f.l"); 
 
 
@@ -652,9 +651,9 @@ public partial class ChangeRuleLexer : Antlr.Runtime.Lexer
 				break;
 			case 3:
 				DebugEnterAlt(3);
-				// ..\\..\\DSL\\ChangeRule.g:47:42: '^'
+				// ..\\..\\DSL\\ChangeRule.g:48:42: '^'
 				{
-				DebugLocation(47, 42);
+				DebugLocation(48, 42);
 				Match('^'); 
 
 				}
@@ -687,12 +686,12 @@ public partial class ChangeRuleLexer : Antlr.Runtime.Lexer
 		{
 			int _type = LANGUAGE;
 			int _channel = DefaultTokenChannel;
-			// ..\\..\\DSL\\ChangeRule.g:57:9: ( ( 'CSharp' | 'HTML' | 'JavaScript' | 'CSS' | 'XSLT' | 'VBNet' | 'Project' | 'Solution' | 'Unknown' ) )
+			// ..\\..\\DSL\\ChangeRule.g:58:9: ( ( 'CSharp' | 'HTML' | 'JavaScript' | 'CSS' | 'XSLT' | 'VBNet' | 'Project' | 'Solution' | 'Unknown' ) )
 			DebugEnterAlt(1);
-			// ..\\..\\DSL\\ChangeRule.g:58:2: ( 'CSharp' | 'HTML' | 'JavaScript' | 'CSS' | 'XSLT' | 'VBNet' | 'Project' | 'Solution' | 'Unknown' )
+			// ..\\..\\DSL\\ChangeRule.g:59:2: ( 'CSharp' | 'HTML' | 'JavaScript' | 'CSS' | 'XSLT' | 'VBNet' | 'Project' | 'Solution' | 'Unknown' )
 			{
-			DebugLocation(58, 2);
-			// ..\\..\\DSL\\ChangeRule.g:58:2: ( 'CSharp' | 'HTML' | 'JavaScript' | 'CSS' | 'XSLT' | 'VBNet' | 'Project' | 'Solution' | 'Unknown' )
+			DebugLocation(59, 2);
+			// ..\\..\\DSL\\ChangeRule.g:59:2: ( 'CSharp' | 'HTML' | 'JavaScript' | 'CSS' | 'XSLT' | 'VBNet' | 'Project' | 'Solution' | 'Unknown' )
 			int alt7=9;
 			try { DebugEnterSubRule(7);
 			try { DebugEnterDecision(7, false);
@@ -710,9 +709,9 @@ public partial class ChangeRuleLexer : Antlr.Runtime.Lexer
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// ..\\..\\DSL\\ChangeRule.g:58:4: 'CSharp'
+				// ..\\..\\DSL\\ChangeRule.g:59:4: 'CSharp'
 				{
-				DebugLocation(58, 4);
+				DebugLocation(59, 4);
 				Match("CSharp"); 
 
 
@@ -720,9 +719,9 @@ public partial class ChangeRuleLexer : Antlr.Runtime.Lexer
 				break;
 			case 2:
 				DebugEnterAlt(2);
-				// ..\\..\\DSL\\ChangeRule.g:58:15: 'HTML'
+				// ..\\..\\DSL\\ChangeRule.g:59:15: 'HTML'
 				{
-				DebugLocation(58, 15);
+				DebugLocation(59, 15);
 				Match("HTML"); 
 
 
@@ -730,9 +729,9 @@ public partial class ChangeRuleLexer : Antlr.Runtime.Lexer
 				break;
 			case 3:
 				DebugEnterAlt(3);
-				// ..\\..\\DSL\\ChangeRule.g:58:24: 'JavaScript'
+				// ..\\..\\DSL\\ChangeRule.g:59:24: 'JavaScript'
 				{
-				DebugLocation(58, 24);
+				DebugLocation(59, 24);
 				Match("JavaScript"); 
 
 
@@ -740,9 +739,9 @@ public partial class ChangeRuleLexer : Antlr.Runtime.Lexer
 				break;
 			case 4:
 				DebugEnterAlt(4);
-				// ..\\..\\DSL\\ChangeRule.g:58:39: 'CSS'
+				// ..\\..\\DSL\\ChangeRule.g:59:39: 'CSS'
 				{
-				DebugLocation(58, 39);
+				DebugLocation(59, 39);
 				Match("CSS"); 
 
 
@@ -750,9 +749,9 @@ public partial class ChangeRuleLexer : Antlr.Runtime.Lexer
 				break;
 			case 5:
 				DebugEnterAlt(5);
-				// ..\\..\\DSL\\ChangeRule.g:58:47: 'XSLT'
+				// ..\\..\\DSL\\ChangeRule.g:59:47: 'XSLT'
 				{
-				DebugLocation(58, 47);
+				DebugLocation(59, 47);
 				Match("XSLT"); 
 
 
@@ -760,9 +759,9 @@ public partial class ChangeRuleLexer : Antlr.Runtime.Lexer
 				break;
 			case 6:
 				DebugEnterAlt(6);
-				// ..\\..\\DSL\\ChangeRule.g:58:56: 'VBNet'
+				// ..\\..\\DSL\\ChangeRule.g:59:56: 'VBNet'
 				{
-				DebugLocation(58, 56);
+				DebugLocation(59, 56);
 				Match("VBNet"); 
 
 
@@ -770,9 +769,9 @@ public partial class ChangeRuleLexer : Antlr.Runtime.Lexer
 				break;
 			case 7:
 				DebugEnterAlt(7);
-				// ..\\..\\DSL\\ChangeRule.g:58:66: 'Project'
+				// ..\\..\\DSL\\ChangeRule.g:59:66: 'Project'
 				{
-				DebugLocation(58, 66);
+				DebugLocation(59, 66);
 				Match("Project"); 
 
 
@@ -780,9 +779,9 @@ public partial class ChangeRuleLexer : Antlr.Runtime.Lexer
 				break;
 			case 8:
 				DebugEnterAlt(8);
-				// ..\\..\\DSL\\ChangeRule.g:58:78: 'Solution'
+				// ..\\..\\DSL\\ChangeRule.g:59:78: 'Solution'
 				{
-				DebugLocation(58, 78);
+				DebugLocation(59, 78);
 				Match("Solution"); 
 
 
@@ -790,9 +789,9 @@ public partial class ChangeRuleLexer : Antlr.Runtime.Lexer
 				break;
 			case 9:
 				DebugEnterAlt(9);
-				// ..\\..\\DSL\\ChangeRule.g:58:91: 'Unknown'
+				// ..\\..\\DSL\\ChangeRule.g:59:91: 'Unknown'
 				{
-				DebugLocation(58, 91);
+				DebugLocation(59, 91);
 				Match("Unknown"); 
 
 
@@ -817,206 +816,6 @@ public partial class ChangeRuleLexer : Antlr.Runtime.Lexer
 	}
 	// $ANTLR end "LANGUAGE"
 
-	partial void EnterRule_IDENTIFIER();
-	partial void LeaveRule_IDENTIFIER();
-
-	// $ANTLR start "IDENTIFIER"
-	[GrammarRule("IDENTIFIER")]
-	private void mIDENTIFIER()
-	{
-		EnterRule_IDENTIFIER();
-		EnterRule("IDENTIFIER", 10);
-		TraceIn("IDENTIFIER", 10);
-		try
-		{
-			int _type = IDENTIFIER;
-			int _channel = DefaultTokenChannel;
-			// ..\\..\\DSL\\ChangeRule.g:64:2: ( LETTER ( LETTER | '0' .. '9' )* )
-			DebugEnterAlt(1);
-			// ..\\..\\DSL\\ChangeRule.g:64:4: LETTER ( LETTER | '0' .. '9' )*
-			{
-			DebugLocation(64, 4);
-			mLETTER(); 
-			DebugLocation(64, 11);
-			// ..\\..\\DSL\\ChangeRule.g:64:11: ( LETTER | '0' .. '9' )*
-			try { DebugEnterSubRule(8);
-			while (true)
-			{
-				int alt8=2;
-				try { DebugEnterDecision(8, false);
-				int LA8_0 = input.LA(1);
-
-				if ((LA8_0=='$'||(LA8_0>='0' && LA8_0<='9')||(LA8_0>='A' && LA8_0<='Z')||LA8_0=='_'||(LA8_0>='a' && LA8_0<='z')))
-				{
-					alt8 = 1;
-				}
-
-
-				} finally { DebugExitDecision(8); }
-				switch ( alt8 )
-				{
-				case 1:
-					DebugEnterAlt(1);
-					// ..\\..\\DSL\\ChangeRule.g:
-					{
-					DebugLocation(64, 11);
-					input.Consume();
-
-
-					}
-					break;
-
-				default:
-					goto loop8;
-				}
-			}
-
-			loop8:
-				;
-
-			} finally { DebugExitSubRule(8); }
-
-
-			}
-
-			state.type = _type;
-			state.channel = _channel;
-		}
-		finally
-		{
-			TraceOut("IDENTIFIER", 10);
-			LeaveRule("IDENTIFIER", 10);
-			LeaveRule_IDENTIFIER();
-		}
-	}
-	// $ANTLR end "IDENTIFIER"
-
-	partial void EnterRule_LETTER();
-	partial void LeaveRule_LETTER();
-
-	// $ANTLR start "LETTER"
-	[GrammarRule("LETTER")]
-	private void mLETTER()
-	{
-		EnterRule_LETTER();
-		EnterRule("LETTER", 11);
-		TraceIn("LETTER", 11);
-		try
-		{
-			// ..\\..\\DSL\\ChangeRule.g:70:2: ( '$' | 'A' .. 'Z' | 'a' .. 'z' | '_' )
-			DebugEnterAlt(1);
-			// ..\\..\\DSL\\ChangeRule.g:
-			{
-			DebugLocation(70, 2);
-			if (input.LA(1)=='$'||(input.LA(1)>='A' && input.LA(1)<='Z')||input.LA(1)=='_'||(input.LA(1)>='a' && input.LA(1)<='z'))
-			{
-				input.Consume();
-
-			}
-			else
-			{
-				MismatchedSetException mse = new MismatchedSetException(null,input);
-				DebugRecognitionException(mse);
-				Recover(mse);
-				throw mse;}
-
-
-			}
-
-		}
-		finally
-		{
-			TraceOut("LETTER", 11);
-			LeaveRule("LETTER", 11);
-			LeaveRule_LETTER();
-		}
-	}
-	// $ANTLR end "LETTER"
-
-	partial void EnterRule_CHARACTER_LITERAL();
-	partial void LeaveRule_CHARACTER_LITERAL();
-
-	// $ANTLR start "CHARACTER_LITERAL"
-	[GrammarRule("CHARACTER_LITERAL")]
-	private void mCHARACTER_LITERAL()
-	{
-		EnterRule_CHARACTER_LITERAL();
-		EnterRule("CHARACTER_LITERAL", 12);
-		TraceIn("CHARACTER_LITERAL", 12);
-		try
-		{
-			int _type = CHARACTER_LITERAL;
-			int _channel = DefaultTokenChannel;
-			// ..\\..\\DSL\\ChangeRule.g:76:5: ( '\\'' ( EscapeSequence |~ ( '\\'' | '\\\\' ) ) '\\'' )
-			DebugEnterAlt(1);
-			// ..\\..\\DSL\\ChangeRule.g:76:9: '\\'' ( EscapeSequence |~ ( '\\'' | '\\\\' ) ) '\\''
-			{
-			DebugLocation(76, 9);
-			Match('\''); 
-			DebugLocation(76, 14);
-			// ..\\..\\DSL\\ChangeRule.g:76:14: ( EscapeSequence |~ ( '\\'' | '\\\\' ) )
-			int alt9=2;
-			try { DebugEnterSubRule(9);
-			try { DebugEnterDecision(9, false);
-			int LA9_0 = input.LA(1);
-
-			if ((LA9_0=='\\'))
-			{
-				alt9 = 1;
-			}
-			else if (((LA9_0>='\u0000' && LA9_0<='&')||(LA9_0>='(' && LA9_0<='[')||(LA9_0>=']' && LA9_0<='\uFFFF')))
-			{
-				alt9 = 2;
-			}
-			else
-			{
-				NoViableAltException nvae = new NoViableAltException("", 9, 0, input);
-				DebugRecognitionException(nvae);
-				throw nvae;
-			}
-			} finally { DebugExitDecision(9); }
-			switch (alt9)
-			{
-			case 1:
-				DebugEnterAlt(1);
-				// ..\\..\\DSL\\ChangeRule.g:76:16: EscapeSequence
-				{
-				DebugLocation(76, 16);
-				mEscapeSequence(); 
-
-				}
-				break;
-			case 2:
-				DebugEnterAlt(2);
-				// ..\\..\\DSL\\ChangeRule.g:76:33: ~ ( '\\'' | '\\\\' )
-				{
-				DebugLocation(76, 33);
-				input.Consume();
-
-
-				}
-				break;
-
-			}
-			} finally { DebugExitSubRule(9); }
-
-			DebugLocation(76, 48);
-			Match('\''); 
-
-			}
-
-			state.type = _type;
-			state.channel = _channel;
-		}
-		finally
-		{
-			TraceOut("CHARACTER_LITERAL", 12);
-			LeaveRule("CHARACTER_LITERAL", 12);
-			LeaveRule_CHARACTER_LITERAL();
-		}
-	}
-	// $ANTLR end "CHARACTER_LITERAL"
-
 	partial void EnterRule_STRING_LITERAL();
 	partial void LeaveRule_STRING_LITERAL();
 
@@ -1025,76 +824,107 @@ public partial class ChangeRuleLexer : Antlr.Runtime.Lexer
 	private void mSTRING_LITERAL()
 	{
 		EnterRule_STRING_LITERAL();
-		EnterRule("STRING_LITERAL", 13);
-		TraceIn("STRING_LITERAL", 13);
+		EnterRule("STRING_LITERAL", 10);
+		TraceIn("STRING_LITERAL", 10);
 		try
 		{
 			int _type = STRING_LITERAL;
 			int _channel = DefaultTokenChannel;
 			CommonToken STRING_BODY_DQ1 = default(CommonToken);
-			CommonToken STRING_BODY_SQ2 = default(CommonToken);
+			CommonToken STRING_BODY_RQ2 = default(CommonToken);
+			CommonToken STRING_BODY_SQ3 = default(CommonToken);
 
-			// ..\\..\\DSL\\ChangeRule.g:80:5: ( '\"' STRING_BODY_DQ '\"' | '\\'' STRING_BODY_SQ '\\'' )
-			int alt10=2;
-			try { DebugEnterDecision(10, false);
-			int LA10_0 = input.LA(1);
+			// ..\\..\\DSL\\ChangeRule.g:65:5: ( '\"' STRING_BODY_DQ '\"' | '/' STRING_BODY_RQ '/' | '\\'' STRING_BODY_SQ '\\'' )
+			int alt8=3;
+			try { DebugEnterDecision(8, false);
+			switch (input.LA(1))
+			{
+			case '\"':
+				{
+				alt8 = 1;
+				}
+				break;
+			case '/':
+				{
+				alt8 = 2;
+				}
+				break;
+			case '\'':
+				{
+				alt8 = 3;
+				}
+				break;
+			default:
+				{
+					NoViableAltException nvae = new NoViableAltException("", 8, 0, input);
+					DebugRecognitionException(nvae);
+					throw nvae;
+				}
+			}
 
-			if ((LA10_0=='\"'))
-			{
-				alt10 = 1;
-			}
-			else if ((LA10_0=='\''))
-			{
-				alt10 = 2;
-			}
-			else
-			{
-				NoViableAltException nvae = new NoViableAltException("", 10, 0, input);
-				DebugRecognitionException(nvae);
-				throw nvae;
-			}
-			} finally { DebugExitDecision(10); }
-			switch (alt10)
+			} finally { DebugExitDecision(8); }
+			switch (alt8)
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// ..\\..\\DSL\\ChangeRule.g:80:8: '\"' STRING_BODY_DQ '\"'
+				// ..\\..\\DSL\\ChangeRule.g:65:8: '\"' STRING_BODY_DQ '\"'
 				{
-				DebugLocation(80, 8);
+				DebugLocation(65, 8);
 				Match('\"'); 
-				DebugLocation(80, 12);
-				int STRING_BODY_DQ1Start280 = CharIndex;
-				int STRING_BODY_DQ1StartLine280 = Line;
-				int STRING_BODY_DQ1StartCharPos280 = CharPositionInLine;
+				DebugLocation(65, 12);
+				int STRING_BODY_DQ1Start195 = CharIndex;
+				int STRING_BODY_DQ1StartLine195 = Line;
+				int STRING_BODY_DQ1StartCharPos195 = CharPositionInLine;
 				mSTRING_BODY_DQ(); 
-				STRING_BODY_DQ1 = new CommonToken(input, TokenTypes.Invalid, TokenChannels.Default, STRING_BODY_DQ1Start280, CharIndex-1);
-				STRING_BODY_DQ1.Line = STRING_BODY_DQ1StartLine280;
-				STRING_BODY_DQ1.CharPositionInLine = STRING_BODY_DQ1StartCharPos280;
-				DebugLocation(80, 27);
+				STRING_BODY_DQ1 = new CommonToken(input, TokenTypes.Invalid, TokenChannels.Default, STRING_BODY_DQ1Start195, CharIndex-1);
+				STRING_BODY_DQ1.Line = STRING_BODY_DQ1StartLine195;
+				STRING_BODY_DQ1.CharPositionInLine = STRING_BODY_DQ1StartCharPos195;
+				DebugLocation(65, 27);
 				Match('\"'); 
-				DebugLocation(80, 31);
+				DebugLocation(65, 31);
 				 Text = (STRING_BODY_DQ1!=null?STRING_BODY_DQ1.Text:null); 
 
 				}
 				break;
 			case 2:
 				DebugEnterAlt(2);
-				// ..\\..\\DSL\\ChangeRule.g:81:8: '\\'' STRING_BODY_SQ '\\''
+				// ..\\..\\DSL\\ChangeRule.g:66:8: '/' STRING_BODY_RQ '/'
 				{
-				DebugLocation(81, 8);
+				DebugLocation(66, 8);
+				Match('/'); 
+				DebugLocation(66, 12);
+				int STRING_BODY_RQ2Start211 = CharIndex;
+				int STRING_BODY_RQ2StartLine211 = Line;
+				int STRING_BODY_RQ2StartCharPos211 = CharPositionInLine;
+				mSTRING_BODY_RQ(); 
+				STRING_BODY_RQ2 = new CommonToken(input, TokenTypes.Invalid, TokenChannels.Default, STRING_BODY_RQ2Start211, CharIndex-1);
+				STRING_BODY_RQ2.Line = STRING_BODY_RQ2StartLine211;
+				STRING_BODY_RQ2.CharPositionInLine = STRING_BODY_RQ2StartCharPos211;
+				DebugLocation(66, 27);
+				Match('/'); 
+				DebugLocation(66, 31);
+				 Text = (STRING_BODY_RQ2!=null?STRING_BODY_RQ2.Text:null); 
+
+				}
+				break;
+			case 3:
+				DebugEnterAlt(3);
+				// ..\\..\\DSL\\ChangeRule.g:67:8: '\\'' STRING_BODY_SQ '\\''
+				{
+				DebugLocation(67, 8);
 				Match('\''); 
-				DebugLocation(81, 13);
-				int STRING_BODY_SQ2Start296 = CharIndex;
-				int STRING_BODY_SQ2StartLine296 = Line;
-				int STRING_BODY_SQ2StartCharPos296 = CharPositionInLine;
+				DebugLocation(67, 13);
+				int STRING_BODY_SQ3Start227 = CharIndex;
+				int STRING_BODY_SQ3StartLine227 = Line;
+				int STRING_BODY_SQ3StartCharPos227 = CharPositionInLine;
 				mSTRING_BODY_SQ(); 
-				STRING_BODY_SQ2 = new CommonToken(input, TokenTypes.Invalid, TokenChannels.Default, STRING_BODY_SQ2Start296, CharIndex-1);
-				STRING_BODY_SQ2.Line = STRING_BODY_SQ2StartLine296;
-				STRING_BODY_SQ2.CharPositionInLine = STRING_BODY_SQ2StartCharPos296;
-				DebugLocation(81, 28);
+				STRING_BODY_SQ3 = new CommonToken(input, TokenTypes.Invalid, TokenChannels.Default, STRING_BODY_SQ3Start227, CharIndex-1);
+				STRING_BODY_SQ3.Line = STRING_BODY_SQ3StartLine227;
+				STRING_BODY_SQ3.CharPositionInLine = STRING_BODY_SQ3StartCharPos227;
+				DebugLocation(67, 28);
 				Match('\''); 
-				DebugLocation(81, 33);
-				 Text = (STRING_BODY_SQ2!=null?STRING_BODY_SQ2.Text:null); 
+				DebugLocation(67, 33);
+				 Text = (STRING_BODY_SQ3!=null?STRING_BODY_SQ3.Text:null); 
 
 				}
 				break;
@@ -1105,8 +935,8 @@ public partial class ChangeRuleLexer : Antlr.Runtime.Lexer
 		}
 		finally
 		{
-			TraceOut("STRING_LITERAL", 13);
-			LeaveRule("STRING_LITERAL", 13);
+			TraceOut("STRING_LITERAL", 10);
+			LeaveRule("STRING_LITERAL", 10);
 			LeaveRule_STRING_LITERAL();
 		}
 	}
@@ -1120,16 +950,202 @@ public partial class ChangeRuleLexer : Antlr.Runtime.Lexer
 	private void mSTRING_BODY_DQ()
 	{
 		EnterRule_STRING_BODY_DQ();
-		EnterRule("STRING_BODY_DQ", 14);
-		TraceIn("STRING_BODY_DQ", 14);
+		EnterRule("STRING_BODY_DQ", 11);
+		TraceIn("STRING_BODY_DQ", 11);
 		try
 		{
-			// ..\\..\\DSL\\ChangeRule.g:85:5: ( ( EscapeSequence |~ ( '\\\\' | '\"' ) )* )
+			// ..\\..\\DSL\\ChangeRule.g:71:5: ( ( '\\\\\"' |~ ( '\"' ) )* )
 			DebugEnterAlt(1);
-			// ..\\..\\DSL\\ChangeRule.g:85:8: ( EscapeSequence |~ ( '\\\\' | '\"' ) )*
+			// ..\\..\\DSL\\ChangeRule.g:71:8: ( '\\\\\"' |~ ( '\"' ) )*
 			{
-			DebugLocation(85, 8);
-			// ..\\..\\DSL\\ChangeRule.g:85:8: ( EscapeSequence |~ ( '\\\\' | '\"' ) )*
+			DebugLocation(71, 8);
+			// ..\\..\\DSL\\ChangeRule.g:71:8: ( '\\\\\"' |~ ( '\"' ) )*
+			try { DebugEnterSubRule(9);
+			while (true)
+			{
+				int alt9=3;
+				try { DebugEnterDecision(9, false);
+				int LA9_0 = input.LA(1);
+
+				if ((LA9_0=='\\'))
+				{
+					int LA9_2 = input.LA(2);
+
+					if ((LA9_2=='\"'))
+					{
+						alt9 = 1;
+					}
+
+					else
+					{
+						alt9 = 2;
+					}
+
+				}
+				else if (((LA9_0>='\u0000' && LA9_0<='!')||(LA9_0>='#' && LA9_0<='[')||(LA9_0>=']' && LA9_0<='\uFFFF')))
+				{
+					alt9 = 2;
+				}
+
+
+				} finally { DebugExitDecision(9); }
+				switch ( alt9 )
+				{
+				case 1:
+					DebugEnterAlt(1);
+					// ..\\..\\DSL\\ChangeRule.g:71:10: '\\\\\"'
+					{
+					DebugLocation(71, 10);
+					Match("\\\""); 
+
+
+					}
+					break;
+				case 2:
+					DebugEnterAlt(2);
+					// ..\\..\\DSL\\ChangeRule.g:71:18: ~ ( '\"' )
+					{
+					DebugLocation(71, 18);
+					input.Consume();
+
+
+					}
+					break;
+
+				default:
+					goto loop9;
+				}
+			}
+
+			loop9:
+				;
+
+			} finally { DebugExitSubRule(9); }
+
+
+			}
+
+		}
+		finally
+		{
+			TraceOut("STRING_BODY_DQ", 11);
+			LeaveRule("STRING_BODY_DQ", 11);
+			LeaveRule_STRING_BODY_DQ();
+		}
+	}
+	// $ANTLR end "STRING_BODY_DQ"
+
+	partial void EnterRule_STRING_BODY_RQ();
+	partial void LeaveRule_STRING_BODY_RQ();
+
+	// $ANTLR start "STRING_BODY_RQ"
+	[GrammarRule("STRING_BODY_RQ")]
+	private void mSTRING_BODY_RQ()
+	{
+		EnterRule_STRING_BODY_RQ();
+		EnterRule("STRING_BODY_RQ", 12);
+		TraceIn("STRING_BODY_RQ", 12);
+		try
+		{
+			// ..\\..\\DSL\\ChangeRule.g:75:5: ( ( '\\\\/' |~ ( '/' ) )* )
+			DebugEnterAlt(1);
+			// ..\\..\\DSL\\ChangeRule.g:75:8: ( '\\\\/' |~ ( '/' ) )*
+			{
+			DebugLocation(75, 8);
+			// ..\\..\\DSL\\ChangeRule.g:75:8: ( '\\\\/' |~ ( '/' ) )*
+			try { DebugEnterSubRule(10);
+			while (true)
+			{
+				int alt10=3;
+				try { DebugEnterDecision(10, false);
+				int LA10_0 = input.LA(1);
+
+				if ((LA10_0=='\\'))
+				{
+					int LA10_2 = input.LA(2);
+
+					if ((LA10_2=='/'))
+					{
+						alt10 = 1;
+					}
+
+					else
+					{
+						alt10 = 2;
+					}
+
+				}
+				else if (((LA10_0>='\u0000' && LA10_0<='.')||(LA10_0>='0' && LA10_0<='[')||(LA10_0>=']' && LA10_0<='\uFFFF')))
+				{
+					alt10 = 2;
+				}
+
+
+				} finally { DebugExitDecision(10); }
+				switch ( alt10 )
+				{
+				case 1:
+					DebugEnterAlt(1);
+					// ..\\..\\DSL\\ChangeRule.g:75:10: '\\\\/'
+					{
+					DebugLocation(75, 10);
+					Match("\\/"); 
+
+
+					}
+					break;
+				case 2:
+					DebugEnterAlt(2);
+					// ..\\..\\DSL\\ChangeRule.g:75:18: ~ ( '/' )
+					{
+					DebugLocation(75, 18);
+					input.Consume();
+
+
+					}
+					break;
+
+				default:
+					goto loop10;
+				}
+			}
+
+			loop10:
+				;
+
+			} finally { DebugExitSubRule(10); }
+
+
+			}
+
+		}
+		finally
+		{
+			TraceOut("STRING_BODY_RQ", 12);
+			LeaveRule("STRING_BODY_RQ", 12);
+			LeaveRule_STRING_BODY_RQ();
+		}
+	}
+	// $ANTLR end "STRING_BODY_RQ"
+
+	partial void EnterRule_STRING_BODY_SQ();
+	partial void LeaveRule_STRING_BODY_SQ();
+
+	// $ANTLR start "STRING_BODY_SQ"
+	[GrammarRule("STRING_BODY_SQ")]
+	private void mSTRING_BODY_SQ()
+	{
+		EnterRule_STRING_BODY_SQ();
+		EnterRule("STRING_BODY_SQ", 13);
+		TraceIn("STRING_BODY_SQ", 13);
+		try
+		{
+			// ..\\..\\DSL\\ChangeRule.g:79:5: ( ( '\\\\\\'' |~ ( '\\'' ) )* )
+			DebugEnterAlt(1);
+			// ..\\..\\DSL\\ChangeRule.g:79:8: ( '\\\\\\'' |~ ( '\\'' ) )*
+			{
+			DebugLocation(79, 8);
+			// ..\\..\\DSL\\ChangeRule.g:79:8: ( '\\\\\\'' |~ ( '\\'' ) )*
 			try { DebugEnterSubRule(11);
 			while (true)
 			{
@@ -1139,9 +1155,20 @@ public partial class ChangeRuleLexer : Antlr.Runtime.Lexer
 
 				if ((LA11_0=='\\'))
 				{
-					alt11 = 1;
+					int LA11_2 = input.LA(2);
+
+					if ((LA11_2=='\''))
+					{
+						alt11 = 1;
+					}
+
+					else
+					{
+						alt11 = 2;
+					}
+
 				}
-				else if (((LA11_0>='\u0000' && LA11_0<='!')||(LA11_0>='#' && LA11_0<='[')||(LA11_0>=']' && LA11_0<='\uFFFF')))
+				else if (((LA11_0>='\u0000' && LA11_0<='&')||(LA11_0>='(' && LA11_0<='[')||(LA11_0>=']' && LA11_0<='\uFFFF')))
 				{
 					alt11 = 2;
 				}
@@ -1152,18 +1179,19 @@ public partial class ChangeRuleLexer : Antlr.Runtime.Lexer
 				{
 				case 1:
 					DebugEnterAlt(1);
-					// ..\\..\\DSL\\ChangeRule.g:85:10: EscapeSequence
+					// ..\\..\\DSL\\ChangeRule.g:79:10: '\\\\\\''
 					{
-					DebugLocation(85, 10);
-					mEscapeSequence(); 
+					DebugLocation(79, 10);
+					Match("\\'"); 
+
 
 					}
 					break;
 				case 2:
 					DebugEnterAlt(2);
-					// ..\\..\\DSL\\ChangeRule.g:85:27: ~ ( '\\\\' | '\"' )
+					// ..\\..\\DSL\\ChangeRule.g:79:19: ~ ( '\\'' )
 					{
-					DebugLocation(85, 27);
+					DebugLocation(79, 19);
 					input.Consume();
 
 
@@ -1186,65 +1214,55 @@ public partial class ChangeRuleLexer : Antlr.Runtime.Lexer
 		}
 		finally
 		{
-			TraceOut("STRING_BODY_DQ", 14);
-			LeaveRule("STRING_BODY_DQ", 14);
-			LeaveRule_STRING_BODY_DQ();
+			TraceOut("STRING_BODY_SQ", 13);
+			LeaveRule("STRING_BODY_SQ", 13);
+			LeaveRule_STRING_BODY_SQ();
 		}
 	}
-	// $ANTLR end "STRING_BODY_DQ"
+	// $ANTLR end "STRING_BODY_SQ"
 
-	partial void EnterRule_STRING_BODY_SQ();
-	partial void LeaveRule_STRING_BODY_SQ();
+	partial void EnterRule_REGEX_MODIFIERS();
+	partial void LeaveRule_REGEX_MODIFIERS();
 
-	// $ANTLR start "STRING_BODY_SQ"
-	[GrammarRule("STRING_BODY_SQ")]
-	private void mSTRING_BODY_SQ()
+	// $ANTLR start "REGEX_MODIFIERS"
+	[GrammarRule("REGEX_MODIFIERS")]
+	private void mREGEX_MODIFIERS()
 	{
-		EnterRule_STRING_BODY_SQ();
-		EnterRule("STRING_BODY_SQ", 15);
-		TraceIn("STRING_BODY_SQ", 15);
+		EnterRule_REGEX_MODIFIERS();
+		EnterRule("REGEX_MODIFIERS", 14);
+		TraceIn("REGEX_MODIFIERS", 14);
 		try
 		{
-			// ..\\..\\DSL\\ChangeRule.g:89:5: ( ( EscapeSequence |~ ( '\\\\' | '\\'' ) )* )
+			int _type = REGEX_MODIFIERS;
+			int _channel = DefaultTokenChannel;
+			// ..\\..\\DSL\\ChangeRule.g:83:2: ( ( 'i' | 's' )+ )
 			DebugEnterAlt(1);
-			// ..\\..\\DSL\\ChangeRule.g:89:8: ( EscapeSequence |~ ( '\\\\' | '\\'' ) )*
+			// ..\\..\\DSL\\ChangeRule.g:83:4: ( 'i' | 's' )+
 			{
-			DebugLocation(89, 8);
-			// ..\\..\\DSL\\ChangeRule.g:89:8: ( EscapeSequence |~ ( '\\\\' | '\\'' ) )*
+			DebugLocation(83, 4);
+			// ..\\..\\DSL\\ChangeRule.g:83:4: ( 'i' | 's' )+
+			int cnt12=0;
 			try { DebugEnterSubRule(12);
 			while (true)
 			{
-				int alt12=3;
+				int alt12=2;
 				try { DebugEnterDecision(12, false);
 				int LA12_0 = input.LA(1);
 
-				if ((LA12_0=='\\'))
+				if ((LA12_0=='i'||LA12_0=='s'))
 				{
 					alt12 = 1;
-				}
-				else if (((LA12_0>='\u0000' && LA12_0<='&')||(LA12_0>='(' && LA12_0<='[')||(LA12_0>=']' && LA12_0<='\uFFFF')))
-				{
-					alt12 = 2;
 				}
 
 
 				} finally { DebugExitDecision(12); }
-				switch ( alt12 )
+				switch (alt12)
 				{
 				case 1:
 					DebugEnterAlt(1);
-					// ..\\..\\DSL\\ChangeRule.g:89:10: EscapeSequence
+					// ..\\..\\DSL\\ChangeRule.g:
 					{
-					DebugLocation(89, 10);
-					mEscapeSequence(); 
-
-					}
-					break;
-				case 2:
-					DebugEnterAlt(2);
-					// ..\\..\\DSL\\ChangeRule.g:89:27: ~ ( '\\\\' | '\\'' )
-					{
-					DebugLocation(89, 27);
+					DebugLocation(83, 4);
 					input.Consume();
 
 
@@ -1252,10 +1270,15 @@ public partial class ChangeRuleLexer : Antlr.Runtime.Lexer
 					break;
 
 				default:
-					goto loop12;
-				}
-			}
+					if (cnt12 >= 1)
+						goto loop12;
 
+					EarlyExitException eee12 = new EarlyExitException( 12, input );
+					DebugRecognitionException(eee12);
+					throw eee12;
+				}
+				cnt12++;
+			}
 			loop12:
 				;
 
@@ -1264,15 +1287,17 @@ public partial class ChangeRuleLexer : Antlr.Runtime.Lexer
 
 			}
 
+			state.type = _type;
+			state.channel = _channel;
 		}
 		finally
 		{
-			TraceOut("STRING_BODY_SQ", 15);
-			LeaveRule("STRING_BODY_SQ", 15);
-			LeaveRule_STRING_BODY_SQ();
+			TraceOut("REGEX_MODIFIERS", 14);
+			LeaveRule("REGEX_MODIFIERS", 14);
+			LeaveRule_REGEX_MODIFIERS();
 		}
 	}
-	// $ANTLR end "STRING_BODY_SQ"
+	// $ANTLR end "REGEX_MODIFIERS"
 
 	partial void EnterRule_DECIMAL_LITERAL();
 	partial void LeaveRule_DECIMAL_LITERAL();
@@ -1282,18 +1307,18 @@ public partial class ChangeRuleLexer : Antlr.Runtime.Lexer
 	private void mDECIMAL_LITERAL()
 	{
 		EnterRule_DECIMAL_LITERAL();
-		EnterRule("DECIMAL_LITERAL", 16);
-		TraceIn("DECIMAL_LITERAL", 16);
+		EnterRule("DECIMAL_LITERAL", 15);
+		TraceIn("DECIMAL_LITERAL", 15);
 		try
 		{
 			int _type = DECIMAL_LITERAL;
 			int _channel = DefaultTokenChannel;
-			// ..\\..\\DSL\\ChangeRule.g:92:17: ( ( '0' .. '9' )+ )
+			// ..\\..\\DSL\\ChangeRule.g:86:17: ( ( '0' .. '9' )+ )
 			DebugEnterAlt(1);
-			// ..\\..\\DSL\\ChangeRule.g:92:19: ( '0' .. '9' )+
+			// ..\\..\\DSL\\ChangeRule.g:86:19: ( '0' .. '9' )+
 			{
-			DebugLocation(92, 19);
-			// ..\\..\\DSL\\ChangeRule.g:92:19: ( '0' .. '9' )+
+			DebugLocation(86, 19);
+			// ..\\..\\DSL\\ChangeRule.g:86:19: ( '0' .. '9' )+
 			int cnt13=0;
 			try { DebugEnterSubRule(13);
 			while (true)
@@ -1315,7 +1340,7 @@ public partial class ChangeRuleLexer : Antlr.Runtime.Lexer
 					DebugEnterAlt(1);
 					// ..\\..\\DSL\\ChangeRule.g:
 					{
-					DebugLocation(92, 19);
+					DebugLocation(86, 19);
 					input.Consume();
 
 
@@ -1345,8 +1370,8 @@ public partial class ChangeRuleLexer : Antlr.Runtime.Lexer
 		}
 		finally
 		{
-			TraceOut("DECIMAL_LITERAL", 16);
-			LeaveRule("DECIMAL_LITERAL", 16);
+			TraceOut("DECIMAL_LITERAL", 15);
+			LeaveRule("DECIMAL_LITERAL", 15);
 			LeaveRule_DECIMAL_LITERAL();
 		}
 	}
@@ -1360,18 +1385,18 @@ public partial class ChangeRuleLexer : Antlr.Runtime.Lexer
 	private void mEscapeSequence()
 	{
 		EnterRule_EscapeSequence();
-		EnterRule("EscapeSequence", 17);
-		TraceIn("EscapeSequence", 17);
+		EnterRule("EscapeSequence", 16);
+		TraceIn("EscapeSequence", 16);
 		try
 		{
-			// ..\\..\\DSL\\ChangeRule.g:97:5: ( '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | '\\\"' | '\\'' | '\\\\' ) )
+			// ..\\..\\DSL\\ChangeRule.g:91:5: ( '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | '\\\\' ) )
 			DebugEnterAlt(1);
-			// ..\\..\\DSL\\ChangeRule.g:97:9: '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | '\\\"' | '\\'' | '\\\\' )
+			// ..\\..\\DSL\\ChangeRule.g:91:9: '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | '\\\\' )
 			{
-			DebugLocation(97, 9);
+			DebugLocation(91, 9);
 			Match('\\'); 
-			DebugLocation(97, 14);
-			if (input.LA(1)=='\"'||input.LA(1)=='\''||input.LA(1)=='\\'||input.LA(1)=='b'||input.LA(1)=='f'||input.LA(1)=='n'||input.LA(1)=='r'||input.LA(1)=='t')
+			DebugLocation(91, 14);
+			if (input.LA(1)=='\\'||input.LA(1)=='b'||input.LA(1)=='f'||input.LA(1)=='n'||input.LA(1)=='r'||input.LA(1)=='t')
 			{
 				input.Consume();
 
@@ -1389,8 +1414,8 @@ public partial class ChangeRuleLexer : Antlr.Runtime.Lexer
 		}
 		finally
 		{
-			TraceOut("EscapeSequence", 17);
-			LeaveRule("EscapeSequence", 17);
+			TraceOut("EscapeSequence", 16);
+			LeaveRule("EscapeSequence", 16);
 			LeaveRule_EscapeSequence();
 		}
 	}
@@ -1404,17 +1429,17 @@ public partial class ChangeRuleLexer : Antlr.Runtime.Lexer
 	private void mWS()
 	{
 		EnterRule_WS();
-		EnterRule("WS", 18);
-		TraceIn("WS", 18);
+		EnterRule("WS", 17);
+		TraceIn("WS", 17);
 		try
 		{
 			int _type = WS;
 			int _channel = DefaultTokenChannel;
-			// ..\\..\\DSL\\ChangeRule.g:99:5: ( ( ' ' | '\\r' | '\\t' | '\\u000C' | '\\n' ) )
+			// ..\\..\\DSL\\ChangeRule.g:93:5: ( ( ' ' | '\\r' | '\\t' | '\\u000C' | '\\n' ) )
 			DebugEnterAlt(1);
-			// ..\\..\\DSL\\ChangeRule.g:99:8: ( ' ' | '\\r' | '\\t' | '\\u000C' | '\\n' )
+			// ..\\..\\DSL\\ChangeRule.g:93:8: ( ' ' | '\\r' | '\\t' | '\\u000C' | '\\n' )
 			{
-			DebugLocation(99, 8);
+			DebugLocation(93, 8);
 			if ((input.LA(1)>='\t' && input.LA(1)<='\n')||(input.LA(1)>='\f' && input.LA(1)<='\r')||input.LA(1)==' ')
 			{
 				input.Consume();
@@ -1427,7 +1452,7 @@ public partial class ChangeRuleLexer : Antlr.Runtime.Lexer
 				Recover(mse);
 				throw mse;}
 
-			DebugLocation(99, 38);
+			DebugLocation(93, 38);
 			_channel=HIDDEN;
 
 			}
@@ -1437,8 +1462,8 @@ public partial class ChangeRuleLexer : Antlr.Runtime.Lexer
 		}
 		finally
 		{
-			TraceOut("WS", 18);
-			LeaveRule("WS", 18);
+			TraceOut("WS", 17);
+			LeaveRule("WS", 17);
 			LeaveRule_WS();
 		}
 	}
@@ -1452,21 +1477,21 @@ public partial class ChangeRuleLexer : Antlr.Runtime.Lexer
 	private void mLINE_COMMENT()
 	{
 		EnterRule_LINE_COMMENT();
-		EnterRule("LINE_COMMENT", 19);
-		TraceIn("LINE_COMMENT", 19);
+		EnterRule("LINE_COMMENT", 18);
+		TraceIn("LINE_COMMENT", 18);
 		try
 		{
 			int _type = LINE_COMMENT;
 			int _channel = DefaultTokenChannel;
-			// ..\\..\\DSL\\ChangeRule.g:103:5: ( '//' (~ ( '\\n' | '\\r' ) )* ( '\\r' )? '\\n' )
+			// ..\\..\\DSL\\ChangeRule.g:97:5: ( '//' (~ ( '\\n' | '\\r' ) )* ( '\\r' )? '\\n' )
 			DebugEnterAlt(1);
-			// ..\\..\\DSL\\ChangeRule.g:103:7: '//' (~ ( '\\n' | '\\r' ) )* ( '\\r' )? '\\n'
+			// ..\\..\\DSL\\ChangeRule.g:97:7: '//' (~ ( '\\n' | '\\r' ) )* ( '\\r' )? '\\n'
 			{
-			DebugLocation(103, 7);
+			DebugLocation(97, 7);
 			Match("//"); 
 
-			DebugLocation(103, 12);
-			// ..\\..\\DSL\\ChangeRule.g:103:12: (~ ( '\\n' | '\\r' ) )*
+			DebugLocation(97, 12);
+			// ..\\..\\DSL\\ChangeRule.g:97:12: (~ ( '\\n' | '\\r' ) )*
 			try { DebugEnterSubRule(14);
 			while (true)
 			{
@@ -1487,7 +1512,7 @@ public partial class ChangeRuleLexer : Antlr.Runtime.Lexer
 					DebugEnterAlt(1);
 					// ..\\..\\DSL\\ChangeRule.g:
 					{
-					DebugLocation(103, 12);
+					DebugLocation(97, 12);
 					input.Consume();
 
 
@@ -1504,8 +1529,8 @@ public partial class ChangeRuleLexer : Antlr.Runtime.Lexer
 
 			} finally { DebugExitSubRule(14); }
 
-			DebugLocation(103, 26);
-			// ..\\..\\DSL\\ChangeRule.g:103:26: ( '\\r' )?
+			DebugLocation(97, 26);
+			// ..\\..\\DSL\\ChangeRule.g:97:26: ( '\\r' )?
 			int alt15=2;
 			try { DebugEnterSubRule(15);
 			try { DebugEnterDecision(15, false);
@@ -1520,9 +1545,9 @@ public partial class ChangeRuleLexer : Antlr.Runtime.Lexer
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// ..\\..\\DSL\\ChangeRule.g:103:26: '\\r'
+				// ..\\..\\DSL\\ChangeRule.g:97:26: '\\r'
 				{
-				DebugLocation(103, 26);
+				DebugLocation(97, 26);
 				Match('\r'); 
 
 				}
@@ -1531,9 +1556,9 @@ public partial class ChangeRuleLexer : Antlr.Runtime.Lexer
 			}
 			} finally { DebugExitSubRule(15); }
 
-			DebugLocation(103, 32);
+			DebugLocation(97, 32);
 			Match('\n'); 
-			DebugLocation(103, 37);
+			DebugLocation(97, 37);
 			_channel=HIDDEN;
 
 			}
@@ -1543,8 +1568,8 @@ public partial class ChangeRuleLexer : Antlr.Runtime.Lexer
 		}
 		finally
 		{
-			TraceOut("LINE_COMMENT", 19);
-			LeaveRule("LINE_COMMENT", 19);
+			TraceOut("LINE_COMMENT", 18);
+			LeaveRule("LINE_COMMENT", 18);
 			LeaveRule_LINE_COMMENT();
 		}
 	}
@@ -1552,8 +1577,8 @@ public partial class ChangeRuleLexer : Antlr.Runtime.Lexer
 
 	public override void mTokens()
 	{
-		// ..\\..\\DSL\\ChangeRule.g:1:8: ( T__21 | T__22 | OR | DIFFERENCE | AND | FILE_NAME | LINES_MATCH | FILE_LANGUAGE | LANGUAGE | IDENTIFIER | CHARACTER_LITERAL | STRING_LITERAL | DECIMAL_LITERAL | WS | LINE_COMMENT )
-		int alt16=15;
+		// ..\\..\\DSL\\ChangeRule.g:1:8: ( T__20 | T__21 | OR | DIFFERENCE | AND | FILE_NAME | LINES_MATCH | FILE_LANGUAGE | LANGUAGE | STRING_LITERAL | REGEX_MODIFIERS | DECIMAL_LITERAL | WS | LINE_COMMENT )
+		int alt16=14;
 		try { DebugEnterDecision(16, false);
 		try
 		{
@@ -1569,19 +1594,19 @@ public partial class ChangeRuleLexer : Antlr.Runtime.Lexer
 		{
 		case 1:
 			DebugEnterAlt(1);
-			// ..\\..\\DSL\\ChangeRule.g:1:10: T__21
+			// ..\\..\\DSL\\ChangeRule.g:1:10: T__20
 			{
 			DebugLocation(1, 10);
-			mT__21(); 
+			mT__20(); 
 
 			}
 			break;
 		case 2:
 			DebugEnterAlt(2);
-			// ..\\..\\DSL\\ChangeRule.g:1:16: T__22
+			// ..\\..\\DSL\\ChangeRule.g:1:16: T__21
 			{
 			DebugLocation(1, 16);
-			mT__22(); 
+			mT__21(); 
 
 			}
 			break;
@@ -1650,54 +1675,45 @@ public partial class ChangeRuleLexer : Antlr.Runtime.Lexer
 			break;
 		case 10:
 			DebugEnterAlt(10);
-			// ..\\..\\DSL\\ChangeRule.g:1:85: IDENTIFIER
+			// ..\\..\\DSL\\ChangeRule.g:1:85: STRING_LITERAL
 			{
 			DebugLocation(1, 85);
-			mIDENTIFIER(); 
+			mSTRING_LITERAL(); 
 
 			}
 			break;
 		case 11:
 			DebugEnterAlt(11);
-			// ..\\..\\DSL\\ChangeRule.g:1:96: CHARACTER_LITERAL
+			// ..\\..\\DSL\\ChangeRule.g:1:100: REGEX_MODIFIERS
 			{
-			DebugLocation(1, 96);
-			mCHARACTER_LITERAL(); 
+			DebugLocation(1, 100);
+			mREGEX_MODIFIERS(); 
 
 			}
 			break;
 		case 12:
 			DebugEnterAlt(12);
-			// ..\\..\\DSL\\ChangeRule.g:1:114: STRING_LITERAL
+			// ..\\..\\DSL\\ChangeRule.g:1:116: DECIMAL_LITERAL
 			{
-			DebugLocation(1, 114);
-			mSTRING_LITERAL(); 
+			DebugLocation(1, 116);
+			mDECIMAL_LITERAL(); 
 
 			}
 			break;
 		case 13:
 			DebugEnterAlt(13);
-			// ..\\..\\DSL\\ChangeRule.g:1:129: DECIMAL_LITERAL
+			// ..\\..\\DSL\\ChangeRule.g:1:132: WS
 			{
-			DebugLocation(1, 129);
-			mDECIMAL_LITERAL(); 
+			DebugLocation(1, 132);
+			mWS(); 
 
 			}
 			break;
 		case 14:
 			DebugEnterAlt(14);
-			// ..\\..\\DSL\\ChangeRule.g:1:145: WS
+			// ..\\..\\DSL\\ChangeRule.g:1:135: LINE_COMMENT
 			{
-			DebugLocation(1, 145);
-			mWS(); 
-
-			}
-			break;
-		case 15:
-			DebugEnterAlt(15);
-			// ..\\..\\DSL\\ChangeRule.g:1:148: LINE_COMMENT
-			{
-			DebugLocation(1, 148);
+			DebugLocation(1, 135);
 			mLINE_COMMENT(); 
 
 			}
@@ -1782,7 +1798,7 @@ public partial class ChangeRuleLexer : Antlr.Runtime.Lexer
 			this.transition = DFA7_transition;
 		}
 
-		public override string Description { get { return "58:2: ( 'CSharp' | 'HTML' | 'JavaScript' | 'CSS' | 'XSLT' | 'VBNet' | 'Project' | 'Solution' | 'Unknown' )"; } }
+		public override string Description { get { return "59:2: ( 'CSharp' | 'HTML' | 'JavaScript' | 'CSS' | 'XSLT' | 'VBNet' | 'Project' | 'Solution' | 'Unknown' )"; } }
 
 		public override void Error(NoViableAltException nvae)
 		{
@@ -1793,155 +1809,50 @@ public partial class ChangeRuleLexer : Antlr.Runtime.Lexer
 	private class DFA16 : DFA
 	{
 		private const string DFA16_eotS =
-			"\x4\xFFFF\x1\x16\x1\xFFFF\x1\x16\x1\xFFFF\x2\x16\x1\xFFFF\x1\x16\x2\xFFFF"+
-			"\x8\x16\x6\xFFFF\x1\x3\x3\x16\x1\xFFFF\x9\x16\x2\xFFFF\x1\x16\x1\x7\x3"+
-			"\x16\x1\x3F\x7\x16\x2\xFFFF\x4\x16\x1\xFFFF\x1\x3F\x1\x16\x1\x3F\x4\x16"+
-			"\x1\xFFFF\x1\x16\x1\xFFFF\x3\x16\x1\x3F\x3\x16\x1\x5\x1\x3F\x5\x16\x1"+
-			"\x3F\x1\x16\x1\x3F\x1\x16\x1\x3F\x1\x16\x1\x3F";
+			"\x12\xFFFF\x1\xB\x4\xFFFF";
 		private const string DFA16_eofS =
-			"\x5F\xFFFF";
+			"\x17\xFFFF";
 		private const string DFA16_minS =
-			"\x1\x9\x3\xFFFF\x1\x72\x1\xFFFF\x1\x78\x1\xFFFF\x1\x6E\x1\x2E\x1\xFFFF"+
-			"\x1\x2E\x2\xFFFF\x1\x53\x1\x54\x1\x61\x1\x53\x1\x42\x1\x72\x1\x6F\x1"+
-			"\x6E\x1\xFFFF\x1\x0\x4\xFFFF\x1\x24\x1\x63\x1\x64\x2\x6C\x1\x6E\x1\x53"+
-			"\x1\x4D\x1\x76\x1\x4C\x1\x4E\x1\x6F\x1\x6C\x1\x6B\x1\x22\x1\x0\x1\x65"+
-			"\x1\x24\x2\x65\x1\x61\x1\x24\x1\x4C\x1\x61\x1\x54\x1\x65\x1\x6A\x1\x75"+
-			"\x1\x6E\x1\x0\x1\xFFFF\x1\x70\x1\x2E\x1\x73\x1\x72\x1\xFFFF\x1\x24\x1"+
-			"\x53\x1\x24\x1\x74\x1\x65\x1\x74\x1\x6F\x1\xFFFF\x1\x74\x1\x6C\x1\x2E"+
-			"\x1\x70\x1\x63\x1\x24\x1\x63\x1\x69\x1\x77\x2\x24\x1\x72\x1\x74\x1\x6F"+
-			"\x1\x6E\x1\x69\x1\x24\x1\x6E\x1\x24\x1\x70\x1\x24\x1\x74\x1\x24";
+			"\x1\x9\x5\xFFFF\x1\x2E\x5\xFFFF\x1\x0\x3\xFFFF\x2\x6C\x1\x0\x1\x65\x1"+
+			"\xFFFF\x1\x2E\x1\x6C";
 		private const string DFA16_maxS =
-			"\x1\x7E\x3\xFFFF\x1\x72\x1\xFFFF\x1\x78\x1\xFFFF\x1\x6E\x1\x69\x1\xFFFF"+
-			"\x1\x69\x2\xFFFF\x1\x53\x1\x54\x1\x61\x1\x53\x1\x42\x1\x72\x1\x6F\x1"+
-			"\x6E\x1\xFFFF\x1\xFFFF\x4\xFFFF\x1\x7A\x1\x63\x1\x64\x1\x6C\x2\x6E\x1"+
-			"\x68\x1\x4D\x1\x76\x1\x4C\x1\x4E\x1\x6F\x1\x6C\x1\x6B\x1\x74\x1\xFFFF"+
-			"\x1\x65\x1\x7A\x2\x65\x1\x61\x1\x7A\x1\x4C\x1\x61\x1\x54\x1\x65\x1\x6A"+
-			"\x1\x75\x1\x6E\x1\xFFFF\x1\xFFFF\x1\x70\x1\x2E\x1\x73\x1\x72\x1\xFFFF"+
-			"\x1\x7A\x1\x53\x1\x7A\x1\x74\x1\x65\x1\x74\x1\x6F\x1\xFFFF\x1\x74\x1"+
-			"\x6E\x1\x2E\x1\x70\x1\x63\x1\x7A\x1\x63\x1\x69\x1\x77\x2\x7A\x1\x72\x1"+
-			"\x74\x1\x6F\x1\x6E\x1\x69\x1\x7A\x1\x6E\x1\x7A\x1\x70\x1\x7A\x1\x74\x1"+
-			"\x7A";
+			"\x1\x7E\x5\xFFFF\x1\x69\x5\xFFFF\x1\xFFFF\x3\xFFFF\x1\x6C\x1\x6E\x1\xFFFF"+
+			"\x1\x65\x1\xFFFF\x1\x2E\x1\x6E";
 		private const string DFA16_acceptS =
-			"\x1\xFFFF\x1\x1\x1\x2\x1\x3\x1\xFFFF\x1\x4\x1\xFFFF\x1\x5\x2\xFFFF\x1"+
-			"\x6\x1\xFFFF\x1\x7\x1\x8\x8\xFFFF\x1\xA\x1\xFFFF\x1\xC\x1\xD\x1\xE\x1"+
-			"\xF\x1E\xFFFF\x1\xB\x4\xFFFF\x1\x9\x7\xFFFF\x1\xB\x17\xFFFF";
+			"\x1\xFFFF\x1\x1\x1\x2\x1\x3\x1\x4\x1\x5\x1\xFFFF\x1\x6\x1\x7\x1\x8\x1"+
+			"\x9\x1\xA\x1\xFFFF\x1\xB\x1\xC\x1\xD\x4\xFFFF\x1\xE\x2\xFFFF";
 		private const string DFA16_specialS =
-			"\x17\xFFFF\x1\x0\x13\xFFFF\x1\x1\xD\xFFFF\x1\x2\x25\xFFFF}>";
+			"\xC\xFFFF\x1\x0\x5\xFFFF\x1\x1\x4\xFFFF}>";
 		private static readonly string[] DFA16_transitionS =
 			{
-				"\x2\x1A\x1\xFFFF\x2\x1A\x12\xFFFF\x1\x1A\x1\xFFFF\x1\x18\x1\xFFFF\x1"+
-				"\x16\x1\xFFFF\x1\x7\x1\x17\x1\x1\x1\x2\x3\xFFFF\x1\x5\x1\xFFFF\x1\x1B"+
-				"\xA\x19\x6\xFFFF\x1\xA\x2\x16\x1\xE\x4\x16\x1\xF\x1\x16\x1\x10\x5\x16"+
-				"\x1\x13\x2\x16\x1\x14\x1\x16\x1\x15\x1\x12\x1\x16\x1\x11\x2\x16\x3\xFFFF"+
-				"\x1\xD\x1\x16\x1\xFFFF\x1\x8\x3\x16\x1\x6\x1\x9\x5\x16\x1\xB\x2\x16"+
-				"\x1\x4\xB\x16\x1\xFFFF\x1\x3\x1\xFFFF\x1\xC",
-				"",
-				"",
-				"",
-				"\x1\x1C",
-				"",
-				"\x1\x1D",
-				"",
-				"\x1\x1E",
-				"\x1\x20\x3A\xFFFF\x1\x1F",
-				"",
-				"\x1\xC\x3A\xFFFF\x1\x21",
-				"",
-				"",
-				"\x1\x22",
-				"\x1\x23",
-				"\x1\x24",
-				"\x1\x25",
-				"\x1\x26",
-				"\x1\x27",
-				"\x1\x28",
-				"\x1\x29",
-				"",
-				"\x27\x2B\x1\x18\x34\x2B\x1\x2A\xFFA3\x2B",
+				"\x2\xF\x1\xFFFF\x2\xF\x12\xFFFF\x1\xF\x1\xFFFF\x1\xB\x3\xFFFF\x1\x5"+
+				"\x1\xB\x1\x1\x1\x2\x3\xFFFF\x1\x4\x1\xFFFF\x1\xC\xA\xE\x6\xFFFF\x1\x7"+
+				"\x2\xFFFF\x1\xA\x4\xFFFF\x1\xA\x1\xFFFF\x1\xA\x5\xFFFF\x1\xA\x2\xFFFF"+
+				"\x1\xA\x1\xFFFF\x2\xA\x1\xFFFF\x1\xA\x5\xFFFF\x1\x9\x2\xFFFF\x1\x5\x3"+
+				"\xFFFF\x1\x4\x1\x6\x2\xFFFF\x1\xD\x2\xFFFF\x1\x8\x2\xFFFF\x1\x3\x3\xFFFF"+
+				"\x1\xD\x8\xFFFF\x1\x3\x1\xFFFF\x1\x8",
 				"",
 				"",
 				"",
 				"",
-				"\x1\x16\xB\xFFFF\xA\x16\x7\xFFFF\x1A\x16\x4\xFFFF\x1\x16\x1\xFFFF\x1A"+
-				"\x16",
-				"\x1\x2C",
-				"\x1\x2D",
-				"\x1\x2E",
-				"\x1\xD\x1\xFFFF\x1\xA",
-				"\x1\x2F",
-				"\x1\x31\x14\xFFFF\x1\x30",
-				"\x1\x32",
-				"\x1\x33",
-				"\x1\x34",
-				"\x1\x35",
-				"\x1\x36",
-				"\x1\x37",
-				"\x1\x38",
-				"\x1\x39\x4\xFFFF\x1\x39\x34\xFFFF\x1\x39\x5\xFFFF\x1\x39\x3\xFFFF\x1"+
-				"\x39\x7\xFFFF\x1\x39\x3\xFFFF\x1\x39\x1\xFFFF\x1\x39",
-				"\x27\x18\x1\x3A\xFFD8\x18",
-				"\x1\x3B",
-				"\x1\x16\xB\xFFFF\xA\x16\x7\xFFFF\x1A\x16\x4\xFFFF\x1\x16\x1\xFFFF\x1A"+
-				"\x16",
-				"\x1\x3C",
-				"\x1\x3D",
-				"\x1\x3E",
-				"\x1\x16\xB\xFFFF\xA\x16\x7\xFFFF\x1A\x16\x4\xFFFF\x1\x16\x1\xFFFF\x1A"+
-				"\x16",
-				"\x1\x40",
-				"\x1\x41",
-				"\x1\x42",
-				"\x1\x43",
-				"\x1\x44",
-				"\x1\x45",
-				"\x1\x46",
-				"\x27\x18\x1\x3A\xFFD8\x18",
 				"",
-				"\x1\x48",
-				"\x1\x49",
-				"\x1\x4A",
-				"\x1\x4B",
+				"\x1\x11\x3A\xFFFF\x1\x10",
 				"",
-				"\x1\x16\xB\xFFFF\xA\x16\x7\xFFFF\x1A\x16\x4\xFFFF\x1\x16\x1\xFFFF\x1A"+
-				"\x16",
-				"\x1\x4C",
-				"\x1\x16\xB\xFFFF\xA\x16\x7\xFFFF\x1A\x16\x4\xFFFF\x1\x16\x1\xFFFF\x1A"+
-				"\x16",
-				"\x1\x4D",
-				"\x1\x4E",
-				"\x1\x4F",
-				"\x1\x50",
 				"",
-				"\x1\x51",
-				"\x1\xD\x1\xFFFF\x1\xA",
-				"\x1\xC",
-				"\x1\x52",
-				"\x1\x53",
-				"\x1\x16\xB\xFFFF\xA\x16\x7\xFFFF\x1A\x16\x4\xFFFF\x1\x16\x1\xFFFF\x1A"+
-				"\x16",
-				"\x1\x54",
-				"\x1\x55",
-				"\x1\x56",
-				"\x1\x16\xB\xFFFF\xA\x16\x7\xFFFF\x1A\x16\x4\xFFFF\x1\x16\x1\xFFFF\x1A"+
-				"\x16",
-				"\x1\x16\xB\xFFFF\xA\x16\x7\xFFFF\x1A\x16\x4\xFFFF\x1\x16\x1\xFFFF\x1A"+
-				"\x16",
-				"\x1\x57",
-				"\x1\x58",
-				"\x1\x59",
-				"\x1\x5A",
-				"\x1\x5B",
-				"\x1\x16\xB\xFFFF\xA\x16\x7\xFFFF\x1A\x16\x4\xFFFF\x1\x16\x1\xFFFF\x1A"+
-				"\x16",
-				"\x1\x5C",
-				"\x1\x16\xB\xFFFF\xA\x16\x7\xFFFF\x1A\x16\x4\xFFFF\x1\x16\x1\xFFFF\x1A"+
-				"\x16",
-				"\x1\x5D",
-				"\x1\x16\xB\xFFFF\xA\x16\x7\xFFFF\x1A\x16\x4\xFFFF\x1\x16\x1\xFFFF\x1A"+
-				"\x16",
-				"\x1\x5E",
-				"\x1\x16\xB\xFFFF\xA\x16\x7\xFFFF\x1A\x16\x4\xFFFF\x1\x16\x1\xFFFF\x1A"+
-				"\x16"
+				"",
+				"",
+				"",
+				"\x2F\xB\x1\x12\xFFD0\xB",
+				"",
+				"",
+				"",
+				"\x1\x13",
+				"\x1\x9\x1\xFFFF\x1\x7",
+				"\x0\x14",
+				"\x1\x15",
+				"",
+				"\x1\x16",
+				"\x1\x9\x1\xFFFF\x1\x7"
 			};
 
 		private static readonly short[] DFA16_eot = DFA.UnpackEncodedString(DFA16_eotS);
@@ -1976,7 +1887,7 @@ public partial class ChangeRuleLexer : Antlr.Runtime.Lexer
 			this.transition = DFA16_transition;
 		}
 
-		public override string Description { get { return "1:1: Tokens : ( T__21 | T__22 | OR | DIFFERENCE | AND | FILE_NAME | LINES_MATCH | FILE_LANGUAGE | LANGUAGE | IDENTIFIER | CHARACTER_LITERAL | STRING_LITERAL | DECIMAL_LITERAL | WS | LINE_COMMENT );"; } }
+		public override string Description { get { return "1:1: Tokens : ( T__20 | T__21 | OR | DIFFERENCE | AND | FILE_NAME | LINES_MATCH | FILE_LANGUAGE | LANGUAGE | STRING_LITERAL | REGEX_MODIFIERS | DECIMAL_LITERAL | WS | LINE_COMMENT );"; } }
 
 		public override void Error(NoViableAltException nvae)
 		{
@@ -1991,34 +1902,22 @@ public partial class ChangeRuleLexer : Antlr.Runtime.Lexer
 		switch (s)
 		{
 			case 0:
-				int LA16_23 = input.LA(1);
+				int LA16_12 = input.LA(1);
 
 				s = -1;
-				if ((LA16_23=='\\')) {s = 42;}
+				if ((LA16_12=='/')) {s = 18;}
 
-				else if (((LA16_23>='\u0000' && LA16_23<='&')||(LA16_23>='(' && LA16_23<='[')||(LA16_23>=']' && LA16_23<='\uFFFF'))) {s = 43;}
-
-				else if ((LA16_23=='\'')) {s = 24;}
+				else if (((LA16_12>='\u0000' && LA16_12<='.')||(LA16_12>='0' && LA16_12<='\uFFFF'))) {s = 11;}
 
 				if (s >= 0) return s;
 				break;
 			case 1:
-				int LA16_43 = input.LA(1);
+				int LA16_18 = input.LA(1);
 
 				s = -1;
-				if ((LA16_43=='\'')) {s = 58;}
+				if (((LA16_18>='\u0000' && LA16_18<='\uFFFF'))) {s = 20;}
 
-				else if (((LA16_43>='\u0000' && LA16_43<='&')||(LA16_43>='(' && LA16_43<='\uFFFF'))) {s = 24;}
-
-				if (s >= 0) return s;
-				break;
-			case 2:
-				int LA16_57 = input.LA(1);
-
-				s = -1;
-				if ((LA16_57=='\'')) {s = 58;}
-
-				else if (((LA16_57>='\u0000' && LA16_57<='&')||(LA16_57>='(' && LA16_57<='\uFFFF'))) {s = 24;}
+				else s = 11;
 
 				if (s >= 0) return s;
 				break;

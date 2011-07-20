@@ -9,13 +9,13 @@ namespace swept
         public Change Change { get; set; }
 
         public abstract ClauseMatch Union( ClauseMatch other );
-        public abstract ClauseMatch Union( bool does );
+        public abstract ClauseMatch Union( IEnumerable<int> lines );
 
         public abstract ClauseMatch Intersection( ClauseMatch other );
-        public abstract ClauseMatch Intersection( bool does );
+        public abstract ClauseMatch Intersection( IEnumerable<int> lines );
 
         public abstract ClauseMatch Subtraction( ClauseMatch other );
-        public abstract ClauseMatch Subtraction( bool does );
+        public abstract ClauseMatch Subtraction( IEnumerable<int> lines );
 
         public abstract bool DoesMatch { get; }
     }
@@ -31,58 +31,37 @@ namespace swept
 
         public override ClauseMatch Union( ClauseMatch other )
         {
-            //  Is this type-grind irreducible?  Is there a better place for it?
-            //  So far as I see, yes, and no.
-            if (other is LineMatch)
-                return Union( ((LineMatch)other).Lines );
-            else
-                return Union( ((FileMatch)other).DoesMatch );
+            return other.Union( Lines );
         }
 
-        public ClauseMatch Union( IEnumerable<int> lines )
+        public override ClauseMatch Union( IEnumerable<int> lines )
         {
             return new LineMatch( lines.Union( Lines ) );
         }
 
-        public override ClauseMatch Union( bool does )
-        {
-            if (does && !Lines.Any())
-                return new FileMatch( does );
-            else
-                return new LineMatch( Lines );
-        }
-
         public override ClauseMatch Intersection( ClauseMatch other )
         {
-            if (other is LineMatch)
-                return Intersection( ((LineMatch)other).Lines );
-            else
-                return Intersection( ((FileMatch)other).DoesMatch );
+            return other.Intersection( Lines );
         }
-        public ClauseMatch Intersection( IEnumerable<int> lines )
+
+        public override ClauseMatch Intersection( IEnumerable<int> lines )
         {
             return new LineMatch( lines.Intersect( Lines ) );
-        }
-        public override ClauseMatch Intersection( bool does )
-        {
-            return new LineMatch( does ? Lines : new List<int>() );
         }
 
         public override ClauseMatch Subtraction( ClauseMatch other )
         {
             if (other is LineMatch)
                 return Subtraction( ((LineMatch)other).Lines );
+            else if (other.DoesMatch)
+                return new FileMatch( false );
             else
-                return Subtraction( ((FileMatch)other).DoesMatch );
+                return new LineMatch( Lines );
         }
 
-        private ClauseMatch Subtraction( IEnumerable<int> lines )
+        public override ClauseMatch Subtraction( IEnumerable<int> lines )
         {
             return new LineMatch( Lines.Where( num => !lines.Contains( num ) ) );
-        }
-        public override ClauseMatch Subtraction( bool does )
-        {
-            return new LineMatch( does ? new List<int>() : Lines );
         }
 
         public override bool DoesMatch
@@ -101,39 +80,50 @@ namespace swept
         private bool does;
         public override bool DoesMatch
         {
-            get
-            {
-                return does;
-            }
+            get { return does; }
         }
 
         public override ClauseMatch Union( ClauseMatch other )
         {
-            return other.Union( DoesMatch );
+            //  Is this type-grind soluble?
+            if (other is LineMatch)
+                return Union( ((LineMatch)other).Lines );
+            else
+                return new FileMatch( DoesMatch || other.DoesMatch );
         }
-        public override ClauseMatch Union( bool does )
+
+        public override ClauseMatch Union( IEnumerable<int> lines )
         {
-            return new FileMatch( DoesMatch || does );
+            if (lines.Any())
+                return new LineMatch( lines );
+            else
+                return new FileMatch( DoesMatch );
         }
 
         public override ClauseMatch Intersection( ClauseMatch other )
         {
-            return other.Intersection( DoesMatch );
+            if (other is LineMatch)
+                return Union( ((LineMatch)other).Lines );
+            else
+                return new FileMatch( DoesMatch && other.DoesMatch );
         }
-        public override ClauseMatch Intersection( bool does )
+
+        public override ClauseMatch Intersection( IEnumerable<int> lines )
         {
-            return new FileMatch( DoesMatch && does );
+            if (!DoesMatch || ! lines.Any())
+                return new FileMatch( false );
+            else
+                return new LineMatch( lines );
         }
 
         public override ClauseMatch Subtraction( ClauseMatch other )
         {
-            bool does = other is LineMatch ? ((LineMatch)other).Lines.Any() : ((FileMatch)other).DoesMatch;
-            return Subtraction( does );
-        }
-        public override ClauseMatch Subtraction( bool does )
-        {
-            return new FileMatch( DoesMatch && !does );
+            return new FileMatch( DoesMatch && !other.DoesMatch );
         }
 
+        public override ClauseMatch Subtraction( IEnumerable<int> lines )
+        {
+            return new FileMatch( DoesMatch && !lines.Any() );
+        }
     }
 }

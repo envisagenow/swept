@@ -45,18 +45,6 @@ namespace swept.Tests
         }
 
         [Test]
-        public void can_remove_File()
-        {
-            var foo = fileCat.Fetch( "foo.cs" );
-            Assert.AreEqual( 1, fileCat.Files.Count );
-            Assert.IsFalse( foo.IsRemoved );
-
-            fileCat.Remove( foo );
-            Assert.AreEqual( 1, fileCat.Files.Count );
-            Assert.IsTrue( foo.IsRemoved );
-        }
-
-        [Test]
         public void can_Clone_FileCatalog()
         {
             fileCat.Files.Add( new SourceFile( "flubber.cs" ) );
@@ -130,16 +118,6 @@ namespace swept.Tests
             SourceFile alsoBlue = fileCat.Fetch( "blue.cs" );
 
             Assert.AreSame( blue, alsoBlue );
-        }
-
-        // TODO--0.3: Reexamine whether file removal is a sensible notion in Swept's idiom
-        [Test]
-        public void CanRemove_NonExistingFile()
-        {
-            int fileCount = fileCat.Files.Count;
-
-            fileCat.Remove("blue.cs");
-            Assert.AreEqual(fileCount, fileCat.Files.Count);
         }
 
         [Test]

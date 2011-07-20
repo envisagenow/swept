@@ -85,7 +85,7 @@ namespace swept.Tests
         public void Gatherer_one_change_two_files_leads_to_one_key_with_list_of_two()
         {
             List<Change> changes = new List<Change>();
-            Change change = new Change() { Subquery = new QueryFileNameNode { NamePattern = "one" } };
+            Change change = new Change() { Subquery = new QueryFileNameNode( "one" ) };
             changes.Add( change );
             List<string> files = new List<string> { FILEONE, FILETWO };
             MockStorageAdapter storage = new MockStorageAdapter();
@@ -104,8 +104,8 @@ namespace swept.Tests
         public void Gatherer_two_changes_one_file_leads_to_two_results()
         {
             List<Change> changes = new List<Change>();
-            Change change1 = new Change() { Subquery = new QueryContentNode { ContentPattern = "woof" } };
-            Change change2 = new Change() { Subquery = new QueryFileNameNode { NamePattern = "one" } };
+            Change change1 = new Change() { Subquery = new QueryContentNode( "woof" ) };
+            Change change2 = new Change() { Subquery = new QueryFileNameNode( "one" ) };
             changes.Add( change1 );
             changes.Add( change2 );
             List<string> files = new List<string> { FILEONE };

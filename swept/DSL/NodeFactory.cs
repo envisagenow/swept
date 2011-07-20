@@ -3,6 +3,7 @@
 //  This software is open source, MIT license.  See the file LICENSE for details.
 using System;
 using Antlr.Runtime;
+using System.Text.RegularExpressions;
 
 namespace swept.DSL
 {
@@ -27,22 +28,52 @@ namespace swept.DSL
             }
         }
 
+        // TODO: improving errors may require the Token Stream to be passed in...  Even that may not be enough.
+        public ISubquery GetQuery( IToken op, Regex pattern )
+        {
+            switch (op.Type)
+            {
+            case ChangeRuleLexer.FILE_NAME:
+                return new QueryFileNameNode( pattern );
+
+            case ChangeRuleLexer.LINES_MATCH:
+                return new QueryContentNode( pattern );
+
+            default:
+                throw new NotImplementedException( string.Format( "Don't know how to create a [{0}] query followed by a regex [{1}].", op.Type, pattern ) );
+            }
+        }
+
         public ISubquery GetQuery( IToken op, string match )
         {
             switch (op.Type)
             {
             case ChangeRuleLexer.FILE_LANGUAGE:
-                return new QueryLanguageNode { Language = (FileLanguage)Enum.Parse( typeof( FileLanguage ), match ) }; 
-                
-            case ChangeRuleLexer.FILE_NAME:
-                return new QueryFileNameNode { NamePattern = match };
-
-            case ChangeRuleLexer.LINES_MATCH:
-                return new QueryContentNode { ContentPattern = match };
+                if (match == "<missing LANGUAGE>")
+                {
+                    var ct = op as CommonToken;
+                    throw new ArgumentException( string.Format( "Swept doesn't know the language you want, starting at line {0}, char {1}.", ct.Line, ct.CharPositionInLine ) );
+                }
+                if (!Enum.IsDefined( typeof( FileLanguage ), match ))
+                    throw new ArgumentException( String.Format("Swept does not know how to tell if a file is language [{0}] at this time.", match) );
+                return new QueryLanguageNode { Language = (FileLanguage)Enum.Parse( typeof( FileLanguage ), match ) };
 
             default:
-                throw new NotImplementedException( string.Format( "Don't know how to create a [{0}] query.", op.Type ) );
+                throw new NotImplementedException( string.Format( "Don't know how to create a [{0}] query followed by a string [{1}].", op.Type, match ) );
             }
+        }
+
+        public Regex GetRegex( string pattern, string options )
+        {
+            RegexOptions opts = RegexOptions.Multiline | RegexOptions.IgnorePatternWhitespace;
+
+            if (!string.IsNullOrEmpty( options ))
+            {
+                if (options.Contains( "i" )) opts = RegexOptions.IgnoreCase;
+                if (options.Contains( "s" )) opts |= RegexOptions.Singleline;
+            }
+
+            return new Regex( pattern, opts );
         }
     }
 }

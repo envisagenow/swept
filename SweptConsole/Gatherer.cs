@@ -29,7 +29,7 @@ namespace swept
             {
                 var sourceFile = _storageAdapter.LoadFile( fileName );
 
-                foreach (var change in _changes)
+                foreach (var change in _changes.OrderBy( c => c.ID))
                 {
                     var match = change.Subquery.Answer( sourceFile );
 

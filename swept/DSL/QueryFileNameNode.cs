@@ -8,11 +8,17 @@ namespace swept.DSL
 {
     public class QueryFileNameNode : ISubquery
     {
-        public string NamePattern { get; internal set; }
+        public Regex Pattern { get; internal set; }
+
+        public QueryFileNameNode( string pattern ) : this( new Regex( pattern )) { }
+        public QueryFileNameNode( Regex pattern )
+        {
+            Pattern = pattern;
+        }
 
         public ClauseMatch Answer( SourceFile file )
         {
-            return new FileMatch( Regex.IsMatch( file.Name, NamePattern ) );
+            return new FileMatch( Pattern.IsMatch( file.Name ) );
         }
     }
 }

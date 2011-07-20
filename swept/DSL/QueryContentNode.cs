@@ -9,24 +9,21 @@ namespace swept.DSL
 {
     public class QueryContentNode : ISubquery
     {
-        public string ContentPattern { get; internal set; }
+        public Regex Pattern { get; internal set; }
+
+        public QueryContentNode( string pattern ) : this( new Regex( pattern ) ) { }
+        public QueryContentNode( Regex pattern )
+        {
+            Pattern = pattern;
+        }
 
         public ClauseMatch Answer( SourceFile file )
         {
-            return identifyMatchList( file, ContentPattern );
-        }
-
-        public ClauseMatch identifyMatchList( SourceFile file, string pattern )
-        {
             var matchList = new LineMatch( new List<int>() );
-            if (string.IsNullOrEmpty( pattern ))
-                return new LineMatch( new List<int>() );
+            if (string.IsNullOrEmpty( Pattern.ToString() ))
+                return matchList;
 
-            // TODO: Add attribute to allow case sensitive matching
-            Regex rx = new Regex( pattern, RegexOptions.IgnoreCase );
-            MatchCollection matches = rx.Matches( file.Content );
-
-            foreach (Match match in matches)
+            foreach (Match match in Pattern.Matches( file.Content ))
             {
                 int line = lineNumberOfMatch( match.Index, file.LineIndices );
                 matchList.Lines.Add( line );
@@ -36,7 +33,8 @@ namespace swept.DSL
         }
 
         // IMPROVE: Surely there's a better way to do this?  :/
-        internal int lineNumberOfMatch( int matchStartPosition, List<int> lineStartPositions )
+        // E. g., binary search or co-iterating or some better API...
+        private int lineNumberOfMatch( int matchStartPosition, List<int> lineStartPositions )
         {
             int currentLineNumber = 1;
             foreach (int lineStartPosition in lineStartPositions)

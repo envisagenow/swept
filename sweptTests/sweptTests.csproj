@@ -70,13 +70,15 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DSL\ChangeRule_Answer_tests.cs" />
-    <Compile Include="DSL\ChangeRule_Grammar_tests.cs" />
+    <Compile Include="ClauseMatch_tests.cs" />
+    <Compile Include="DSL\Grammar_tests.cs" />
     <Compile Include="Console\ArgumentsTests.cs" />
     <Compile Include="Console\BuildReporterTests.cs" />
     <Compile Include="ChangeCatalogTests.cs" />
     <Compile Include="Console\GathererTests.cs" />
-    <Compile Include="DSL\ChangeRule_tests.cs" />
+    <Compile Include="DSL\DSL_tests_base.cs" />
+    <Compile Include="DSL\NodeFactory_tests.cs" />
+    <Compile Include="DSL\Answer_tests.cs" />
     <Compile Include="SeeAlsoTests.cs" />
     <Compile Include="Console\TraverserTests.cs" />
     <Compile Include="FileContentFilterTests.cs" />

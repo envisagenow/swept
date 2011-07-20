@@ -14,12 +14,18 @@ namespace swept.Tests
     [TestFixture]
     public class BuildReporterTests
     {
-        public string empty_report = "<SweptBuildReport />";
+        BuildReporter reporter = new BuildReporter();
+
+        [SetUp]
+        public void SetUp()
+        {
+            reporter = new BuildReporter();
+        }
 
         [Test]
         public void No_task_data_creates_empty_report()
         {
-            BuildReporter reporter = new BuildReporter();
+            string empty_report = "<SweptBuildReport TotalTasks=\"0\" />";
 
             string report = reporter.ReportOn( new Dictionary<Change, Dictionary<SourceFile, ClauseMatch>>() );
 
@@ -30,14 +36,12 @@ namespace swept.Tests
         public void single_Change_single_SourceFile_report()
         {
             var expectedReport = XDocument.Parse(
-@"<SweptBuildReport>
+@"<SweptBuildReport TotalTasks='4'>
     <Change ID='HTML 01' Description='Improve browser compatibility' TotalTasks='4'>
         <SourceFile Name='bar.htm' TaskCount='4' />
     </Change>
 </SweptBuildReport>"
             );
-
-            BuildReporter reporter = new BuildReporter();
 
             var changes = new Dictionary<Change, Dictionary<SourceFile,ClauseMatch>>();
 
@@ -64,7 +68,7 @@ namespace swept.Tests
         {
             var expectedReport = XDocument.Parse(
 @"
-<SweptBuildReport>
+<SweptBuildReport TotalTasks='10'>
     <Change 
         ID='DomainEvents 01' 
         Description='Use DomainEvents instead of AcadisUserPersister and AuditRecordPersister'
@@ -85,24 +89,18 @@ namespace swept.Tests
 "
             );
 
-            var changes = new Dictionary<Change, Dictionary<SourceFile,ClauseMatch>>();
-
             var csharpChange = new Change
             {
                 ID = "DomainEvents 01",
                 Description = "Use DomainEvents instead of AcadisUserPersister and AuditRecordPersister"
             };
 
-            var csharpFiles = new Dictionary<SourceFile,ClauseMatch>();
+            SourceFile foo = new SourceFile( "foo.cs" );
+            SourceFile goo = new SourceFile( "goo.cs" );
 
-            // TODO: sensible flexibility point for generating tests--but .TaskCount is m'lark.
-            SourceFile foo = new SourceFile( "foo.cs" ); // { TaskCount = 1 };
-            SourceFile goo = new SourceFile( "goo.cs" ); // { TaskCount = 3 };
-
+            var csharpFiles = new Dictionary<SourceFile, ClauseMatch>();
             csharpFiles[foo] = new FileMatch( true );
             csharpFiles[goo] = new LineMatch( new List<int> { 1, 2, 3 } );
-
-            changes[csharpChange] = csharpFiles;
 
             var htmlChange = new Change
             {
@@ -111,16 +109,17 @@ namespace swept.Tests
                 Description = "Improve browser compatibility across IE versions"
             };
 
-            var htmlFiles = new Dictionary<SourceFile,ClauseMatch>();
-            SourceFile bar = new SourceFile( "bar.htm" ); // { TaskCount = 4 };
-            SourceFile shmoo = new SourceFile( "shmoo.aspx" ); // { TaskCount = 2 };
+            SourceFile bar = new SourceFile( "bar.htm" );
+            SourceFile shmoo = new SourceFile( "shmoo.aspx" );
 
+            var htmlFiles = new Dictionary<SourceFile, ClauseMatch>();
             htmlFiles[bar] = new LineMatch( new List<int> { 1, 2, 3, 4 } );
             htmlFiles[shmoo] = new LineMatch( new List<int> { 8, 12 } );
 
+            var changes = new Dictionary<Change, Dictionary<SourceFile, ClauseMatch>>();
+            changes[csharpChange] = csharpFiles;
             changes[htmlChange] = htmlFiles;
 
-            BuildReporter reporter = new BuildReporter();
             string report = reporter.ReportOn( changes );
 
             Assert.That( report, Is.EqualTo( expectedReport.ToString() ) );

@@ -38,18 +38,6 @@ namespace swept
             Files.Add( file );
         }
 
-        public void Remove( string fileName )
-        {
-            SourceFile file = Find( fileName );
-            if( file == null ) return;
-            Remove( file );
-        }
-
-        public void Remove( SourceFile file )
-        {
-            file.IsRemoved = true;
-        }
-
         public void Rename( string oldName, string newName )
         {
             SourceFile file = Fetch( oldName );

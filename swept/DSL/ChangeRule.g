@@ -14,6 +14,7 @@ options {
 @header {
 #pragma warning disable 3021
 using System;
+using System.Text.RegularExpressions;
 }
 
 @lexer::namespace {swept.DSL}
@@ -29,29 +30,29 @@ private NodeFactory factory = new NodeFactory();
 OR: ('||' | 'or') ;
 DIFFERENCE: ('-' | 'except') ;
 public expression returns [ISubquery sq]
-	:	lhs=and_exp { $sq = lhs; } (op=(OR | DIFFERENCE) rhs=and_exp { $sq = factory.Get( lhs, op, rhs ); })?
+	:	lhs=and_exp { $sq = lhs; } (op=(OR | DIFFERENCE) rhs=and_exp { $sq = factory.Get( sq, op, rhs ); })*
 	;
 
 AND: ('&&' | 'and') ;
 public and_exp returns [ISubquery sq]
-	:	lhs=atom { $sq = lhs; } (op=AND rhs=atom { $sq = factory.Get( lhs, op, rhs ); })?
+	:	lhs=atom { $sq = lhs; } (op=AND rhs=atom { $sq = factory.Get( sq, op, rhs ); })*
 	;
 	
 public atom returns [ISubquery sq]
-	:	q=direct_query { $sq = q; }
+	:	q=query { $sq = q; }
 	|	'(' q=expression ')' { $sq = q; }
 	;
 
 FILE_NAME:		'file.name'		| 'f.n' | '@' ;
 LINES_MATCH:	'lines.match'	| 'l.m' | '~' ;
 FILE_LANGUAGE:	'file.language'	| 'f.l' | '^' ;
-public direct_query returns [ISubquery sq]
-	:	op=(FILE_NAME | LINES_MATCH) regex { $sq = factory.GetQuery( op, $regex.text ); }
+public query returns [ISubquery sq]
+	:	op=(FILE_NAME | LINES_MATCH) r=regex { $sq = factory.GetQuery( op, r ); }
 	|	op=FILE_LANGUAGE LANGUAGE { $sq = factory.GetQuery( op, $LANGUAGE.text ); }
 	;
 	
-regex
-	:	STRING_LITERAL
+regex returns [Regex rex]
+	:	STRING_LITERAL REGEX_MODIFIERS? { $rex = factory.GetRegex( $STRING_LITERAL.text, $REGEX_MODIFIERS.text ); }
 	;
 
 LANGUAGE:
@@ -60,40 +61,33 @@ LANGUAGE:
 
 //	----------------------
 
-IDENTIFIER
-	:	LETTER (LETTER|'0'..'9')*
-	;
-	
-fragment
-LETTER
-	:	'$'
-	|	'A'..'Z'
-	|	'a'..'z'
-	|	'_'
-	;
-
-CHARACTER_LITERAL
-    :   '\'' ( EscapeSequence | ~('\''|'\\') ) '\''
-    ;
-
 STRING_LITERAL
     :  '"' STRING_BODY_DQ '"' { $text = $STRING_BODY_DQ.text; } 
+    |  '/' STRING_BODY_RQ '/' { $text = $STRING_BODY_RQ.text; } 
     |  '\'' STRING_BODY_SQ '\'' { $text = $STRING_BODY_SQ.text; } 
     ;
 
 fragment STRING_BODY_DQ
-    :  ( EscapeSequence | ~( '\\' | '"' ) )*
+    :  ( '\\"' | ~( '"' ) )*
+    ;
+
+fragment STRING_BODY_RQ
+    :  ( '\\/' | ~( '/' ) )*
     ;
 
 fragment STRING_BODY_SQ
-    :  ( EscapeSequence | ~( '\\' | '\'' ) )*
+    :  ( '\\\'' | ~( '\'' ) )*
     ;
+
+REGEX_MODIFIERS
+	:	('i' | 's')+
+	;
 
 DECIMAL_LITERAL : ('0'..'9')+ ;
 
 fragment
 EscapeSequence
-    :   '\\' ('b'|'t'|'n'|'f'|'r'|'\"'|'\''|'\\')
+    :   '\\' ('b'|'t'|'n'|'f'|'r'|'\\')
     ;
 
 WS  :  (' '|'\r'|'\t'|'\u000C'|'\n') {$channel=HIDDEN;}

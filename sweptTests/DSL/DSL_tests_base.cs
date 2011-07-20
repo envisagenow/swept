@@ -7,7 +7,7 @@ using Antlr.Runtime;
 
 namespace swept.DSL.Tests
 {
-    public class ChangeRule_tests
+    public class DSL_tests_base
     {
         protected ChangeRuleParser GetChangeRuleParser( string input )
         {

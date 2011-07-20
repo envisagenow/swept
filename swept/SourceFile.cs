@@ -24,10 +24,6 @@ namespace swept
         public FileLanguage Language;
         public string Name;
 
-        // TODO: clean out this statefullness
-        //public int TaskCount;
-        public bool IsRemoved { get; set; }
-
         public List<int> LineIndices { get; private set; }
 
         private string _content;
