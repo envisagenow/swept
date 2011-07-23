@@ -1,5 +1,5 @@
 //  Swept:  Software Enhancement Progress Tracking.
-//  Copyright (c) 2010 Jason Cole and Envisage Technologies Corp.
+//  Copyright (c) 2011 Jason Cole and Envisage Technologies Corp.
 //  This software is open source, MIT license.  See the file LICENSE for details.
 using System.Collections.Generic;
 using System.IO;
@@ -10,7 +10,6 @@ namespace swept
 {
     public class SourceFile
     {
-
         public SourceFile( string name )
         {
             Name = name;
@@ -22,9 +21,8 @@ namespace swept
         }
 
         public FileLanguage Language;
-        public string Name;
-
         public List<int> LineIndices { get; private set; }
+        public string Name;
 
         private string _content;
         public string Content
@@ -37,6 +35,7 @@ namespace swept
             }
         }
 
+        // TODO: consider another place for this
         private static Dictionary<string, FileLanguage> extensionLanguage;
         private static Dictionary<string, FileLanguage> ExtensionLanguage
         {
@@ -46,41 +45,41 @@ namespace swept
                 {
                     extensionLanguage = new Dictionary<string, FileLanguage>();
                     extensionLanguage[".cs"] = FileLanguage.CSharp;
-                    extensionLanguage[".vb"] = FileLanguage.VBNet;
+                    extensionLanguage[".css"] = FileLanguage.CSS;
                     extensionLanguage[".html"] = FileLanguage.HTML;
                     extensionLanguage[".aspx"] = FileLanguage.HTML;
                     extensionLanguage[".ascx"] = FileLanguage.HTML;
                     extensionLanguage[".asp"] = FileLanguage.HTML;
                     extensionLanguage[".htm"] = FileLanguage.HTML;
                     extensionLanguage[".js"] = FileLanguage.JavaScript;
-                    extensionLanguage[".css"] = FileLanguage.CSS;
-                    extensionLanguage[".xsl"] = FileLanguage.XSLT;
-                    extensionLanguage[".xslt"] = FileLanguage.XSLT;
                     extensionLanguage[".csproj"] = FileLanguage.Project;
                     extensionLanguage[".vbproj"] = FileLanguage.Project;
                     extensionLanguage[".sln"] = FileLanguage.Solution;
+                    extensionLanguage[".vb"] = FileLanguage.VBNet;
+                    extensionLanguage[".xsl"] = FileLanguage.XSLT;
+                    extensionLanguage[".xslt"] = FileLanguage.XSLT;
                     extensionLanguage[""] = FileLanguage.None;
                 }
                 return extensionLanguage;
             }
         }
 
-        public SourceFile Clone()
+        // TODO: Check periodically that this is correct
+        public bool Equals( SourceFile file )
         {
-            SourceFile file = new SourceFile( Name );
-
-            // TODO: clone other attrs?  Figure out how to automagic this.
-            
-            return file;
+            return Name.Equals( file.Name );
         }
 
-        public bool Equals(SourceFile file)
-        {
-            if( Name != file.Name ) return false;
-            // TODO: expand equality?  Automagic?
-
-            return true;
-        }
+        // TODO: Larger issue with Clone(), Equals(file), and ilk:  As class grows,
+        //  they become out of date, or perhaps they just _look_ like it, since added
+        //  members will not always be wanted in their implementations.  What practices
+        //  or conventions will help keep them up to date, and make it prima facie
+        //  clear that they're up to date?
+        //  One way would be to have attributes for the states applied to the members
+        //  themselves--whether they're in or out for each of these member-surface methods.
+        //  That documents the intent near the members, though using those attributes
+        //  to _make it happen_ is another, larger task.  Also unlikely to be performant,
+        //  if reflective, in enough cases.
 
         public static FileLanguage FileLanguageFromExtension( string fileExt )
         {

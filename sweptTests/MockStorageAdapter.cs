@@ -1,9 +1,10 @@
 ﻿//  Swept:  Software Enhancement Progress Tracking.
-//  Copyright (c) 2010 Jason Cole and Envisage Technologies Corp.
+//  Copyright (c) 2011 Jason Cole and Envisage Technologies Corp.
 //  This software is open source, MIT license.  See the file LICENSE for details.
 using System;
 using System.Xml;
 using System.Collections.Generic;
+using System.IO;
 
 namespace swept.Tests
 {
@@ -37,9 +38,18 @@ namespace swept.Tests
             LibraryDoc = new XmlDocument();
             LibraryDoc.LoadXml( xmlText );
         }
-        
+
+        private IOException _ll_ioex;
+        public void LoadLibrary_Throw( IOException ex )
+        {
+            _ll_ioex = ex;
+        }
+
         public XmlDocument LoadLibrary( string libraryPath )
         {
+            if (_ll_ioex != null)
+                throw _ll_ioex;
+
             FileName = libraryPath;
             if( ThrowBadXmlException )
             {
@@ -50,21 +60,22 @@ namespace swept.Tests
             return LibraryDoc;
         }
 
-        public string renamedOldLibraryPath;
-        public string renamedNewLibraryPath;
-        public void RenameLibrary( string oldPath, string newPath )
-        {
-            renamedNewLibraryPath = newPath;
-            renamedOldLibraryPath = oldPath;
-        }
-
         public string GetCWD()
         {
             return CWD;
         }
 
+        private IOException _gfif_ioex;
+        public void GetFilesInFolder_Throw( IOException ex )
+        {
+            _gfif_ioex = ex;
+        }
+
         public IEnumerable<string> GetFilesInFolder( string folder )
         {
+            if (_gfif_ioex != null)
+                throw _gfif_ioex;
+
             if (FilesInFolder.ContainsKey( folder ))
                 return FilesInFolder[folder];
 

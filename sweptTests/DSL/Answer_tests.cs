@@ -11,7 +11,7 @@ namespace swept.DSL.Tests
     {
         //  These tests don't exhaust all combinations of behavior, they
         //  just show two simple answers, one matching and one not.
-        //  ClauseMatch is tested elsewhere with lighter setup.
+        //  ClauseMatch is tested elsewhere more systematically.
 
         [Test]
         public void Content_Answers()

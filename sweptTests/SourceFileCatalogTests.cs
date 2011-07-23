@@ -45,24 +45,6 @@ namespace swept.Tests
         }
 
         [Test]
-        public void can_Clone_FileCatalog()
-        {
-            fileCat.Files.Add( new SourceFile( "flubber.cs" ) );
-
-            SourceFileCatalog secondCat = fileCat.Clone();
-
-            Assert.AreEqual( fileCat.Files.Count, secondCat.Files.Count );
-            Assert.AreEqual( "flubber.cs", secondCat.Files[0].Name );
-        }
-
-        [Test]
-        public void Clone_does_not_duplicate_ChangeCatalog()
-        {
-            SourceFileCatalog secondCat = fileCat.Clone();
-            Assert.AreSame( changeCat, secondCat.ChangeCatalog );
-        }
-
-        [Test]
         public void Can_collect_SourceFiles()
         {
             SourceFile entry = new SourceFile( "foo.cs" );

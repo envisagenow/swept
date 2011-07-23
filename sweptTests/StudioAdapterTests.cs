@@ -49,13 +49,6 @@ namespace swept.Tests
         }
 
         [Test]
-        public void when_SolutionRenamed_swept_Library_renamed()
-        {
-            adapter.Raise_SolutionRenamed( @"d:\old_stuff\old.sln", @"c:\stuff\new.sln" );
-
-            Assert.That( librarian.LibraryPath, Is.EqualTo( @"c:\stuff\new.swept.library" ) );
-        }
-        [Test]
         public void when_FileGotFocus_it_becomes_CurrentFile()
         {
             adapter.Raise_FileGotFocus( "foo.cs", "using System;" );

@@ -94,30 +94,21 @@ namespace swept
             {
                 doc = _storageAdapter.LoadLibrary( libraryPath );
             }
-            catch (XmlException exception)
+            catch (XmlException xex)
             {
-                _userAdapter.BadXmlInExpectedLibrary( libraryPath, exception );
+                _userAdapter.BadXmlInExpectedLibrary( libraryPath, xex );
                 doc = StorageAdapter.emptyCatalogDoc;
                 // TODO--0.3: Shut down addin cleanly on bad library XML
+            }
+            catch (IOException ioex)
+            {
+                throw new IOException( String.Format( "No such library as [{0}].{1}Wrong folder?  Typoed library name?", libraryPath, Environment.NewLine ), ioex );
             }
 
             return doc;
         }
 
-        private void RenameSolution( string oldSolutionPath, string newSolutionPath )
-        {
-            string oldLibraryPath = LibraryPath;
-            SolutionPath = newSolutionPath;
-            LibraryPath = Path.ChangeExtension( SolutionPath, "swept.library" );
-            _storageAdapter.RenameLibrary( oldLibraryPath, LibraryPath );
-        }
-
         #region Event Listeners
-        public void Hear_SolutionRenamed( object sender, swept.FileListEventArgs e )
-        {
-            RenameSolution( e.Names[0], e.Names[1] );
-        }
-
         public void Hear_SolutionOpened(object sender, FileEventArgs arg)
         {
             OpenSolution(arg.Name);

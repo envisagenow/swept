@@ -40,7 +40,6 @@ namespace swept.Addin
             _windowEvents = _studio.Events.get_WindowEvents( null );
 
             _solutionEvents.Opened += Hear_SolutionOpened;
-            _solutionEvents.Renamed += Hear_SolutionRenamed;
 
             _solutionItemsEvents.ItemRenamed += Hear_ItemRenamed;
 
@@ -67,7 +66,6 @@ namespace swept.Addin
 
             _documentEvents.DocumentSaved -= Hear_DocumentSaved;
 
-            _solutionEvents.Renamed -= Hear_SolutionRenamed;
             _solutionEvents.Opened -= Hear_SolutionOpened;
 
             _solutionItemsEvents.ItemRenamed -= Hear_ItemRenamed;
@@ -234,18 +232,6 @@ namespace swept.Addin
                 // TODO--0.3: convince the add-in manager that I'm outta here.
             }
 
-        }
-
-        public void Hear_SolutionRenamed( string oldName )
-        {
-            try
-            {
-                _adapter.Raise_SolutionRenamed( oldName, _studio.Solution.FileName );
-            }
-            catch (Exception e)
-            {
-                describeException( e );
-            }
         }
 
         private void Hear_WindowActivated( Window GotFocus, Window LostFocus )

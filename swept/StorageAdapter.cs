@@ -79,11 +79,6 @@ namespace swept
             return Directory.GetDirectories( folder );
         }
 
-        public void RenameLibrary( string oldPath, string newPath )
-        {
-            throw new NotImplementedException();
-        }
-
         public SourceFile LoadFile( string fileName )
         {
             try

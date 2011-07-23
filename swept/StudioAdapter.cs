@@ -27,18 +27,6 @@ namespace swept
                 Event_SolutionOpened(this, new FileEventArgs { Name = solutionPath });
         }
 
-        public event EventHandler<FileListEventArgs> Event_SolutionRenamed;
-        public void Raise_SolutionRenamed( string oldName, string newName )
-        {
-            if( Event_SolutionRenamed != null )
-            {
-                var names = new List<string>();
-                names.Add(oldName);
-                names.Add(newName);
-                Event_SolutionRenamed(this, new FileListEventArgs { Names = names });
-            }
-        }
-
         public event EventHandler<FileEventArgs> Event_FileGotFocus;
         public void Raise_FileGotFocus(string fileName, string content)
         {

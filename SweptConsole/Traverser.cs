@@ -24,11 +24,25 @@ namespace swept
 
         public IEnumerable<string> GetProjectFiles()
         {
-            List<string> projectFiles = new List<string>();
+            try
+            {
+                List<string> projectFiles = new List<string>();
 
-            ListFilesInFolder( projectFiles, Args.Folder );
+                ListFilesInFolder( projectFiles, Args.Folder );
 
-            return projectFiles;
+                return projectFiles;
+            }
+            catch (IOException ioex)
+            {
+                if (ioex.Message.StartsWith( "Could not find a part of the path " ))
+                {
+                    var msg = string.Format( 
+                        "{0}{1}Perhaps you expected a different current dir.{1}Perhaps you need to specify a different 'folder:' argument.", 
+                        ioex.Message, Environment.NewLine );
+                    throw new Exception( msg, ioex );
+                }
+                throw;
+            }
         }
 
         private void ListFilesInFolder( List<string> projectFiles, string folder )

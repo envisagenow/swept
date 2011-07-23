@@ -20,16 +20,6 @@ namespace swept
             Files = new List<SourceFile>();
         }
 
-        public SourceFileCatalog Clone()
-        {
-            SourceFileCatalog newCatalog = new SourceFileCatalog { ChangeCatalog = ChangeCatalog };
-
-            Files.ForEach( file => newCatalog.Files.Add( file.Clone() ) );
-            newCatalog.SolutionPath = SolutionPath;
-
-            return newCatalog;
-        }
-
         public void Add( SourceFile file )
         {
             if( Files.Exists( sf => sf.Name == file.Name ) )

@@ -33,7 +33,6 @@ namespace swept
             StudioAdapter.Event_NonSourceGotFocus += TaskWindow.Hear_NonSourceGotFocus;
             StudioAdapter.Event_FileGotFocus += TaskWindow.Hear_FileGotFocus;
             StudioAdapter.Event_SolutionOpened += Librarian.Hear_SolutionOpened;
-            StudioAdapter.Event_SolutionRenamed += Librarian.Hear_SolutionRenamed;
 
             //  Subscribe to the TaskWindow's events
             //  A self-subscription.  Odd, possibly poor practice...

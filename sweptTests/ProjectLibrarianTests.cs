@@ -1,11 +1,10 @@
 ﻿//  Swept:  Software Enhancement Progress Tracking.
-//  Copyright (c) 2010 Jason Cole and Envisage Technologies Corp.
+//  Copyright (c) 2011 Jason Cole and Envisage Technologies Corp.
 //  This software is open source, MIT license.  See the file LICENSE for details.
 using NUnit.Framework;
 using swept;
 using System;
 using System.Xml;
-using System.Collections.Generic;
 using System.IO;
 using swept.DSL;
 
@@ -73,27 +72,6 @@ namespace swept.Tests
         }
 
         [Test]
-        public void Swept_Library_renamed_sought_in_expected_location()
-        {
-            FileListEventArgs renameArgs = new FileListEventArgs { Names = new List<string> { @"d:\code\old.sln", @"c:\newplace\new.sln" } };
-            Horace.Hear_SolutionRenamed( this, renameArgs );
-
-            Assert.AreEqual( @"c:\newplace\new.swept.library", Horace.LibraryPath );
-        }
-
-        [Test]
-        public void Swept_Library_renamed_renames_the_library_on_disk()
-        {
-            string oldSln = @"f:\over\here.sln";
-            string newSln = @"c:\newplace\new.sln";
-            FileListEventArgs renameArgs = new FileListEventArgs { Names = new List<string> { oldSln, newSln } };
-            Horace.Hear_SolutionRenamed( this, renameArgs );
-
-            Assert.That( _storageAdapter.renamedOldLibraryPath, Is.EqualTo( @"f:\over\here.swept.library" ) );
-            Assert.That( _storageAdapter.renamedNewLibraryPath, Is.EqualTo( @"c:\newplace\new.swept.library" ) );
-        }
-
-        [Test]
         public void OpenSolution_finding_Swept_Library_will_load_Changes()
         {
             _storageAdapter.LibraryDoc = new XmlDocument();
@@ -149,9 +127,16 @@ namespace swept.Tests
         }
 
         [Test]
-        public void SolutionName_from_LibraryName()
+        public void Exception_unfound_library_upgraded_message()
         {
-            
+            var mockStorageAdapter = new MockStorageAdapter();
+            mockStorageAdapter.LoadLibrary_Throw( new IOException( "This is nonsense." ) );
+
+            var librarian = new ProjectLibrarian( mockStorageAdapter, new ChangeCatalog() );
+
+            var ex = Assert.Throws<IOException>( () => librarian.OpenLibrary( "C:\\hither\\this.library" ) );
+            Assert.That( ex.Message.Contains( "C:\\hither\\this.library" ) );
         }
+
     }
 }

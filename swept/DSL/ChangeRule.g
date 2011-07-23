@@ -5,7 +5,6 @@ grammar ChangeRule;
 
 options {
 	language = CSharp3;
-//	backtrack = true;
 }
 
 @lexer::header {
@@ -23,7 +22,7 @@ using System.Text.RegularExpressions;
 const int HIDDEN = Hidden;
 }
 
-@members {
+@parser::members {
 private NodeFactory factory = new NodeFactory();
 }
 
@@ -56,7 +55,7 @@ regex returns [Regex rex]
 	;
 
 LANGUAGE:
-	( 'CSharp' | 'HTML' | 'JavaScript' | 'CSS' | 'XSLT' | 'VBNet' | 'Project' | 'Solution' | 'Unknown' ) ;
+	( 'CSharp' | 'CSS' | 'HTML' | 'JavaScript' | 'Project' | 'Solution' | 'VBNet' | 'XSLT' | 'Unknown' ) ;
 
 
 //	----------------------

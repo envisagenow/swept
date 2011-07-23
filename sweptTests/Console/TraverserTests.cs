@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
+using System.IO;
 
 namespace swept.Tests
 {
@@ -33,9 +34,6 @@ namespace swept.Tests
             IEnumerable<string> files = traverser.GetProjectFiles();
             Assert.That( files.ToList().Count, Is.EqualTo( 0 ) );
         }
-
-        // TODO: exclusions of part of the path, e.g., ".svn" folders everywhere.
-        // TODO: recursion into subfolders
 
         [Test]
         public void traversal_returns_all_filenames_in_folder()
@@ -140,5 +138,20 @@ namespace swept.Tests
             Assert.That( filesFromTraverser[1], Is.EqualTo( @"c:\foo\foo.html" ) );
         }
 
+        [Test]
+        public void Exception_path_wrong_upgraded_message()
+        {
+            var ioex = new IOException( "Could not find a part of the path 'C:\\missing\\folder'." );
+            mockStorageAdapter.GetFilesInFolder_Throw( ioex );
+
+            string[] argsText = { "folder:c:\\foo", "library:foo.library" };
+            var args = new Arguments( argsText, null, null );
+            Traverser traverser = new Traverser( args, mockStorageAdapter );
+
+            var ex = Assert.Throws<Exception>( () => traverser.GetProjectFiles() );
+            Assert.That( ex.Message.Contains( "C:\\missing\\folder'" ) );
+            Assert.That( ex.Message.Contains( "Perhaps you expected a different current dir." ) );
+            Assert.That( ex.Message.Contains( "specify a different 'folder:' argument" ) );
+        }
     }
 }
