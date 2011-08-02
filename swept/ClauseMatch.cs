@@ -103,7 +103,7 @@ namespace swept
         public override ClauseMatch Intersection( ClauseMatch other )
         {
             if (other is LineMatch)
-                return Union( ((LineMatch)other).Lines );
+                return Intersection( ((LineMatch)other).Lines );
             else
                 return new FileMatch( DoesMatch && other.DoesMatch );
         }

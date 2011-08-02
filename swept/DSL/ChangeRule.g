@@ -79,7 +79,7 @@ fragment STRING_BODY_SQ
     ;
 
 REGEX_MODIFIERS
-	:	('i' | 's')+
+	:	('i' | 's' | 'w')+
 	;
 
 DECIMAL_LITERAL : ('0'..'9')+ ;

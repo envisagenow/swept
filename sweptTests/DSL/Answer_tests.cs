@@ -101,5 +101,21 @@ namespace swept.DSL.Tests
             Assert.That( answer.DoesMatch );
 
         }
+
+        [Test]
+        public void Compound_Answers()
+        {
+            string rule = "^CSharp and (~\"using Acadis.IRepoFramework;\" or ~\"XadrAction\")";
+
+            var parser = GetChangeRuleParser(rule);
+            var query = parser.expression();
+            Assert.That(query as OpIntersectionNode, Is.Not.Null);
+
+            var bar = new SourceFile("bar.cs");
+            bar.Content = "using example;\n//hello, world!\n";
+            ClauseMatch answer = query.Answer(bar);
+
+            Assert.That(answer.DoesMatch, Is.False);
+        }
     }
 }

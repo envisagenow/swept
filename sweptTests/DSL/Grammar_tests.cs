@@ -172,5 +172,21 @@ namespace swept.DSL.Tests
             var foo_or_bar = cs_and_FooOrBar.RHS as OpUnionNode;
             Assert.That( (foo_or_bar.LHS as QueryContentNode).Pattern.ToString(), Is.EqualTo( "foo" ) );
         }
+
+        [Test]
+        public void Missing_operator_should_complain_clearly()
+        {
+            //  Note missing the tilde in front of the regex.
+            var text = "^CSharp and /Aspose/i";
+            var parser = GetChangeRuleParser(text);
+
+            ISubquery sq = parser.expression();
+
+            Assert.That(sq is OpIntersectionNode);
+            var intersection = sq as OpIntersectionNode;
+
+            Assert.That(intersection.RHS, Is.Not.Null);
+            //  This is the problem, and it should probably be throwing an exception.
+        }
     }
 }

@@ -1,5 +1,5 @@
 ﻿//  Swept:  Software Enhancement Progress Tracking.
-//  Copyright (c) 2010 Jason Cole and Envisage Technologies Corp.
+//  Copyright (c) 2011 Jason Cole and Envisage Technologies Corp.
 //  This software is open source, MIT license.  See the file LICENSE for details.
 using System;
 using System.Linq;
@@ -15,6 +15,7 @@ namespace swept
         public string Library { get; private set; }
         public string Folder { get; private set; }
         public IEnumerable<string> Exclude { get; private set; }
+        public string Output { get; private set; }
 
         public bool AreInvalid
         {
@@ -48,12 +49,7 @@ This software is open source, MIT license.  See the file LICENSE for details.
             Library = string.Empty;
             Folder = string.Empty;
             Exclude = new List<string>();
-
-            if (args.Length == 0)
-            {
-                writer.Write( UsageMessage );
-                return;
-            }
+            Output = string.Empty;
 
             List<string> exceptionMessages = new List<string>();
 
@@ -69,6 +65,10 @@ This software is open source, MIT license.  See the file LICENSE for details.
 
                     case "version":
                         writer.Write( VersionMessage );
+                        return;
+
+                    case "usage":
+                        writer.Write(UsageMessage);
                         return;
 
                     default:
@@ -95,6 +95,10 @@ This software is open source, MIT license.  See the file LICENSE for details.
                 case "exclude":
                     Exclude = tokens[1].Split( ',' );
                     break;
+                case "output":
+                    Output = tokens[1];
+                    break;
+
                 case null:
                 case "":
                 default:
@@ -119,6 +123,11 @@ This software is open source, MIT license.  See the file LICENSE for details.
                     exceptionMessages.Add( String.Format( "Too many libraries (*.swept.library) found in folder [{0}].", Folder ) );
                 else
                     Library = possibilities.First();
+            }
+
+            if (!Exclude.Any())
+            {
+                Exclude = new string [] { ".svn", "bin", ".gitignore", "lib", "Build", "exslt", "ScormEngineInterface", "FitnesseFixtures" };
             }
 
             if (exceptionMessages.Any())

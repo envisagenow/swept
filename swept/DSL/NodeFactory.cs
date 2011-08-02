@@ -65,12 +65,13 @@ namespace swept.DSL
 
         public Regex GetRegex( string pattern, string options )
         {
-            RegexOptions opts = RegexOptions.Multiline | RegexOptions.IgnorePatternWhitespace;
+            RegexOptions opts = RegexOptions.Multiline | RegexOptions.Compiled;
 
             if (!string.IsNullOrEmpty( options ))
             {
-                if (options.Contains( "i" )) opts = RegexOptions.IgnoreCase;
-                if (options.Contains( "s" )) opts |= RegexOptions.Singleline;
+                if (options.Contains("i")) opts = RegexOptions.IgnoreCase;
+                if (options.Contains("s")) opts |= RegexOptions.Singleline;
+                if (options.Contains("w")) opts |= RegexOptions.IgnorePatternWhitespace;
             }
 
             return new Regex( pattern, opts );

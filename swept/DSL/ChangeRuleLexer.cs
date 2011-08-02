@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-// $ANTLR 3.3.1.7705 ..\\..\\DSL\\ChangeRule.g 2011-07-23 09:23:55
+// $ANTLR 3.3.1.7705 ..\\..\\DSL\\ChangeRule.g 2011-08-02 10:58:46
 
 // The variable 'variable' is assigned but its value is never used.
 #pragma warning disable 219
@@ -1235,12 +1235,12 @@ public partial class ChangeRuleLexer : Antlr.Runtime.Lexer
 		{
 			int _type = REGEX_MODIFIERS;
 			int _channel = DefaultTokenChannel;
-			// ..\\..\\DSL\\ChangeRule.g:82:2: ( ( 'i' | 's' )+ )
+			// ..\\..\\DSL\\ChangeRule.g:82:2: ( ( 'i' | 's' | 'w' )+ )
 			DebugEnterAlt(1);
-			// ..\\..\\DSL\\ChangeRule.g:82:4: ( 'i' | 's' )+
+			// ..\\..\\DSL\\ChangeRule.g:82:4: ( 'i' | 's' | 'w' )+
 			{
 			DebugLocation(82, 4);
-			// ..\\..\\DSL\\ChangeRule.g:82:4: ( 'i' | 's' )+
+			// ..\\..\\DSL\\ChangeRule.g:82:4: ( 'i' | 's' | 'w' )+
 			int cnt12=0;
 			try { DebugEnterSubRule(12);
 			while (true)
@@ -1249,7 +1249,7 @@ public partial class ChangeRuleLexer : Antlr.Runtime.Lexer
 				try { DebugEnterDecision(12, false);
 				int LA12_0 = input.LA(1);
 
-				if ((LA12_0=='i'||LA12_0=='s'))
+				if ((LA12_0=='i'||LA12_0=='s'||LA12_0=='w'))
 				{
 					alt12 = 1;
 				}
@@ -1830,7 +1830,7 @@ public partial class ChangeRuleLexer : Antlr.Runtime.Lexer
 				"\x2\xFFFF\x1\xA\x4\xFFFF\x1\xA\x1\xFFFF\x1\xA\x5\xFFFF\x1\xA\x2\xFFFF"+
 				"\x1\xA\x1\xFFFF\x2\xA\x1\xFFFF\x1\xA\x5\xFFFF\x1\x9\x2\xFFFF\x1\x5\x3"+
 				"\xFFFF\x1\x4\x1\x6\x2\xFFFF\x1\xD\x2\xFFFF\x1\x8\x2\xFFFF\x1\x3\x3\xFFFF"+
-				"\x1\xD\x8\xFFFF\x1\x3\x1\xFFFF\x1\x8",
+				"\x1\xD\x3\xFFFF\x1\xD\x4\xFFFF\x1\x3\x1\xFFFF\x1\x8",
 				"",
 				"",
 				"",
