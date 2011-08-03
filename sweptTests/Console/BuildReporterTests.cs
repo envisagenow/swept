@@ -55,7 +55,7 @@ namespace swept.Tests
             var bar = new SourceFile( "bar.htm" );
 
             var fileMatches = new Dictionary<SourceFile, ClauseMatch>();
-            fileMatches[bar] = new LineMatch( new List<int> { 1, 12, 123, 1234 } ); //change.Subquery.Answer( bar );
+            fileMatches[bar] = new LineMatch( new List<int> { 1, 12, 123, 1234 } );
             changes.Add( change, fileMatches );
 
             string report = reporter.ReportOn( changes );

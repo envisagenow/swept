@@ -36,11 +36,13 @@ namespace swept.DSL.Tests
         }
 
         [Test]
-        public void GetRegex_default_is_multiline_and_ignores_whitespace_in_pattern()
+        public void GetRegex_default_is_multiline()
         {
+            // TODO: Push this test up so we're testing the behavior, and name the test as
+            // per the comment below:
+            //  So the begin and end anchors match for each line in the source file.
             var rex = _factory.GetRegex( "foo", null );
             Assert.That( rex.Options & RegexOptions.Multiline, Is.EqualTo( RegexOptions.Multiline ) );
-            Assert.That( rex.Options & RegexOptions.IgnorePatternWhitespace, Is.EqualTo( RegexOptions.IgnorePatternWhitespace ) );
         }
 
         [Test]

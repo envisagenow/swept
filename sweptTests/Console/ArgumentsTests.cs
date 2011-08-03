@@ -1,5 +1,5 @@
 ﻿//  Swept:  Software Enhancement Progress Tracking.
-//  Copyright (c) 2010 Jason Cole and Envisage Technologies Corp.
+//  Copyright (c) 2011 Jason Cole and Envisage Technologies Corp.
 //  This software is open source, MIT license.  See the file LICENSE for details.
 using System;
 using System.Linq;
@@ -23,7 +23,7 @@ namespace swept.Tests
             mockStorageAdapter.CWD = @"d:\code\project";
         }
 
-        [Test, ExpectedException( ExpectedMessage = "Don't understand the input [bad-argument]." )]
+        [Test, ExpectedException( ExpectedMessage = "Don't understand the input [bad-argument].  Try 'sweptconsole h' for help with arguments." )]
         public void malformed_args_throw()
         {
             var argsArray = new string[] { "bad-argument", "library:unused" };
@@ -37,10 +37,12 @@ namespace swept.Tests
             new Arguments( argsArray, mockStorageAdapter, Console.Out );
         }
 
-        [Test]
-        public void Empty_args_emits_usage_message()
+        [TestCase( "usage" )]
+        [TestCase( "help" )]
+        [TestCase( "/?" )]
+        public void Request_for_help_works( string help )
         {
-            var argsArray = new string[] { };
+            var argsArray = new string[] { help };
 
             string output;
             using (StringWriter writer = new StringWriter())

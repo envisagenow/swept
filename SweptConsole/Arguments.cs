@@ -27,8 +27,28 @@ namespace swept
             get
             {
                 return @"SweptConsole usage:
-> SweptConsole library:my_solution.swept.library
-> SweptConsole folder:c:\work\acadis library:acadis-2008.swept.library exclude:.svn,bin,build
+> SweptConsole library:my_solution.swept.library output:logs\swept_report.xml
+> SweptConsole folder:c:\code\project exclude:.svn,bin,build
+  Arguments:
+    help:  Or 'h' or 'usage', gets this message.
+    version:  Prints a brief version and credits message, and terminates.
+    debug:  Triggers a Debugger.Launch(), then continues as usual.
+    folder:  The top folder SweptConsole will sweep for rule violations.
+        If no folder is specified, the current working directory is used.
+    library:  The Swept rules library file to check against.
+        If no library is specified, Swept checks the top folder for a file 
+        named '*.swept.library'.  If it finds exactly one, Swept will use it.
+    exclude:  A comma-separated list of folders Swept will not search
+        within.  All folders below these are also excluded.
+---
+Features below are Not Yet Implemented:
+NYI output:  The file that will get the output of SweptConsole.  If none is
+        specified, the report goes to standard Out.
+NYI files:  A comma-separated list of files to search for violations.  Not
+        compatible with the 'folder' argument.
+NYI pipesvn:  Indicates that standard In will contain the output from an
+        svn status command, and these files will be used as the file list
+        to search for violations.
 ";
             }
         }
@@ -37,8 +57,8 @@ namespace swept
         {
             get
             {
-                return @"SweptConsole version 0.1, Swept core version 0.2.4
-Copyright (c) 2010 Jason Cole and Envisage Technologies Corp.
+                return @"SweptConsole version 0.3, Swept core version 0.4.2
+Copyright (c) 2011 Jason Cole and Envisage Technologies Corp.
 This software is open source, MIT license.  See the file LICENSE for details.
 ";
             }
@@ -68,11 +88,14 @@ This software is open source, MIT license.  See the file LICENSE for details.
                         return;
 
                     case "usage":
-                        writer.Write(UsageMessage);
+                    case "help":
+                    case "h":
+                    case "/?":
+                        writer.Write( UsageMessage );
                         return;
 
                     default:
-                        exceptionMessages.Add( String.Format( "Don't understand the input [{0}].", s ) );
+                        exceptionMessages.Add( String.Format( "Don't understand the input [{0}].  Try 'sweptconsole h' for help with arguments.", s ) );
                         continue;
                     }
                 }
