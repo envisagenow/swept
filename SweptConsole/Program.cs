@@ -1,5 +1,5 @@
 ﻿//  Swept:  Software Enhancement Progress Tracking.
-//  Copyright (c) 2010 Jason Cole and Envisage Technologies Corp.
+//  Copyright (c) 2011 Jason Cole and Envisage Technologies Corp.
 //  This software is open source, MIT license.  See the file LICENSE for details.
 using System;
 using System.Collections.Generic;
@@ -24,7 +24,7 @@ namespace swept
         private static void execute( string[] args, TextWriter writer )
         {
             Starter starter = new Starter();
-            starter.Start();
+            starter.Start( new EventSwitchboard() );   // FIX:  finish exception subscribing
             ProjectLibrarian librarian = starter.Librarian;
             IStorageAdapter storageAdapter = starter.StorageAdapter;
 

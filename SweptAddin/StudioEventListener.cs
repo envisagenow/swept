@@ -6,196 +6,146 @@ using EnvDTE80;
 using EnvDTE;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using System.Drawing;
 
 namespace swept.Addin
 {
-    internal class StudioEventListener : IDisposable
+    internal class StudioEventStarter : IDisposable
     {
         private DTE2 _studio;
         private AddIn _sweptAddin;
-        private StudioAdapter _adapter;
+        private EventSwitchboard _switchboard;
 
         //  Class scoped to hold these references for the lifetime of the addin.
         private SolutionEvents _solutionEvents;
-        private ProjectItemsEvents _solutionItemsEvents;
         private DocumentEvents _documentEvents;
-        private CommandEvents _commandEvents;
-        private WindowEvents _windowEvents;
+        private StudioEventChannel _channel;
 
-        private Window _taskWindowWindow;
-        private TaskWindow_GUI _taskWindowControl;
-        //  When in the middle of a save-as, this will hold the original name.
-        string _saveAsOldName = string.Empty;
-
-        private List<string> log = new List<string>();
-
-        public void Connect( DTE2 studio, Starter starter, AddIn sweptAddin )
+        public void Connect( DTE2 studio, AddIn sweptAddin, EventSwitchboard switchboard )
         {
             _studio = studio;
             _sweptAddin = sweptAddin;
-            _adapter = starter.StudioAdapter;
+            _switchboard = switchboard;
+
             _solutionEvents = _studio.Events.SolutionEvents;
-            _solutionItemsEvents = _studio.Events.SolutionItemsEvents;
             _documentEvents = _studio.Events.get_DocumentEvents( null );
-            _windowEvents = _studio.Events.get_WindowEvents( null );
 
-            _solutionEvents.Opened += Hear_SolutionOpened;
+            _channel = new StudioEventChannel( _switchboard, _studio );
 
-            _solutionItemsEvents.ItemRenamed += Hear_ItemRenamed;
+            _solutionEvents.Opened += _channel.Hear_SolutionOpened;
+            _solutionEvents.AfterClosing += _channel.Hear_SolutionClosed;
 
-            _documentEvents.DocumentSaved += Hear_DocumentSaved;
-
-            _windowEvents.WindowActivated += Hear_WindowActivated;
-
-            hook_all_CommandEvents();
-            hook_TaskWindow( starter.TaskWindow );
+            _documentEvents.DocumentSaved += _channel.Hear_DocumentSaved;
+            _documentEvents.DocumentOpened += _channel.Hear_DocumentOpened;
+            _documentEvents.DocumentClosing += _channel.Hear_DocumentClosing;
 
             if (_studio.Solution != null)
             {
-                Hear_SolutionOpened();
-                Hear_WindowActivated( _studio.ActiveWindow, null );
+                _channel.Hear_SolutionOpened();
             }
         }
 
         public void Disconnect( Starter starter )
         {
-            unhook_TaskWindow();
-            unhook_all_CommandEvents();
+            _documentEvents.DocumentSaved -= _channel.Hear_DocumentSaved;
+            _documentEvents.DocumentOpened -= _channel.Hear_DocumentOpened;
+            _documentEvents.DocumentClosing -= _channel.Hear_DocumentClosing;
 
-            _windowEvents.WindowActivated -= Hear_WindowActivated;
+            _solutionEvents.Opened -= _channel.Hear_SolutionOpened;
+            _solutionEvents.AfterClosing -= _channel.Hear_SolutionClosed;
 
-            _documentEvents.DocumentSaved -= Hear_DocumentSaved;
-
-            _solutionEvents.Opened -= Hear_SolutionOpened;
-
-            _solutionItemsEvents.ItemRenamed -= Hear_ItemRenamed;
-
-            _windowEvents = null;
             _documentEvents = null;
-            _solutionItemsEvents = null;
             _solutionEvents = null;
 
-            _adapter = null;
+            _switchboard = null;
             _studio = null;
+            _channel = null;
         }
 
-        #region CommandEvents
-        private void hook_all_CommandEvents()
+        void IDisposable.Dispose()
         {
-            //  get and subscribe to all events prior to execution
-            _commandEvents = _studio.Events.get_CommandEvents( "{00000000-0000-0000-0000-000000000000}", 0 );
+            //_taskWindowControl.Dispose();
+        }
+    }
 
-            _commandEvents.BeforeExecute += hear_all_CommandEvents_before;
-            _commandEvents.AfterExecute += hear_all_CommandEvents_after;
+    public class StudioEventChannel
+    {
+        swept.EventSwitchboard _switchboard;
+        private DTE2 _studio;
+
+        public StudioEventChannel( EventSwitchboard switchboard, DTE2 studio )
+        {
+            _switchboard = switchboard;
+            _studio = studio;
         }
 
-        private void unhook_all_CommandEvents()
+        public void Hear_SolutionOpened()
         {
-            _commandEvents.BeforeExecute -= hear_all_CommandEvents_before;
-            _commandEvents.AfterExecute -= hear_all_CommandEvents_after;
-            _commandEvents = null;
-        }
-
-        private bool ignoreCommandEvent( int ID )
-        {
-            return (ID == 337 || ID == 1627 || ID == 1936 || ID == 2200);
-        }
-
-        void hear_all_CommandEvents_before( string Guid, int ID, object CustomIn, object CustomOut, ref bool CancelDefault )
-        {
-            if (ignoreCommandEvent( ID )) return;
-
-            Command command = _studio.Commands.Item( Guid, ID );
-            if (command == null)
+            try
             {
-                log.Add( string.Format( "ID [{0}] with GUID [{1}] matches no command.", ID, Guid ) );
-                return;
+                _switchboard.Raise_SolutionOpened( _studio.Solution.FileName );
             }
-
-            string commandName = command.Name;
-            string message = string.Format( "Before [{0}] has guid [{1}] and id [{2}].", commandName, command.Guid, command.ID );
-
-            switch (commandName)
+            catch (Exception e)
             {
-            case "File.SaveSelectedItemsAs":
-                _saveAsOldName = _studio.ActiveDocument.FullName;
-                break;
+                describeException( e );
 
-            default:
-                //log.Add( message );
-                break;
+                // TODO: Work out if this was fatal, and should I unload the addin?
             }
         }
 
-        private void hear_all_CommandEvents_after( string Guid, int ID, object CustomIn, object CustomOut )
+        public void Hear_SolutionClosed()
         {
-            if (ignoreCommandEvent( ID )) return;
-
-            Command command = _studio.Commands.Item( Guid, ID );
-            if (command == null) return;
-
-            string commandName = command.Name;
-
-            string message = string.Format( "After [{0}] has guid [{1}] and id [{2}].", commandName, command.Guid, command.ID );
-
-            switch (commandName)
+            try
             {
-            case "File.SaveSelectedItemsAs":
-                _saveAsOldName = string.Empty;
-                break;
-
-            case "Edit.LineDown":
-                //log.Add( message );
-                //Clipboard.SetText( string.Join( "\n", log.ToArray() ) );
-                break;
-
-            default:
-                //log.Add( message );
-                break;
+                _switchboard.Raise_SolutionClosed( _studio.Solution.FileName );
             }
-        }
-        #endregion
-
-        TaskWindow _taskWindow;
-        private void hook_TaskWindow( TaskWindow taskWindow )
-        {
-            _taskWindow = taskWindow;
-            
-            create_taskWindow();
-            taskWindow.Event_TaskListReset += _taskWindowControl.Hear_TaskListReset;
-            // TODO--0.3, Grid: get 'checkbox altered' events from the GridView, somewhat as below
-            //_taskWindowForm._taskGridView.CheckBoxColumn.Event_ItemCheck += Hear_ItemCheck;
-
-            _taskWindowControl.Event_SeeAlsoFollowed += taskWindow.Hear_SeeAlsoFollowed;
-
-            _taskWindowWindow.Visible = true;
-            _taskWindowControl.Show();
-        }
-
-        private void create_taskWindow()
-        {
-            if (_taskWindowControl == null)
+            catch (Exception e)
             {
-                System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
-                Windows2 win2 = (Windows2)_studio.Windows;
-                object taskWindowControl = null;
+                describeException( e );
 
-                _taskWindowWindow = win2.CreateToolWindow2(_sweptAddin, assembly.Location, "swept.Addin." + typeof(TaskWindow_GUI).Name, "Swept", "{9ED54F84-A89D-4fcd-A854-44251E925F09}", ref taskWindowControl);
-                _taskWindowControl = (TaskWindow_GUI)taskWindowControl;
+                // TODO: Work out if this was fatal, and should I unload the addin?
             }
         }
 
-        private void unhook_TaskWindow()
+        public void Hear_DocumentSaved( Document doc )
         {
-            _taskWindowWindow.Visible = false;
-            
-            _taskWindowControl.Event_SeeAlsoFollowed -= _taskWindow.Hear_SeeAlsoFollowed;
-
-            // TODO--0.3, Grid: stop getting 'checkbox altered' events, somewhat as below
-            //_taskWindowForm._taskGridView.CheckBoxColumn.Event_ItemCheck -= Hear_ItemCheck;
-            _taskWindow.Event_TaskListReset -= _taskWindowControl.Hear_TaskListReset;
-            _taskWindow = null;
+            try
+            {
+                string fileName = doc.FullName;
+                _switchboard.Raise_FileSaved( fileName );
+            }
+            catch (Exception e)
+            {
+                describeException( e );
+            }
         }
+
+        public void Hear_DocumentOpened( Document doc )
+        {
+            try
+            {
+                string fileName = doc.FullName;
+                _switchboard.Raise_FileOpened( fileName );
+            }
+            catch (Exception e)
+            {
+                describeException( e );
+            }
+        }
+
+        public void Hear_DocumentClosing( Document doc )
+        {
+            try
+            {
+                string fileName = doc.FullName;
+                _switchboard.Raise_FileClosing( fileName );
+            }
+            catch (Exception e)
+            {
+                describeException( e );
+            }
+        }
+
 
         internal static void describeException( Exception e )
         {
@@ -213,94 +163,6 @@ namespace swept.Addin
             if (choice == DialogResult.Yes)
                 Clipboard.SetText( exceptionText );
         }
-
-        void IDisposable.Dispose()
-        {
-            _taskWindowControl.Dispose();
-        }
-
-        public void Hear_SolutionOpened()
-        {
-            try
-            {
-                _adapter.Raise_SolutionOpened( _studio.Solution.FileName );
-            }
-            catch (Exception e)
-            {
-                describeException( e );
-                Disconnect( null );
-                // TODO--0.3: convince the add-in manager that I'm outta here.
-            }
-
-        }
-
-        private void Hear_WindowActivated( Window GotFocus, Window LostFocus )
-        {
-            try
-            {
-                if ((GotFocus == _taskWindowWindow)
-                    || (GotFocus.Object == null)
-                    || (GotFocus.Object.ToString() == "System.ComponentModel.Design.DesignerHost"))
-                {
-                    return;
-                }
-
-                if (GotFocus.Document == null)
-                {
-                    _adapter.Raise_NonSourceGetsFocus();
-                }
-                else
-                {
-                    var textDoc = GotFocus.Document.Object("TextDocument") as TextDocument;
-                    if (textDoc != null)
-                    {
-                        string content = textDoc.StartPoint.CreateEditPoint().GetText(textDoc.EndPoint);
-                        _adapter.Raise_FileGotFocus(GotFocus.Document.FullName, content);
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                describeException( e );
-            }
-        }
-
-        private void Hear_DocumentSaved( Document doc )
-        {
-            try
-            {
-                string fileName = doc.FullName;
-                if (_saveAsOldName == string.Empty)
-                    _adapter.Raise_FileSaved( fileName );
-                else
-                    _adapter.Raise_FileSavedAs( _saveAsOldName, fileName );
-            }
-            catch (Exception e)
-            {
-                describeException( e );
-            }
-        }
-
-        private void Hear_ItemRenamed( ProjectItem item, string oldName )
-        {
-            try
-            {
-                _adapter.Raise_FileRenamed( oldName, item.Name );
-            }
-            catch (Exception e)
-            {
-                describeException( e );
-            }
-        }
-
-        //  above here, subscribed
-
-        // TODO--0.3: Hear_FilePasted
-        private void Hear_FilePasted( string fileName )
-        {
-            _adapter.Raise_FilePasted( fileName );
-        }
-
-        //Will this be covered by individual file save events?  _adapter.RaiseSolutionSaved()
     }
+
 }

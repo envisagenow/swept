@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.30729</ProductVersion>
+    <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{485E504A-C357-463B-9C75-0FAB7ADFB186}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -88,13 +88,9 @@
     <Compile Include="StarterTests.cs" />
     <Compile Include="TaskTests.cs" />
     <Compile Include="ChangeTests.cs" />
-    <Compile Include="TaskWindowEventTests.cs" />
-    <Compile Include="TaskWindowForm_tests.cs" />
-    <Compile Include="TaskWindowTests.cs" />
-    <Compile Include="StudioAdapterTests.cs" />
+    <Compile Include="EventSwitchboardTests.cs" />
     <Compile Include="ProjectLibrarianTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SourceFileCatalogTests.cs" />
     <Compile Include="SourceFileTests.cs" />
     <Compile Include="TestPreparer.cs" />
     <Compile Include="TestProbe.cs" />

@@ -10,8 +10,8 @@ namespace swept
 {
     public class Traverser
     {
-        IStorageAdapter StorageAdapter;
-        Arguments Args;
+        readonly IStorageAdapter StorageAdapter;
+        readonly Arguments Args;
 
         public Traverser( Arguments args, IStorageAdapter storageAdapter )
         {

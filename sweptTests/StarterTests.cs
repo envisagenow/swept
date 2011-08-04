@@ -16,15 +16,14 @@ namespace swept.Tests
         public void CanCreateStarter()
         {
             starter = new Starter();
-            starter.Start();
+            starter.Start( new EventSwitchboard() );
         }
 
         [Test]
         public void StudioAdapter_is_connected()
         {
-            StudioAdapter studio = starter.StudioAdapter;
+            EventSwitchboard studio = starter.Switchboard;
 
-            Assert.IsNotNull(studio.taskWindow);
             Assert.IsNotNull(studio.Librarian);
         }
 
@@ -33,7 +32,7 @@ namespace swept.Tests
         {
             ProjectLibrarian lib = starter.Librarian;
             Assert.IsNotNull(lib);
-            Assert.IsNotNull( starter.ChangeCatalog );
+            Assert.IsNotNull( lib._changeCatalog );
         }
 
         [Test]
@@ -41,9 +40,8 @@ namespace swept.Tests
         {
             starter.Stop();
 
-            Assert.IsNull( starter.StudioAdapter );
+            Assert.IsNull( starter.Switchboard );
             Assert.IsNull( starter.Librarian );
-            Assert.IsNull( starter.TaskWindow );
         }
         
         // TODO--0.2: load the appropriate library if Swept started with a solution already loaded

@@ -15,7 +15,6 @@ namespace swept.Tests
     {
         private SourceFile file;
         private List<Change> changes;
-        private TaskWindow window;
 
         [SetUp]
         public void CanShowFile()

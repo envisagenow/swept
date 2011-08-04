@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.30729</ProductVersion>
+    <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{BC619D2C-C72E-4111-9489-E353B858A712}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -59,7 +59,6 @@
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Data" />
-    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -82,9 +81,7 @@
     <Compile Include="DSL\ChangeRuleLexer.cs" />
     <Compile Include="DSL\ChangeRuleParser.cs" />
     <Compile Include="SeeAlso.cs" />
-    <Compile Include="SourceFileCatalog.cs" />
-    <Compile Include="UserGUIAdapter.cs" />
-    <Compile Include="StudioAdapter.cs">
+    <Compile Include="EventSwitchboard.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="EventArgClasses.cs" />
@@ -93,7 +90,6 @@
     <Compile Include="StorageAdapter.cs" />
     <Compile Include="Starter.cs" />
     <Compile Include="Task.cs" />
-    <Compile Include="TaskWindow.cs" />
     <Compile Include="ProjectLibrarian.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SourceFile.cs" />

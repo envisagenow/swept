@@ -1,5 +1,5 @@
 ﻿//  Swept:  Software Enhancement Progress Tracking.
-//  Copyright (c) 2010 Jason Cole and Envisage Technologies Corp.
+//  Copyright (c) 2011 Jason Cole and Envisage Technologies Corp.
 //  This software is open source, MIT license.  See the file LICENSE for details.
 using System;
 using System.Collections.Generic;
@@ -10,15 +10,13 @@ namespace swept
 {
     public class ProjectLibrarian
     {
-        //  There are two major collections per solution:  The Change and Source File catalogs.
-
         //  The Change Catalog holds things the team wants to improve in this solution.
         internal ChangeCatalog _changeCatalog;
 
-        internal SourceFileCatalog _sourceCatalog;
-
-        internal IUserAdapter _userAdapter;
         internal IStorageAdapter _storageAdapter;
+        internal EventSwitchboard _switchboard;
+
+        private List<Task> _allTasks;
 
         private string _solutionPath;
         public string SolutionPath
@@ -30,19 +28,49 @@ namespace swept
             internal set
             {
                 _solutionPath = value;
-                _sourceCatalog.SolutionPath = _solutionPath;
             }
         }
 
         public string LibraryPath {get; set;}
 
-        public ProjectLibrarian( IStorageAdapter storageAdapter, ChangeCatalog changeCatalog )
+        public ProjectLibrarian( IStorageAdapter storageAdapter, EventSwitchboard switchboard )
         {
             _storageAdapter = storageAdapter;
-            _changeCatalog = changeCatalog;
-            _sourceCatalog = new SourceFileCatalog();
-            _userAdapter = new UserGUIAdapter();
+            _switchboard = switchboard;
+
+            _changeCatalog = new ChangeCatalog();
+            _allTasks = new List<Task>();
         }
+
+
+        #region Events
+        public void Hear_SolutionOpened( object sender, FileEventArgs arg )
+        {
+            OpenSolution( arg.Name );
+        }
+
+        public void Hear_SolutionClosed( object sender, swept.FileEventArgs args )
+        {
+            CloseSolution();
+        }
+        public void Hear_FileOpened( object sender, FileEventArgs e )
+        {
+            OpenSourceFile( e.Name, e.Content );
+        }
+
+        public void Hear_FileClosing( object sender, FileEventArgs e )
+        {
+            throw new NotImplementedException();
+        }
+
+        public event EventHandler<ChangeCatalogEventArgs> Event_ChangeCatalogUpdated;
+        public void Raise_ChangeCatalogUpdated()
+        {
+            if (Event_ChangeCatalogUpdated != null)
+                Event_ChangeCatalogUpdated( this, new ChangeCatalogEventArgs { Catalog = _changeCatalog } );
+        }
+        #endregion
+
 
         private void OpenSolution(string solutionPath)
         {
@@ -59,32 +87,9 @@ namespace swept
             XmlPort port = new XmlPort();
             _changeCatalog = port.ChangeCatalog_FromXmlDocument( libraryDoc );
 
-            _sourceCatalog = new SourceFileCatalog();
-            _sourceCatalog.ChangeCatalog = _changeCatalog;
-            _sourceCatalog.SolutionPath = SolutionPath;
-
-            // TODO: return here to see if it's needed
+            // TODO:  Watch for FileSystem-level change events on the library file, and reload?
+            
             Raise_ChangeCatalogUpdated();
-            Raise_SourceCatalogUpdated();
-        }
-
-        public List<Change> GetSortedChanges()
-        {
-            return _changeCatalog.GetSortedChanges();
-        }
-
-        public event EventHandler<ChangeCatalogEventArgs> Event_ChangeCatalogUpdated;
-        public void Raise_ChangeCatalogUpdated()
-        {
-            if( Event_ChangeCatalogUpdated != null )
-                Event_ChangeCatalogUpdated( this, new ChangeCatalogEventArgs { Catalog = _changeCatalog } );
-        }
-
-        public event EventHandler<SourceCatalogEventArgs> Event_SourceCatalogUpdated;
-        public void Raise_SourceCatalogUpdated()
-        {
-            if( Event_SourceCatalogUpdated != null )
-                Event_SourceCatalogUpdated( this, new SourceCatalogEventArgs { Catalog = _sourceCatalog } );
         }
 
         private XmlDocument GetLibraryDocument( string libraryPath )
@@ -96,24 +101,45 @@ namespace swept
             }
             catch (XmlException xex)
             {
-                _userAdapter.BadXmlInExpectedLibrary( libraryPath, xex );
+                _switchboard.Raise_SweptException( xex );
                 doc = StorageAdapter.emptyCatalogDoc;
-                // TODO--0.3: Shut down addin cleanly on bad library XML
             }
             catch (IOException ioex)
             {
-                throw new IOException( String.Format( "No such library as [{0}].{1}Wrong folder?  Typoed library name?", libraryPath, Environment.NewLine ), ioex );
+                throw new IOException( String.Format( "Swept expects a library named [{0}].{1}Misnamed or didn't create Swept library?  Renamed solution but did not rename Swept library?", libraryPath, Environment.NewLine ), ioex );
             }
 
             return doc;
         }
 
-        #region Event Listeners
-        public void Hear_SolutionOpened(object sender, FileEventArgs arg)
+        private void CloseSolution()
         {
-            OpenSolution(arg.Name);
+            //clear task lisk
+            //blank the ChangeCatalog
+            throw new NotImplementedException();
         }
 
-        #endregion
+        internal void OpenSourceFile( string name, string content )
+        {
+            var openedFile = new SourceFile( name ) { Content = content };
+
+            _allTasks.AddRange( GetTasksForFile( openedFile ) );
+            _switchboard.Raise_TaskListChanged( _allTasks );
+        }
+
+        private List<Task> GetTasksForFile( SourceFile file )
+        {
+            var tasks = new List<Task>();
+            foreach (var change in _changeCatalog.GetSortedChanges())
+            {
+                tasks.AddRange( Task.FromChangesForFile( change, file ) );
+            }
+            return tasks;
+        }
+
+        public List<Change> GetSortedChanges()
+        {
+            return _changeCatalog.GetSortedChanges();
+        }
     }
 }

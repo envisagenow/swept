@@ -13,7 +13,6 @@ namespace swept.Tests
     {
         private TestPreparer _preparer;
         private Starter _starter;
-        private TaskWindow _window;
 
         [SetUp]
         public void StartUp()
@@ -23,7 +22,6 @@ namespace swept.Tests
             _preparer = new TestPreparer();
 
             _starter.Start();
-            _window = _starter.TaskWindow;
         }
 
         //[Test, Ignore("tricky--not well suited for dev candidates")]
@@ -46,25 +44,17 @@ namespace swept.Tests
         //    Assert.That( userAdapter.DoubleClickedTask, Is.SameAs( task ) );
         //}
 
-        [Test]
-        public void when_TaskWindow_toggled_visibility_changed()
-        {
-            _window.Visible = false;
-            _window.Raise_TaskWindowToggled();
+        //  I like this test.  I hope to have it again some day.
+        //[Test]
+        //public void when_SeeAlsoFollowed_GUI_shows_it()
+        //{
+        //    _preparer.ShiftSweptToMocks( _starter );
 
-            Assert.IsTrue( _window.Visible );
-        }
+        //    SeeAlso search = new SeeAlso { Description = "Search", Target = "www.google.com", TargetType = TargetType.URL };
 
-        [Test]
-        public void when_SeeAlsoFollowed_GUI_shows_it()
-        {
-            _preparer.ShiftSweptToMocks( _starter );
+        //    _window.Follow( search );
 
-            SeeAlso search = new SeeAlso { Description = "Search", Target = "www.google.com", TargetType = TargetType.URL };
-
-            _window.Follow( search );
-
-            Assert.That( _preparer.MockGUI.SentSeeAlso, Is.SameAs( search ) );
-        }
+        //    Assert.That( _preparer.MockGUI.SentSeeAlso, Is.SameAs( search ) );
+        //}
     }
 }

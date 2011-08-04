@@ -1,5 +1,5 @@
 ﻿//  Swept:  Software Enhancement Progress Tracking.
-//  Copyright (c) 2010 Jason Cole and Envisage Technologies Corp.
+//  Copyright (c) 2011 Jason Cole and Envisage Technologies Corp.
 //  This software is open source, MIT license.  See the file LICENSE for details.
 using System;
 using NUnit.Framework;
@@ -11,47 +11,34 @@ namespace swept.Tests
     public class IntegrationTests
     {
         private Starter _starter;
-        private StudioAdapter _adapter;
+        private EventSwitchboard _switchboard;
         private ProjectLibrarian _librarian;
-        private TaskWindow _tasks;
 
         [SetUp]
         public void StartUp()
         {
+            _switchboard = new EventSwitchboard();
+
             _starter = new Starter();
-            _starter.Start();
+            _starter.Start( _switchboard );
 
             _librarian = _starter.Librarian;
             _librarian.SolutionPath = @"c:\code\path\to.sln";
             
-            _tasks = _starter.TaskWindow;
-            _adapter = _starter.StudioAdapter;
 
             TestPreparer preparer = new TestPreparer();
             preparer.ShiftSweptToMocks( _starter );
         }
 
         [Test]
-        public void When_SolutionOpened_all_source_catalog_references_updated()
-        {
-            SourceFileCatalog oldCatalog = _librarian._sourceCatalog;
-            _adapter.Raise_SolutionOpened( @"c:\different\place\for.sln" );
-            SourceFileCatalog newCatalog = _librarian._sourceCatalog;
-            Assert.That( newCatalog, Is.Not.EqualTo( oldCatalog ) );
-            Assert.That( newCatalog, Is.EqualTo( _tasks._fileCatalog ) );
-        }
-
-        [Test]
         public void When_SolutionOpened_all_change_catalog_references_updated()
         {
             ChangeCatalog oldCatalog = _librarian._changeCatalog;
-            Assert.That( oldCatalog, Is.EqualTo( _tasks._changeCatalog ) );
 
-            _adapter.Raise_SolutionOpened( @"c:\different\place\for.sln" );
+            _switchboard.Raise_SolutionOpened( @"c:\different\place\for.sln" );
             
             ChangeCatalog newCatalog = _librarian._changeCatalog;
             Assert.That( newCatalog, Is.Not.SameAs( oldCatalog ) );
-            Assert.That( newCatalog, Is.EqualTo( _tasks._changeCatalog ) );
         }
 
     }

@@ -7,6 +7,7 @@ using System;
 using System.Xml;
 using System.IO;
 using swept.DSL;
+using System.Collections.Generic;
 
 namespace swept.Tests
 {
@@ -19,23 +20,24 @@ namespace swept.Tests
         private string _testingSolutionPath;
         private ChangeCatalog _changeCatalog;
         private MockStorageAdapter _storageAdapter;
-        private MockUserAdapter _userAdapter;
+
+        private EventSwitchboard _switchboard;
 
         [SetUp]
         public void Setup()
         {
             _testingSolutionPath = @"f:\over\here.sln";
             _storageAdapter = new MockStorageAdapter();
-            _changeCatalog = new ChangeCatalog();
+            _switchboard = new EventSwitchboard();
 
-            Horace = new ProjectLibrarian( _storageAdapter, _changeCatalog ) 
+            Horace = new ProjectLibrarian( _storageAdapter, _switchboard ) 
             { 
                 SolutionPath = _testingSolutionPath,
                 LibraryPath = Path.ChangeExtension( _testingSolutionPath, "swept.library" )
             };
 
-            _userAdapter = new MockUserAdapter();
-            Horace._userAdapter = _userAdapter;
+            _changeCatalog = Horace._changeCatalog;
+            _tasks = null;
         }
 
         private static FileEventArgs Get_testfile_FileEventArgs()
@@ -94,7 +96,6 @@ namespace swept.Tests
             Horace.Hear_SolutionOpened( this, Get_testfile_FileEventArgs() );
 
             Assert.AreEqual( 0, _changeCatalog._changes.Count );
-            Assert.AreEqual( 0, Horace._sourceCatalog.Files.Count );
         }
 
         [Test]
@@ -104,7 +105,6 @@ namespace swept.Tests
             Horace.Hear_SolutionOpened( this, Get_testfile_FileEventArgs() );
 
             Assert.AreEqual( 0, _changeCatalog._changes.Count );
-            Assert.AreEqual( 0, Horace._sourceCatalog.Files.Count );
         }
 
         [Test]
@@ -113,7 +113,8 @@ namespace swept.Tests
             _storageAdapter.ThrowBadXmlException = true;
             Horace.Hear_SolutionOpened( this, Get_testfile_FileEventArgs() );
 
-            Assert.That( _userAdapter.SentBadLibraryMessage );
+            //  FIX:  Subscribe to the message, listener sets a val, Assert checks it
+            //Assert.That( _userAdapter.SentBadLibraryMessage );
         }
 
         [Test]
@@ -132,11 +133,44 @@ namespace swept.Tests
             var mockStorageAdapter = new MockStorageAdapter();
             mockStorageAdapter.LoadLibrary_Throw( new IOException( "This is nonsense." ) );
 
-            var librarian = new ProjectLibrarian( mockStorageAdapter, new ChangeCatalog() );
+            var librarian = new ProjectLibrarian( mockStorageAdapter, new EventSwitchboard() );
 
             var ex = Assert.Throws<IOException>( () => librarian.OpenLibrary( "C:\\hither\\this.library" ) );
             Assert.That( ex.Message.Contains( "C:\\hither\\this.library" ) );
         }
 
+
+        [Test]
+        public void OpenFile_will_Raise_TaskListChanged_Event()
+        {
+            _switchboard.Event_TaskListChanged += Listen_for_TasksChanged_Event;
+            Horace.OpenSourceFile( "foo.cs", "//hello, world!" );
+
+            Assert.That( _tasks, Is.Not.Null );
+        }
+
+        [Test]
+        public void OpenFile_will_Add_new_FileMatch_to_Tasks()
+        {
+            _switchboard.Event_TaskListChanged += Listen_for_TasksChanged_Event;
+            Change allCSharpMustGo = new Change
+            {
+                Description = "We hate CSharp.", 
+                Subquery = new QueryLanguageNode { Language = FileLanguage.CSharp } 
+            };
+            Horace._changeCatalog.Add( allCSharpMustGo );
+
+            Horace.OpenSourceFile( "foo.cs", "//hello, world!" );
+
+            Assert.That( _tasks.Count, Is.EqualTo( 1 ) );
+        }
+
+
+        private List<Task> _tasks;
+        private void Listen_for_TasksChanged_Event( object caller, TasksEventArgs e )
+        {
+            _tasks = e.Tasks;
+        }
+        
     }
 }
