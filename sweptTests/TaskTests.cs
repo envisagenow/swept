@@ -15,7 +15,7 @@ namespace swept.Tests
         public void FromMatch_gets_one_task_on_matching_File_scope()
         {
             var match = new FileMatch( true );  //  This file matches
-            List<Task> tasks = Task.FromMatch( match, null );
+            List<Task> tasks = Task.FromMatch( match, null, null );
             Assert.That( tasks.Count, Is.EqualTo( 1 ) );
             Assert.That( tasks[0].LineNumber, Is.EqualTo( 1 ) );
         }
@@ -25,7 +25,7 @@ namespace swept.Tests
         {
             var match = new LineMatch( new List<int> { 4, 8, 9 } );
 
-            List<Task> tasks = Task.FromMatch( match, null );
+            List<Task> tasks = Task.FromMatch( match, null, null );
 
             Assert.That( tasks.Count, Is.EqualTo( 3 ) );
             Assert.That( tasks[0].LineNumber, Is.EqualTo( 4 ) );
@@ -37,7 +37,7 @@ namespace swept.Tests
         public void FromMatch_gets_no_tasks_from_LineMatch_with_no_lines()
         {
             var match = new LineMatch( new List<int>() );
-            List<Task> tasks = Task.FromMatch( match, null );
+            List<Task> tasks = Task.FromMatch( match, null, null );
             Assert.That( tasks.Count, Is.EqualTo( 0 ) );
         }
 
@@ -45,7 +45,7 @@ namespace swept.Tests
         public void FromMatch_gets_no_Tasks_from_FileMatch_with_DoesMatch_false()
         {
             var match = new FileMatch(false);
-            List<Task> tasks = Task.FromMatch( match, null );
+            List<Task> tasks = Task.FromMatch( match, null, null );
             Assert.That( tasks.Count, Is.EqualTo( 0 ) );
         }
 
@@ -56,7 +56,7 @@ namespace swept.Tests
             string description = "XML must have correct namespace.";
             var change = new Change { Description = description };
 
-            List<Task> tasks = Task.FromMatch( match, change );
+            List<Task> tasks = Task.FromMatch( match, change, null );
             Assert.That( tasks.Count, Is.EqualTo( 1 ) );
 
             var task = tasks[0];

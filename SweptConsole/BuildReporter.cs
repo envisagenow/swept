@@ -32,7 +32,7 @@ namespace swept
                 foreach (SourceFile file in fileMatches.Keys.OrderBy( file => file.Name ))
                 {
                     var match = fileMatches[file];
-                    var tasks = Task.FromMatch( match, change );
+                    var tasks = Task.FromMatch( match, change, file );
 
                     if (tasks.Count == 0)
                         continue;
