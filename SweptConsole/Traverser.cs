@@ -10,13 +10,13 @@ namespace swept
 {
     public class Traverser
     {
-        readonly IStorageAdapter StorageAdapter;
-        readonly Arguments Args;
+        private readonly IStorageAdapter _storageAdapter;
+        private readonly Arguments _args;
 
         public Traverser( Arguments args, IStorageAdapter storageAdapter )
         {
-            StorageAdapter = storageAdapter;
-            Args = args;
+            _storageAdapter = storageAdapter;
+            _args = args;
             WhiteListPattern = @"\.(cs|aspx|ascx|x?html?|xml|txt|xslt?|css)$";
         }
 
@@ -27,8 +27,31 @@ namespace swept
             try
             {
                 List<string> projectFiles = new List<string>();
+                string nextLine;
+                if (_args.Piping)
+                {
+                    while ((nextLine = Console.In.ReadLine()) != null)
+                    {
+                        // TODO: Cleanup - Generalize/unplug - rough -- this code should be put into SVN reader.
+                        if (nextLine.Length > 9)
+                        {
+                            char firstChar = nextLine[0];
+                            if (firstChar == 'D')
+                                continue; // Deleted file- skip
+                            else if (firstChar == '?')
+                                continue; // Not version controlled - skip
 
-                ListFilesInFolder( projectFiles, Args.Folder );
+                            // assume - 'A' or 'M' for add or modify
+                            string fileName = Path.Combine( _args.Folder, nextLine.Substring( 8 ) );
+                            projectFiles.Add( fileName );
+                        }
+                        else { } // invalid line -- handle later???
+                    }
+                }
+                else
+                {
+                    ListFilesInFolder( projectFiles, _args.Folder );
+                }
 
                 return projectFiles;
             }
@@ -50,14 +73,14 @@ namespace swept
             if (FolderIsExcluded( folder )) return;
             if (FolderIsExcluded( Path.GetFileName( folder ))) return;
 
-            foreach (string file in StorageAdapter.GetFilesInFolder( folder ))
+            foreach (string file in _storageAdapter.GetFilesInFolder( folder ))
             {
                 string fullyQualifiedFileName = Path.Combine( folder, file );
                 if( Regex.IsMatch( file, WhiteListPattern, RegexOptions.IgnoreCase ))
                     projectFiles.Add( fullyQualifiedFileName );
             }
 
-            IEnumerable<string> children = StorageAdapter.GetFoldersInFolder( folder );
+            IEnumerable<string> children = _storageAdapter.GetFoldersInFolder( folder );
             foreach (string childFolder in children )
             {
                 string fullPath = Path.Combine( folder, childFolder );
@@ -67,7 +90,7 @@ namespace swept
 
         private bool FolderIsExcluded( string folder )
         {
-            foreach (string exclusion in Args.Exclude)
+            foreach (string exclusion in _args.Exclude)
             {
                 string escapedExclusion = exclusion.Replace( "\\", "\\\\" ) + "$";
                 if (Regex.IsMatch( folder, escapedExclusion ))

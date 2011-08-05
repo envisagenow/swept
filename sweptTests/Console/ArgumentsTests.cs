@@ -153,6 +153,17 @@ namespace swept.Tests
             Assert.That( args.Exclude.Count(), Is.EqualTo( 3 ) );
         }
 
+        [Test]
+        public void svnin_is_unary_bool_false_by_default()
+        {
+            Arguments args = new Arguments( new string[] { "library:unused" }, mockStorageAdapter, Console.Out );
+            Assert.That( args.Piping, Is.False );
+
+            args = new Arguments( new string[] { "pipe:svn", "library:unused" }, mockStorageAdapter, Console.Out );
+            Assert.That( args.Piping );
+            Assert.That( args.PipeSource, Is.EqualTo( PipeSource.SVN ) );
+        }
+
         // TODO: exclude every instance of ".svn", vs. exclude only a particular "images" folder.
         // probably by specifying a path...  do relative paths provide enough info, or must they be absolute?
     }

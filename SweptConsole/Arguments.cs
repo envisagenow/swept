@@ -9,12 +9,16 @@ using System.Diagnostics;
 
 namespace swept
 {
+    public enum PipeSource { None, SVN }
+
     public class Arguments
     {
-
         public string Library { get; private set; }
         public string Folder { get; private set; }
         public IEnumerable<string> Exclude { get; private set; }
+        public bool Piping { get; private set; }
+        public PipeSource PipeSource { get; private set; }
+
         public string Output { get; private set; }
 
         public bool AreInvalid
@@ -40,15 +44,15 @@ namespace swept
         named '*.swept.library'.  If it finds exactly one, Swept will use it.
     exclude:  A comma-separated list of folders Swept will not search
         within.  All folders below these are also excluded.
+    pipe:svn:  Indicates that standard In will contain the output from an
+        svn status command, and these files will be used as the file list
+        to search for violations.
 ---
 Features below are Not Yet Implemented:
 NYI output:  The file that will get the output of SweptConsole.  If none is
         specified, the report goes to standard Out.
 NYI files:  A comma-separated list of files to search for violations.  Not
         compatible with the 'folder' argument.
-NYI pipesvn:  Indicates that standard In will contain the output from an
-        svn status command, and these files will be used as the file list
-        to search for violations.
 ";
             }
         }
@@ -120,6 +124,11 @@ This software is open source, MIT license.  See the file LICENSE for details.
                     break;
                 case "output":
                     Output = tokens[1];
+                    break;
+                case "pipe":
+                    // TODO: Friendly let-down if they have an unrecognized VCS pipe-source
+                    Piping = true;
+                    PipeSource = (PipeSource)Enum.Parse( typeof( PipeSource ), tokens[1], true );
                     break;
 
                 case null:
