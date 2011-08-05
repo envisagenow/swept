@@ -19,8 +19,6 @@ namespace swept.Tests
 
         public void ShiftSweptToMocks( Starter starter )
         {
-            // FIX: for testing, this won't work for exceptions.
-            starter.Librarian._switchboard = null;
             starter.Librarian._storageAdapter = MockFS;
         }
     }

@@ -71,6 +71,12 @@ namespace swept
                 Event_TaskListChanged( this, new TasksEventArgs { Tasks = tasks } );
         }
 
+        public event EventHandler<ChangeCatalogEventArgs> Event_ChangeCatalogUpdated;
+        public void Raise_ChangeCatalogUpdated( ChangeCatalog changeCatalog )
+        {
+            if (Event_ChangeCatalogUpdated != null)
+                Event_ChangeCatalogUpdated( this, new ChangeCatalogEventArgs { Catalog = changeCatalog } );
+        }
         #endregion
 
     }

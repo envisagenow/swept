@@ -8,14 +8,11 @@ namespace swept
     public class Starter
     {
         public ProjectLibrarian Librarian { get; private set; }
-
         public IStorageAdapter StorageAdapter { get; set; }
         public EventSwitchboard Switchboard { get; set; }
-        //private IUserAdapter UserAdapter { get; set; }
 
         public void Start( EventSwitchboard switchboard )
         {
-            //UserAdapter = userAdapter;
             Switchboard = switchboard;
             StorageAdapter = new StorageAdapter();
 

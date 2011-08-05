@@ -20,12 +20,14 @@ namespace swept.Addin
         private SolutionEvents _solutionEvents;
         private DocumentEvents _documentEvents;
         private StudioEventChannel _channel;
+        private UserGUIAdapter _guiAdapter;
 
-        public void Connect( DTE2 studio, AddIn sweptAddin, EventSwitchboard switchboard )
+        public void Connect( DTE2 studio, AddIn sweptAddin, EventSwitchboard switchboard, UserGUIAdapter guiAdapter )
         {
             _studio = studio;
             _sweptAddin = sweptAddin;
             _switchboard = switchboard;
+            _guiAdapter = guiAdapter;
 
             _solutionEvents = _studio.Events.SolutionEvents;
             _documentEvents = _studio.Events.get_DocumentEvents( null );
@@ -38,6 +40,10 @@ namespace swept.Addin
             _documentEvents.DocumentSaved += _channel.Hear_DocumentSaved;
             _documentEvents.DocumentOpened += _channel.Hear_DocumentOpened;
             _documentEvents.DocumentClosing += _channel.Hear_DocumentClosing;
+
+            switchboard.Event_TaskListChanged += _guiAdapter.Hear_TasksChangedEvent;
+            _studio.Events.get_TaskListEvents( "" ).TaskNavigated += _guiAdapter.Hear_TaskNavigated;
+
 
             if (_studio.Solution != null)
             {
@@ -146,7 +152,7 @@ namespace swept.Addin
             }
         }
 
-
+        // TODO: move to UserGUIAdapter 
         internal static void describeException( Exception e )
         {
             string exceptionText = string.Format(

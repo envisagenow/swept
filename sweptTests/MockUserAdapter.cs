@@ -10,8 +10,6 @@ namespace swept.Tests
     [CoverageExclude]
     class MockUserAdapter : IUserAdapter
     {
-        public bool SentBadLibraryMessage;
-
         internal List<string> messages;
 
         public Task DoubleClickedTask { get; private set; }
@@ -22,12 +20,6 @@ namespace swept.Tests
         }
 
         #region IUserAdapter Members
-
-        public void BadXmlInExpectedLibrary( string libraryPath, XmlException exception )
-        {
-            SentBadLibraryMessage = true;
-            // TODO--0.3: shut down swept addin smoothly when Library XML is bad.
-        }
 
         public void DebugMessage( string message )
         {

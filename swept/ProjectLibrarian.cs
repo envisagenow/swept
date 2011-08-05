@@ -63,12 +63,6 @@ namespace swept
             throw new NotImplementedException();
         }
 
-        public event EventHandler<ChangeCatalogEventArgs> Event_ChangeCatalogUpdated;
-        public void Raise_ChangeCatalogUpdated()
-        {
-            if (Event_ChangeCatalogUpdated != null)
-                Event_ChangeCatalogUpdated( this, new ChangeCatalogEventArgs { Catalog = _changeCatalog } );
-        }
         #endregion
 
 
@@ -89,7 +83,7 @@ namespace swept
 
             // TODO:  Watch for FileSystem-level change events on the library file, and reload?
             
-            Raise_ChangeCatalogUpdated();
+            _switchboard.Raise_ChangeCatalogUpdated(_changeCatalog);
         }
 
         private XmlDocument GetLibraryDocument( string libraryPath )

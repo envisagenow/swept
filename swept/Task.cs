@@ -8,16 +8,16 @@ namespace swept
 {
     public class Task
     {
+        public SourceFile File { get; private set; }
         public int LineNumber { get; private set; }
-        private Change _Change;
-        private SourceFile _File;
-        public IEnumerable<SeeAlso> SeeAlsos { get { return _Change.SeeAlsos; } }
-        public string Description { get { return _Change.Description; } }
+        public Change Change { get; private set; }
+        public IEnumerable<SeeAlso> SeeAlsos { get { return Change.SeeAlsos; } }
+        public string Description { get { return Change.Description; } }
 
         public Task( Change change, SourceFile file, int line )
         {
-            _Change = change;
-            _File = file;
+            Change = change;
+            File = file;
             LineNumber = line;
         }
 

@@ -8,7 +8,6 @@ namespace swept
 {
     public interface IUserAdapter
     {
-        void BadXmlInExpectedLibrary( string libraryPath, XmlException exception );
         void DebugMessage( string message );
         void ShowSeeAlso( SeeAlso seeAlso );
     }
