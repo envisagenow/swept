@@ -3,14 +3,12 @@
 //  This software is open source, MIT license.  See the file LICENSE for details.
 using System;
 using System.Collections.Generic;
-using NUnit.Framework;
 using System.Xml.Linq;
-using swept;
+using NUnit.Framework;
 using swept.DSL;
 
 namespace swept.Tests
 {
-    [CoverageExclude]
     [TestFixture]
     public class BuildReporterTests
     {

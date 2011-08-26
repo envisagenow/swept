@@ -8,7 +8,15 @@ using System.Xml;
 
 namespace swept
 {
-    public class ProjectLibrarian
+    public interface ISweptEventListener
+    {
+        void Hear_SolutionOpened( object sender, FileEventArgs args );
+        void Hear_SolutionClosed( object sender, EventArgs args );
+        void Hear_FileOpened( object sender, FileEventArgs args );
+        void Hear_FileClosing( object sender, FileEventArgs args );
+    }
+
+    public class ProjectLibrarian : ISweptEventListener
     {
         //  The Change Catalog holds things the team wants to improve in this solution.
         internal ChangeCatalog _changeCatalog;
@@ -44,23 +52,24 @@ namespace swept
 
 
         #region Events
-        public void Hear_SolutionOpened( object sender, FileEventArgs arg )
+        public void Hear_SolutionOpened( object sender, FileEventArgs args )
         {
-            OpenSolution( arg.Name );
+            OpenSolution( args.Name );
         }
 
-        public void Hear_SolutionClosed( object sender, swept.FileEventArgs args )
+        public void Hear_SolutionClosed( object sender, EventArgs args )
         {
             CloseSolution();
         }
-        public void Hear_FileOpened( object sender, FileEventArgs e )
+
+        public void Hear_FileOpened( object sender, FileEventArgs args )
         {
-            OpenSourceFile( e.Name, e.Content );
+            OpenSourceFile( args.Name, args.Content );
         }
 
-        public void Hear_FileClosing( object sender, FileEventArgs e )
+        public void Hear_FileClosing( object sender, FileEventArgs args )
         {
-            throw new NotImplementedException();
+            CloseSourceFile( args.Name );
         }
 
         #endregion
@@ -108,17 +117,17 @@ namespace swept
 
         private void CloseSolution()
         {
-            //clear task lisk
-            //blank the ChangeCatalog
-            throw new NotImplementedException();
+            _allTasks.Clear();
+            _changeCatalog = null;
         }
 
         internal void OpenSourceFile( string name, string content )
         {
             var openedFile = new SourceFile( name ) { Content = content };
 
-            _allTasks.AddRange( GetTasksForFile( openedFile ) );
-            _switchboard.Raise_TaskListChanged( _allTasks );
+            var newTasks = GetTasksForFile( openedFile );
+            _allTasks.AddRange( newTasks );
+            _switchboard.Raise_TaskListChanged( newTasks );
         }
 
         private List<Task> GetTasksForFile( SourceFile file )
@@ -134,6 +143,11 @@ namespace swept
         public List<Change> GetSortedChanges()
         {
             return _changeCatalog.GetSortedChanges();
+        }
+
+        private void CloseSourceFile( string name )
+        {
+            _allTasks.RemoveAll( task => name == task.File.Name );
         }
     }
 }

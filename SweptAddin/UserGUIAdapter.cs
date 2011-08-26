@@ -1,5 +1,5 @@
 //  Swept:  Software Enhancement Progress Tracking.
-//  Copyright (c) 2010 Jason Cole and Envisage Technologies Corp.
+//  Copyright (c) 2011 Jason Cole and Envisage Technologies Corp.
 //  This software is open source, MIT license.  See the file LICENSE for details.
 using System;
 using System.Diagnostics;
@@ -13,10 +13,10 @@ namespace swept.Addin
     [CoverageExclude( "Wrapper around Windows GUI" )]
     public class UserGUIAdapter : IUserAdapter
     {
-        private DTE2 _studioApplication;
+        private DTE2 _studio;
         public UserGUIAdapter( DTE2 studioApplication )
         {
-            _studioApplication = studioApplication;
+            _studio = studioApplication;
         }
 
         // TODO--0.N: a sensible debug framework
@@ -53,7 +53,7 @@ namespace swept.Addin
 
         private void AddNewSweptTasks( List<Task> list )
         {
-            TaskList studioTaskList = _studioApplication.ToolWindows.TaskList;
+            TaskList studioTaskList = _studio.ToolWindows.TaskList;
             foreach (Task sweptTask in list)
             {
                 studioTaskList.TaskItems.Add( 
@@ -76,13 +76,13 @@ namespace swept.Addin
             {
                 try
                 {
-                    _studioApplication.ExecuteCommand(
+                    _studio.ExecuteCommand(
                         "File.OpenFile",
                         string.Format( "\"{0}\"", TaskItem.FileName )
                     );
 
                     //  Trouble if I'm not on an editor document
-                    var doc = _studioApplication.ActiveDocument;
+                    var doc = _studio.ActiveDocument;
                     if (doc.Type != "Text")
                         throw new Exception( "Somehow I don't have a text editor window." );
 

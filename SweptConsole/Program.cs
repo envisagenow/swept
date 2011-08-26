@@ -23,23 +23,26 @@ namespace swept
 
         private static void execute( string[] args, TextWriter writer )
         {
-            Starter starter = new Starter();
-            starter.Start( new EventSwitchboard() );   // FIX:  finish exception subscribing
-            ProjectLibrarian librarian = starter.Librarian;
-            IStorageAdapter storageAdapter = starter.StorageAdapter;
+            IStorageAdapter storage = new StorageAdapter();
 
-            var arguments = new Arguments( args, storageAdapter, writer );
+            var arguments = new Arguments( args, storage, writer );
             if (arguments.AreInvalid)
                 return;
 
-            var traverser = new Traverser( arguments, storageAdapter );
+            EventSwitchboard switchboard = new EventSwitchboard();
+            ProjectLibrarian librarian = new ProjectLibrarian( storage, switchboard );
+
+            Subscriber subscriber = new Subscriber();
+            subscriber.Subscribe( switchboard, librarian );   // FIX:  finish exception subscribing
+
+            var traverser = new Traverser( arguments, storage );
             IEnumerable<string> fileNames = traverser.GetProjectFiles();
 
             librarian.OpenLibrary( arguments.Library );
 
             var changes = librarian.GetSortedChanges();
 
-            var gatherer = new Gatherer( changes, fileNames, storageAdapter );
+            var gatherer = new Gatherer( changes, fileNames, storage );
 
             Dictionary<Change, Dictionary<SourceFile, ClauseMatch>> results = gatherer.GetMatchesPerChange();
 

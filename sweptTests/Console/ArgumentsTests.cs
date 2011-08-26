@@ -4,13 +4,11 @@
 using System;
 using System.Linq;
 using NUnit.Framework;
-using swept;
 using System.IO;
 using System.Collections.Generic;
 
 namespace swept.Tests
 {
-    [CoverageExclude]
     [TestFixture]
     public class ArgumentsTests
     {
@@ -23,18 +21,26 @@ namespace swept.Tests
             mockStorageAdapter.CWD = @"d:\code\project";
         }
 
-        [Test, ExpectedException( ExpectedMessage = "Don't understand the input [bad-argument].  Try 'sweptconsole h' for help with arguments." )]
+        [Test]
         public void malformed_args_throw()
         {
             var argsArray = new string[] { "bad-argument", "library:unused" };
-            new Arguments( argsArray, mockStorageAdapter, Console.Out );
+            TestDelegate createBadArgs = () => new Arguments( argsArray, mockStorageAdapter, Console.Out );
+
+            var ex = Assert.Throws<Exception>( createBadArgs );
+
+            Assert.That( ex.Message, Is.EqualTo( "Don't understand the input [bad-argument].  Try 'sweptconsole h' for help with arguments." ) );
         }
 
-        [Test, ExpectedException( ExpectedMessage = "Don't recognize the argument [oddity]." )]
+        [Test]
         public void unknown_args_throw()
         {
             var argsArray = new string[] { "oddity:unrecognized_arg_name", "library:unused" };
-            new Arguments( argsArray, mockStorageAdapter, Console.Out );
+            TestDelegate createBadArgs = () => new Arguments( argsArray, mockStorageAdapter, Console.Out );
+
+            var ex = Assert.Throws<Exception>( createBadArgs );
+            
+            Assert.That( ex.Message, Is.EqualTo( "Don't recognize the argument [oddity]." ) );
         }
 
         [TestCase( "usage" )]
@@ -163,8 +169,5 @@ namespace swept.Tests
             Assert.That( args.Piping );
             Assert.That( args.PipeSource, Is.EqualTo( PipeSource.SVN ) );
         }
-
-        // TODO: exclude every instance of ".svn", vs. exclude only a particular "images" folder.
-        // probably by specifying a path...  do relative paths provide enough info, or must they be absolute?
     }
 }

@@ -3,13 +3,13 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.21022</ProductVersion>
+    <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{BC619D2C-C72E-4111-9489-E353B858A712}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>swept</RootNamespace>
-    <AssemblyName>swept</AssemblyName>
+    <AssemblyName>swept.core</AssemblyName>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <UpgradeBackupLocation>
@@ -88,7 +88,7 @@
     <Compile Include="IUserAdapter.cs" />
     <Compile Include="IStorageAdapter.cs" />
     <Compile Include="StorageAdapter.cs" />
-    <Compile Include="Starter.cs" />
+    <Compile Include="Subscriber.cs" />
     <Compile Include="Task.cs" />
     <Compile Include="ProjectLibrarian.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

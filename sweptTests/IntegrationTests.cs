@@ -10,7 +10,7 @@ namespace swept.Tests
     [TestFixture]
     public class IntegrationTests
     {
-        private Starter _starter;
+        private Subscriber _starter;
         private EventSwitchboard _switchboard;
         private ProjectLibrarian _librarian;
 
@@ -18,16 +18,11 @@ namespace swept.Tests
         public void StartUp()
         {
             _switchboard = new EventSwitchboard();
-
-            _starter = new Starter();
-            _starter.Start( _switchboard );
-
-            _librarian = _starter.Librarian;
+            _librarian = new ProjectLibrarian( new MockStorageAdapter(), _switchboard );
             _librarian.SolutionPath = @"c:\code\path\to.sln";
-            
 
-            TestPreparer preparer = new TestPreparer();
-            preparer.ShiftSweptToMocks( _starter );
+            _starter = new Subscriber();
+            _starter.Subscribe( _switchboard, _librarian );
         }
 
         [Test]

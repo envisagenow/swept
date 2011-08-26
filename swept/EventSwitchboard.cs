@@ -8,7 +8,7 @@ namespace swept
 {
     public class EventSwitchboard
     {
-        public ProjectLibrarian Librarian { get; set; }
+        private ProjectLibrarian Librarian { get; set; }
 
         public void Hear_TaskLocationSought( object sender, TaskEventArgs args )
         {
@@ -25,25 +25,25 @@ namespace swept
                 Event_SolutionOpened(this, new FileEventArgs { Name = solutionPath });
         }
 
-        public event EventHandler<FileEventArgs> Event_SolutionClosed;
-        public void Raise_SolutionClosed(string solutionPath)
+        public event EventHandler<EventArgs> Event_SolutionClosed;
+        public void Raise_SolutionClosed()
         {
             if (Event_SolutionClosed != null)
-                Event_SolutionClosed(this, new FileEventArgs { Name = solutionPath });
+                Event_SolutionClosed( this, new EventArgs() );
         }
 
         public event EventHandler<FileEventArgs> Event_FileSaved;
-        public void Raise_FileSaved(string fileName)
+        public void Raise_FileSaved(string fileName, string content)
         {
             if (Event_FileSaved != null)
-                Event_FileSaved(this, new FileEventArgs { Name = fileName });
+                Event_FileSaved(this, new FileEventArgs { Name = fileName, Content = content });
         }
 
         public event EventHandler<FileEventArgs> Event_FileOpened;
-        public void Raise_FileOpened(string fileName)
+        public void Raise_FileOpened(string fileName, string content)
         {
             if (Event_FileOpened != null)
-                Event_FileOpened(this, new FileEventArgs { Name = fileName });
+                Event_FileOpened(this, new FileEventArgs { Name = fileName, Content = content });
         }
 
         public event EventHandler<FileEventArgs> Event_FileClosing;
