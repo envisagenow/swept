@@ -11,12 +11,11 @@ namespace swept
 {
     internal class XmlPort
     {
-
-
         public ChangeCatalog ChangeCatalog_FromXmlDocument( XmlDocument doc )
         {
             XmlNode node = doc.SelectSingleNode( "SweptProjectData/ChangeCatalog" );
 
+            // TODO: Make this message talk about both elements.
             if (node == null)
                 throw new Exception( "Document must have a <ChangeCatalog> node.  Please supply one." );
 
@@ -38,6 +37,7 @@ namespace swept
 
         public const string cfa_ID = "ID";
         public const string cfa_Description = "Description";
+        public const string cfa_BuildFail = "BuildFail";
 
         private Change Change_FromNode( XmlNode changeNode )
         {
@@ -51,23 +51,36 @@ namespace swept
             if (changeNode.Attributes[cfa_Description] != null)
                 change.Description = changeNode.Attributes[cfa_Description].Value;
 
+            if (changeNode.Attributes[cfa_BuildFail] != null)
+            {
+                string failText = changeNode.Attributes[cfa_BuildFail].Value;
+                try
+                {
+                    change.BuildFail = (BuildFailMode)Enum.Parse( typeof( BuildFailMode ), failText );
+                }
+                catch (ArgumentException e)
+                {
+                    throw new Exception( String.Format( "Change ID [{0}] has an unknown BuildFail value [{1}].", change.ID, failText ) );
+                }
+            }
+
             // can't do it because I'm not upg'd to XDoc and XElems yet...
             //string ruleText = changeNode.ChildNodes.First( c => c.NodeType == XmlNodeType.Text );
             var sb = new StringBuilder();
             foreach (XmlNode child in changeNode.ChildNodes)
             {
-                switch( child.NodeType )
+                switch (child.NodeType)
                 {
                 case XmlNodeType.Text:
                     sb.AppendLine( child.Value.Trim() );
                     break;
 
                 case XmlNodeType.Element:
-                    change.SeeAlsos.Add( SeeAlso_FromNode( child ));
+                    change.SeeAlsos.Add( SeeAlso_FromNode( child ) );
                     break;
 
                 default:
-                    throw new Exception( String.Format("Not ready for child node [{0}] typed [{1}].", child.Value, child.NodeType) );
+                    throw new Exception( String.Format( "Not ready for child node [{0}] typed [{1}].", child.Value, child.NodeType ) );
                 }
             }
             string ruleText = sb.ToString();

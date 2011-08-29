@@ -21,5 +21,18 @@ namespace swept.Tests
             change.SeeAlsos.Add( new SeeAlso { Description = "Go here", Target = "here.com", TargetType = TargetType.URL } );
             // TODO: finish this test
         }
+
+        [Test]
+        public void BuildFail_attribute_has_sane_default_and_settability()
+        {
+            Change change = new Change();
+
+            Assert.That( change.BuildFail, Is.EqualTo( BuildFailMode.None ) );
+
+            change.BuildFail = BuildFailMode.Any;
+
+            Assert.That( change.BuildFail, Is.EqualTo( BuildFailMode.Any ) );
+        }
+
     }
 }

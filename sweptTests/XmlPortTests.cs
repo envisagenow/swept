@@ -4,6 +4,7 @@
 using System;
 using NUnit.Framework;
 using System.Xml;
+using System.Collections.Generic;
 
 namespace swept.Tests
 {
@@ -20,8 +21,31 @@ namespace swept.Tests
         }
 
 
-        // TODO--0.N: "Note that a 'Not' operator on a top level change won't do what you want.
-        // Make an enclosed 'Not' filter instead."
+        [Test]
+        public void Populates_BuildFail_from_attribute()
+        {
+            string changeText = "<SweptProjectData><ChangeCatalog><Change ID='this' BuildFail='Any'> ^CSharp </Change></ChangeCatalog></SweptProjectData>";
+            XmlDocument xml = new XmlDocument();
+            xml.LoadXml( changeText );
+
+            var cat = port.ChangeCatalog_FromXmlDocument( xml );
+            List<Change> changes = cat.GetSortedChanges();
+            Assert.That( changes.Count, Is.EqualTo( 1 ) );
+
+            Assert.That( changes[0].BuildFail, Is.EqualTo( BuildFailMode.Any ) );
+        }
+
+        [Test]
+        public void Populates_BuildFail_gives_clear_exception_on_invalid_value()
+        {
+            string changeText = "<SweptProjectData><ChangeCatalog><Change ID='this' BuildFail='Fake'> ^CSharp </Change></ChangeCatalog></SweptProjectData>";
+            XmlDocument xml = new XmlDocument();
+            xml.LoadXml( changeText );
+
+            var ex = Assert.Throws<Exception>( () => port.ChangeCatalog_FromXmlDocument( xml ) );
+
+            Assert.That( ex.Message, Is.EqualTo( "Change ID [this] has an unknown BuildFail value [Fake]." ) );
+        }
 
 
         #region Exception testing

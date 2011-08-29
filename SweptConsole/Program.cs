@@ -50,6 +50,9 @@ namespace swept
             var reportXML = buildReporter.ReportOn( results );
 
             writer.WriteLine( reportXML );
+
+            //FailChecker checker = new FailChecker();
+            //checker.FailCheck( results );
         }
     }
 }

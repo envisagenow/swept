@@ -21,8 +21,15 @@ namespace swept
         Unknown,
     }
 
+    public enum BuildFailMode
+    {
+        None,
+        Any,
+    }
+
     public class Change
     {
+        public BuildFailMode BuildFail { get; set; }
         public List<SeeAlso> SeeAlsos { get; set; }
         public string ID { get; internal set; }
         public string Description { get; internal set; }
@@ -40,16 +47,5 @@ namespace swept
             match.Change = this;
             return match;
         }
-
-        //public IssueSet GetIssueSet( SourceFile file )
-        //{
-        //    return new IssueSet( this, file, GetMatches( file ) );
-        //}
-
-        //public new Change Clone()
-        //{
-        //    return (Change)base.CloneInto( new Change() );
-        //    // TODO: also the SeeAlsos
-        //}
     }
 }
