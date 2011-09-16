@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-// $ANTLR 3.3.1.7705 ..\\..\\DSL\\ChangeRule.g 2011-08-02 18:09:34
+// $ANTLR 3.3.1.7705 ..\\..\\DSL\\ChangeRule.g 2011-09-15 13:34:01
 
 // The variable 'variable' is assigned but its value is never used.
 #pragma warning disable 219
@@ -31,27 +31,29 @@ namespace swept.DSL
 public partial class ChangeRuleParser : Antlr.Runtime.Parser
 {
 	internal static readonly string[] tokenNames = new string[] {
-		"<invalid>", "<EOR>", "<DOWN>", "<UP>", "AND", "DECIMAL_LITERAL", "DIFFERENCE", "EscapeSequence", "FILE_LANGUAGE", "FILE_NAME", "LANGUAGE", "LINES_MATCH", "LINE_COMMENT", "OR", "REGEX_MODIFIERS", "STRING_BODY_DQ", "STRING_BODY_RQ", "STRING_BODY_SQ", "STRING_LITERAL", "WS", "'('", "')'"
+		"<invalid>", "<EOR>", "<DOWN>", "<UP>", "AND", "DECIMAL_LITERAL", "DIFFERENCE", "EscapeSequence", "FILE", "FILE_LANGUAGE", "FILE_NAME", "LANGUAGE", "LINES_MATCH", "LINE_COMMENT", "NOT", "OR", "REGEX_MODIFIERS", "STRING_BODY_DQ", "STRING_BODY_RQ", "STRING_BODY_SQ", "STRING_LITERAL", "WS", "'('", "')'"
 	};
 	public const int EOF=-1;
 	public const int AND=4;
 	public const int DECIMAL_LITERAL=5;
 	public const int DIFFERENCE=6;
 	public const int EscapeSequence=7;
-	public const int FILE_LANGUAGE=8;
-	public const int FILE_NAME=9;
-	public const int LANGUAGE=10;
-	public const int LINES_MATCH=11;
-	public const int LINE_COMMENT=12;
-	public const int OR=13;
-	public const int REGEX_MODIFIERS=14;
-	public const int STRING_BODY_DQ=15;
-	public const int STRING_BODY_RQ=16;
-	public const int STRING_BODY_SQ=17;
-	public const int STRING_LITERAL=18;
-	public const int WS=19;
-	public const int T__20=20;
-	public const int T__21=21;
+	public const int FILE=8;
+	public const int FILE_LANGUAGE=9;
+	public const int FILE_NAME=10;
+	public const int LANGUAGE=11;
+	public const int LINES_MATCH=12;
+	public const int LINE_COMMENT=13;
+	public const int NOT=14;
+	public const int OR=15;
+	public const int REGEX_MODIFIERS=16;
+	public const int STRING_BODY_DQ=17;
+	public const int STRING_BODY_RQ=18;
+	public const int STRING_BODY_SQ=19;
+	public const int STRING_LITERAL=20;
+	public const int WS=21;
+	public const int T__22=22;
+	public const int T__23=23;
 
 	// delegates
 	// delegators
@@ -107,7 +109,7 @@ public partial class ChangeRuleParser : Antlr.Runtime.Parser
 			// ..\\..\\DSL\\ChangeRule.g:32:4: lhs= and_exp (op= ( OR | DIFFERENCE ) rhs= and_exp )*
 			{
 			DebugLocation(32, 7);
-			PushFollow(Follow._and_exp_in_expression109);
+			PushFollow(Follow._and_exp_in_expression110);
 			lhs=and_exp();
 			PopFollow();
 
@@ -150,7 +152,7 @@ public partial class ChangeRuleParser : Antlr.Runtime.Parser
 					}
 
 					DebugLocation(32, 56);
-					PushFollow(Follow._and_exp_in_expression126);
+					PushFollow(Follow._and_exp_in_expression127);
 					rhs=and_exp();
 					PopFollow();
 
@@ -197,7 +199,7 @@ public partial class ChangeRuleParser : Antlr.Runtime.Parser
 	partial void LeaveRule_and_exp();
 
 	// $ANTLR start "and_exp"
-	// ..\\..\\DSL\\ChangeRule.g:36:8: public and_exp returns [ISubquery sq] : lhs= atom (op= AND rhs= atom )* ;
+	// ..\\..\\DSL\\ChangeRule.g:36:8: public and_exp returns [ISubquery sq] : lhs= unary (op= AND rhs= unary )* ;
 	[GrammarRule("and_exp")]
 	public ISubquery and_exp()
 	{
@@ -214,19 +216,19 @@ public partial class ChangeRuleParser : Antlr.Runtime.Parser
 		DebugLocation(36, 1);
 		try
 		{
-			// ..\\..\\DSL\\ChangeRule.g:37:2: (lhs= atom (op= AND rhs= atom )* )
+			// ..\\..\\DSL\\ChangeRule.g:37:2: (lhs= unary (op= AND rhs= unary )* )
 			DebugEnterAlt(1);
-			// ..\\..\\DSL\\ChangeRule.g:37:4: lhs= atom (op= AND rhs= atom )*
+			// ..\\..\\DSL\\ChangeRule.g:37:4: lhs= unary (op= AND rhs= unary )*
 			{
 			DebugLocation(37, 7);
-			PushFollow(Follow._atom_in_and_exp162);
-			lhs=atom();
+			PushFollow(Follow._unary_in_and_exp163);
+			lhs=unary();
 			PopFollow();
 
-			DebugLocation(37, 13);
+			DebugLocation(37, 14);
 			 sq = lhs; 
-			DebugLocation(37, 28);
-			// ..\\..\\DSL\\ChangeRule.g:37:28: (op= AND rhs= atom )*
+			DebugLocation(37, 29);
+			// ..\\..\\DSL\\ChangeRule.g:37:29: (op= AND rhs= unary )*
 			try { DebugEnterSubRule(2);
 			while (true)
 			{
@@ -245,16 +247,16 @@ public partial class ChangeRuleParser : Antlr.Runtime.Parser
 				{
 				case 1:
 					DebugEnterAlt(1);
-					// ..\\..\\DSL\\ChangeRule.g:37:29: op= AND rhs= atom
+					// ..\\..\\DSL\\ChangeRule.g:37:30: op= AND rhs= unary
 					{
-					DebugLocation(37, 31);
-					op=(IToken)Match(input,AND,Follow._AND_in_and_exp169); 
-					DebugLocation(37, 39);
-					PushFollow(Follow._atom_in_and_exp173);
-					rhs=atom();
+					DebugLocation(37, 32);
+					op=(IToken)Match(input,AND,Follow._AND_in_and_exp170); 
+					DebugLocation(37, 40);
+					PushFollow(Follow._unary_in_and_exp174);
+					rhs=unary();
 					PopFollow();
 
-					DebugLocation(37, 45);
+					DebugLocation(37, 47);
 					 sq = factory.Get( sq, op, rhs ); 
 
 					}
@@ -293,35 +295,36 @@ public partial class ChangeRuleParser : Antlr.Runtime.Parser
 	// $ANTLR end "and_exp"
 
 
-	partial void EnterRule_atom();
-	partial void LeaveRule_atom();
+	partial void EnterRule_unary();
+	partial void LeaveRule_unary();
 
-	// $ANTLR start "atom"
-	// ..\\..\\DSL\\ChangeRule.g:40:8: public atom returns [ISubquery sq] : (q= query | '(' q= expression ')' );
-	[GrammarRule("atom")]
-	public ISubquery atom()
+	// $ANTLR start "unary"
+	// ..\\..\\DSL\\ChangeRule.g:42:1: unary returns [ISubquery sq] : (op= ( FILE | NOT ) rhs= unary |rhs= atom );
+	[GrammarRule("unary")]
+	private ISubquery unary()
 	{
-		EnterRule_atom();
-		EnterRule("atom", 3);
-		TraceIn("atom", 3);
+		EnterRule_unary();
+		EnterRule("unary", 3);
+		TraceIn("unary", 3);
 		ISubquery sq = default(ISubquery);
 
-		ISubquery q = default(ISubquery);
+		IToken op = default(IToken);
+		ISubquery rhs = default(ISubquery);
 
-		try { DebugEnterRule(GrammarFileName, "atom");
-		DebugLocation(40, 1);
+		try { DebugEnterRule(GrammarFileName, "unary");
+		DebugLocation(42, 1);
 		try
 		{
-			// ..\\..\\DSL\\ChangeRule.g:41:2: (q= query | '(' q= expression ')' )
+			// ..\\..\\DSL\\ChangeRule.g:43:2: (op= ( FILE | NOT ) rhs= unary |rhs= atom )
 			int alt3=2;
 			try { DebugEnterDecision(3, false);
 			int LA3_0 = input.LA(1);
 
-			if (((LA3_0>=FILE_LANGUAGE && LA3_0<=FILE_NAME)||LA3_0==LINES_MATCH))
+			if ((LA3_0==FILE||LA3_0==NOT))
 			{
 				alt3 = 1;
 			}
-			else if ((LA3_0==20))
+			else if (((LA3_0>=FILE_LANGUAGE && LA3_0<=FILE_NAME)||LA3_0==LINES_MATCH||LA3_0==22))
 			{
 				alt3 = 2;
 			}
@@ -336,33 +339,43 @@ public partial class ChangeRuleParser : Antlr.Runtime.Parser
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// ..\\..\\DSL\\ChangeRule.g:41:4: q= query
+				// ..\\..\\DSL\\ChangeRule.g:43:4: op= ( FILE | NOT ) rhs= unary
 				{
-				DebugLocation(41, 5);
-				PushFollow(Follow._query_in_atom197);
-				q=query();
+				DebugLocation(43, 6);
+				op=(IToken)input.LT(1);
+				if (input.LA(1)==FILE||input.LA(1)==NOT)
+				{
+					input.Consume();
+					state.errorRecovery=false;
+				}
+				else
+				{
+					MismatchedSetException mse = new MismatchedSetException(null,input);
+					DebugRecognitionException(mse);
+					throw mse;
+				}
+
+				DebugLocation(43, 23);
+				PushFollow(Follow._unary_in_unary240);
+				rhs=unary();
 				PopFollow();
 
-				DebugLocation(41, 12);
-				 sq = q; 
+				DebugLocation(43, 30);
+				 sq = factory.Get( op, rhs ); 
 
 				}
 				break;
 			case 2:
 				DebugEnterAlt(2);
-				// ..\\..\\DSL\\ChangeRule.g:42:4: '(' q= expression ')'
+				// ..\\..\\DSL\\ChangeRule.g:44:4: rhs= atom
 				{
-				DebugLocation(42, 4);
-				Match(input,20,Follow._20_in_atom204); 
-				DebugLocation(42, 9);
-				PushFollow(Follow._expression_in_atom208);
-				q=expression();
+				DebugLocation(44, 7);
+				PushFollow(Follow._atom_in_unary249);
+				rhs=atom();
 				PopFollow();
 
-				DebugLocation(42, 21);
-				Match(input,21,Follow._21_in_atom210); 
-				DebugLocation(42, 25);
-				 sq = q; 
+				DebugLocation(44, 13);
+				 sq = rhs; 
 
 				}
 				break;
@@ -376,49 +389,47 @@ public partial class ChangeRuleParser : Antlr.Runtime.Parser
 		}
 		finally
 		{
-			TraceOut("atom", 3);
-			LeaveRule("atom", 3);
-			LeaveRule_atom();
+			TraceOut("unary", 3);
+			LeaveRule("unary", 3);
+			LeaveRule_unary();
 		}
-		DebugLocation(43, 1);
-		} finally { DebugExitRule(GrammarFileName, "atom"); }
+		DebugLocation(45, 1);
+		} finally { DebugExitRule(GrammarFileName, "unary"); }
 		return sq;
 
 	}
-	// $ANTLR end "atom"
+	// $ANTLR end "unary"
 
 
-	partial void EnterRule_query();
-	partial void LeaveRule_query();
+	partial void EnterRule_atom();
+	partial void LeaveRule_atom();
 
-	// $ANTLR start "query"
-	// ..\\..\\DSL\\ChangeRule.g:48:8: public query returns [ISubquery sq] : (op= ( FILE_NAME | LINES_MATCH ) r= regex |op= FILE_LANGUAGE LANGUAGE );
-	[GrammarRule("query")]
-	public ISubquery query()
+	// $ANTLR start "atom"
+	// ..\\..\\DSL\\ChangeRule.g:47:8: public atom returns [ISubquery sq] : (q= query | '(' q= expression ')' );
+	[GrammarRule("atom")]
+	public ISubquery atom()
 	{
-		EnterRule_query();
-		EnterRule("query", 4);
-		TraceIn("query", 4);
+		EnterRule_atom();
+		EnterRule("atom", 4);
+		TraceIn("atom", 4);
 		ISubquery sq = default(ISubquery);
 
-		IToken op = default(IToken);
-		IToken LANGUAGE1 = default(IToken);
-		Regex r = default(Regex);
+		ISubquery q = default(ISubquery);
 
-		try { DebugEnterRule(GrammarFileName, "query");
-		DebugLocation(48, 1);
+		try { DebugEnterRule(GrammarFileName, "atom");
+		DebugLocation(47, 1);
 		try
 		{
-			// ..\\..\\DSL\\ChangeRule.g:49:2: (op= ( FILE_NAME | LINES_MATCH ) r= regex |op= FILE_LANGUAGE LANGUAGE )
+			// ..\\..\\DSL\\ChangeRule.g:48:2: (q= query | '(' q= expression ')' )
 			int alt4=2;
 			try { DebugEnterDecision(4, false);
 			int LA4_0 = input.LA(1);
 
-			if ((LA4_0==FILE_NAME||LA4_0==LINES_MATCH))
+			if (((LA4_0>=FILE_LANGUAGE && LA4_0<=FILE_NAME)||LA4_0==LINES_MATCH))
 			{
 				alt4 = 1;
 			}
-			else if ((LA4_0==FILE_LANGUAGE))
+			else if ((LA4_0==22))
 			{
 				alt4 = 2;
 			}
@@ -433,9 +444,106 @@ public partial class ChangeRuleParser : Antlr.Runtime.Parser
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// ..\\..\\DSL\\ChangeRule.g:49:4: op= ( FILE_NAME | LINES_MATCH ) r= regex
+				// ..\\..\\DSL\\ChangeRule.g:48:4: q= query
 				{
-				DebugLocation(49, 6);
+				DebugLocation(48, 5);
+				PushFollow(Follow._query_in_atom270);
+				q=query();
+				PopFollow();
+
+				DebugLocation(48, 12);
+				 sq = q; 
+
+				}
+				break;
+			case 2:
+				DebugEnterAlt(2);
+				// ..\\..\\DSL\\ChangeRule.g:49:4: '(' q= expression ')'
+				{
+				DebugLocation(49, 4);
+				Match(input,22,Follow._22_in_atom277); 
+				DebugLocation(49, 9);
+				PushFollow(Follow._expression_in_atom281);
+				q=expression();
+				PopFollow();
+
+				DebugLocation(49, 21);
+				Match(input,23,Follow._23_in_atom283); 
+				DebugLocation(49, 25);
+				 sq = q; 
+
+				}
+				break;
+
+			}
+		}
+		catch (RecognitionException re)
+		{
+			ReportError(re);
+			Recover(input,re);
+		}
+		finally
+		{
+			TraceOut("atom", 4);
+			LeaveRule("atom", 4);
+			LeaveRule_atom();
+		}
+		DebugLocation(50, 1);
+		} finally { DebugExitRule(GrammarFileName, "atom"); }
+		return sq;
+
+	}
+	// $ANTLR end "atom"
+
+
+	partial void EnterRule_query();
+	partial void LeaveRule_query();
+
+	// $ANTLR start "query"
+	// ..\\..\\DSL\\ChangeRule.g:55:8: public query returns [ISubquery sq] : (op= ( FILE_NAME | LINES_MATCH ) r= regex |op= FILE_LANGUAGE LANGUAGE );
+	[GrammarRule("query")]
+	public ISubquery query()
+	{
+		EnterRule_query();
+		EnterRule("query", 5);
+		TraceIn("query", 5);
+		ISubquery sq = default(ISubquery);
+
+		IToken op = default(IToken);
+		IToken LANGUAGE1 = default(IToken);
+		Regex r = default(Regex);
+
+		try { DebugEnterRule(GrammarFileName, "query");
+		DebugLocation(55, 1);
+		try
+		{
+			// ..\\..\\DSL\\ChangeRule.g:56:2: (op= ( FILE_NAME | LINES_MATCH ) r= regex |op= FILE_LANGUAGE LANGUAGE )
+			int alt5=2;
+			try { DebugEnterDecision(5, false);
+			int LA5_0 = input.LA(1);
+
+			if ((LA5_0==FILE_NAME||LA5_0==LINES_MATCH))
+			{
+				alt5 = 1;
+			}
+			else if ((LA5_0==FILE_LANGUAGE))
+			{
+				alt5 = 2;
+			}
+			else
+			{
+				NoViableAltException nvae = new NoViableAltException("", 5, 0, input);
+				DebugRecognitionException(nvae);
+				throw nvae;
+			}
+			} finally { DebugExitDecision(5); }
+			switch (alt5)
+			{
+			case 1:
+				DebugEnterAlt(1);
+				// ..\\..\\DSL\\ChangeRule.g:56:4: op= ( FILE_NAME | LINES_MATCH ) r= regex
+				{
+				DebugLocation(56, 6);
 				op=(IToken)input.LT(1);
 				if (input.LA(1)==FILE_NAME||input.LA(1)==LINES_MATCH)
 				{
@@ -449,25 +557,25 @@ public partial class ChangeRuleParser : Antlr.Runtime.Parser
 					throw mse;
 				}
 
-				DebugLocation(49, 34);
-				PushFollow(Follow._regex_in_query288);
+				DebugLocation(56, 34);
+				PushFollow(Follow._regex_in_query361);
 				r=regex();
 				PopFollow();
 
-				DebugLocation(49, 41);
+				DebugLocation(56, 41);
 				 sq = factory.GetQuery( op, r ); 
 
 				}
 				break;
 			case 2:
 				DebugEnterAlt(2);
-				// ..\\..\\DSL\\ChangeRule.g:50:4: op= FILE_LANGUAGE LANGUAGE
+				// ..\\..\\DSL\\ChangeRule.g:57:4: op= FILE_LANGUAGE LANGUAGE
 				{
-				DebugLocation(50, 6);
-				op=(IToken)Match(input,FILE_LANGUAGE,Follow._FILE_LANGUAGE_in_query297); 
-				DebugLocation(50, 21);
-				LANGUAGE1=(IToken)Match(input,LANGUAGE,Follow._LANGUAGE_in_query299); 
-				DebugLocation(50, 30);
+				DebugLocation(57, 6);
+				op=(IToken)Match(input,FILE_LANGUAGE,Follow._FILE_LANGUAGE_in_query370); 
+				DebugLocation(57, 21);
+				LANGUAGE1=(IToken)Match(input,LANGUAGE,Follow._LANGUAGE_in_query372); 
+				DebugLocation(57, 30);
 				 sq = factory.GetQuery( op, (LANGUAGE1!=null?LANGUAGE1.Text:null) ); 
 
 				}
@@ -482,11 +590,11 @@ public partial class ChangeRuleParser : Antlr.Runtime.Parser
 		}
 		finally
 		{
-			TraceOut("query", 4);
-			LeaveRule("query", 4);
+			TraceOut("query", 5);
+			LeaveRule("query", 5);
 			LeaveRule_query();
 		}
-		DebugLocation(51, 1);
+		DebugLocation(58, 1);
 		} finally { DebugExitRule(GrammarFileName, "query"); }
 		return sq;
 
@@ -498,56 +606,56 @@ public partial class ChangeRuleParser : Antlr.Runtime.Parser
 	partial void LeaveRule_regex();
 
 	// $ANTLR start "regex"
-	// ..\\..\\DSL\\ChangeRule.g:53:1: regex returns [Regex rex] : STRING_LITERAL ( REGEX_MODIFIERS )? ;
+	// ..\\..\\DSL\\ChangeRule.g:60:1: regex returns [Regex rex] : STRING_LITERAL ( REGEX_MODIFIERS )? ;
 	[GrammarRule("regex")]
 	private Regex regex()
 	{
 		EnterRule_regex();
-		EnterRule("regex", 5);
-		TraceIn("regex", 5);
+		EnterRule("regex", 6);
+		TraceIn("regex", 6);
 		Regex rex = default(Regex);
 
 		IToken STRING_LITERAL2 = default(IToken);
 		IToken REGEX_MODIFIERS3 = default(IToken);
 
 		try { DebugEnterRule(GrammarFileName, "regex");
-		DebugLocation(53, 1);
+		DebugLocation(60, 1);
 		try
 		{
-			// ..\\..\\DSL\\ChangeRule.g:54:2: ( STRING_LITERAL ( REGEX_MODIFIERS )? )
+			// ..\\..\\DSL\\ChangeRule.g:61:2: ( STRING_LITERAL ( REGEX_MODIFIERS )? )
 			DebugEnterAlt(1);
-			// ..\\..\\DSL\\ChangeRule.g:54:4: STRING_LITERAL ( REGEX_MODIFIERS )?
+			// ..\\..\\DSL\\ChangeRule.g:61:4: STRING_LITERAL ( REGEX_MODIFIERS )?
 			{
-			DebugLocation(54, 4);
-			STRING_LITERAL2=(IToken)Match(input,STRING_LITERAL,Follow._STRING_LITERAL_in_regex317); 
-			DebugLocation(54, 19);
-			// ..\\..\\DSL\\ChangeRule.g:54:19: ( REGEX_MODIFIERS )?
-			int alt5=2;
-			try { DebugEnterSubRule(5);
-			try { DebugEnterDecision(5, false);
-			int LA5_0 = input.LA(1);
+			DebugLocation(61, 4);
+			STRING_LITERAL2=(IToken)Match(input,STRING_LITERAL,Follow._STRING_LITERAL_in_regex390); 
+			DebugLocation(61, 19);
+			// ..\\..\\DSL\\ChangeRule.g:61:19: ( REGEX_MODIFIERS )?
+			int alt6=2;
+			try { DebugEnterSubRule(6);
+			try { DebugEnterDecision(6, false);
+			int LA6_0 = input.LA(1);
 
-			if ((LA5_0==REGEX_MODIFIERS))
+			if ((LA6_0==REGEX_MODIFIERS))
 			{
-				alt5 = 1;
+				alt6 = 1;
 			}
-			} finally { DebugExitDecision(5); }
-			switch (alt5)
+			} finally { DebugExitDecision(6); }
+			switch (alt6)
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// ..\\..\\DSL\\ChangeRule.g:54:19: REGEX_MODIFIERS
+				// ..\\..\\DSL\\ChangeRule.g:61:19: REGEX_MODIFIERS
 				{
-				DebugLocation(54, 19);
-				REGEX_MODIFIERS3=(IToken)Match(input,REGEX_MODIFIERS,Follow._REGEX_MODIFIERS_in_regex319); 
+				DebugLocation(61, 19);
+				REGEX_MODIFIERS3=(IToken)Match(input,REGEX_MODIFIERS,Follow._REGEX_MODIFIERS_in_regex392); 
 
 				}
 				break;
 
 			}
-			} finally { DebugExitSubRule(5); }
+			} finally { DebugExitSubRule(6); }
 
-			DebugLocation(54, 36);
+			DebugLocation(61, 36);
 			 rex = factory.GetRegex( (STRING_LITERAL2!=null?STRING_LITERAL2.Text:null), (REGEX_MODIFIERS3!=null?REGEX_MODIFIERS3.Text:null) ); 
 
 			}
@@ -560,11 +668,11 @@ public partial class ChangeRuleParser : Antlr.Runtime.Parser
 		}
 		finally
 		{
-			TraceOut("regex", 5);
-			LeaveRule("regex", 5);
+			TraceOut("regex", 6);
+			LeaveRule("regex", 6);
 			LeaveRule_regex();
 		}
-		DebugLocation(55, 1);
+		DebugLocation(62, 1);
 		} finally { DebugExitRule(GrammarFileName, "regex"); }
 		return rex;
 
@@ -576,22 +684,25 @@ public partial class ChangeRuleParser : Antlr.Runtime.Parser
 	#region Follow sets
 	private static class Follow
 	{
-		public static readonly BitSet _and_exp_in_expression109 = new BitSet(new ulong[]{0x2042UL});
-		public static readonly BitSet _set_in_expression116 = new BitSet(new ulong[]{0x100B00UL});
-		public static readonly BitSet _and_exp_in_expression126 = new BitSet(new ulong[]{0x2042UL});
-		public static readonly BitSet _atom_in_and_exp162 = new BitSet(new ulong[]{0x12UL});
-		public static readonly BitSet _AND_in_and_exp169 = new BitSet(new ulong[]{0x100B00UL});
-		public static readonly BitSet _atom_in_and_exp173 = new BitSet(new ulong[]{0x12UL});
-		public static readonly BitSet _query_in_atom197 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _20_in_atom204 = new BitSet(new ulong[]{0x100B00UL});
-		public static readonly BitSet _expression_in_atom208 = new BitSet(new ulong[]{0x200000UL});
-		public static readonly BitSet _21_in_atom210 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _set_in_query278 = new BitSet(new ulong[]{0x40000UL});
-		public static readonly BitSet _regex_in_query288 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _FILE_LANGUAGE_in_query297 = new BitSet(new ulong[]{0x400UL});
-		public static readonly BitSet _LANGUAGE_in_query299 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _STRING_LITERAL_in_regex317 = new BitSet(new ulong[]{0x4002UL});
-		public static readonly BitSet _REGEX_MODIFIERS_in_regex319 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _and_exp_in_expression110 = new BitSet(new ulong[]{0x8042UL});
+		public static readonly BitSet _set_in_expression117 = new BitSet(new ulong[]{0x405700UL});
+		public static readonly BitSet _and_exp_in_expression127 = new BitSet(new ulong[]{0x8042UL});
+		public static readonly BitSet _unary_in_and_exp163 = new BitSet(new ulong[]{0x12UL});
+		public static readonly BitSet _AND_in_and_exp170 = new BitSet(new ulong[]{0x405700UL});
+		public static readonly BitSet _unary_in_and_exp174 = new BitSet(new ulong[]{0x12UL});
+		public static readonly BitSet _set_in_unary230 = new BitSet(new ulong[]{0x405700UL});
+		public static readonly BitSet _unary_in_unary240 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _atom_in_unary249 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _query_in_atom270 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _22_in_atom277 = new BitSet(new ulong[]{0x405700UL});
+		public static readonly BitSet _expression_in_atom281 = new BitSet(new ulong[]{0x800000UL});
+		public static readonly BitSet _23_in_atom283 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _set_in_query351 = new BitSet(new ulong[]{0x100000UL});
+		public static readonly BitSet _regex_in_query361 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _FILE_LANGUAGE_in_query370 = new BitSet(new ulong[]{0x800UL});
+		public static readonly BitSet _LANGUAGE_in_query372 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _STRING_LITERAL_in_regex390 = new BitSet(new ulong[]{0x10002UL});
+		public static readonly BitSet _REGEX_MODIFIERS_in_regex392 = new BitSet(new ulong[]{0x2UL});
 
 	}
 	#endregion Follow sets

@@ -9,19 +9,19 @@ namespace swept.Tests
     [TestFixture]
     public class ClauseMatch_tests
     {
-        private LineMatch lm_00 = new LineMatch( new int[] { } );
-        private LineMatch lm_12 = new LineMatch( new[] { 1, 2 } );
-        private LineMatch lm_23 = new LineMatch( new[] { 2, 3 } );
+        private readonly LineMatch lines_00 = new LineMatch( new int[] { } );
+        private readonly LineMatch lines_12 = new LineMatch( new[] { 1, 2 } );
+        private readonly LineMatch lines_23 = new LineMatch( new[] { 2, 3 } );
 
-        private FileMatch fm_T = new FileMatch( true );
-        private FileMatch fm_F = new FileMatch( false );
+        private readonly FileMatch file_T = new FileMatch( true );
+        private readonly FileMatch file_F = new FileMatch( false );
 
         [Test]
         public void LineMatch_to_LineMatch()
         {
-            var u12 = lm_12.Union( lm_23 ) as LineMatch;
-            var i12 = lm_12.Intersection( lm_23 ) as LineMatch;
-            var d12 = lm_12.Subtraction( lm_23 ) as LineMatch;
+            var u12 = lines_12.Union( lines_23 ) as LineMatch;
+            var i12 = lines_12.Intersection( lines_23 ) as LineMatch;
+            var d12 = lines_12.Subtraction( lines_23 ) as LineMatch;
 
             //  LineMatches operating on each other have standard set operation semantics
             Assert.That( u12.Lines.Count, Is.EqualTo( 3 ) );
@@ -35,20 +35,20 @@ namespace swept.Tests
         [Test]
         public void LineMatch_to_FileMatch()
         {
-            var ulT = lm_12.Union( fm_T ) as LineMatch;
-            var ilT = lm_12.Intersection( fm_T ) as LineMatch;
-            var dlT = lm_12.Subtraction( fm_T ) as FileMatch;
-            var dT1 = fm_T.Subtraction( lm_12 ) as FileMatch;
+            var ulT = lines_12.Union( file_T ) as LineMatch;
+            var ilT = lines_12.Intersection( file_T ) as LineMatch;
+            var dlT = lines_12.Subtraction( file_T ) as FileMatch;
+            var dT1 = file_T.Subtraction( lines_12 ) as FileMatch;
 
-            var ulF = lm_12.Union( fm_F ) as LineMatch;
-            var ilF = lm_12.Intersection( fm_F ) as FileMatch;
-            var dlF = lm_12.Subtraction( fm_F ) as LineMatch;
-            var dF1 = fm_F.Subtraction( lm_12 ) as FileMatch;
+            var ulF = lines_12.Union( file_F ) as LineMatch;
+            var ilF = lines_12.Intersection( file_F ) as FileMatch;
+            var dlF = lines_12.Subtraction( file_F ) as LineMatch;
+            var dF1 = file_F.Subtraction( lines_12 ) as FileMatch;
 
-            var u0T = lm_00.Union( fm_T ) as FileMatch;
-            var i0T = lm_00.Intersection( fm_T ) as FileMatch;
-            var d0T = lm_00.Subtraction( fm_T ) as FileMatch;
-            var dT0 = fm_T.Subtraction( lm_00 ) as FileMatch;
+            var u0T = lines_00.Union( file_T ) as FileMatch;
+            var i0T = lines_00.Intersection( file_T ) as FileMatch;
+            var d0T = lines_00.Subtraction( file_T ) as FileMatch;
+            var dT0 = file_T.Subtraction( lines_00 ) as FileMatch;
 
             Assert.That( ulT.Lines.Count, Is.EqualTo( 2 ) );
             Assert.That( ilT.Lines.Count, Is.EqualTo( 2 ) );
@@ -69,7 +69,7 @@ namespace swept.Tests
         [Test]
         public void Empty_list_Union_File_True_makes_File_True()
         {
-            var match = lm_00.Union( fm_T );
+            var match = lines_00.Union( file_T );
 
             Assert.That( match is FileMatch );
             Assert.That( match.DoesMatch );
@@ -78,18 +78,18 @@ namespace swept.Tests
         [Test]
         public void FileMatch_to_FileMatch()
         {
-            var uTT = fm_T.Union( fm_T ) as FileMatch;
-            var uTF = fm_T.Union( fm_F ) as FileMatch;
-            var uFF = fm_F.Union( fm_F ) as FileMatch;
+            var uTT = file_T.Union( file_T ) as FileMatch;
+            var uTF = file_T.Union( file_F ) as FileMatch;
+            var uFF = file_F.Union( file_F ) as FileMatch;
 
-            var iTT = fm_T.Intersection( fm_T ) as FileMatch;
-            var iTF = fm_T.Intersection( fm_F ) as FileMatch;
-            var iFF = fm_F.Intersection( fm_F ) as FileMatch;
+            var iTT = file_T.Intersection( file_T ) as FileMatch;
+            var iTF = file_T.Intersection( file_F ) as FileMatch;
+            var iFF = file_F.Intersection( file_F ) as FileMatch;
 
-            var dTT = fm_T.Subtraction( fm_T ) as FileMatch;
-            var dTF = fm_T.Subtraction( fm_F ) as FileMatch;
-            var dFT = fm_F.Subtraction( fm_T ) as FileMatch;
-            var dFF = fm_F.Subtraction( fm_F ) as FileMatch;
+            var dTT = file_T.Subtraction( file_T ) as FileMatch;
+            var dTF = file_T.Subtraction( file_F ) as FileMatch;
+            var dFT = file_F.Subtraction( file_T ) as FileMatch;
+            var dFF = file_F.Subtraction( file_F ) as FileMatch;
 
             Assert.That( uTT.DoesMatch );
             Assert.That( uTF.DoesMatch );

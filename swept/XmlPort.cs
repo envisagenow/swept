@@ -60,7 +60,7 @@ namespace swept
                 }
                 catch (ArgumentException e)
                 {
-                    throw new Exception( String.Format( "Change ID [{0}] has an unknown BuildFail value [{1}].", change.ID, failText ) );
+                    throw new Exception( String.Format( "Change ID [{0}] has an unknown BuildFail value [{1}].", change.ID, failText ), e );
                 }
             }
 

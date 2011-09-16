@@ -26,17 +26,24 @@ const int HIDDEN = Hidden;
 private NodeFactory factory = new NodeFactory();
 }
 
-OR: ('||' | 'or') ;
-DIFFERENCE: ('-' | 'except') ;
+OR:				'||' | 'or' ;
+DIFFERENCE:		'-'  | 'except' ;
 public expression returns [ISubquery sq]
 	:	lhs=and_exp { $sq = lhs; } (op=(OR | DIFFERENCE) rhs=and_exp { $sq = factory.Get( sq, op, rhs ); })*
 	;
 
-AND: ('&&' | 'and') ;
+AND:			'&&' | 'and' ;
 public and_exp returns [ISubquery sq]
-	:	lhs=atom { $sq = lhs; } (op=AND rhs=atom { $sq = factory.Get( sq, op, rhs ); })*
+	:	lhs=unary { $sq = lhs; } (op=AND rhs=unary { $sq = factory.Get( sq, op, rhs ); })*
 	;
-	
+
+FILE:			'file.has' | 'f.h' | '*' ;
+NOT:			'not'			   | '!' ;
+unary returns [ISubquery sq]
+	:	op=(FILE | NOT) rhs=unary { $sq = factory.Get( op, rhs ); }
+	|	rhs=atom { $sq = rhs; }
+	;
+
 public atom returns [ISubquery sq]
 	:	q=query { $sq = q; }
 	|	'(' q=expression ')' { $sq = q; }

@@ -111,6 +111,23 @@ namespace swept.DSL.Tests
             Assert.That( rhs.Pattern.ToString(), Is.EqualTo( "foom!" ) );
         }
 
+        [TestCase( "not" )]
+        [TestCase( "!" )]
+        public void Simple_negation( string negation )
+        {
+            string query = string.Format( "{0} file.language CSharp", negation );
+            var parser = GetChangeRuleParser( query );
+
+            ISubquery sq = parser.expression();
+            var notExp = sq as OpNegationNode;
+
+            Assert.That( notExp, Is.Not.Null );
+
+            var rhs = notExp.RHS as QueryLanguageNode;
+
+            Assert.That( rhs.Language, Is.EqualTo( FileLanguage.CSharp ) );
+        }
+
         [Test]
         public void Chained_intersection()
         {

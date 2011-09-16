@@ -10,6 +10,21 @@ namespace swept.DSL
     /// <summary> Used by the ANTLR-generated parser to create CST nodes </summary>
     public class NodeFactory
     {
+        public ISubquery Get( IToken op, ISubquery rhs )
+        {
+            switch (op.Type)
+            {
+            case ChangeRuleLexer.NOT:
+                return new OpNegationNode( op.Text, rhs );
+
+            case ChangeRuleLexer.FILE:
+                return new OpFileScopeNode( op.Text, rhs );
+
+            default:
+                throw new NotImplementedException( string.Format( "Factory uneducated on how to create a type [{0}] unary node.", op.Type ) );
+            }
+        }
+
         public ISubquery Get( ISubquery lhs, IToken op, ISubquery rhs )
         {
             switch (op.Type)
@@ -24,7 +39,7 @@ namespace swept.DSL
                 return new OpDifferenceNode( lhs, op.Text, rhs );
 
             default:
-                throw new NotImplementedException( string.Format( "Don't know how to create a [{0}] binary operation.", op.Type ) );
+                throw new NotImplementedException( string.Format( "Factory uneducated on how to create a type [{0}] binary node.", op.Type ) );
             }
         }
 

@@ -9,8 +9,8 @@ namespace swept.DSL.Tests
     [TestFixture]
     public class Answer_tests : DSL_tests_base
     {
-        //  These tests don't exhaust all combinations of behavior, they
-        //  just show two simple answers, one matching and one not.
+        //  These tests don't exhaust all combinations of behavior, they just show 
+        //  two simple answers per distinct behavior, one matching and one not.
         //  ClauseMatch is tested elsewhere more systematically.
 
         [Test]
@@ -99,7 +99,53 @@ namespace swept.DSL.Tests
 
             answer = query.Answer( new SourceFile( "foo.cs" ) );
             Assert.That( answer.DoesMatch );
+        }
 
+        [Test]
+        public void Negation_Answers()
+        {
+            var parser = GetChangeRuleParser( "!f.l CSharp" );
+            var query = parser.expression();
+            Assert.That( query as OpNegationNode, Is.Not.Null );
+
+            ClauseMatch answer = query.Answer( new SourceFile( "foo.cs" ) );
+            Assert.That( answer.DoesMatch, Is.False );
+
+            answer = query.Answer( new SourceFile( "foo.html" ) );
+            Assert.That( answer.DoesMatch );
+        }
+
+        [Test]
+        public void Chain_Unary_Answers()
+        {
+            var parser = GetChangeRuleParser( "!!^CSharp" );
+            var query = parser.expression();
+            Assert.That( query, Is.InstanceOf<OpNegationNode>() );
+            Assert.That( (query as OpNegationNode).RHS, Is.InstanceOf<OpNegationNode>() );
+
+            ClauseMatch answer = query.Answer( new SourceFile( "foo.cs" ) );
+            Assert.That( answer.DoesMatch );
+
+            answer = query.Answer( new SourceFile( "foo.html" ) );
+            Assert.That( answer.DoesMatch, Is.False );
+        }
+
+        [Test]
+        public void FileScope_Answers()
+        {
+            var parser = GetChangeRuleParser( "* ~/things/" );
+            var query = parser.expression();
+            Assert.That( query, Is.InstanceOf<OpFileScopeNode>() );
+
+            SourceFile fooFile = new SourceFile( "foo.cs" );
+            fooFile.Content = "// stuff\n\n";
+            ClauseMatch answer = query.Answer( fooFile );
+            Assert.That( answer.DoesMatch, Is.False );
+
+            fooFile.Content = "// things\n\n";
+            answer = query.Answer( fooFile );
+            Assert.That( answer.DoesMatch );
+            Assert.That( answer, Is.InstanceOf<FileMatch>() );
         }
 
         [Test]

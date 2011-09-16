@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.30729</ProductVersion>
+    <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{BC619D2C-C72E-4111-9489-E353B858A712}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -67,6 +67,9 @@
   <ItemGroup>
     <Compile Include="DSL\OpBinaryNode.cs" />
     <Compile Include="DSL\OpDifferenceNode.cs" />
+    <Compile Include="DSL\OpFileScopeNode.cs" />
+    <Compile Include="DSL\OpNegationNode.cs" />
+    <Compile Include="DSL\OpUnaryNode.cs" />
     <Compile Include="DSL\QueryContentNode.cs" />
     <Compile Include="DSL\OpIntersectionNode.cs" />
     <Compile Include="DSL\ISubquery.cs" />
