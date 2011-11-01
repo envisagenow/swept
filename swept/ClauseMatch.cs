@@ -21,6 +21,7 @@ namespace swept
         public abstract ClauseMatch Subtraction( IEnumerable<int> lines );
 
         public abstract bool DoesMatch { get; }
+        public abstract int Count { get; }
     }
 
     public class LineMatch : ClauseMatch
@@ -71,6 +72,11 @@ namespace swept
         {
             get { return Lines.Any(); }
         }
+
+        public override int Count
+        {
+            get { return Lines.Count; }
+        }
     }
 
     public class FileMatch : ClauseMatch
@@ -84,6 +90,11 @@ namespace swept
         public override bool DoesMatch
         {
             get { return does; }
+        }
+
+        public override int Count
+        {
+            get { return does ? 1 : 0; }
         }
 
         public override ClauseMatch Union( ClauseMatch other )

@@ -25,6 +25,7 @@ namespace swept
     {
         None,
         Any,
+        Over,
     }
 
     public class Change
@@ -33,6 +34,7 @@ namespace swept
         public List<SeeAlso> SeeAlsos { get; set; }
         public string ID { get; internal set; }
         public string Description { get; internal set; }
+        public int BuildFailOverLimit { get; set; }
 
         public Change()
         {

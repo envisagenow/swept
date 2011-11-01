@@ -33,6 +33,16 @@ namespace swept.Tests
         }
 
         [Test]
+        public void Count_works()
+        {
+            Assert.That( lines_00.Count, Is.EqualTo( 0 ) );
+            Assert.That( lines_12.Count, Is.EqualTo( 2 ) );
+
+            Assert.That( file_F.Count, Is.EqualTo( 0 ) );
+            Assert.That( file_T.Count, Is.EqualTo( 1 ) );
+        }
+
+        [Test]
         public void LineMatch_to_FileMatch()
         {
             var ulT = lines_12.Union( file_T ) as LineMatch;

@@ -8,7 +8,6 @@ using System.Collections.Generic;
 
 namespace swept.Tests
 {
-    [CoverageExclude]
     [TestFixture]
     public class XmlPortTests
     {
@@ -49,6 +48,7 @@ namespace swept.Tests
 
 
         #region Exception testing
+        [CoverageExclude]
         [Test, ExpectedException( ExpectedMessage = "Document must have a <ChangeCatalog> node.  Please supply one." )]
         public void ChangeCatalog_from_IncorrectXML_Throws()
         {
