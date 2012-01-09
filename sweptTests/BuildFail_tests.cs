@@ -1,29 +1,37 @@
-﻿using System;
+﻿//  Swept:  Software Enhancement Progress Tracking.
+//  Copyright (c) 2012 Jason Cole and Envisage Technologies Corp.
+//  This software is open source, MIT license.  See the file LICENSE for details.
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 
 namespace swept.Tests
 {
+    //  So what do I think about unit test classes describing their domain
+    //  rather than corresponding 1:1-ishly to app classes?
     [TestFixture]
     public class BuildFail_tests
     {
-        [Test]
-        public void Empty_inputs_do_not_fail()
+        private FailChecker _checker;
+        private Dictionary<Change, Dictionary<swept.SourceFile, swept.ClauseMatch>> _changeViolations;
+
+        [SetUp]
+        public void Setup()
         {
+            _checker = new FailChecker();
+            _changeViolations = new Dictionary<Change, Dictionary<SourceFile, ClauseMatch>>();
+        }
 
-            FailChecker checker = new FailChecker();
-
-            var results = new Dictionary<Change, Dictionary<SourceFile, ClauseMatch>>();
-
-            var problems = checker.Check( results );
-
+        [Test]
+        public void Zero_Violations_do_not_fail()
+        {
+            var problems = _checker.Check( _changeViolations );
             Assert.That( problems.Count(), Is.EqualTo( 0 ) );
         }
 
-
         [Test]
-        public void When_we_do_violate_a_BuildFail_Any_Change_we_do_fail()
+        public void When_we_violate_a_FailAny_Change_we_fail()
         {
             Change change = new Change() { ID = "644", Description = "Major problem!", BuildFail = BuildFailMode.Any };
             Dictionary<SourceFile, ClauseMatch> sourceClauseMatch = new Dictionary<SourceFile, ClauseMatch>();
@@ -33,19 +41,16 @@ namespace swept.Tests
 
             sourceClauseMatch[failedSource] = failedClause;
 
-            var checker = new FailChecker();
+            _changeViolations[change] = sourceClauseMatch;
 
-            var changes = new Dictionary<Change, Dictionary<SourceFile, ClauseMatch>>();
-            changes[change] = sourceClauseMatch;
+            var failures = _checker.Check( _changeViolations );
 
-            var problems = checker.Check( changes );
-
-            Assert.That( problems.Count(), Is.EqualTo( 1 ) );
-            Assert.That( problems[0], Is.EqualTo( "Rule [644] has been violated, and it breaks the build if there are any violations." ) );
+            Assert.That( failures.Count(), Is.EqualTo( 1 ) );
+            Assert.That( failures[0], Is.EqualTo( "Rule [644] has been violated, and it breaks the build if there are any violations." ) );
         }
 
         [Test]
-        public void When_we_do_violate_a_BuildFail_None_Change_we_do_not_fail()
+        public void When_we_violate_a_BuildFail_None_Change_we_do_not_fail()
         {
             Change change = new Change() { ID = "644", Description="Not a problem.", BuildFail = BuildFailMode.None };
             Dictionary<SourceFile, ClauseMatch> sourceClauseMatch = new Dictionary<SourceFile, ClauseMatch>();
@@ -55,14 +60,12 @@ namespace swept.Tests
 
             sourceClauseMatch[failedSource] = failedClause;
 
-            var checker = new FailChecker();
-
             var changes = new Dictionary< Change, Dictionary<SourceFile, ClauseMatch> >();
             changes[change] = sourceClauseMatch;
 
-            var problems = checker.Check( changes );
+            var failures = _checker.Check( changes );
 
-            Assert.That( problems.Count(), Is.EqualTo( 0 ) );
+            Assert.That( failures.Count(), Is.EqualTo( 0 ) );
         }
 
         [Test]
@@ -75,25 +78,20 @@ namespace swept.Tests
 
             SourceFile failedSource = new SourceFile( "some_file.cs" );
             ClauseMatch failedClause = new LineMatch( new List<int> { 1, 44 } );
-
             sourceClauseMatch[failedSource] = failedClause;
 
             SourceFile failedSource2 = new SourceFile( "some_other_file.cs" );
             ClauseMatch failedClause2 = new LineMatch( new List<int> { 23, 65, 81 } );
-
             sourceClauseMatch2[failedSource2] = failedClause2;
 
-            var checker = new FailChecker();
+            _changeViolations[change] = sourceClauseMatch;
+            _changeViolations[change2] = sourceClauseMatch2;
 
-            var changes = new Dictionary<Change, Dictionary<SourceFile, ClauseMatch>>();
-            changes[change] = sourceClauseMatch;
-            changes[change2] = sourceClauseMatch2;
+            var failures = _checker.Check( _changeViolations );
 
-            var problems = checker.Check( changes );
-
-            Assert.That( problems.Count(), Is.EqualTo( 2 ) );
-            Assert.That( problems[0], Is.EqualTo( "Rule [191] has been violated, and it breaks the build if there are any violations." ) );
-            Assert.That( problems[1], Is.EqualTo( "Rule [200] has been violated, and it breaks the build if there are any violations." ) );
+            Assert.That( failures.Count(), Is.EqualTo( 2 ) );
+            Assert.That( failures[0], Is.EqualTo( "Rule [191] has been violated, and it breaks the build if there are any violations." ) );
+            Assert.That( failures[1], Is.EqualTo( "Rule [200] has been violated, and it breaks the build if there are any violations." ) );
         }
 
         [Test]
@@ -108,56 +106,20 @@ namespace swept.Tests
 
             SourceFile failedSource = new SourceFile( "some_file.cs" );
             ClauseMatch failedClause = new LineMatch( new List<int> { 1, 44 } );
-
             sourceClauseMatch[failedSource] = failedClause;
 
             SourceFile failedSource2 = new SourceFile( "some_other_file.cs" );
             ClauseMatch failedClause2 = new LineMatch( new List<int> { 23, 65, 81 } );
-
             sourceClauseMatch2[failedSource2] = failedClause2;
 
-            var checker = new FailChecker();
+            _changeViolations[change] = sourceClauseMatch;
+            _changeViolations[change2] = sourceClauseMatch2;
 
-            var changes = new Dictionary<Change, Dictionary<SourceFile, ClauseMatch>>();
-            changes[change] = sourceClauseMatch;
-            changes[change2] = sourceClauseMatch2;
+            var failures = _checker.Check( _changeViolations );
 
-            var problems = checker.Check( changes );
-
-            Assert.That( problems.Count(), Is.EqualTo( 1 ) );
-            Assert.That( problems[0], Is.EqualTo( "Rule [200] has been violated [3] times, and it breaks the build if there are over [2] violations." ) );
-        }
-    }
-
-    public class FailChecker
-    {
-        public List<string> Check( Dictionary<Change, Dictionary<SourceFile, ClauseMatch>> changes )
-        {
-            var problems = new List<string>();
-
-            foreach (var change in changes.Keys)
-            {
-                if (change.BuildFail == BuildFailMode.Any)
-                {
-                    string problemText = string.Format( "Rule [{0}] has been violated, and it breaks the build if there are any violations.", change.ID );
-                    problems.Add( problemText );
-                }
-                else if (change.BuildFail == BuildFailMode.Over)
-                {
-                    int violationCount = 0;
-                    foreach (var sourcefile in changes[change].Keys)
-                    {
-                        violationCount += changes[change][sourcefile].Count;
-                    }
-                    if (violationCount > change.BuildFailOverLimit)
-                    {
-                        string problemText = string.Format( "Rule [{0}] has been violated [{1}] times, and it breaks the build if there are over [{2}] violations.", change.ID, violationCount, change.BuildFailOverLimit );
-                        problems.Add( problemText );
-                    }
-                }
-            }
-
-            return problems;
+            //  This catches that being under the limit does not cause a failure--though in passing.
+            Assert.That( failures.Count(), Is.EqualTo( 1 ) );
+            Assert.That( failures[0], Is.EqualTo( "Rule [200] has been violated [3] times, and it breaks the build if there are over [2] violations." ) );
         }
     }
 }
