@@ -27,12 +27,12 @@ namespace swept
             }
         }
 
-        public void Save(string fileName, string xmlText)
-        {
-            var doc = new XmlDocument();
-            doc.LoadXml( xmlText );
-            doc.Save( fileName );
-        }
+        //public void Save(string fileName, string xmlText)
+        //{
+        //    var doc = new XmlDocument();
+        //    doc.LoadXml( xmlText );
+        //    doc.Save( fileName );
+        //}
 
         public XmlDocument LoadLibrary( string libraryPath )
         {

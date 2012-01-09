@@ -1,5 +1,5 @@
 ﻿//  Swept:  Software Enhancement Progress Tracking.
-//  Copyright (c) 2011 Jason Cole and Envisage Technologies Corp.
+//  Copyright (c) 2012 Jason Cole and Envisage Technologies Corp.
 //  This software is open source, MIT license.  See the file LICENSE for details.
 using System;
 using System.Xml;
@@ -8,7 +8,6 @@ using System.IO;
 
 namespace swept.Tests
 {
-    [CoverageExclude]
     class MockStorageAdapter : IStorageAdapter
     {
         private List<string> _loadedFiles;
@@ -27,11 +26,11 @@ namespace swept.Tests
             _loadedFiles = new List<string>();
         }
 
-        public void Save(string fileName, string xmlText)
-        {
-            FileName = fileName;
-            setDocFromText( xmlText );
-        }
+        //public void Save(string fileName, string xmlText)
+        //{
+        //    FileName = fileName;
+        //    setDocFromText( xmlText );
+        //}
 
         private void setDocFromText( string xmlText )
         {

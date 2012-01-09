@@ -1,9 +1,10 @@
 ﻿//  Swept:  Software Enhancement Progress Tracking.
-//  Copyright (c) 2011 Jason Cole and Envisage Technologies Corp.
+//  Copyright (c) 2012 Jason Cole and Envisage Technologies Corp.
 //  This software is open source, MIT license.  See the file LICENSE for details.
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace swept
 {
@@ -51,8 +52,15 @@ namespace swept
 
             writer.WriteLine( reportXML );
 
-            //FailChecker checker = new FailChecker();
-            //checker.FailCheck( results );
+            FailChecker checker = new FailChecker();
+            var failures = checker.Check( results );
+            if (failures.Any())
+            {
+                //TODO XOMG WTD FAIL LOL
+                //checker.ReportFailures(); //probly rong:  who should report?
+
+                Environment.Exit( failures.Count );
+            }
         }
     }
 }

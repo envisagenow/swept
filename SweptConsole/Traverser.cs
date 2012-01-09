@@ -1,5 +1,5 @@
 ﻿//  Swept:  Software Enhancement Progress Tracking.
-//  Copyright (c) 2010 Jason Cole and Envisage Technologies Corp.
+//  Copyright (c) 2012 Jason Cole and Envisage Technologies Corp.
 //  This software is open source, MIT license.  See the file LICENSE for details.
 using System;
 using System.Collections.Generic;
@@ -27,25 +27,25 @@ namespace swept
             try
             {
                 List<string> projectFiles = new List<string>();
-                string nextLine;
+                string lineText;
                 if (_args.Piping)
                 {
-                    while ((nextLine = Console.In.ReadLine()) != null)
+                    while ((lineText = Console.In.ReadLine()) != null)
                     {
                         // TODO: Cleanup - Generalize/unplug - rough -- this code should be put into SVN reader.
-                        if (nextLine.Length > 9)
+                        if (lineText.Length > 9)
                         {
-                            char firstChar = nextLine[0];
+                            char firstChar = lineText[0];
                             if (firstChar == 'D')
                                 continue; // Deleted file- skip
                             else if (firstChar == '?')
                                 continue; // Not version controlled - skip
 
                             // assume - 'A' or 'M' for add or modify
-                            string fileName = Path.Combine( _args.Folder, nextLine.Substring( 8 ) );
+                            string fileName = Path.Combine( _args.Folder, lineText.Substring( 8 ) );
                             projectFiles.Add( fileName );
                         }
-                        else { } // invalid line -- handle later???
+                        else { } //TODO: handle non-status lines more methodically
                     }
                 }
                 else

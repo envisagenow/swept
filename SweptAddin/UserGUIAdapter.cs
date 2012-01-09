@@ -1,5 +1,5 @@
 //  Swept:  Software Enhancement Progress Tracking.
-//  Copyright (c) 2011 Jason Cole and Envisage Technologies Corp.
+//  Copyright (c) 2012 Jason Cole and Envisage Technologies Corp.
 //  This software is open source, MIT license.  See the file LICENSE for details.
 using System;
 using System.Diagnostics;
@@ -17,12 +17,6 @@ namespace swept.Addin
         public UserGUIAdapter( DTE2 studioApplication )
         {
             _studio = studioApplication;
-        }
-
-        // TODO--0.N: a sensible debug framework
-        public void DebugMessage( string message )
-        {
-            //MessageBox.Show( message );
         }
 
         public void ShowSeeAlso( SeeAlso seeAlso )

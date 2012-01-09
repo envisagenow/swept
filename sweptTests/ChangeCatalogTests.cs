@@ -1,5 +1,5 @@
 //  Swept:  Software Enhancement Progress Tracking.
-//  Copyright (c) 2010 Jason Cole and Envisage Technologies Corp.
+//  Copyright (c) 2012 Jason Cole and Envisage Technologies Corp.
 //  This software is open source, MIT license.  See the file LICENSE for details.
 using NUnit.Framework;
 using swept;
@@ -9,7 +9,6 @@ using swept.DSL;
 
 namespace swept.Tests
 {
-    [CoverageExclude]
     [TestFixture]
     public class ChangeCatalogTests
     {
@@ -20,21 +19,11 @@ namespace swept.Tests
             cat = new ChangeCatalog();
 
             Change avoidAliasUsing = new Change { ID = "e1", Description = "Don't use 'using' to alias.", Subquery = new QueryLanguageNode { Language = FileLanguage.CSharp } };
-            // TODO--0.3: figure out contentPattern for avoidAliasUsing.
             cat.Add( avoidAliasUsing );
 
             cat.Add( new Change { ID = "e2", Description = "Upgrade to XHTML", Subquery = new QueryLanguageNode { Language = FileLanguage.HTML }  } );
             cat.Add( new Change { ID = "e3", Description = "Put <title> on all pages", Subquery = new QueryLanguageNode { Language = FileLanguage.HTML } } );
         }
-
-        //[Test]
-        //public void GetChanges_returns_all_matching_Changes()
-        //{
-        //    List<Change> changes = cat.GetChangesForFile(new SourceFile("index.html"));
-        //    List<Change> moreChanges = cat.FindAll(ch => ch.Language == FileLanguage.HTML);
-        //    Assert.IsTrue(changes.TrueForAll(ch => moreChanges.Contains(ch)));
-        //    Assert.AreEqual(moreChanges.Count, changes.Count);
-        //}
 
         [Test]
         public void GetChanges_returns_only_pertinent_Changes()
@@ -57,8 +46,6 @@ namespace swept.Tests
             List<Change> changes = cat.GetChangesForFile(new SourceFile("hello_style.css"));
             Assert.AreEqual(0, changes.Count);
         }
-
-        // TODO--0.3, DC: Test removing Changes from Catalog
 
         #region Equals tests
         [Test]
@@ -156,8 +143,7 @@ namespace swept.Tests
             Assert.That( changes[4].ID, Is.EqualTo( b_52.ID ) );
         }
 
-
-        [Test, ExpectedException( ExpectedMessage = "There is already a change with the ID [a_17]." )]
+        [Test]
         public void Duplicate_IDs_not_allowed()
         {
             ChangeCatalog cat = new ChangeCatalog();
@@ -166,7 +152,8 @@ namespace swept.Tests
             Change a_17b = new Change { ID = "a_17" };
 
             cat.Add( a_17a );
-            cat.Add( a_17b );
+            var ex = Assert.Throws<Exception>( () => cat.Add( a_17b ) );
+            Assert.That( ex.Message, Is.EqualTo( "There is already a change with the ID [a_17]." ));
         }
 
     }

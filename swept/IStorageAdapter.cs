@@ -9,7 +9,6 @@ namespace swept
 {
     public interface IStorageAdapter
     {
-        void Save( string fileName, string xmlText );
         XmlDocument LoadLibrary(string libraryPath);
         string GetCWD();
 
