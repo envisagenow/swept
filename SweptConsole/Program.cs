@@ -53,22 +53,22 @@ namespace swept
 
             fullReportWriter.WriteLine( reportXML );
 
+            int failureCode = 0;
+
             FailChecker checker = new FailChecker();
             var failures = checker.Check( results );
             if (failures.Any())
             {
-                var message = checker.ReportFailures( failures );
+                var message = buildReporter.ReportBuildFailures( failures );
                 Console.Error.WriteLine( message );
 
-                //TODO: report to xml for buildReporter
-                //var xml = checker.ReportFailureXML( failures );
-                //TODO: then open file, write xml, close file
-
-
-
-
-                Environment.Exit( 20 );
+                failureCode = 20;
             }
+
+            //TODO goal code:
+            //var reportXML = buildReporter.ReportOn( results, failures );
+
+            Environment.Exit( failureCode );
         }
     }
 }

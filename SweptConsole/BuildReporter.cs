@@ -14,6 +14,11 @@ namespace swept
         {
             XDocument report_doc = new XDocument();
             XElement report_root = new XElement( "SweptBuildReport" );
+
+            //TODO Goal code:
+            //  var failures_element = GetFailureReportElement( failures );
+            //  report_root.Add( failures_element );
+
             int totalTasks = 0;
             foreach (Change change in filesPerChange.Keys.OrderBy( c => c.ID ))
             {
@@ -51,5 +56,38 @@ namespace swept
             report_doc.Add( report_root );
             return report_doc.ToString();
         }
+
+        public string ReportBuildFailures( List<string> failures )
+        {
+            if (failures.Count == 0)
+                return string.Empty;
+            else
+            {
+                string failureMessage = "Swept failed due to build breaking rule failure{0}:\n{1}";
+                string failuresText = "";
+                foreach (string fail in failures)
+                {
+                    failuresText += fail + "\n";
+                }
+
+                var plurality = failures.Count > 1 ? "s" : "";
+
+                return string.Format( failureMessage, plurality, failuresText );
+            }
+        }
+
+        public XElement GenerateBuildFailureXML( List<string> failures )
+        {
+            XElement xml = new XElement( "SweptBuildFailures" );
+
+            foreach (string fail in failures)
+            {
+                XElement xmlFailure = new XElement( "SweptBuildFailure", fail );
+                xml.Add( xmlFailure );
+            }
+
+            return xml;
+        }
+
     }
 }
