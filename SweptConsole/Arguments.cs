@@ -61,8 +61,8 @@ NYI files:  A comma-separated list of files to search for violations.  Not
         {
             get
             {
-                return @"SweptConsole version 0.3, Swept core version 0.4.2
-Copyright (c) 2011 Jason Cole and Envisage Technologies Corp.
+                return @"Swept version 0.3, Swept core version 0.5.1
+Copyright (c) 2012 Jason Cole and Envisage Technologies Corp.
 This software is open source, MIT license.  See the file LICENSE for details.
 ";
             }
@@ -99,7 +99,7 @@ This software is open source, MIT license.  See the file LICENSE for details.
                         return;
 
                     default:
-                        exceptionMessages.Add( String.Format( "Don't understand the input [{0}].  Try 'sweptconsole h' for help with arguments.", s ) );
+                        exceptionMessages.Add( String.Format( "Don't understand the input [{0}].  Try 'swept h' for help with arguments.", s ) );
                         continue;
                     }
                 }

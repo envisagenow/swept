@@ -37,7 +37,7 @@ namespace swept
 
         public const string cfa_ID = "ID";
         public const string cfa_Description = "Description";
-        public const string cfa_BuildFail = "BuildFail";
+        public const string cfa_FailMode = "FailMode";
 
         private Change Change_FromNode( XmlNode changeNode )
         {
@@ -51,16 +51,16 @@ namespace swept
             if (changeNode.Attributes[cfa_Description] != null)
                 change.Description = changeNode.Attributes[cfa_Description].Value;
 
-            if (changeNode.Attributes[cfa_BuildFail] != null)
+            if (changeNode.Attributes[cfa_FailMode] != null)
             {
-                string failText = changeNode.Attributes[cfa_BuildFail].Value;
+                string failText = changeNode.Attributes[cfa_FailMode].Value;
                 try
                 {
                     change.BuildFail = (BuildFailMode)Enum.Parse( typeof( BuildFailMode ), failText );
                 }
                 catch (ArgumentException e)
                 {
-                    throw new Exception( String.Format( "Change ID [{0}] has an unknown BuildFail value [{1}].", change.ID, failText ), e );
+                    throw new Exception( String.Format( "Change ID [{0}] has an unknown {1} value [{2}].", change.ID, cfa_FailMode, failText ), e );
                 }
             }
 

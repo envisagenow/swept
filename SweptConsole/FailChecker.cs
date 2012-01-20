@@ -37,5 +37,35 @@ namespace swept
 
             return failures;
         }
+
+        public string ReportFailures( List<string> failures )
+        {
+            if (failures.Count == 0)
+                return string.Empty;
+            else
+            {
+                string failureMessage = "Swept failed due to build breaking rule failure{0}:\n{1}";
+                string failuresText = "";
+                foreach (string fail in failures)
+                {
+                    failuresText += fail + "\n";
+                }
+
+                var plurality = failures.Count > 1? "s" : "";
+
+                return string.Format( failureMessage, plurality, failuresText );
+            }
+        }
+
+        public string ReportFailureXML( List<string> failures )
+        {
+            if (failures.Count == 0)
+                return string.Empty;
+            else
+            {
+                string failureXML = string.Format( "<{0}s><{0}>{1}</{0}></{0}s>", "SweptRuleFailure", failures[0] );
+                return failureXML;
+            }
+        }
     }
 }

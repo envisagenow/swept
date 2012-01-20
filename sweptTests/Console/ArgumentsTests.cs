@@ -29,7 +29,7 @@ namespace swept.Tests
 
             var ex = Assert.Throws<Exception>( createBadArgs );
 
-            Assert.That( ex.Message, Is.EqualTo( "Don't understand the input [bad-argument].  Try 'sweptconsole h' for help with arguments." ) );
+            Assert.That( ex.Message, Is.EqualTo( "Don't understand the input [bad-argument].  Try 'swept h' for help with arguments." ) );
         }
 
         [Test]

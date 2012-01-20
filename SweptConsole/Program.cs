@@ -22,11 +22,12 @@ namespace swept
             }
         }
 
-        private static void execute( string[] args, TextWriter writer )
+        //private static void execute( string[] args, TextWriter fullReportWriter, TextWriter failureReportWriter )
+        private static void execute( string[] args, TextWriter fullReportWriter )
         {
             IStorageAdapter storage = new StorageAdapter();
 
-            var arguments = new Arguments( args, storage, writer );
+            var arguments = new Arguments( args, storage, fullReportWriter );
             if (arguments.AreInvalid)
                 return;
 
@@ -45,21 +46,28 @@ namespace swept
 
             var gatherer = new Gatherer( changes, fileNames, storage );
 
-            Dictionary<Change, Dictionary<SourceFile, ClauseMatch>> results = gatherer.GetMatchesPerChange();
+            var results = gatherer.GetMatchesPerChange();
 
             var buildReporter = new BuildReporter();
             var reportXML = buildReporter.ReportOn( results );
 
-            writer.WriteLine( reportXML );
+            fullReportWriter.WriteLine( reportXML );
 
             FailChecker checker = new FailChecker();
             var failures = checker.Check( results );
             if (failures.Any())
             {
-                //TODO XOMG WTD FAIL LOL
-                //checker.ReportFailures(); //probly rong:  who should report?
+                var message = checker.ReportFailures( failures );
+                Console.Error.WriteLine( message );
 
-                Environment.Exit( failures.Count );
+                //TODO: report to xml for buildReporter
+                //var xml = checker.ReportFailureXML( failures );
+                //TODO: then open file, write xml, close file
+
+
+
+
+                Environment.Exit( 20 );
             }
         }
     }

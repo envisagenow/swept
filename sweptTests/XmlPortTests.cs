@@ -23,7 +23,7 @@ namespace swept.Tests
         [Test]
         public void Populates_BuildFail_from_attribute()
         {
-            string changeText = "<SweptProjectData><ChangeCatalog><Change ID='this' BuildFail='Any'> ^CSharp </Change></ChangeCatalog></SweptProjectData>";
+            string changeText = "<SweptProjectData><ChangeCatalog><Change ID='this' FailMode='Any'> ^CSharp </Change></ChangeCatalog></SweptProjectData>";
             XmlDocument xml = new XmlDocument();
             xml.LoadXml( changeText );
 
@@ -37,13 +37,13 @@ namespace swept.Tests
         [Test]
         public void Populates_BuildFail_gives_clear_exception_on_invalid_value()
         {
-            string changeText = "<SweptProjectData><ChangeCatalog><Change ID='this' BuildFail='Fake'> ^CSharp </Change></ChangeCatalog></SweptProjectData>";
+            string changeText = "<SweptProjectData><ChangeCatalog><Change ID='this' FailMode='Fake'> ^CSharp </Change></ChangeCatalog></SweptProjectData>";
             XmlDocument xml = new XmlDocument();
             xml.LoadXml( changeText );
 
             var ex = Assert.Throws<Exception>( () => port.ChangeCatalog_FromXmlDocument( xml ) );
 
-            Assert.That( ex.Message, Is.EqualTo( "Change ID [this] has an unknown BuildFail value [Fake]." ) );
+            Assert.That( ex.Message, Is.EqualTo( "Change ID [this] has an unknown FailMode value [Fake]." ) );
         }
 
 
