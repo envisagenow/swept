@@ -19,10 +19,10 @@ namespace swept
             catch (Exception ex)
             {
                 Console.Out.WriteLine( ex.Message + "\nStack trace:\n" + ex.StackTrace );
+                Environment.Exit( 20 );
             }
         }
 
-        //private static void execute( string[] args, TextWriter fullReportWriter, TextWriter failureReportWriter )
         private static void execute( string[] args, TextWriter fullReportWriter )
         {
             IStorageAdapter storage = new StorageAdapter();
@@ -62,11 +62,8 @@ namespace swept
                 var message = buildReporter.ReportBuildFailures( failures );
                 Console.Error.WriteLine( message );
 
-                failureCode = 20;
+                failureCode = 10;
             }
-
-            //TODO goal code:
-            //var reportXML = buildReporter.ReportOn( results, failures );
 
             Environment.Exit( failureCode );
         }

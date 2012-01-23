@@ -35,6 +35,21 @@ namespace swept.Tests
         }
 
         [Test]
+        public void Populates_BuildFail_Limit_from_attribute()
+        {
+            string changeText = "<SweptProjectData><ChangeCatalog><Change ID='this' FailMode='Over' Limit='2'> ^CSharp </Change></ChangeCatalog></SweptProjectData>";
+            XmlDocument xml = new XmlDocument();
+            xml.LoadXml( changeText );
+
+            var cat = port.ChangeCatalog_FromXmlDocument( xml );
+            List<Change> changes = cat.GetSortedChanges();
+            Assert.That( changes.Count, Is.EqualTo( 1 ) );
+
+            Assert.That( changes[0].BuildFail, Is.EqualTo( BuildFailMode.Over ) );
+            Assert.That( changes[0].BuildFailOverLimit, Is.EqualTo( 2 ) );
+        }
+
+        [Test]
         public void Populates_BuildFail_gives_clear_exception_on_invalid_value()
         {
             string changeText = "<SweptProjectData><ChangeCatalog><Change ID='this' FailMode='Fake'> ^CSharp </Change></ChangeCatalog></SweptProjectData>";

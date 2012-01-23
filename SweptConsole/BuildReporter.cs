@@ -63,15 +63,15 @@ namespace swept
                 return string.Empty;
             else
             {
-                string failureMessage = "Swept failed due to build breaking rule failure{0}:\n{1}";
+                var plurality = failures.Count > 1 ? "s" : "";
+
                 string failuresText = "";
                 foreach (string fail in failures)
                 {
                     failuresText += fail + "\n";
                 }
 
-                var plurality = failures.Count > 1 ? "s" : "";
-
+                string failureMessage = "Swept failed due to build breaking rule failure{0}:\n{1}";
                 return string.Format( failureMessage, plurality, failuresText );
             }
         }
