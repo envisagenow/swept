@@ -1,5 +1,5 @@
 ﻿//  Swept:  Software Enhancement Progress Tracking.
-//  Copyright (c) 2010 Jason Cole and Envisage Technologies Corp.
+//  Copyright (c) 2012 Jason Cole and Envisage Technologies Corp.
 //  This software is open source, MIT license.  See the file LICENSE for details.
 using System;
 using System.Xml;
@@ -15,9 +15,8 @@ namespace swept
         {
             XmlNode node = doc.SelectSingleNode( "SweptProjectData/ChangeCatalog" );
 
-            // TODO: Make this message talk about both elements.
             if (node == null)
-                throw new Exception( "Document must have a <ChangeCatalog> node.  Please supply one." );
+                throw new Exception( "Document must have a <ChangeCatalog> node inside a <SweptProjectData> node.  Please supply one." );
 
             return ChangeCatalog_FromNode( node );
         }
@@ -38,6 +37,7 @@ namespace swept
         public const string cfa_ID = "ID";
         public const string cfa_Description = "Description";
         public const string cfa_FailMode = "FailMode";
+        public const string cfa_FailLimit = "Limit";
 
         private Change Change_FromNode( XmlNode changeNode )
         {
@@ -56,11 +56,25 @@ namespace swept
                 string failText = changeNode.Attributes[cfa_FailMode].Value;
                 try
                 {
+                    //  When, MS?:  change.BuildFail = Enum.Parse<BuildFailMode>( failText );
                     change.BuildFail = (BuildFailMode)Enum.Parse( typeof( BuildFailMode ), failText );
+                    if (change.BuildFail == BuildFailMode.Over)
+                    {
+                        try
+                        {
+                            string failOver = changeNode.Attributes[cfa_FailLimit].Value;
+                            change.BuildFailOverLimit = int.Parse( failOver );
+                        }
+                        catch( Exception failEx )
+                        {
+                            string msg = String.Format( "Found no fail over 'Limit' for Change ID [{0}].", change.ID );
+                            throw new Exception( msg, failEx );
+                        }
+                    }
                 }
-                catch (ArgumentException e)
+                catch (ArgumentException argEx)
                 {
-                    throw new Exception( String.Format( "Change ID [{0}] has an unknown {1} value [{2}].", change.ID, cfa_FailMode, failText ), e );
+                    throw new Exception( String.Format( "Change ID [{0}] has an unknown {1} value [{2}].", change.ID, cfa_FailMode, failText ), argEx );
                 }
             }
 

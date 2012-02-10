@@ -11,23 +11,18 @@ namespace swept.Tests
     [TestFixture]
     public class XmlPortTests
     {
-        private XmlPort port;
-
-        [SetUp]
-        public void given_a_port()
+        private ChangeCatalog getChangeCatalog( string changeText )
         {
-            port = new XmlPort();
-        }
-
-
-        [Test]
-        public void Populates_BuildFail_from_attribute()
-        {
-            string changeText = "<SweptProjectData><ChangeCatalog><Change ID='this' FailMode='Any'> ^CSharp </Change></ChangeCatalog></SweptProjectData>";
             XmlDocument xml = new XmlDocument();
             xml.LoadXml( changeText );
+            var port = new XmlPort();
+            return port.ChangeCatalog_FromXmlDocument( xml );
+        }
 
-            var cat = port.ChangeCatalog_FromXmlDocument( xml );
+        [Test]
+        public void Populates_FailMode_from_attribute()
+        {
+            var cat = getChangeCatalog( "<SweptProjectData><ChangeCatalog><Change ID='this' FailMode='Any'> ^CSharp </Change></ChangeCatalog></SweptProjectData>" );
             List<Change> changes = cat.GetSortedChanges();
             Assert.That( changes.Count, Is.EqualTo( 1 ) );
 
@@ -35,13 +30,9 @@ namespace swept.Tests
         }
 
         [Test]
-        public void Populates_BuildFail_Limit_from_attribute()
+        public void Populates_FailOver_Limit_from_attribute()
         {
-            string changeText = "<SweptProjectData><ChangeCatalog><Change ID='this' FailMode='Over' Limit='2'> ^CSharp </Change></ChangeCatalog></SweptProjectData>";
-            XmlDocument xml = new XmlDocument();
-            xml.LoadXml( changeText );
-
-            var cat = port.ChangeCatalog_FromXmlDocument( xml );
+            var cat = getChangeCatalog( "<SweptProjectData><ChangeCatalog><Change ID='this' FailMode='Over' Limit='2'> ^CSharp </Change></ChangeCatalog></SweptProjectData>" );
             List<Change> changes = cat.GetSortedChanges();
             Assert.That( changes.Count, Is.EqualTo( 1 ) );
 
@@ -50,28 +41,26 @@ namespace swept.Tests
         }
 
         [Test]
-        public void Populates_BuildFail_gives_clear_exception_on_invalid_value()
+        public void ChangeCatalog_from_IncorrectXML_Throws()
         {
-            string changeText = "<SweptProjectData><ChangeCatalog><Change ID='this' FailMode='Fake'> ^CSharp </Change></ChangeCatalog></SweptProjectData>";
-            XmlDocument xml = new XmlDocument();
-            xml.LoadXml( changeText );
+            var ex = Assert.Throws<Exception>( () => getChangeCatalog( "<x>eek!</x>" ) );
+            Assert.That( ex.Message, Is.EqualTo( "Document must have a <ChangeCatalog> node inside a <SweptProjectData> node.  Please supply one." ) );
+        }
 
-            var ex = Assert.Throws<Exception>( () => port.ChangeCatalog_FromXmlDocument( xml ) );
-
+        [Test]
+        public void FailMode_parse_gives_clear_exception_on_invalid_value()
+        {
+            string badMode = "<SweptProjectData><ChangeCatalog><Change ID='this' FailMode='Fake'> ^CSharp </Change></ChangeCatalog></SweptProjectData>";
+            var ex = Assert.Throws<Exception>( () => getChangeCatalog( badMode ) );
             Assert.That( ex.Message, Is.EqualTo( "Change ID [this] has an unknown FailMode value [Fake]." ) );
         }
 
-
-        #region Exception testing
-        [CoverageExclude]
-        [Test, ExpectedException( ExpectedMessage = "Document must have a <ChangeCatalog> node.  Please supply one." )]
-        public void ChangeCatalog_from_IncorrectXML_Throws()
+        [Test]
+        public void FailOver_Limit_gripes_when_missing_or_gibberish()
         {
-            XmlDocument xml = new XmlDocument();
-            xml.LoadXml( "<x>eek!</x>" );
-            port.ChangeCatalog_FromXmlDocument( xml );
+            string badLimit = "<SweptProjectData><ChangeCatalog><Change ID='this' FailMode='Over' Limit='asfdfds'> ^CSharp </Change></ChangeCatalog></SweptProjectData>";
+            Exception ex = Assert.Throws<Exception>( () => getChangeCatalog( badLimit ) );
+            Assert.That( ex.Message, Is.EqualTo( "Found no fail over 'Limit' for Change ID [this]." ) );
         }
-
-        #endregion
     }
 }

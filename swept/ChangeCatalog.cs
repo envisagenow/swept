@@ -1,5 +1,5 @@
 //  Swept:  Software Enhancement Progress Tracking.
-//  Copyright (c) 2010 Jason Cole and Envisage Technologies Corp.
+//  Copyright (c) 2012 Jason Cole and Envisage Technologies Corp.
 //  This software is open source, MIT license.  See the file LICENSE for details.
 using System;
 using System.Linq;
@@ -14,25 +14,6 @@ namespace swept
         public ChangeCatalog()
         {
             _changes = new List<Change>();
-        }
-
-
-        public bool Equals( ChangeCatalog other )
-        {
-            if( _changes.Count != other._changes.Count )
-                return false;
-
-            Comparison<Change> onIDs = (left, right) => left.ID.CompareTo(right.ID);
-            _changes.Sort( onIDs );
-            other._changes.Sort( onIDs );
-
-            for( int i = 0; i < _changes.Count; i++ )
-            {
-                if( !_changes[i].Equals( other._changes[i] ) )
-                    return false;
-            }
-
-            return true;
         }
 
         public List<Change> GetSortedChanges()
