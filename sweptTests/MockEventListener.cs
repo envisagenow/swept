@@ -5,7 +5,7 @@ using System;
 
 namespace swept.Tests
 {
-    public class MockEventListener : ISweptEventListener
+    public class MockEventListener : IHearIDEEvents
     {
         #region ISweptEventListener Members
 

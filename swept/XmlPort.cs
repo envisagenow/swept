@@ -67,7 +67,7 @@ namespace swept
                         }
                         catch( Exception failEx )
                         {
-                            string msg = String.Format( "Found no fail over 'Limit' for Change ID [{0}].", change.ID );
+                            string msg = String.Format( "Found no integer 'Limit' for Change ID [{0}].", change.ID );
                             throw new Exception( msg, failEx );
                         }
                     }

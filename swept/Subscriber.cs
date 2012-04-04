@@ -7,14 +7,14 @@ namespace swept
 {
     public class Subscriber
     {
-        private ISweptEventListener Librarian { get; set; }
+        private IHearIDEEvents Librarian { get; set; }
         private EventSwitchboard Switchboard { get; set; }
         public bool HasSubscribed { get; private set; }
 
         public const string MSG_Resubscribe_Exception = "A second subscription.  Swept's startup code is busted.";
         public const string MSG_Unsubscribe_Exception = "A second unsubscription.  Swept's shutdown code is busted.";
 
-        public void Subscribe( EventSwitchboard switchboard, ISweptEventListener librarian )
+        public void Subscribe( EventSwitchboard switchboard, IHearIDEEvents librarian )
         {
             if (HasSubscribed)
                 throw new Exception( MSG_Resubscribe_Exception );

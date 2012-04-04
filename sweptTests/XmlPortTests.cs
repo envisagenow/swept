@@ -60,7 +60,7 @@ namespace swept.Tests
         {
             string badLimit = "<SweptProjectData><ChangeCatalog><Change ID='this' FailMode='Over' Limit='asfdfds'> ^CSharp </Change></ChangeCatalog></SweptProjectData>";
             Exception ex = Assert.Throws<Exception>( () => getChangeCatalog( badLimit ) );
-            Assert.That( ex.Message, Is.EqualTo( "Found no fail over 'Limit' for Change ID [this]." ) );
+            Assert.That( ex.Message, Is.EqualTo( "Found no integer 'Limit' for Change ID [this]." ) );
         }
     }
 }

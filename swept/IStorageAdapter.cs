@@ -4,6 +4,7 @@
 using System;
 using System.Xml;
 using System.Collections.Generic;
+using System.Xml.Linq;
 
 namespace swept
 {
@@ -17,5 +18,8 @@ namespace swept
         IEnumerable<string> GetFoldersInFolder( string folder );
 
         SourceFile LoadFile( string fileName );
+
+        //XDocument LoadHistory( string historyPath );
+        //void SaveHistory( XDocument buildHistory );
     }
 }

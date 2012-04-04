@@ -14,7 +14,7 @@ namespace swept
         {
             try
             {
-                execute( args, Console.Out );
+                execute( args, new StorageAdapter(), Console.Out, Console.Error );
             }
             catch (Exception ex)
             {
@@ -23,11 +23,9 @@ namespace swept
             }
         }
 
-        private static void execute( string[] args, TextWriter fullReportWriter )
+        private static void execute( string[] args, IStorageAdapter storage, TextWriter reportWriter, TextWriter errorWriter )
         {
-            IStorageAdapter storage = new StorageAdapter();
-
-            var arguments = new Arguments( args, storage, fullReportWriter );
+            var arguments = new Arguments( args, storage, reportWriter );
             if (arguments.AreInvalid)
                 return;
 
@@ -35,7 +33,8 @@ namespace swept
             ProjectLibrarian librarian = new ProjectLibrarian( storage, switchboard );
 
             Subscriber subscriber = new Subscriber();
-            subscriber.Subscribe( switchboard, librarian );   // FIX:  finish exception subscribing
+            subscriber.Subscribe( switchboard, librarian );
+            // TODO: subscriber.SubscribeExceptions( switchboard, this );
 
             var traverser = new Traverser( arguments, storage );
             IEnumerable<string> fileNames = traverser.GetProjectFiles();
@@ -51,7 +50,7 @@ namespace swept
             var buildReporter = new BuildReporter();
             var reportXML = buildReporter.ReportOn( results );
 
-            fullReportWriter.WriteLine( reportXML );
+            reportWriter.WriteLine( reportXML );
 
             int failureCode = 0;
 
@@ -60,7 +59,7 @@ namespace swept
             if (failures.Any())
             {
                 var message = buildReporter.ReportBuildFailures( failures );
-                Console.Error.WriteLine( message );
+                errorWriter.WriteLine( message );
 
                 failureCode = 10;
             }

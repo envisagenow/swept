@@ -8,7 +8,7 @@ using System.Xml;
 
 namespace swept
 {
-    public interface ISweptEventListener
+    public interface IHearIDEEvents
     {
         void Hear_SolutionOpened( object sender, FileEventArgs args );
         void Hear_SolutionClosed( object sender, EventArgs args );
@@ -16,7 +16,7 @@ namespace swept
         void Hear_FileClosing( object sender, FileEventArgs args );
     }
 
-    public class ProjectLibrarian : ISweptEventListener
+    public class ProjectLibrarian : IHearIDEEvents
     {
         //  The Change Catalog holds things the team wants to improve in this solution.
         internal ChangeCatalog _changeCatalog;
@@ -25,20 +25,7 @@ namespace swept
         internal EventSwitchboard _switchboard;
 
         private List<Task> _allTasks;
-
-        private string _solutionPath;
-        public string SolutionPath
-        {
-            get
-            {
-                return _solutionPath;
-            }
-            internal set
-            {
-                _solutionPath = value;
-            }
-        }
-
+        public string SolutionPath { get; internal set; }
         public string LibraryPath {get; set;}
 
         public ProjectLibrarian( IStorageAdapter storageAdapter, EventSwitchboard switchboard )
@@ -51,7 +38,7 @@ namespace swept
         }
 
 
-        #region Events
+        #region IHearIDEEvents
         public void Hear_SolutionOpened( object sender, FileEventArgs args )
         {
             OpenSolution( args.Name );

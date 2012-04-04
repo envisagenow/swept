@@ -50,6 +50,19 @@ namespace swept.Tests
         }
 
         [Test]
+        public void When_we_have_no_tasks_in_a_FailAny_Change_we_do_not_fail()
+        {
+            Change change = new Change() { ID = "644", Description = "Major problem!", BuildFail = BuildFailMode.Any };
+            Dictionary<SourceFile, ClauseMatch> sourceClauseMatch = new Dictionary<SourceFile, ClauseMatch>();
+
+            _changeViolations[change] = sourceClauseMatch;
+
+            var failures = _checker.Check( _changeViolations );
+
+            Assert.That( failures.Count(), Is.EqualTo( 0 ) );
+        }
+
+        [Test]
         public void When_we_violate_a_BuildFail_None_Change_we_do_not_fail()
         {
             Change change = new Change() { ID = "644", Description="Not a problem.", BuildFail = BuildFailMode.None };

@@ -20,7 +20,7 @@ namespace swept.Tests
         }
 
         [Test]
-        public void Default_BuildFail_None_is_settable()
+        public void BuildFail_Default_None_is_settable()
         {
             Change change = new Change();
             Assert.That( change.BuildFail, Is.EqualTo( BuildFailMode.None ) );
