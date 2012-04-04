@@ -14,12 +14,14 @@ namespace swept.Tests
     {
         private BuildReporter _reporter;
         private Dictionary<Change, Dictionary<SourceFile, ClauseMatch>> _changeViolations;
+        private FailChecker _checker;
 
         [SetUp]
         public void Setup()
         {
             _reporter = new BuildReporter();
             _changeViolations = new Dictionary<Change, Dictionary<SourceFile, ClauseMatch>>();
+            _checker = new FailChecker();
         }
 
         #region Command line build fail messages
@@ -62,6 +64,42 @@ namespace swept.Tests
             Assert.AreEqual( expectedFailureMessage, failureText );
         }
         #endregion
+
+        [TestCase( "Copyright update", 22 )]
+        [TestCase( "Silly problem", 46 )]
+        public void Checking_for_build_failures_updates_history_file( string changeID, int violationCount )
+        {
+            var expectedHistory = XDocument.Parse( string.Format( @"<BuildHistory>
+  <Build Number=""3403"" DateTime=""4/4/2012 10:25 AM"">
+    <Change ID=""{0}"" Violations=""{1}"" />
+  </Build>
+</BuildHistory>", changeID, violationCount ) );
+
+            var change = new Change()
+            {
+                ID = changeID,
+                Description = "Time marches on",
+                BuildFail = BuildFailMode.Over,
+                BuildFailOverLimit = 20
+            };
+            var sourceClauseMatch = new Dictionary<SourceFile, ClauseMatch>();
+
+            var failedSource = new SourceFile( "some_file.cs" );
+
+            List<int> violationLines = new List<int>();
+            for (int i = 0; i < violationCount; i++)
+            {
+                violationLines.Add( (i * 7) + 22 );  //arbitrary lines throughout the source file had this problem.
+            }
+            ClauseMatch failedClause = new LineMatch( violationLines );
+            sourceClauseMatch[failedSource] = failedClause;
+
+            _changeViolations[change] = sourceClauseMatch;
+
+            string writtenHistory = _checker.GetBuildHistory( _changeViolations );
+
+            Assert.That( writtenHistory, Is.EqualTo( expectedHistory.ToString() ) );
+        }
 
         [Test]
         public void Zero_Problems_produces_empty_failure_XML()
