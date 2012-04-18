@@ -9,6 +9,7 @@ using System.Xml.Linq;
 
 namespace swept.Tests
 {
+
     [TestFixture]
     public class BuildFailReporting_tests
     {
@@ -65,15 +66,17 @@ namespace swept.Tests
         }
         #endregion
 
-        [TestCase( "Copyright update", 22 )]
-        [TestCase( "Silly problem", 46 )]
-        public void Checking_for_build_failures_updates_history_file( string changeID, int violationCount )
+        [TestCase( "Copyright update", 22, "4/4/2012 10:25:02 AM", 3403 )]
+        [TestCase( "Silly problem", 46, "5/11/2012 7:28:02 AM", 1)]
+        public void Checking_for_build_failures_updates_history_file( string changeID, int violationCount, string buildTimeString, int buildNumber )
         {
-            var expectedHistory = XDocument.Parse( string.Format( @"<BuildHistory>
-  <Build Number=""3403"" DateTime=""4/4/2012 10:25 AM"">
+            DateTime buildDateTime = DateTime.Parse( buildTimeString );
+            var expectedHistory = XDocument.Parse( string.Format(
+@"<BuildHistory>
+  <Build Number=""{3}"" DateTime=""{2}"">
     <Change ID=""{0}"" Violations=""{1}"" />
   </Build>
-</BuildHistory>", changeID, violationCount ) );
+</BuildHistory>", changeID, violationCount, buildDateTime, buildNumber ) );
 
             var change = new Change()
             {
@@ -96,9 +99,43 @@ namespace swept.Tests
 
             _changeViolations[change] = sourceClauseMatch;
 
-            string writtenHistory = _checker.GetBuildHistory( _changeViolations );
+            string writtenHistory = _checker.GetBuildHistory( _changeViolations, buildDateTime, buildNumber );
 
             Assert.That( writtenHistory, Is.EqualTo( expectedHistory.ToString() ) );
+        }
+
+        [TestCase( 12, "9/14/2012 2:44:02 AM", 60)]
+        [TestCase( 14, "5/11/2012 7:28:02 AM", 54)]
+        public void We_can_read_a_history_from_XML_to_a_domain_object( int buildNumber, string dateString, int violationsCount )
+        {
+                       
+            var history = XDocument.Parse( string.Format(
+@"<BuildHistory>
+  <Build Number=""{3}"" DateTime=""{2}"">
+    <Change ID=""{0}"" Violations=""{1}"" />
+    <Change ID=""always the same"" Violations=""44"" />
+  </Build>
+  <Build Number=""1100"" DateTime=""1/1/2022 3:20:14 PM"">
+    <Change ID=""always the same"" Violations=""44"" />
+  </Build>
+
+</BuildHistory>", "silly problem", violationsCount, dateString, buildNumber  ) );
+
+
+            BuildHistory buildHistory = _checker.ReadBuildHistory( history );
+
+            BuildRun firstRun = buildHistory.BuildRuns[0];
+            Assert.That( firstRun.BuildDate, Is.EqualTo( DateTime.Parse( dateString ) ) );
+            Assert.That( firstRun.BuildNumber, Is.EqualTo( buildNumber ) );
+
+            Assert.That( firstRun.ChangeViolations["silly problem"], Is.EqualTo( violationsCount ) );
+            Assert.That( firstRun.ChangeViolations["always the same"], Is.EqualTo( 44 ) );
+
+
+            BuildRun secondRun = buildHistory.BuildRuns[1];
+            Assert.That( secondRun.BuildDate, Is.EqualTo( DateTime.Parse( "1/1/2022 3:20:14 PM" ) ) );
+            Assert.That( secondRun.BuildNumber, Is.EqualTo( 1100 ) );
+            Assert.That( secondRun.ChangeViolations.Count(), Is.EqualTo( 1 ) );
         }
 
         [Test]

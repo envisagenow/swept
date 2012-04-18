@@ -37,14 +37,14 @@ namespace swept
             return failures;
         }
 
-        public string GetBuildHistory( Dictionary<Change, Dictionary<SourceFile, ClauseMatch>> changeViolations )
+        public string GetBuildHistory( Dictionary<Change, Dictionary<SourceFile, ClauseMatch>> changeViolations, DateTime buildDateTime, int buildNumber )
         {
             XDocument buildHistory = new XDocument();
             XElement historyRoot = new XElement( "BuildHistory" );
 
             XElement build = new XElement( "Build" );
-            build.Add( new XAttribute( "Number", "3403" ) );
-            build.Add( new XAttribute( "DateTime", "4/4/2012 10:25 AM" ) );
+            build.Add( new XAttribute( "Number", buildNumber) );
+            build.Add( new XAttribute( "DateTime", buildDateTime.ToString() ) );
 
             foreach (Change change in changeViolations.Keys)
             {
@@ -73,5 +73,35 @@ namespace swept
             }
             return totalProblemCount;
         }
+
+
+        public BuildHistory ReadBuildHistory( XDocument history )
+        {
+            BuildHistory buildHistory = new BuildHistory();
+
+            var builds = history.Descendants( "Build" );
+            foreach (var build in builds)
+            {
+                BuildRun buildRun = new BuildRun();
+
+                buildRun.BuildNumber = int.Parse( build.Attribute( "Number" ).Value );
+                buildRun.BuildDate = DateTime.Parse( build.Attribute( "DateTime" ).Value );
+
+                var changes = build.Descendants( "Change" );
+
+                foreach (var change in changes)
+                {
+                    string changeID = change.Attribute( "ID" ).Value;
+
+                    int changeViolations = int.Parse( change.Attribute( "Violations" ).Value );
+                    buildRun.ChangeViolations.Add( changeID, changeViolations );
+                }
+
+                buildHistory.BuildRuns.Add( buildRun );
+            }
+
+            return buildHistory;
+        }
     }
+
 }
