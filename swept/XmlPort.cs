@@ -1,5 +1,5 @@
 ﻿//  Swept:  Software Enhancement Progress Tracking.
-//  Copyright (c) 2012 Jason Cole and Envisage Technologies Corp.
+//  Copyright (c) 2009, 2012 Jason Cole and Envisage Technologies Corp.
 //  This software is open source, MIT license.  See the file LICENSE for details.
 using System;
 using System.Xml;
@@ -56,14 +56,14 @@ namespace swept
                 string failText = changeNode.Attributes[cfa_FailMode].Value;
                 try
                 {
-                    //  When, MS?:  change.BuildFail = Enum.Parse<BuildFailMode>( failText );
-                    change.BuildFail = (BuildFailMode)Enum.Parse( typeof( BuildFailMode ), failText );
-                    if (change.BuildFail == BuildFailMode.Over)
+                    //  When, MS?:  change.RunFail = Enum.Parse<RunFailMode>( failText );
+                    change.RunFail = (RunFailMode)Enum.Parse( typeof( RunFailMode ), failText );
+                    if (change.RunFail == RunFailMode.Over)
                     {
                         try
                         {
                             string failOver = changeNode.Attributes[cfa_FailLimit].Value;
-                            change.BuildFailOverLimit = int.Parse( failOver );
+                            change.RunFailOverLimit = int.Parse( failOver );
                         }
                         catch( Exception failEx )
                         {

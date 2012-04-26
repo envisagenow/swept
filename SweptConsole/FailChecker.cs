@@ -1,5 +1,5 @@
 ﻿//  Swept:  Software Enhancement Progress Tracking.
-//  Copyright (c) 2012 Jason Cole and Envisage Technologies Corp.
+//  Copyright (c) 2009, 2012 Jason Cole and Envisage Technologies Corp.
 //  This software is open source, MIT license.  See the file LICENSE for details.
 using System;
 using System.Collections.Generic;
@@ -16,20 +16,16 @@ namespace swept
 
             foreach (var change in changeViolations.Keys)
             {
-                int violationCount = 0;
-                foreach (var sourcefile in changeViolations[change].Keys)
-                {
-                    violationCount += changeViolations[change][sourcefile].Count;
-                }
+                int count = countViolations( changeViolations[change] );
 
-                if (change.BuildFail == BuildFailMode.Any && violationCount > 0)
+                if (change.RunFail == RunFailMode.Any && count > 0)
                 {
                     string failureText = string.Format( "Rule [{0}] has been violated, and it breaks the build if there are any violations.", change.ID );
                     failures.Add( failureText );
                 }
-                else if (change.BuildFail == BuildFailMode.Over && violationCount > change.BuildFailOverLimit)
+                else if (change.RunFail == RunFailMode.Over && count > change.RunFailOverLimit)
                 {
-                    string failureText = string.Format( "Rule [{0}] has been violated [{1}] times, and it breaks the build if there are over [{2}] violations.", change.ID, violationCount, change.BuildFailOverLimit );
+                    string failureText = string.Format( "Rule [{0}] has been violated [{1}] times, and it breaks the build if there are over [{2}] violations.", change.ID, count, change.RunFailOverLimit );
                     failures.Add( failureText );
                 }
             }
@@ -37,71 +33,64 @@ namespace swept
             return failures;
         }
 
-        public string GetBuildHistory( Dictionary<Change, Dictionary<SourceFile, ClauseMatch>> changeViolations, DateTime buildDateTime, int buildNumber )
+        public string GetRunHistory( Dictionary<Change, Dictionary<SourceFile, ClauseMatch>> changeViolations, DateTime buildDateTime, int buildNumber )
         {
-            XDocument buildHistory = new XDocument();
-            XElement historyRoot = new XElement( "BuildHistory" );
+            XDocument historyDoc = new XDocument();
+            XElement runHistory = new XElement( "RunHistory" );
 
-            XElement build = new XElement( "Build" );
-            build.Add( new XAttribute( "Number", buildNumber) );
-            build.Add( new XAttribute( "DateTime", buildDateTime.ToString() ) );
+            XElement run = new XElement( "Run" );
+            run.Add( new XAttribute( "Number", buildNumber ) );
+            run.Add( new XAttribute( "DateTime", buildDateTime.ToString() ) );
 
             foreach (Change change in changeViolations.Keys)
             {
                 XAttribute changeID = new XAttribute( "ID", change.ID );
                 XElement changeElement = new XElement( "Change" );
                 changeElement.Add( changeID );
-                changeElement.Add( new XAttribute( "Violations", TotalProblems(changeViolations[change]) ) );
-                build.Add( changeElement );
+                changeElement.Add( new XAttribute( "Violations", countViolations( changeViolations[change] ) ) );
+                run.Add( changeElement );
             }
 
-            historyRoot.Add( build );
+            runHistory.Add( run );
 
-            buildHistory.Add( historyRoot );
-                        
-            return buildHistory.ToString();
+            historyDoc.Add( runHistory );
+
+            return historyDoc.ToString();
         }
-        private int TotalProblems( Dictionary<SourceFile, ClauseMatch> problemsPerFile )
+
+        private int countViolations( Dictionary<SourceFile, ClauseMatch> problemsPerFile )
         {
-            int totalProblemCount = 0;
+            int count = 0;
             foreach (SourceFile source in problemsPerFile.Keys)
             {
-                var clauseMatch = problemsPerFile[source];
-                var theseProblemsCount = clauseMatch.Count;
-                 totalProblemCount += theseProblemsCount;
-
+                count += problemsPerFile[source].Count;
             }
-            return totalProblemCount;
+            return count;
         }
 
-
-        public BuildHistory ReadBuildHistory( XDocument history )
+        public RunHistory ReadRunHistory( XDocument historyXml )
         {
-            BuildHistory buildHistory = new BuildHistory();
+            RunHistory runHistory = new RunHistory();
 
-            var builds = history.Descendants( "Build" );
-            foreach (var build in builds)
+            foreach (var runXml in historyXml.Descendants( "Run" ))
             {
-                BuildRun buildRun = new BuildRun();
+                RunHistoryEntry run = new RunHistoryEntry();
 
-                buildRun.BuildNumber = int.Parse( build.Attribute( "Number" ).Value );
-                buildRun.BuildDate = DateTime.Parse( build.Attribute( "DateTime" ).Value );
+                run.Number = int.Parse( runXml.Attribute( "Number" ).Value );
+                run.Date = DateTime.Parse( runXml.Attribute( "DateTime" ).Value );
 
-                var changes = build.Descendants( "Change" );
-
-                foreach (var change in changes)
+                foreach (var changeXml in runXml.Descendants( "Change" ))
                 {
-                    string changeID = change.Attribute( "ID" ).Value;
+                    string changeID = changeXml.Attribute( "ID" ).Value;
 
-                    int changeViolations = int.Parse( change.Attribute( "Violations" ).Value );
-                    buildRun.ChangeViolations.Add( changeID, changeViolations );
+                    int changeViolations = int.Parse( changeXml.Attribute( "Violations" ).Value );
+                    run.Violations.Add( changeID, changeViolations );
                 }
 
-                buildHistory.BuildRuns.Add( buildRun );
+                runHistory.Runs.Add( run );
             }
 
-            return buildHistory;
+            return runHistory;
         }
     }
-
 }

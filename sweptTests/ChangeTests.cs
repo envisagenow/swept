@@ -1,5 +1,5 @@
 //  Swept:  Software Enhancement Progress Tracking.
-//  Copyright (c) 2012 Jason Cole and Envisage Technologies Corp.
+//  Copyright (c) 2009, 2012 Jason Cole and Envisage Technologies Corp.
 //  This software is open source, MIT license.  See the file LICENSE for details.
 using NUnit.Framework;
 using swept;
@@ -23,10 +23,10 @@ namespace swept.Tests
         public void BuildFail_Default_None_is_settable()
         {
             Change change = new Change();
-            Assert.That( change.BuildFail, Is.EqualTo( BuildFailMode.None ) );
+            Assert.That( change.RunFail, Is.EqualTo( RunFailMode.None ) );
 
-            change.BuildFail = BuildFailMode.Any;
-            Assert.That( change.BuildFail, Is.EqualTo( BuildFailMode.Any ) );
+            change.RunFail = RunFailMode.Any;
+            Assert.That( change.RunFail, Is.EqualTo( RunFailMode.Any ) );
         }
     }
 }

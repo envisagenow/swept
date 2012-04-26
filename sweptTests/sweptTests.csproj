@@ -70,8 +70,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BuildFailReporting_tests.cs" />
-    <Compile Include="BuildFail_tests.cs" />
+    <Compile Include="RunFailReporting_tests.cs" />
+    <Compile Include="RunFail_tests.cs" />
+    <Compile Include="RunHistoryReading_tests.cs" />
     <Compile Include="ClauseMatch_tests.cs" />
     <Compile Include="DSL\Grammar_tests.cs" />
     <Compile Include="Console\ArgumentsTests.cs" />

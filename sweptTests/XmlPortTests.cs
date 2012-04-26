@@ -1,5 +1,5 @@
 ﻿//  Swept:  Software Enhancement Progress Tracking.
-//  Copyright (c) 2012 Jason Cole and Envisage Technologies Corp.
+//  Copyright (c) 2009, 2012 Jason Cole and Envisage Technologies Corp.
 //  This software is open source, MIT license.  See the file LICENSE for details.
 using System;
 using NUnit.Framework;
@@ -26,7 +26,7 @@ namespace swept.Tests
             List<Change> changes = cat.GetSortedChanges();
             Assert.That( changes.Count, Is.EqualTo( 1 ) );
 
-            Assert.That( changes[0].BuildFail, Is.EqualTo( BuildFailMode.Any ) );
+            Assert.That( changes[0].RunFail, Is.EqualTo( RunFailMode.Any ) );
         }
 
         [Test]
@@ -36,8 +36,8 @@ namespace swept.Tests
             List<Change> changes = cat.GetSortedChanges();
             Assert.That( changes.Count, Is.EqualTo( 1 ) );
 
-            Assert.That( changes[0].BuildFail, Is.EqualTo( BuildFailMode.Over ) );
-            Assert.That( changes[0].BuildFailOverLimit, Is.EqualTo( 2 ) );
+            Assert.That( changes[0].RunFail, Is.EqualTo( RunFailMode.Over ) );
+            Assert.That( changes[0].RunFailOverLimit, Is.EqualTo( 2 ) );
         }
 
         [Test]

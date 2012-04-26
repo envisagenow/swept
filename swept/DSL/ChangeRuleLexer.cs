@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-// $ANTLR 3.3.1.7705 ..\\..\\DSL\\ChangeRule.g 2011-10-05 13:46:02
+// $ANTLR 3.3.1.7705 ..\\..\\DSL\\ChangeRule.g 2012-04-26 10:57:59
 
 // The variable 'variable' is assigned but its value is never used.
 #pragma warning disable 219

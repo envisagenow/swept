@@ -1,5 +1,5 @@
 //  Swept:  Software Enhancement Progress Tracking.
-//  Copyright (c) 2011 Jason Cole and Envisage Technologies Corp.
+//  Copyright (c) 2009, 2012 Jason Cole and Envisage Technologies Corp.
 //  This software is open source, MIT license.  See the file LICENSE for details.
 using System;
 using System.Collections.Generic;
@@ -21,7 +21,7 @@ namespace swept
         Unknown,
     }
 
-    public enum BuildFailMode
+    public enum RunFailMode
     {
         None,
         Any,
@@ -30,11 +30,11 @@ namespace swept
 
     public class Change
     {
-        public BuildFailMode BuildFail { get; set; }
+        public RunFailMode RunFail { get; set; }
         public List<SeeAlso> SeeAlsos { get; set; }
         public string ID { get; internal set; }
         public string Description { get; internal set; }
-        public int BuildFailOverLimit { get; set; }
+        public int RunFailOverLimit { get; set; }
 
         public Change()
         {
