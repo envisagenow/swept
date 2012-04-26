@@ -5,6 +5,7 @@ using System;
 using System.Xml;
 using System.Collections.Generic;
 using System.IO;
+using System.Xml.Linq;
 
 namespace swept.Tests
 {
@@ -15,6 +16,7 @@ namespace swept.Tests
         public XmlDocument LibraryDoc { get; set; }
         public Dictionary<string, List<string>> FilesInFolder { get; set; }
         public Dictionary<string, List<string>> FoldersInFolder { get; set; }
+        public XDocument RunHistory { get; set; }
         public string CWD = String.Empty;
         public bool ThrowBadXmlException;
 
@@ -112,6 +114,11 @@ namespace swept.Tests
        internal bool DidLoad( string fileName )
        {
            return _loadedFiles.Contains( fileName );
+       }
+
+       public void SaveRunHistory( XDocument runHistory )
+       {
+           RunHistory = runHistory;
        }
     }
 }

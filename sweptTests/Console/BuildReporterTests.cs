@@ -12,12 +12,40 @@ namespace swept.Tests
     [TestFixture]
     public class BuildReporterTests
     {
-        BuildReporter reporter = new BuildReporter();
+        private BuildReporter _reporter;
+        private MockStorageAdapter _storage;
 
         [SetUp]
         public void SetUp()
         {
-            reporter = new BuildReporter();
+            _storage = new MockStorageAdapter();
+            _reporter = new BuildReporter( _storage );
+        }
+
+        [Test]
+        public void When_we_write_run_report_it_is_stored_to_disk()
+        {
+            var runHistory = new RunHistory();
+            var violations = new Dictionary<string, int>();
+            violations.Add( "foo", 2 );
+            runHistory.AddRun( new RunHistoryEntry
+            {
+                Number = 22,
+                Date = DateTime.Parse( "4/4/2012 10:25:02 AM" ),
+                Violations = violations
+            } );
+
+            _reporter.WriteRunHistory( runHistory );
+            Assert.That( _storage.RunHistory, Is.Not.Null );
+
+            var expectedHistory =
+@"<RunHistory>
+  <Run Number=""22"" DateTime=""4/4/2012 10:25:02 AM"">
+    <Change ID=""foo"" Violations=""2"" />
+  </Run>
+</RunHistory>";
+
+            Assert.That( _storage.RunHistory.ToString(), Is.EqualTo( expectedHistory ) );
         }
 
         [Test]
@@ -25,7 +53,7 @@ namespace swept.Tests
         {
             string empty_report = "<SweptBuildReport TotalTasks=\"0\" />";
 
-            string report = reporter.ReportOn( new Dictionary<Change, Dictionary<SourceFile, ClauseMatch>>() );
+            string report = _reporter.ReportOn( new Dictionary<Change, Dictionary<SourceFile, ClauseMatch>>() );
 
             Assert.That( report, Is.EqualTo( empty_report ) );
         }
@@ -56,7 +84,7 @@ namespace swept.Tests
             fileMatches[bar] = new LineMatch( new List<int> { 1, 12, 123, 1234 } );
             changes.Add( change, fileMatches );
 
-            string report = reporter.ReportOn( changes );
+            string report = _reporter.ReportOn( changes );
 
             Assert.That( report, Is.EqualTo( expectedReport.ToString() ) );
         }
@@ -118,7 +146,7 @@ namespace swept.Tests
             changes[csharpChange] = csharpFiles;
             changes[htmlChange] = htmlFiles;
 
-            string report = reporter.ReportOn(changes);
+            string report = _reporter.ReportOn(changes);
 
             Assert.That(report, Is.EqualTo(expectedReport.ToString()));
         }
@@ -158,7 +186,7 @@ namespace swept.Tests
             var changes = new Dictionary<Change, Dictionary<SourceFile, ClauseMatch>>();
             changes[csharpChange] = csharpFiles;
 
-            string report = reporter.ReportOn(changes);
+            string report = _reporter.ReportOn(changes);
 
             Assert.That(report, Is.EqualTo(expectedReport.ToString()));
         }

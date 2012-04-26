@@ -15,11 +15,13 @@ namespace swept.Tests
         private BuildReporter _reporter;
         private Dictionary<Change, Dictionary<SourceFile, ClauseMatch>> _changeViolations;
         private FailChecker _checker;
+        private MockStorageAdapter _storage;
 
         [SetUp]
         public void Setup()
         {
-            _reporter = new BuildReporter();
+            _storage = new MockStorageAdapter();
+            _reporter = new BuildReporter( _storage );
             _changeViolations = new Dictionary<Change, Dictionary<SourceFile, ClauseMatch>>();
             _checker = new FailChecker();
         }
@@ -65,43 +67,7 @@ namespace swept.Tests
         }
         #endregion
 
-        [TestCase( "Copyright update", 22, "4/4/2012 10:25:02 AM", 3403 )]
-        [TestCase( "Silly problem", 46, "5/11/2012 7:28:02 AM", 1)]
-        public void Checking_for_build_failures_updates_history_file( string changeID, int violationCount, string buildTimeString, int buildNumber )
-        {
-            DateTime buildDateTime = DateTime.Parse( buildTimeString );
-            var expectedHistory = XDocument.Parse( string.Format(
-@"<RunHistory>
-  <Run Number=""{3}"" DateTime=""{2}"">
-    <Change ID=""{0}"" Violations=""{1}"" />
-  </Run>
-</RunHistory>", changeID, violationCount, buildDateTime, buildNumber ) );
 
-            var change = new Change()
-            {
-                ID = changeID,
-                Description = "Time marches on",
-                RunFail = RunFailMode.Over,
-                RunFailOverLimit = 20
-            };
-            var sourceClauseMatch = new Dictionary<SourceFile, ClauseMatch>();
-
-            var failedSource = new SourceFile( "some_file.cs" );
-
-            List<int> violationLines = new List<int>();
-            for (int i = 0; i < violationCount; i++)
-            {
-                violationLines.Add( (i * 7) + 22 );  //arbitrary lines throughout the source file had this problem.
-            }
-            ClauseMatch failedClause = new LineMatch( violationLines );
-            sourceClauseMatch[failedSource] = failedClause;
-
-            _changeViolations[change] = sourceClauseMatch;
-
-            string writtenHistory = _checker.GetRunHistory( _changeViolations, buildDateTime, buildNumber );
-
-            Assert.That( writtenHistory, Is.EqualTo( expectedHistory.ToString() ) );
-        }
 
         [Test]
         public void Zero_Problems_produces_empty_failure_XML()

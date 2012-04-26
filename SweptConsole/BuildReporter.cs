@@ -10,6 +10,14 @@ namespace swept
 {
     public class BuildReporter
     {
+        private IStorageAdapter _storage;
+
+        public BuildReporter( IStorageAdapter storage )
+        {
+            _storage = storage;
+        }
+
+
         public string ReportOn( Dictionary<Change, Dictionary<SourceFile, ClauseMatch>> filesPerChange )
         {
             XDocument report_doc = new XDocument();
@@ -26,7 +34,7 @@ namespace swept
 
                 var change_element = new XElement( "Change",
                     new XAttribute( "ID", change.ID ),
-                    new XAttribute("Description",change.Description)
+                    new XAttribute( "Description", change.Description )
                 );
 
                 var fileMatches = filesPerChange[change];
@@ -87,6 +95,36 @@ namespace swept
             }
 
             return xml;
+        }
+
+        public void WriteRunHistory( RunHistory runHistory )
+        {
+            var report = new XDocument();
+
+            XElement report_root = new XElement( "RunHistory" );
+            report.Add( report_root );
+
+            foreach (var run in runHistory.Runs)
+            {
+                var runElement = new XElement( "Run",
+                    new XAttribute( "Number", run.Number ),
+                    new XAttribute( "DateTime", run.Date.ToString() )
+                );
+
+                foreach (var violation in run.Violations)
+                {
+                    var changeElement = new XElement( "Change",
+                        new XAttribute( "ID", violation.Key ),
+                        new XAttribute( "Violations", violation.Value )
+                    );
+
+                    runElement.Add( changeElement );
+                }
+
+                report_root.Add( runElement );
+            }
+
+            _storage.SaveRunHistory( report );
         }
 
     }

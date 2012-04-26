@@ -5,6 +5,7 @@ using System;
 using System.IO;
 using System.Xml;
 using System.Collections.Generic;
+using System.Xml.Linq;
 
 namespace swept
 {
@@ -92,6 +93,11 @@ namespace swept
                 Console.Out.WriteLine( String.Format( "LoadFile( {0} ) failed.", fileName ) );
                 throw;
             }
+        }
+
+        public void SaveRunHistory( XDocument runHistory )
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -83,6 +83,7 @@
     <Compile Include="DSL\NodeFactory_tests.cs" />
     <Compile Include="DSL\Answer_tests.cs" />
     <Compile Include="MockEventListener.cs" />
+    <Compile Include="RunHistory_tests.cs" />
     <Compile Include="SeeAlsoTests.cs" />
     <Compile Include="Console\TraverserTests.cs" />
     <Compile Include="FileContentFilterTests.cs" />

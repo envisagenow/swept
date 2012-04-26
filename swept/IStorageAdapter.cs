@@ -19,7 +19,7 @@ namespace swept
 
         SourceFile LoadFile( string fileName );
 
-        //XDocument LoadHistory( string historyPath );
-        //void SaveHistory( XDocument runHistory );
+        //XDocument LoadRunHistory( string historyPath );
+        void SaveRunHistory( XDocument runHistory );
     }
 }

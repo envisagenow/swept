@@ -33,31 +33,32 @@ namespace swept
             return failures;
         }
 
-        public string GetRunHistory( Dictionary<Change, Dictionary<SourceFile, ClauseMatch>> changeViolations, DateTime buildDateTime, int buildNumber )
-        {
-            XDocument historyDoc = new XDocument();
-            XElement runHistory = new XElement( "RunHistory" );
+        //public string GetRunHistory( Dictionary<Change, Dictionary<SourceFile, ClauseMatch>> changeViolations, DateTime runDateTime, int runNumber )
+        //{
+        //    XDocument historyDoc = new XDocument();
+        //    XElement runHistory = new XElement( "RunHistory" );
 
-            XElement run = new XElement( "Run" );
-            run.Add( new XAttribute( "Number", buildNumber ) );
-            run.Add( new XAttribute( "DateTime", buildDateTime.ToString() ) );
+        //    XElement run = new XElement( "Run" );
+        //    run.Add( new XAttribute( "Number", runNumber ) );
+        //    run.Add( new XAttribute( "DateTime", runDateTime.ToString() ) );
 
-            foreach (Change change in changeViolations.Keys)
-            {
-                XAttribute changeID = new XAttribute( "ID", change.ID );
-                XElement changeElement = new XElement( "Change" );
-                changeElement.Add( changeID );
-                changeElement.Add( new XAttribute( "Violations", countViolations( changeViolations[change] ) ) );
-                run.Add( changeElement );
-            }
+        //    foreach (Change change in changeViolations.Keys)
+        //    {
+        //        XAttribute changeID = new XAttribute( "ID", change.ID );
+        //        XElement changeElement = new XElement( "Change" );
+        //        changeElement.Add( changeID );
+        //        changeElement.Add( new XAttribute( "Violations", countViolations( changeViolations[change] ) ) );
+        //        run.Add( changeElement );
+        //    }
 
-            runHistory.Add( run );
+        //    runHistory.Add( run );
 
-            historyDoc.Add( runHistory );
+        //    historyDoc.Add( runHistory );
 
-            return historyDoc.ToString();
-        }
+        //    return historyDoc.ToString();
+        //}
 
+        //todo, it's coming out of here
         private int countViolations( Dictionary<SourceFile, ClauseMatch> problemsPerFile )
         {
             int count = 0;
