@@ -26,6 +26,7 @@ namespace swept
         None,
         Any,
         Over,
+        Increase,
     }
 
     public class Change

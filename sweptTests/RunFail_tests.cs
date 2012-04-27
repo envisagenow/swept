@@ -46,7 +46,7 @@ namespace swept.Tests
             var failures = _checker.Check( _changeViolations );
 
             Assert.That( failures.Count(), Is.EqualTo( 1 ) );
-            Assert.That( failures[0], Is.EqualTo( "Rule [644] has been violated, and it breaks the build if there are any violations." ) );
+            Assert.That( failures[0], Is.EqualTo( "Rule [644] has been violated [2] times, and it breaks the build if there are any violations." ) );
         }
 
         [Test]
@@ -103,8 +103,8 @@ namespace swept.Tests
             var failures = _checker.Check( _changeViolations );
 
             Assert.That( failures.Count(), Is.EqualTo( 2 ) );
-            Assert.That( failures[0], Is.EqualTo( "Rule [191] has been violated, and it breaks the build if there are any violations." ) );
-            Assert.That( failures[1], Is.EqualTo( "Rule [200] has been violated, and it breaks the build if there are any violations." ) );
+            Assert.That( failures[0], Is.EqualTo( "Rule [191] has been violated [2] times, and it breaks the build if there are any violations." ) );
+            Assert.That( failures[1], Is.EqualTo( "Rule [200] has been violated [3] times, and it breaks the build if there are any violations." ) );
         }
 
         [Test]
@@ -150,6 +150,37 @@ namespace swept.Tests
             var failures = _checker.Check( _changeViolations );
 
             Assert.That( failures.Count(), Is.EqualTo( 0 ) );
+        }
+
+        [Test]
+        public void When_failures_increase_on_a_FailMode_Increase_rule_we_break()
+        {
+            var change = new Change()
+            {
+                ID = "300",
+                Description = "Major problem!",
+                RunFail = RunFailMode.Increase,
+            };
+            var sourceClauseMatch = new Dictionary<SourceFile, ClauseMatch>();
+
+            var failedSource = new SourceFile( "some_file.cs" );
+            ClauseMatch failedClause = new LineMatch( new List<int> { 1, 44, 68, 70, 79, 102, 111, 194, 198, 292, 321, 334, 345, 367 } );
+            sourceClauseMatch[failedSource] = failedClause;
+
+            _changeViolations[change] = sourceClauseMatch;
+
+            var history = new RunHistory();
+
+            var vio = new Dictionary<string, int>();
+            vio["300"] = 10;
+
+            history.AddRun( new RunHistoryEntry { Date = DateTime.Now.AddDays( -7 ), Number = 17, Violations = vio } );
+
+            _checker.History = history;
+            var failures = _checker.Check( _changeViolations );
+
+            Assert.That( failures.Count(), Is.EqualTo( 1 ) );
+            Assert.That( failures[0], Is.EqualTo( "Rule [300] has been violated [14] times, and it breaks the build if there are over [10] violations." ) );
         }
     }
 }

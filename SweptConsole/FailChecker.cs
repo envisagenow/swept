@@ -10,6 +10,8 @@ namespace swept
 {
     public class FailChecker
     {
+        public RunHistory History { get; set; }
+
         public List<string> Check( Dictionary<Change, Dictionary<SourceFile, ClauseMatch>> changeViolations )
         {
             var failures = new List<string>();
@@ -18,16 +20,39 @@ namespace swept
             {
                 int count = countViolations( changeViolations[change] );
 
-                if (change.RunFail == RunFailMode.Any && count > 0)
+                int threshold;
+                switch (change.RunFail)
                 {
-                    string failureText = string.Format( "Rule [{0}] has been violated, and it breaks the build if there are any violations.", change.ID );
+                case RunFailMode.Any:
+                    threshold = 0;
+                    break;
+
+                case RunFailMode.Over:
+                    threshold = change.RunFailOverLimit;
+                    break;
+
+                case RunFailMode.Increase:
+                    threshold = History.WaterlineFor( change.ID );
+                    break;
+
+                case RunFailMode.None:
+                    threshold = 4000;
+                    break;
+
+                default:
+                    throw new Exception( String.Format( "I do not know how to check a failure mode of [{0}].  Please extend FailChecker.Check.", change.RunFail ) );
+                }
+
+                string thresholdPhrase = (threshold == 0) ?
+                    "any"
+                    : "over [" + threshold + "]";
+
+                if (count > threshold)
+                {
+                    string failureText = string.Format( "Rule [{0}] has been violated [{1}] times, and it breaks the build if there are {2} violations.", change.ID, count, thresholdPhrase );
                     failures.Add( failureText );
                 }
-                else if (change.RunFail == RunFailMode.Over && count > change.RunFailOverLimit)
-                {
-                    string failureText = string.Format( "Rule [{0}] has been violated [{1}] times, and it breaks the build if there are over [{2}] violations.", change.ID, count, change.RunFailOverLimit );
-                    failures.Add( failureText );
-                }
+
             }
 
             return failures;

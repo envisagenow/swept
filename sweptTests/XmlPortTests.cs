@@ -30,6 +30,16 @@ namespace swept.Tests
         }
 
         [Test]
+        public void Populates_FailMode_increase_from_attribute()
+        {
+            var cat = getChangeCatalog( "<SweptProjectData><ChangeCatalog><Change ID='this' FailMode='Increase'> ^CSharp </Change></ChangeCatalog></SweptProjectData>" );
+            List<Change> changes = cat.GetSortedChanges();
+            Assert.That( changes.Count, Is.EqualTo( 1 ) );
+
+            Assert.That( changes[0].RunFail, Is.EqualTo( RunFailMode.Increase ) );
+        }
+
+        [Test]
         public void Populates_FailOver_Limit_from_attribute()
         {
             var cat = getChangeCatalog( "<SweptProjectData><ChangeCatalog><Change ID='this' FailMode='Over' Limit='2'> ^CSharp </Change></ChangeCatalog></SweptProjectData>" );

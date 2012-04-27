@@ -9,6 +9,8 @@ namespace swept
 {
     public class RunHistory
     {
+        public const int HighWaterLine = 4000;
+
         public int NextRunNumber
         {
             get
@@ -44,7 +46,24 @@ namespace swept
             return entry;
         }
 
-
+        public int WaterlineFor( string ChangeID )
+        {
+            int mostRecentIndex = Runs.Count - 1;
+            if (mostRecentIndex == -1)
+            {
+                return HighWaterLine;
+            }
+            
+            RunHistoryEntry run = Runs[mostRecentIndex];
+            if (run.Violations.ContainsKey( ChangeID ))
+            {
+                return run.Violations[ChangeID];
+            }
+            else
+            {
+                return HighWaterLine;
+            }
+        }
 
         private int countViolations( Dictionary<SourceFile, ClauseMatch> problemsPerFile )
         {
