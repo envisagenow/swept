@@ -6,24 +6,54 @@ using System.Collections.Generic;
 using System.Xml.Linq;
 using NUnit.Framework;
 using swept.DSL;
+using System.IO;
 
 namespace swept.Tests
 {
     [TestFixture]
-    public class BuildReporterTests
+    public class BuildLibrarianTests
     {
-        private BuildReporter _reporter;
+        private BuildLibrarian _librarian;
         private MockStorageAdapter _storage;
+        private Arguments _args;
 
         [SetUp]
         public void SetUp()
         {
             _storage = new MockStorageAdapter();
-            _reporter = new BuildReporter( _storage );
+            _args = new Arguments( new string[] { "library:foo.library", "history:foo.history" }, _storage, Console.Out );
+            _librarian = new BuildLibrarian( _args, _storage );
+        }
+
+
+        [Test]
+        public void we_can_read_run_history_from_disk()
+        {
+            _storage.RunHistory = XDocument.Parse(
+@"<RunHistory>
+  <Run Number=""22"" DateTime=""4/4/2012 10:25:02 AM"">
+    <Change ID=""foo"" Violations=""2"" />
+  </Run>
+</RunHistory>" );
+            
+            var runHistory = _librarian.ReadRunHistory();
+
+            Assert.That( runHistory.Runs.Count, Is.EqualTo(1) );
         }
 
         [Test]
-        public void When_we_write_run_report_it_is_stored_to_disk()
+        public void When_run_history_is_missing_a_new_one_is_created()
+        {
+            _storage.RunHistoryNotFoundException = new FileNotFoundException();
+
+            var runHistory = _librarian.ReadRunHistory();
+            Assert.That( runHistory.Runs.Count, Is.EqualTo( 0 ) );
+        }
+
+
+
+        [Test]
+        public void When_we_write_run_history_it_is_stored_to_disk()
         {
             var runHistory = new RunHistory();
             var violations = new Dictionary<string, int>();
@@ -35,8 +65,7 @@ namespace swept.Tests
                 Violations = violations
             } );
 
-            _reporter.WriteRunHistory( runHistory );
-            Assert.That( _storage.RunHistory, Is.Not.Null );
+            _librarian.WriteRunHistory( runHistory );
 
             var expectedHistory =
 @"<RunHistory>
@@ -53,7 +82,7 @@ namespace swept.Tests
         {
             string empty_report = "<SweptBuildReport TotalTasks=\"0\" />";
 
-            string report = _reporter.ReportOn( new Dictionary<Change, Dictionary<SourceFile, ClauseMatch>>() );
+            string report = _librarian.ReportOn( new Dictionary<Change, Dictionary<SourceFile, ClauseMatch>>() );
 
             Assert.That( report, Is.EqualTo( empty_report ) );
         }
@@ -84,7 +113,7 @@ namespace swept.Tests
             fileMatches[bar] = new LineMatch( new List<int> { 1, 12, 123, 1234 } );
             changes.Add( change, fileMatches );
 
-            string report = _reporter.ReportOn( changes );
+            string report = _librarian.ReportOn( changes );
 
             Assert.That( report, Is.EqualTo( expectedReport.ToString() ) );
         }
@@ -146,7 +175,7 @@ namespace swept.Tests
             changes[csharpChange] = csharpFiles;
             changes[htmlChange] = htmlFiles;
 
-            string report = _reporter.ReportOn(changes);
+            string report = _librarian.ReportOn(changes);
 
             Assert.That(report, Is.EqualTo(expectedReport.ToString()));
         }
@@ -186,7 +215,7 @@ namespace swept.Tests
             var changes = new Dictionary<Change, Dictionary<SourceFile, ClauseMatch>>();
             changes[csharpChange] = csharpFiles;
 
-            string report = _reporter.ReportOn(changes);
+            string report = _librarian.ReportOn(changes);
 
             Assert.That(report, Is.EqualTo(expectedReport.ToString()));
         }

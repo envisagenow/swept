@@ -68,7 +68,7 @@
   <ItemGroup>
     <Compile Include="Arguments.cs" />
     <Compile Include="RunHistory.cs" />
-    <Compile Include="BuildReporter.cs" />
+    <Compile Include="BuildLibrarian.cs" />
     <Compile Include="FailChecker.cs" />
     <Compile Include="Gatherer.cs" />
     <Compile Include="Program.cs" />

@@ -76,6 +76,21 @@ namespace swept.Tests
         }
 
         [Test]
+        public void Missing_History_arg_will_use_single_history_found_in_folder()
+        {
+            string searchFolder = "f:\\work\\search_here";
+            List<string> foundFiles = new List<string>();
+            string foundHistory = "found.swept.history";
+            foundFiles.Add( foundHistory );
+            mockStorageAdapter.FilesInFolder[searchFolder] = foundFiles;
+            var argsArray = new string[] { "folder:" + searchFolder };
+
+            var args = new Arguments( argsArray, mockStorageAdapter, Console.Out );
+
+            Assert.That( args.History, Is.EqualTo( Path.Combine( searchFolder, foundHistory ) ) );
+        }
+
+        [Test]
         public void Missing_Library_arg_will_throw_if_no_library_found_in_folder()
         {
             string searchFolder = "f:\\work\\search_here";

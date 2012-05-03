@@ -12,18 +12,20 @@ namespace swept.Tests
     [TestFixture]
     public class RunFailReporting_tests
     {
-        private BuildReporter _reporter;
+        private BuildLibrarian _reporter;
         private Dictionary<Change, Dictionary<SourceFile, ClauseMatch>> _changeViolations;
         private FailChecker _checker;
         private MockStorageAdapter _storage;
+        private Arguments _args;
 
         [SetUp]
         public void Setup()
         {
             _storage = new MockStorageAdapter();
-            _reporter = new BuildReporter( _storage );
+            _args = new Arguments( new string[] { "library:foo.library", "history:foo.history" }, _storage, Console.Out );
+            _reporter = new BuildLibrarian( _args, _storage );
             _changeViolations = new Dictionary<Change, Dictionary<SourceFile, ClauseMatch>>();
-            _checker = new FailChecker();
+            _checker = new FailChecker( new RunHistory() );
         }
 
         #region Command line build fail messages

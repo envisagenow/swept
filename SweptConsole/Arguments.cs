@@ -14,6 +14,7 @@ namespace swept
     public class Arguments
     {
         public string Library { get; private set; }
+        public string History { get; private set; }
         public string Folder { get; private set; }
         public IEnumerable<string> Exclude { get; private set; }
         public bool Piping { get; private set; }
@@ -71,6 +72,7 @@ This software is open source, MIT license.  See the file LICENSE for details.
         public Arguments( string[] args, IStorageAdapter storageAdapter, TextWriter writer )
         {
             Library = string.Empty;
+            History = string.Empty;
             Folder = string.Empty;
             Exclude = new List<string>();
             Output = string.Empty;
@@ -116,6 +118,9 @@ This software is open source, MIT license.  See the file LICENSE for details.
                 case "library":
                     Library = tokens[1];
                     break;
+                case "history":
+                    History = tokens[1];
+                    break;
                 case "folder":
                     Folder = tokens[1];
                     break;
@@ -157,6 +162,18 @@ This software is open source, MIT license.  See the file LICENSE for details.
                     Library = possibilities.First();
             }
 
+            if (string.IsNullOrEmpty( History ))
+            {
+                var possibilities = storageAdapter.GetFilesInFolder( Folder, "*.swept.history" );
+                int resultCount = possibilities.Count();
+
+                if (resultCount == 1)
+                    History = possibilities.First();
+                else if (resultCount == 0)
+                    History = "like the library file, just s/library/history/, except the user may have put their own custom name for the library in which doesn't contain the substring 'library'.";
+            }
+
+
             if (!Exclude.Any())
             {
                 Exclude = new string [] { ".svn", "bin", ".gitignore", "lib", "Build", "exslt", "ScormEngineInterface", "FitnesseFixtures" };
@@ -165,9 +182,12 @@ This software is open source, MIT license.  See the file LICENSE for details.
             if (exceptionMessages.Any())
                 throw new Exception( string.Join( "\n", exceptionMessages.ToArray() ) );
 
-            if (Folder[1] == ':' && Library[1] != ':')
+            if (!string.IsNullOrEmpty( Folder ) && Folder[1] == ':')
             {
-                Library = Path.Combine( Folder, Library );
+                if (Library[1] != ':')
+                    Library = Path.Combine( Folder, Library );
+                if (History[1] != ':')
+                    History = Path.Combine( Folder, History );
             }
         }
     }

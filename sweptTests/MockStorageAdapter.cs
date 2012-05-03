@@ -52,7 +52,7 @@ namespace swept.Tests
                 throw _ll_ioex;
 
             FileName = libraryPath;
-            if( ThrowBadXmlException )
+            if (ThrowBadXmlException)
             {
                 ThrowBadXmlException = false;
                 throw new XmlException();
@@ -100,25 +100,33 @@ namespace swept.Tests
         }
 
 
-       public SourceFile LoadFile( string fileName )
-       {
-           if (!_loadedFiles.Contains(fileName))
-           {
-               _loadedFiles.Add( fileName );
-           }
+        public SourceFile LoadFile( string fileName )
+        {
+            if (!_loadedFiles.Contains( fileName ))
+            {
+                _loadedFiles.Add( fileName );
+            }
 
-           return new SourceFile( fileName );
-       }
+            return new SourceFile( fileName );
+        }
 
 
-       internal bool DidLoad( string fileName )
-       {
-           return _loadedFiles.Contains( fileName );
-       }
+        internal bool DidLoad( string fileName )
+        {
+            return _loadedFiles.Contains( fileName );
+        }
 
-       public void SaveRunHistory( XDocument runHistory )
-       {
-           RunHistory = runHistory;
-       }
+        public void SaveRunHistory( XDocument runHistory )
+        {
+            RunHistory = runHistory;
+        }
+
+        public Exception RunHistoryNotFoundException { get; set; }
+        public XDocument LoadRunHistory()
+        {
+            if (RunHistoryNotFoundException != null)
+                throw RunHistoryNotFoundException;
+            return RunHistory;
+        }
     }
 }

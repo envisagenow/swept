@@ -99,5 +99,10 @@ namespace swept
         {
             throw new NotImplementedException();
         }
+
+        public XDocument LoadRunHistory()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

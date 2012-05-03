@@ -5,15 +5,18 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Xml.Linq;
+using System.IO;
 
 namespace swept
 {
-    public class BuildReporter
+    public class BuildLibrarian
     {
         private IStorageAdapter _storage;
+        private Arguments _args;
 
-        public BuildReporter( IStorageAdapter storage )
+        public BuildLibrarian( Arguments args, IStorageAdapter storage )
         {
+            _args = args;
             _storage = storage;
         }
 
@@ -95,6 +98,46 @@ namespace swept
             }
 
             return xml;
+        }
+
+        public RunHistory ReadRunHistory()
+        {
+            XDocument doc;
+            try
+            {
+                //doc = _storage.LoadRunHistory( _args.History );
+                doc = _storage.LoadRunHistory();
+            }
+            catch (FileNotFoundException)
+            {
+                doc = new XDocument();
+            }
+            return ReadRunHistory( doc );
+        }
+
+        public RunHistory ReadRunHistory( XDocument historyXml )
+        {
+            RunHistory runHistory = new RunHistory();
+
+            foreach (var runXml in historyXml.Descendants( "Run" ))
+            {
+                RunHistoryEntry run = new RunHistoryEntry();
+
+                run.Number = int.Parse( runXml.Attribute( "Number" ).Value );
+                run.Date = DateTime.Parse( runXml.Attribute( "DateTime" ).Value );
+
+                foreach (var changeXml in runXml.Descendants( "Change" ))
+                {
+                    string changeID = changeXml.Attribute( "ID" ).Value;
+
+                    int changeViolations = int.Parse( changeXml.Attribute( "Violations" ).Value );
+                    run.Violations.Add( changeID, changeViolations );
+                }
+
+                runHistory.Runs.Add( run );
+            }
+
+            return runHistory;
         }
 
         public void WriteRunHistory( RunHistory runHistory )

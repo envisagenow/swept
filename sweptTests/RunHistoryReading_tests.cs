@@ -12,12 +12,16 @@ namespace swept.Tests
     [TestFixture]
     public class RunHistoryReading_tests
     {
-        private FailChecker _checker;
+        private BuildLibrarian _librarian;
+        private MockStorageAdapter _storage;
+        private Arguments _args;
 
         [SetUp]
         public void Setup()
         {
-            _checker = new FailChecker();
+            _storage = new MockStorageAdapter();
+            _args = new Arguments( new string[] { "library:foo.library", "history:foo.history" }, _storage, Console.Out );
+            _librarian = new BuildLibrarian( _args, _storage );
         }
 
         [Test]
@@ -25,7 +29,7 @@ namespace swept.Tests
         {
             var historyXml = XDocument.Parse( "<RunHistory />" );
 
-            RunHistory history = _checker.ReadRunHistory( historyXml );
+            RunHistory history = _librarian.ReadRunHistory( historyXml );
 
             Assert.That( history.Runs.Count, Is.EqualTo( 0 ) );
         }
@@ -48,7 +52,7 @@ namespace swept.Tests
 </RunHistory>", "silly problem", violationsCount, dateString, runNumber ) );
 
 
-            RunHistory history = _checker.ReadRunHistory( historyXml );
+            RunHistory history = _librarian.ReadRunHistory( historyXml );
 
             RunHistoryEntry firstRun = history.Runs[0];
             Assert.That( firstRun.Date, Is.EqualTo( DateTime.Parse( dateString ) ) );

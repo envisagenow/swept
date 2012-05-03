@@ -10,7 +10,12 @@ namespace swept
 {
     public class FailChecker
     {
-        public RunHistory History { get; set; }
+        public FailChecker( RunHistory history )
+        {
+            History = history;
+        }
+
+        public RunHistory History { get; private set; }
 
         public List<string> Check( Dictionary<Change, Dictionary<SourceFile, ClauseMatch>> changeViolations )
         {
@@ -58,32 +63,7 @@ namespace swept
             return failures;
         }
 
-        //public string GetRunHistory( Dictionary<Change, Dictionary<SourceFile, ClauseMatch>> changeViolations, DateTime runDateTime, int runNumber )
-        //{
-        //    XDocument historyDoc = new XDocument();
-        //    XElement runHistory = new XElement( "RunHistory" );
-
-        //    XElement run = new XElement( "Run" );
-        //    run.Add( new XAttribute( "Number", runNumber ) );
-        //    run.Add( new XAttribute( "DateTime", runDateTime.ToString() ) );
-
-        //    foreach (Change change in changeViolations.Keys)
-        //    {
-        //        XAttribute changeID = new XAttribute( "ID", change.ID );
-        //        XElement changeElement = new XElement( "Change" );
-        //        changeElement.Add( changeID );
-        //        changeElement.Add( new XAttribute( "Violations", countViolations( changeViolations[change] ) ) );
-        //        run.Add( changeElement );
-        //    }
-
-        //    runHistory.Add( run );
-
-        //    historyDoc.Add( runHistory );
-
-        //    return historyDoc.ToString();
-        //}
-
-        //todo, it's coming out of here
+        //todo, move to a more general purpose location
         private int countViolations( Dictionary<SourceFile, ClauseMatch> problemsPerFile )
         {
             int count = 0;
@@ -92,31 +72,6 @@ namespace swept
                 count += problemsPerFile[source].Count;
             }
             return count;
-        }
-
-        public RunHistory ReadRunHistory( XDocument historyXml )
-        {
-            RunHistory runHistory = new RunHistory();
-
-            foreach (var runXml in historyXml.Descendants( "Run" ))
-            {
-                RunHistoryEntry run = new RunHistoryEntry();
-
-                run.Number = int.Parse( runXml.Attribute( "Number" ).Value );
-                run.Date = DateTime.Parse( runXml.Attribute( "DateTime" ).Value );
-
-                foreach (var changeXml in runXml.Descendants( "Change" ))
-                {
-                    string changeID = changeXml.Attribute( "ID" ).Value;
-
-                    int changeViolations = int.Parse( changeXml.Attribute( "Violations" ).Value );
-                    run.Violations.Add( changeID, changeViolations );
-                }
-
-                runHistory.Runs.Add( run );
-            }
-
-            return runHistory;
         }
     }
 }

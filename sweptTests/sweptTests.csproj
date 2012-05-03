@@ -76,7 +76,7 @@
     <Compile Include="ClauseMatch_tests.cs" />
     <Compile Include="DSL\Grammar_tests.cs" />
     <Compile Include="Console\ArgumentsTests.cs" />
-    <Compile Include="Console\BuildReporterTests.cs" />
+    <Compile Include="Console\BuildLibrarianTests.cs" />
     <Compile Include="ChangeCatalogTests.cs" />
     <Compile Include="Console\GathererTests.cs" />
     <Compile Include="DSL\DSL_tests_base.cs" />

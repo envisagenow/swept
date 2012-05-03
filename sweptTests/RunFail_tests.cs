@@ -14,12 +14,14 @@ namespace swept.Tests
     public class RunFail_tests
     {
         private FailChecker _checker;
+        private RunHistory _history;
         private Dictionary<Change, Dictionary<SourceFile, ClauseMatch>> _changeViolations;
 
         [SetUp]
         public void Setup()
         {
-            _checker = new FailChecker();
+            _history = new RunHistory();
+            _checker = new FailChecker( _history );
             _changeViolations = new Dictionary<Change, Dictionary<SourceFile, ClauseMatch>>();
         }
 
@@ -169,14 +171,11 @@ namespace swept.Tests
 
             _changeViolations[change] = sourceClauseMatch;
 
-            var history = new RunHistory();
-
             var vio = new Dictionary<string, int>();
             vio["300"] = 10;
 
-            history.AddRun( new RunHistoryEntry { Date = DateTime.Now.AddDays( -7 ), Number = 17, Violations = vio } );
+            _history.AddRun( new RunHistoryEntry { Date = DateTime.Now.AddDays( -7 ), Number = 17, Violations = vio } );
 
-            _checker.History = history;
             var failures = _checker.Check( _changeViolations );
 
             Assert.That( failures.Count(), Is.EqualTo( 1 ) );

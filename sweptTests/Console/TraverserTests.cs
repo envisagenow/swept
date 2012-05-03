@@ -27,7 +27,7 @@ namespace swept.Tests
             List<string> filesInFoo = new List<string> { "foo.cs", "foo.html" };
             mockStorageAdapter.FilesInFolder["c:\\foo"] = filesInFoo;
 
-            string[] argsText = { "folder:c:\\foo", "exclude:c:\\foo", "library:foo.library" };
+            string[] argsText = { "folder:c:\\foo", "exclude:c:\\foo", "library:foo.library", "history:foo.history" };
             var args = new Arguments( argsText, null, Console.Out );
             Traverser traverser = new Traverser( args, mockStorageAdapter );
 
@@ -41,7 +41,7 @@ namespace swept.Tests
             List<string> filesInFoo = new List<string> { "foo.cs", "foo.html" };
             mockStorageAdapter.FilesInFolder["c:\\foo"] = filesInFoo;
 
-            string[] argsText = { "folder:c:\\foo", "library:foo.library" };
+            string[] argsText = { "folder:c:\\foo", "library:foo.library", "history:foo.history" };
             var args = new Arguments( argsText, null, null );
             Traverser traverser = new Traverser( args, mockStorageAdapter );
 
@@ -60,7 +60,7 @@ namespace swept.Tests
             List<string> filesInFooBar = new List<string> { "bar.cs", "bar.html" };
             mockStorageAdapter.FilesInFolder["c:\\foo\\bar"] = filesInFooBar;
 
-            string[] argsText = { "folder:c:\\foo", "library:foo.library" };
+            string[] argsText = { "folder:c:\\foo", "library:foo.library", "history:foo.history" };
             var args = new Arguments( argsText, null, null );
             Traverser traverser = new Traverser( args, mockStorageAdapter );
 
@@ -83,7 +83,7 @@ namespace swept.Tests
             mockStorageAdapter.FilesInFolder["c:\\foo\\bar"] = filesInFooBar;
             mockStorageAdapter.FilesInFolder["c:\\foo\\bar\\subsub"] = filesInSubSub;
 
-            string[] argsText = { "folder:c:\\foo", "library:foo.library" };
+            string[] argsText = { "folder:c:\\foo", "library:foo.library", "history:foo.history" };
             var args = new Arguments( argsText, null, null );
             Traverser traverser = new Traverser( args, mockStorageAdapter );
 
@@ -108,7 +108,7 @@ namespace swept.Tests
             mockStorageAdapter.FilesInFolder["c:\\foo\\bar"] = filesInFooBar;
             mockStorageAdapter.FilesInFolder["c:\\foo\\bar\\subsub"] = filesInSubSub;
 
-            string[] argsText = { "folder:c:\\foo", "library:foo.library", "exclude:.*ubs.*" };
+            string[] argsText = { "folder:c:\\foo", "library:foo.library", "history:foo.history", "exclude:.*ubs.*" };
             var args = new Arguments( argsText, null, null );
             Traverser traverser = new Traverser( args, mockStorageAdapter );
 
@@ -126,7 +126,7 @@ namespace swept.Tests
             List<string> filesInFoo = new List<string> { "foo.cs", "foo.html", "foo.schnob", "foo.dll", "foo.pdb" };
             mockStorageAdapter.FilesInFolder["c:\\foo"] = filesInFoo;
 
-            string[] argsText = { "folder:c:\\foo", "library:foo.library" };
+            string[] argsText = { "folder:c:\\foo", "library:foo.library", "history:foo.history" };
             var args = new Arguments( argsText, null, null );
             Traverser traverser = new Traverser( args, mockStorageAdapter );
             traverser.WhiteListPattern = @"\.(cs|html)$";
@@ -144,7 +144,7 @@ namespace swept.Tests
             var ioex = new IOException( "Could not find a part of the path 'C:\\missing\\folder'." );
             mockStorageAdapter.GetFilesInFolder_Throw( ioex );
 
-            string[] argsText = { "folder:c:\\foo", "library:foo.library" };
+            string[] argsText = { "folder:c:\\foo", "library:foo.library", "history:foo.history" };
             var args = new Arguments( argsText, null, null );
             Traverser traverser = new Traverser( args, mockStorageAdapter );
 

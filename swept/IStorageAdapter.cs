@@ -21,5 +21,6 @@ namespace swept
 
         //XDocument LoadRunHistory( string historyPath );
         void SaveRunHistory( XDocument runHistory );
+        XDocument LoadRunHistory();
     }
 }

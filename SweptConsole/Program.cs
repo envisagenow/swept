@@ -47,16 +47,18 @@ namespace swept
 
             var results = gatherer.GetMatchesPerChange();
 
-            var buildReporter = new BuildReporter( storage );
+            var buildReporter = new BuildLibrarian( arguments, storage );
             var reportXML = buildReporter.ReportOn( results );
             reportWriter.WriteLine( reportXML );
 
-            //todo Run history looks like:
+            ////todo Run history looks like:
+            var runHistory = buildReporter.ReadRunHistory();
+            //// add the current run's results to the history
             //buildReporter.WriteRunHistory( runHistory );
 
             int failureCode = 0;
 
-            FailChecker checker = new FailChecker();
+            FailChecker checker = new FailChecker( runHistory );
             var failures = checker.Check( results );
             if (failures.Any())
             {
