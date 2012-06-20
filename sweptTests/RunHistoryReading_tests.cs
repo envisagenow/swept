@@ -13,15 +13,13 @@ namespace swept.Tests
     public class RunHistoryReading_tests
     {
         private BuildLibrarian _librarian;
-        private MockStorageAdapter _storage;
-        private Arguments _args;
 
         [SetUp]
         public void Setup()
         {
-            _storage = new MockStorageAdapter();
-            _args = new Arguments( new string[] { "library:foo.library", "history:foo.history" }, _storage, Console.Out );
-            _librarian = new BuildLibrarian( _args, _storage );
+            var storage = new MockStorageAdapter();
+            var args = new Arguments( new string[] { "library:foo.library", "history:foo.history" }, storage, Console.Out );
+            _librarian = new BuildLibrarian( args, storage );
         }
 
         [Test]

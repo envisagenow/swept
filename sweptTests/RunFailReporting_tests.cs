@@ -13,19 +13,13 @@ namespace swept.Tests
     public class RunFailReporting_tests
     {
         private BuildLibrarian _reporter;
-        private Dictionary<Change, Dictionary<SourceFile, ClauseMatch>> _changeViolations;
-        private FailChecker _checker;
-        private MockStorageAdapter _storage;
-        private Arguments _args;
 
         [SetUp]
         public void Setup()
         {
-            _storage = new MockStorageAdapter();
-            _args = new Arguments( new string[] { "library:foo.library", "history:foo.history" }, _storage, Console.Out );
-            _reporter = new BuildLibrarian( _args, _storage );
-            _changeViolations = new Dictionary<Change, Dictionary<SourceFile, ClauseMatch>>();
-            _checker = new FailChecker( new RunHistory() );
+            var storage = new MockStorageAdapter();
+            var args = new Arguments( new string[] { "library:foo.library", "history:foo.history" }, storage, Console.Out );
+            _reporter = new BuildLibrarian( args, storage );
         }
 
         #region Command line build fail messages
@@ -59,16 +53,14 @@ namespace swept.Tests
         [Test]
         public void When_one_failure_occurs_text_is_correct()
         {
-            List<string> failures = new List<string>();
             string problemText = "fooblah";
-            failures.Add( problemText );
+            var failures = new List<string> { problemText };
             string failureText = _reporter.ReportBuildFailures( failures );
 
             var expectedFailureMessage = String.Format( "Swept failed due to build breaking rule failure:\n{0}\n", problemText );
             Assert.AreEqual( expectedFailureMessage, failureText );
         }
         #endregion
-
 
 
         [Test]
@@ -82,9 +74,7 @@ namespace swept.Tests
         [Test]
         public void When_one_failure_occurs_failure_XML_is_correct()
         {
-            List<string> failures = new List<string>();
-            string problemText = "fooblah";
-            failures.Add( problemText );
+            List<string> failures = new List<string> { "fooblah" };
             XElement failureXML = _reporter.GenerateBuildFailureXML( failures );
 
             var expectedFailureXML =
@@ -98,9 +88,7 @@ namespace swept.Tests
         [Test]
         public void When_multiple_failures_occur_XML_is_correct()
         {
-            List<string> failures = new List<string>();
-            failures.Add( "fail1" );
-            failures.Add( "fail2" );
+            var failures = new List<string> { "fail1", "fail2" };
             XElement failureXML = _reporter.GenerateBuildFailureXML( failures );
 
             var expectedFailureXML =
