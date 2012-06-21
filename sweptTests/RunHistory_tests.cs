@@ -1,3 +1,6 @@
+//  Swept:  Software Enhancement Progress Tracking.
+//  Copyright (c) 2009, 2012 Jason Cole and Envisage Technologies Corp.
+//  This software is open source, MIT license.  See the file LICENSE for details.
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,7 +42,7 @@ namespace swept.Tests
         {
             _history.AddRun( new RunHistoryEntry() );
 
-            var run = new RunHistoryEntry();
+            var run = new RunHistoryEntry { Passed = true };
             run.Number = 401;
             run.Violations["Eliminate Crystal Reports"] = 6;
             run.Violations["Update widgets to widgets 2.0"] = 45;
@@ -66,6 +69,23 @@ namespace swept.Tests
             Assert.That( _history.WaterlineFor( "Update widgets to widgets 2.0" ), Is.EqualTo( RunHistory.HighWaterLine ) );
         }
 
+        [Test]
+        public void Waterline_disregards_failed_runs()
+        {
+            var run = new RunHistoryEntry();
+            run.Number = 401;
+            run.Violations["Eliminate Crystal Reports"] = 6;
+            run.Passed = true;
+            _history.AddRun( run );
+
+            var failingRun = new RunHistoryEntry();
+            failingRun.Number = 402;
+            failingRun.Violations["Eliminate Crystal Reports"] = 718;
+            failingRun.Passed = false;
+            _history.AddRun( failingRun );
+
+            Assert.That( _history.WaterlineFor( "Eliminate Crystal Reports" ), Is.EqualTo( 6 ) );
+        }
 
         [Test]
         public void Can_generate_run_entry_from_results()
@@ -112,6 +132,7 @@ namespace swept.Tests
             Assert.That( entry.Violations.Count, Is.EqualTo( 2 ) );
             Assert.That( entry.Violations[change.ID], Is.EqualTo( 7 ) );
             Assert.That( entry.Violations[happyChange.ID], Is.EqualTo( 0 ) );
+            Assert.That( entry.Passed, Is.True );
         }
 
     }

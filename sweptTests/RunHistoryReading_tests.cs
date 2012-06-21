@@ -39,11 +39,11 @@ namespace swept.Tests
 
             var historyXml = XDocument.Parse( string.Format(
 @"<RunHistory>
-  <Run Number=""{3}"" DateTime=""{2}"">
+  <Run Number=""{3}"" DateTime=""{2}"" Passed=""false"">
     <Change ID=""{0}"" Violations=""{1}"" />
     <Change ID=""always the same"" Violations=""44"" />
   </Run>
-  <Run Number=""1100"" DateTime=""1/1/2022 3:20:14 PM"">
+  <Run Number=""1100"" DateTime=""1/1/2022 3:20:14 PM"" Passed=""true"">
     <Change ID=""always the same"" Violations=""44"" />
   </Run>
 
@@ -58,12 +58,13 @@ namespace swept.Tests
 
             Assert.That( firstRun.Violations["silly problem"], Is.EqualTo( violationsCount ) );
             Assert.That( firstRun.Violations["always the same"], Is.EqualTo( 44 ) );
-
+            Assert.That( firstRun.Passed, Is.False );
 
             RunHistoryEntry secondRun = history.Runs[1];
             Assert.That( secondRun.Date, Is.EqualTo( DateTime.Parse( "1/1/2022 3:20:14 PM" ) ) );
             Assert.That( secondRun.Number, Is.EqualTo( 1100 ) );
             Assert.That( secondRun.Violations.Count(), Is.EqualTo( 1 ) );
+            Assert.That( secondRun.Passed );
         }
     }
 }

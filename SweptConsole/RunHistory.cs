@@ -34,7 +34,10 @@ namespace swept
 
         public RunHistoryEntry GenerateEntry( Dictionary<Change, Dictionary<SourceFile, ClauseMatch>> changeViolations, DateTime runDateTime )
         {
-            var entry = new RunHistoryEntry();
+            var checker = new FailChecker( this );
+            var failures = checker.Check( changeViolations );
+
+            var entry = new RunHistoryEntry { Passed = (failures.Count == 0) };
             entry.Number = NextRunNumber;
             entry.Date = runDateTime;
 
@@ -48,16 +51,21 @@ namespace swept
 
         public int WaterlineFor( string ChangeID )
         {
-            int mostRecentIndex = Runs.Count - 1;
-            if (mostRecentIndex == -1)
+            RunHistoryEntry mostRecentlyPassed = null;
+
+            foreach( var run in Runs )
+            {
+                if (run.Passed)
+                    mostRecentlyPassed = run;
+            }
+
+            if (mostRecentlyPassed == null)
             {
                 return HighWaterLine;
             }
-            
-            RunHistoryEntry run = Runs[mostRecentIndex];
-            if (run.Violations.ContainsKey( ChangeID ))
+            else if (mostRecentlyPassed.Violations.ContainsKey( ChangeID ))
             {
-                return run.Violations[ChangeID];
+                return mostRecentlyPassed.Violations[ChangeID];
             }
             else
             {

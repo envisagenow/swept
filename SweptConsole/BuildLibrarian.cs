@@ -125,6 +125,7 @@ namespace swept
 
                 run.Number = int.Parse( runXml.Attribute( "Number" ).Value );
                 run.Date = DateTime.Parse( runXml.Attribute( "DateTime" ).Value );
+                run.Passed = Boolean.Parse( runXml.Attribute( "Passed" ).Value );
 
                 foreach (var changeXml in runXml.Descendants( "Change" ))
                 {
@@ -151,7 +152,8 @@ namespace swept
             {
                 var runElement = new XElement( "Run",
                     new XAttribute( "Number", run.Number ),
-                    new XAttribute( "DateTime", run.Date.ToString() )
+                    new XAttribute( "DateTime", run.Date.ToString() ),
+                    new XAttribute( "Passed", run.Passed.ToString() ) 
                 );
 
                 foreach (var violation in run.Violations)

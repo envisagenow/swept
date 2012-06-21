@@ -12,6 +12,7 @@ namespace swept
         public int Number;
         public DateTime Date;
         public Dictionary<String, int> Violations;
+        public bool Passed;
 
         public RunHistoryEntry()
         {

@@ -31,7 +31,7 @@ namespace swept.Tests
         {
             _storage.RunHistory = XDocument.Parse(
 @"<RunHistory>
-  <Run Number=""22"" DateTime=""4/4/2012 10:25:02 AM"">
+  <Run Number=""22"" DateTime=""4/4/2012 10:25:02 AM"" Passed=""True"">
     <Change ID=""foo"" Violations=""2"" />
   </Run>
 </RunHistory>" );
@@ -62,15 +62,32 @@ namespace swept.Tests
             {
                 Number = 22,
                 Date = DateTime.Parse( "4/4/2012 10:25:02 AM" ),
-                Violations = violations
+                Violations = violations,
+                Passed = false
             } );
 
             _librarian.WriteRunHistory( runHistory );
 
+            Dictionary<string, int> violationsNext = new Dictionary<string, int>();
+            violationsNext.Add( "bar", 0 );
+            runHistory.AddRun( new RunHistoryEntry
+            {
+                Number = 23,
+                Date = DateTime.Parse( "4/7/2012 10:25:03 AM" ),
+                Violations = violationsNext,
+                Passed = true
+            } );
+
+            _librarian.WriteRunHistory( runHistory );
+
+
             var expectedHistory =
 @"<RunHistory>
-  <Run Number=""22"" DateTime=""4/4/2012 10:25:02 AM"">
+  <Run Number=""22"" DateTime=""4/4/2012 10:25:02 AM"" Passed=""False"">
     <Change ID=""foo"" Violations=""2"" />
+  </Run>
+  <Run Number=""23"" DateTime=""4/7/2012 10:25:03 AM"" Passed=""True"">
+    <Change ID=""bar"" Violations=""0"" />
   </Run>
 </RunHistory>";
 
