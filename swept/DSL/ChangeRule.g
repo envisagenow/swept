@@ -1,5 +1,5 @@
 ﻿//  Swept:  Software Enhancement Progress Tracking.
-//  Copyright (c) 2011 Jason Cole and Envisage Technologies Corp.
+//  Copyright (c) 2009, 2011 Jason Cole and Envisage Technologies Corp.
 //  This software is open source, MIT license.  See the file LICENSE for details.
 grammar ChangeRule;
 
@@ -54,15 +54,15 @@ LINES_MATCH:	'lines.match'	| 'l.m' | '~' ;
 FILE_LANGUAGE:	'file.language'	| 'f.l' | '^' ;
 public query returns [ISubquery sq]
 	:	op=(FILE_NAME | LINES_MATCH) r=regex { $sq = factory.GetQuery( op, r ); }
-	|	op=FILE_LANGUAGE LANGUAGE { $sq = factory.GetQuery( op, $LANGUAGE.text ); }
+	|	op=FILE_LANGUAGE ?BARE_WORD { $sq = factory.GetQuery( op, $BARE_WORD.text ); }
 	;
 	
 regex returns [Regex rex]
-	:	STRING_LITERAL REGEX_MODIFIERS? { $rex = factory.GetRegex( $STRING_LITERAL.text, $REGEX_MODIFIERS.text ); }
+	:	STRING_LITERAL BARE_WORD? { $rex = factory.GetRegex( $STRING_LITERAL.text, $BARE_WORD.text ); }
 	;
 
-LANGUAGE:
-	( 'CSharp' | 'CSS' | 'HTML' | 'JavaScript' | 'Project' | 'Solution' | 'VBNet' | 'XSLT' | 'Unknown' ) ;
+//LANGUAGE:
+//	( 'CSharp' | 'CSS' | 'HTML' | 'JavaScript' | 'Project' | 'Solution' | 'VBNet' | 'XSLT' | 'Unknown' ) ;
 
 
 //	----------------------
@@ -85,11 +85,15 @@ fragment STRING_BODY_SQ
     :  ( '\\\'' | ~( '\'' ) )*
     ;
 
-REGEX_MODIFIERS
+fragment REGEX_MODIFIERS
 	:	('i' | 's' | 'w')+
 	;
 
-DECIMAL_LITERAL : ('0'..'9')+ ;
+BARE_WORD
+	:  ( 'a'..'z' | 'A'..'Z' )+
+	;
+
+//DECIMAL_LITERAL : ('0'..'9')+ ;
 
 fragment
 EscapeSequence

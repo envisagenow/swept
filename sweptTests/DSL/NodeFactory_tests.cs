@@ -1,5 +1,5 @@
 //  Swept:  Software Enhancement Progress Tracking.
-//  Copyright (c) 2012 Jason Cole and Envisage Technologies Corp.
+//  Copyright (c) 2009, 2012 Jason Cole and Envisage Technologies Corp.
 //  This software is open source, MIT license.  See the file LICENSE for details.
 using NUnit.Framework;
 using System.Text.RegularExpressions;
@@ -32,8 +32,25 @@ namespace swept.DSL.Tests
         {
             var t = new CommonToken( ChangeRuleLexer.FILE_LANGUAGE );
             var ex = Assert.Throws<ArgumentException>( () => _factory.GetQuery( t, "CShoop" ) );
-            Assert.That( ex.Message, Is.EqualTo( "Swept does not know how to tell if a file is language [CShoop] at this time." ) );
+            Assert.That( ex.Message, Is.EqualTo( "Swept core has not learned how to recognize files of language [CShoop]." ) );
         }
+
+        [Test]
+        public void Get_unary_with_string_throws_descriptively_when_uneducated()
+        {
+            var t = new CommonToken( -1 );
+            var ex = Assert.Throws<NotImplementedException>( () => _factory.GetQuery( t, "CSharp" ) );
+            Assert.That( ex.Message, Is.EqualTo( "Swept factory has not learned how to make a query from operator [EOF] followed by text \"CSharp\"." ) );
+        }
+
+        [Test]
+        public void Get_unary_with_regex_throws_descriptively_when_uneducated()
+        {
+            var t = new CommonToken( -1 );
+            var ex = Assert.Throws<NotImplementedException>( () => _factory.GetQuery( t, new Regex( "foo.*bar" ) ) );
+            Assert.That( ex.Message, Is.EqualTo( "Swept factory has not learned how to make a query from operator [EOF] followed by regex /foo.*bar/." ) );
+        }
+
 
         [Test]
         public void GetRegex_default_is_multiline()
@@ -71,6 +88,20 @@ namespace swept.DSL.Tests
             
             Assert.That( rex.IsMatch( "foo bar" ) );
             Assert.That( rex.IsMatch( "foo\nbar" ) );
+        }
+
+        [Test]
+        public void GetRegex_option_w_ignores_whitespace()
+        {
+            var rex = _factory.GetRegex( "foo bar", "" );
+
+            Assert.That( rex.IsMatch( "foo bar" ) );
+            Assert.That( rex.IsMatch( "foobar" ), Is.False );
+
+            rex = _factory.GetRegex( "foo bar", "w" );
+
+            Assert.That( rex.IsMatch( "foo bar" ), Is.False );
+            Assert.That( rex.IsMatch( "foobar" ) );
         }
     }
 }

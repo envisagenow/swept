@@ -41,16 +41,14 @@ namespace swept
                     break;
 
                 case RunFailMode.None:
-                    threshold = 4000;
+                    threshold = int.MaxValue;
                     break;
 
                 default:
-                    throw new Exception( String.Format( "I do not know how to check a failure mode of [{0}].  Please extend FailChecker.Check.", change.RunFail ) );
+                    throw new Exception( String.Format( "I do not know how to check a failure mode of [{0}].  Please extend FailChecker.Check.", change.RunFail.ToString() ) );
                 }
 
-                string thresholdPhrase = (threshold == 0) ?
-                    "any"
-                    : "over [" + threshold + "]";
+                string thresholdPhrase = (threshold == 0) ? "any" : "over [" + threshold + "]";
 
                 if (count > threshold)
                 {

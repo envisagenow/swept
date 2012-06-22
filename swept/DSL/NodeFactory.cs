@@ -1,9 +1,10 @@
 //  Swept:  Software Enhancement Progress Tracking.
-//  Copyright (c) 2011 Jason Cole and Envisage Technologies Corp.
+//  Copyright (c) 2009, 2011 Jason Cole and Envisage Technologies Corp.
 //  This software is open source, MIT license.  See the file LICENSE for details.
 using System;
 using Antlr.Runtime;
 using System.Text.RegularExpressions;
+using System.Collections.Generic;
 
 namespace swept.DSL
 {
@@ -21,7 +22,8 @@ namespace swept.DSL
                 return new OpFileScopeNode( op.Text, rhs );
 
             default:
-                throw new NotImplementedException( string.Format( "Factory uneducated on how to create a type [{0}] unary node.", op.Type ) );
+                throw new NotImplementedException( string.Format( 
+                    "Swept factory has not learneed how to make a unary expression with operator [{0}].", OperatorName( op.Type ) ) );
             }
         }
 
@@ -39,7 +41,8 @@ namespace swept.DSL
                 return new OpDifferenceNode( lhs, op.Text, rhs );
 
             default:
-                throw new NotImplementedException( string.Format( "Factory uneducated on how to create a type [{0}] binary node.", op.Type ) );
+                throw new NotImplementedException( string.Format( 
+                    "Swept factory has not learned how to make a binary expression with operator [{0}].", OperatorName( op.Type ) ) );
             }
         }
 
@@ -55,27 +58,60 @@ namespace swept.DSL
                 return new QueryContentNode( pattern );
 
             default:
-                throw new NotImplementedException( string.Format( "Don't know how to create a [{0}] query followed by a regex [{1}].", op.Type, pattern ) );
+                throw new NotImplementedException( string.Format( 
+                    "Swept factory has not learned how to make a query from operator [{0}] followed by regex /{1}/.", OperatorName( op.Type ), pattern ) );
             }
         }
 
-        public ISubquery GetQuery( IToken op, string match )
+        public ISubquery GetQuery( IToken op, string text )
         {
             switch (op.Type)
             {
             case ChangeRuleLexer.FILE_LANGUAGE:
-                if (match == "<missing LANGUAGE>")
+                if (!Enum.IsDefined( typeof( FileLanguage ), text ))
                 {
-                    var ct = op as CommonToken;
-                    throw new ArgumentException( string.Format( "Swept doesn't know the language you want, starting at line {0}, char {1}.", ct.Line, ct.CharPositionInLine ) );
+                    throw new ArgumentException( String.Format(
+                        "Swept core has not learned how to recognize files of language [{0}].", text ) );
                 }
-                if (!Enum.IsDefined( typeof( FileLanguage ), match ))
-                    throw new ArgumentException( String.Format("Swept does not know how to tell if a file is language [{0}] at this time.", match) );
-                return new QueryLanguageNode { Language = (FileLanguage)Enum.Parse( typeof( FileLanguage ), match ) };
+
+                return new QueryLanguageNode { Language = (FileLanguage)Enum.Parse( typeof( FileLanguage ), text ) };
 
             default:
-                throw new NotImplementedException( string.Format( "Don't know how to create a [{0}] query followed by a string [{1}].", op.Type, match ) );
+                throw new NotImplementedException( string.Format(
+                    "Swept factory has not learned how to make a query from operator [{0}] followed by text \"{1}\".", OperatorName(op.Type), text ) );
             }
+        }
+
+        Dictionary<int, string> _nameOfOpType = null;
+        public string OperatorName( int opType )
+        {
+            if (_nameOfOpType == null)
+            {
+                // if and as the grammar changes, the lexer consts may change.  Update as necessary.
+                _nameOfOpType = new Dictionary<int, string>();
+                _nameOfOpType[ChangeRuleLexer.EOF] = "EOF";
+                _nameOfOpType[ChangeRuleLexer.AND] = "AND";
+                _nameOfOpType[ChangeRuleLexer.BARE_WORD] = "BARE_WORD";
+                _nameOfOpType[ChangeRuleLexer.DIFFERENCE] = "DIFFERENCE";
+                _nameOfOpType[ChangeRuleLexer.EscapeSequence] = "EscapeSequence";
+                _nameOfOpType[ChangeRuleLexer.FILE] = "FILE";
+                _nameOfOpType[ChangeRuleLexer.FILE_LANGUAGE] = "FILE_LANGUAGE";
+                _nameOfOpType[ChangeRuleLexer.FILE_NAME] = "FILE_NAME";
+                _nameOfOpType[ChangeRuleLexer.LINES_MATCH] = "LINES_MATCH";
+                _nameOfOpType[ChangeRuleLexer.LINE_COMMENT] = "LINE_COMMENT";
+                _nameOfOpType[ChangeRuleLexer.NOT] = "NOT";
+                _nameOfOpType[ChangeRuleLexer.OR] = "OR";
+                _nameOfOpType[ChangeRuleLexer.REGEX_MODIFIERS] = "REGEX_MODIFIERS";
+                _nameOfOpType[ChangeRuleLexer.STRING_BODY_DQ] = "STRING_BODY_DQ";
+                _nameOfOpType[ChangeRuleLexer.STRING_BODY_RQ] = "STRING_BODY_RQ";
+                _nameOfOpType[ChangeRuleLexer.STRING_BODY_SQ] = "STRING_BODY_SQ";
+                _nameOfOpType[ChangeRuleLexer.STRING_LITERAL] = "STRING_LITERAL";
+                _nameOfOpType[ChangeRuleLexer.WS] = "WS";
+                _nameOfOpType[ChangeRuleLexer.T__21] = "T__21";
+                _nameOfOpType[ChangeRuleLexer.T__22] = "T__22";
+            }
+
+            return _nameOfOpType[opType];
         }
 
         public Regex GetRegex( string pattern, string options )

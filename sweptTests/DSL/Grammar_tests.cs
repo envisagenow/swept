@@ -44,7 +44,8 @@ namespace swept.DSL.Tests
         public void Query_of_language( string query )
         {
             var parser = GetChangeRuleParser( query );
-            var dq = parser.expression() as QueryLanguageNode;
+            ISubquery expr = parser.expression();
+            var dq = expr as QueryLanguageNode;
 
             Assert.That( dq, Is.Not.Null );
             Assert.That( dq.Language, Is.EqualTo( FileLanguage.CSS ) );
@@ -61,16 +62,6 @@ namespace swept.DSL.Tests
             Assert.That( qc.Pattern.ToString(), Is.EqualTo( "foom!" ) );
             Assert.That( qc.Pattern.Options & RegexOptions.IgnoreCase, Is.EqualTo( RegexOptions.IgnoreCase ) );
             Assert.That( qc.Pattern.IsMatch( "FoOM!" ) );
-        }
-
-        //  Does this go here?
-        [Test]
-        public void DirectQuery_with_bad_language_fails_friendly()
-        {
-            var parser = GetChangeRuleParser( "\n\n    f.l FBI" );
-
-            var ex = Assert.Throws<ArgumentException>( () => parser.query() );
-            Assert.That( ex.Message, Is.EqualTo( "Swept doesn't know the language you want, starting at line 3, char 4." ) );
         }
 
         [TestCase( "and" )]

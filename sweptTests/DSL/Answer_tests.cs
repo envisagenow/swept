@@ -1,5 +1,5 @@
 ﻿//  Swept:  Software Enhancement Progress Tracking.
-//  Copyright (c) 2012 Jason Cole and Envisage Technologies Corp.
+//  Copyright (c) 2009, 2012 Jason Cole and Envisage Technologies Corp.
 //  This software is open source, MIT license.  See the file LICENSE for details.
 using System;
 using NUnit.Framework;
@@ -66,11 +66,11 @@ namespace swept.DSL.Tests
             var query = parser.expression();
             Assert.That( query as OpIntersectionNode, Is.Not.Null );
 
-            ClauseMatch answer = query.Answer( new SourceFile( "foo.cs" ) );
-            Assert.That( answer.DoesMatch, Is.False );
-
-            answer = query.Answer( new SourceFile( "bar.cs" ) );
+            ClauseMatch answer = query.Answer( new SourceFile( "bar.cs" ) );
             Assert.That( answer.DoesMatch );
+
+            answer = query.Answer( new SourceFile( "bar.html" ) );
+            Assert.That( answer.DoesMatch, Is.False );
         }
 
         [Test]
