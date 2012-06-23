@@ -73,8 +73,8 @@
     <Compile Include="DSL\QueryContentNode.cs" />
     <Compile Include="DSL\OpIntersectionNode.cs" />
     <Compile Include="DSL\ISubquery.cs" />
-    <Compile Include="Change.cs" />
-    <Compile Include="ChangeCatalog.cs" />
+    <Compile Include="Rule.cs" />
+    <Compile Include="RuleCatalog.cs" />
     <Compile Include="ClauseMatch.cs" />
     <Compile Include="CoverageExcludeAttribute.cs" />
     <Compile Include="DSL\NodeFactory.cs" />

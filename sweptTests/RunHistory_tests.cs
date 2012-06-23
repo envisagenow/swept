@@ -38,7 +38,7 @@ namespace swept.Tests
         }
 
         [Test]
-        public void Can_get_waterline_for_a_Change()
+        public void Can_get_waterline_for_a_Rule()
         {
             _history.AddRun( new RunHistoryEntry() );
 
@@ -59,7 +59,7 @@ namespace swept.Tests
         }
 
         [Test]
-        public void Waterline_of_an_unfound_Change_starts_high()
+        public void Waterline_of_an_unfound_Rule_starts_high()
         {
             var run = new RunHistoryEntry();
             run.Number = 401;
@@ -90,7 +90,7 @@ namespace swept.Tests
         [Test]
         public void Can_generate_run_entry_from_results()
         {
-            var change = new Change()
+            var rule = new Rule()
             {
                 ID = "basic entry",
                 Description = "simple",
@@ -109,29 +109,29 @@ namespace swept.Tests
             ClauseMatch failedClause = new LineMatch( violationLines );
             sourceClauseMatch[failedSource] = failedClause;
 
-            var changeViolations = new Dictionary<Change, Dictionary<SourceFile, ClauseMatch>>();
-            changeViolations[change] = sourceClauseMatch;
+            var ruleViolations = new Dictionary<Rule, Dictionary<SourceFile, ClauseMatch>>();
+            ruleViolations[rule] = sourceClauseMatch;
 
 
             var noMatches = new Dictionary<SourceFile, ClauseMatch>();
-            var happyChange = new Change
+            var happyRule = new Rule
             {
                 ID = "no problem",
-                Description = "the app reports changes with no issues",
+                Description = "the app reports rules with no issues",
                 RunFail = RunFailMode.Any,
             };
 
-            changeViolations[happyChange] = noMatches;
+            ruleViolations[happyRule] = noMatches;
 
             DateTime nowish = DateTime.Now;
 
-            RunHistoryEntry entry = _history.GenerateEntry( changeViolations, nowish );
+            RunHistoryEntry entry = _history.GenerateEntry( ruleViolations, nowish );
 
             Assert.That( entry.Number, Is.EqualTo( 1 ) );
             Assert.That( entry.Date, Is.EqualTo( nowish ) );
             Assert.That( entry.Violations.Count, Is.EqualTo( 2 ) );
-            Assert.That( entry.Violations[change.ID], Is.EqualTo( 7 ) );
-            Assert.That( entry.Violations[happyChange.ID], Is.EqualTo( 0 ) );
+            Assert.That( entry.Violations[rule.ID], Is.EqualTo( 7 ) );
+            Assert.That( entry.Violations[happyRule.ID], Is.EqualTo( 0 ) );
             Assert.That( entry.Passed, Is.True );
         }
 

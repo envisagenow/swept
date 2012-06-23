@@ -17,27 +17,27 @@ namespace swept
 
         public RunHistory History { get; private set; }
 
-        public List<string> Check( Dictionary<Change, Dictionary<SourceFile, ClauseMatch>> changeViolations )
+        public List<string> Check( Dictionary<Rule, Dictionary<SourceFile, ClauseMatch>> ruleViolations )
         {
             var failures = new List<string>();
 
-            foreach (var change in changeViolations.Keys)
+            foreach (var rule in ruleViolations.Keys)
             {
-                int count = countViolations( changeViolations[change] );
+                int count = countViolations( ruleViolations[rule] );
 
                 int threshold;
-                switch (change.RunFail)
+                switch (rule.RunFail)
                 {
                 case RunFailMode.Any:
                     threshold = 0;
                     break;
 
                 case RunFailMode.Over:
-                    threshold = change.RunFailOverLimit;
+                    threshold = rule.RunFailOverLimit;
                     break;
 
                 case RunFailMode.Increase:
-                    threshold = History.WaterlineFor( change.ID );
+                    threshold = History.WaterlineFor( rule.ID );
                     break;
 
                 case RunFailMode.None:
@@ -45,14 +45,14 @@ namespace swept
                     break;
 
                 default:
-                    throw new Exception( String.Format( "I do not know how to check a failure mode of [{0}].  Please extend FailChecker.Check.", change.RunFail.ToString() ) );
+                    throw new Exception( String.Format( "I do not know how to check a failure mode of [{0}].  Please extend FailChecker.Check.", rule.RunFail ) );
                 }
 
                 string thresholdPhrase = (threshold == 0) ? "any" : "over [" + threshold + "]";
 
                 if (count > threshold)
                 {
-                    string failureText = string.Format( "Rule [{0}] has been violated [{1}] times, and it breaks the build if there are {2} violations.", change.ID, count, thresholdPhrase );
+                    string failureText = string.Format( "Rule [{0}] has been violated [{1}] times, and it breaks the build if there are {2} violations.", rule.ID, count, thresholdPhrase );
                     failures.Add( failureText );
                 }
 

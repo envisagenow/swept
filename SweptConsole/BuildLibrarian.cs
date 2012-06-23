@@ -1,5 +1,5 @@
 ﻿//  Swept:  Software Enhancement Progress Tracking.
-//  Copyright (c) 2012 Jason Cole and Envisage Technologies Corp.
+//  Copyright (c) 2009, 2012 Jason Cole and Envisage Technologies Corp.
 //  This software is open source, MIT license.  See the file LICENSE for details.
 using System;
 using System.Linq;
@@ -11,8 +11,8 @@ namespace swept
 {
     public class BuildLibrarian
     {
-        private IStorageAdapter _storage;
-        private Arguments _args;
+        private readonly IStorageAdapter _storage;
+        private readonly Arguments _args;
 
         public BuildLibrarian( Arguments args, IStorageAdapter storage )
         {
@@ -21,7 +21,7 @@ namespace swept
         }
 
 
-        public string ReportOn( Dictionary<Change, Dictionary<SourceFile, ClauseMatch>> filesPerChange )
+        public string ReportOn( Dictionary<Rule, Dictionary<SourceFile, ClauseMatch>> filesPerRule )
         {
             XDocument report_doc = new XDocument();
             XElement report_root = new XElement( "SweptBuildReport" );
@@ -31,36 +31,36 @@ namespace swept
             //  report_root.Add( failures_element );
 
             int totalTasks = 0;
-            foreach (Change change in filesPerChange.Keys.OrderBy( c => c.ID ))
+            foreach (Rule rule in filesPerRule.Keys.OrderBy( c => c.ID ))
             {
-                int totalTasksPerChange = 0;
+                int totalTasksPerRule = 0;
 
-                var change_element = new XElement( "Change",
-                    new XAttribute( "ID", change.ID ),
-                    new XAttribute( "Description", change.Description )
+                var rule_element = new XElement( "Rule",
+                    new XAttribute( "ID", rule.ID ),
+                    new XAttribute( "Description", rule.Description )
                 );
 
-                var fileMatches = filesPerChange[change];
+                var fileMatches = filesPerRule[rule];
                 foreach (SourceFile file in fileMatches.Keys.OrderBy( file => file.Name ))
                 {
                     var match = fileMatches[file];
-                    var tasks = Task.FromMatch( match, change, file );
+                    var tasks = Task.FromMatch( match, rule, file );
 
                     if (tasks.Count == 0)
                         continue;
 
-                    totalTasksPerChange += tasks.Count;
+                    totalTasksPerRule += tasks.Count;
 
                     var file_tasks = new XElement( "SourceFile",
                         new XAttribute( "Name", file.Name ),
                         new XAttribute( "TaskCount", tasks.Count )
                     );
-                    change_element.Add( file_tasks );
+                    rule_element.Add( file_tasks );
                 }
 
-                change_element.Add( new XAttribute( "TotalTasks", totalTasksPerChange ) );
-                totalTasks += totalTasksPerChange;
-                report_root.Add( change_element );
+                rule_element.Add( new XAttribute( "TotalTasks", totalTasksPerRule ) );
+                totalTasks += totalTasksPerRule;
+                report_root.Add( rule_element );
             }
 
             report_root.Add( new XAttribute( "TotalTasks", totalTasks ) );
@@ -127,12 +127,12 @@ namespace swept
                 run.Date = DateTime.Parse( runXml.Attribute( "DateTime" ).Value );
                 run.Passed = Boolean.Parse( runXml.Attribute( "Passed" ).Value );
 
-                foreach (var changeXml in runXml.Descendants( "Change" ))
+                foreach (var ruleXml in runXml.Descendants( "Rule" ))
                 {
-                    string changeID = changeXml.Attribute( "ID" ).Value;
+                    string ruleID = ruleXml.Attribute( "ID" ).Value;
 
-                    int changeViolations = int.Parse( changeXml.Attribute( "Violations" ).Value );
-                    run.Violations.Add( changeID, changeViolations );
+                    int ruleViolations = int.Parse( ruleXml.Attribute( "Violations" ).Value );
+                    run.Violations.Add( ruleID, ruleViolations );
                 }
 
                 runHistory.Runs.Add( run );
@@ -158,12 +158,12 @@ namespace swept
 
                 foreach (var violation in run.Violations)
                 {
-                    var changeElement = new XElement( "Change",
+                    var ruleElement = new XElement( "Rule",
                         new XAttribute( "ID", violation.Key ),
                         new XAttribute( "Violations", violation.Value )
                     );
 
-                    runElement.Add( changeElement );
+                    runElement.Add( ruleElement );
                 }
 
                 report_root.Add( runElement );

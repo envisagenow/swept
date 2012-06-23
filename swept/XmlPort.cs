@@ -11,25 +11,25 @@ namespace swept
 {
     internal class XmlPort
     {
-        public ChangeCatalog ChangeCatalog_FromXmlDocument( XmlDocument doc )
+        public RuleCatalog RuleCatalog_FromXmlDocument( XmlDocument doc )
         {
-            XmlNode node = doc.SelectSingleNode( "SweptProjectData/ChangeCatalog" );
+            XmlNode node = doc.SelectSingleNode( "SweptProjectData/RuleCatalog" );
 
             if (node == null)
-                throw new Exception( "Document must have a <ChangeCatalog> node inside a <SweptProjectData> node.  Please supply one." );
+                throw new Exception( "Document must have a <RuleCatalog> node inside a <SweptProjectData> node.  Please supply one." );
 
-            return ChangeCatalog_FromNode( node );
+            return RuleCatalog_FromNode( node );
         }
 
 
-        public ChangeCatalog ChangeCatalog_FromNode( XmlNode node )
+        public RuleCatalog RuleCatalog_FromNode( XmlNode node )
         {
-            ChangeCatalog cat = new ChangeCatalog();
+            RuleCatalog cat = new RuleCatalog();
 
-            XmlNodeList changes = node.SelectNodes( "Change" );
-            foreach (XmlNode changeNode in changes)
+            XmlNodeList rules = node.SelectNodes( "Rule" );
+            foreach (XmlNode ruleNode in rules)
             {
-                cat.Add( Change_FromNode( changeNode ) );
+                cat.Add( Rule_FromNode( ruleNode ) );
             }
             return cat;
         }
@@ -39,49 +39,49 @@ namespace swept
         public const string cfa_FailMode = "FailMode";
         public const string cfa_FailLimit = "Limit";
 
-        private Change Change_FromNode( XmlNode changeNode )
+        private Rule Rule_FromNode( XmlNode ruleNode )
         {
-            Change change = new Change();
+            Rule rule = new Rule();
 
-            if (changeNode.Attributes[cfa_ID] != null)
-                change.ID = changeNode.Attributes[cfa_ID].Value;
+            if (ruleNode.Attributes[cfa_ID] != null)
+                rule.ID = ruleNode.Attributes[cfa_ID].Value;
             else
-                throw new Exception( "Changes must have IDs at their top level." );
+                throw new Exception( "Rules must have IDs at their top level." );
 
-            if (changeNode.Attributes[cfa_Description] != null)
-                change.Description = changeNode.Attributes[cfa_Description].Value;
+            if (ruleNode.Attributes[cfa_Description] != null)
+                rule.Description = ruleNode.Attributes[cfa_Description].Value;
 
-            if (changeNode.Attributes[cfa_FailMode] != null)
+            if (ruleNode.Attributes[cfa_FailMode] != null)
             {
-                string failText = changeNode.Attributes[cfa_FailMode].Value;
+                string failText = ruleNode.Attributes[cfa_FailMode].Value;
                 try
                 {
-                    //  When, MS?:  change.RunFail = Enum.Parse<RunFailMode>( failText );
-                    change.RunFail = (RunFailMode)Enum.Parse( typeof( RunFailMode ), failText );
-                    if (change.RunFail == RunFailMode.Over)
+                    //  When, MS?:  rule.RunFail = Enum.Parse<RunFailMode>( failText );
+                    rule.RunFail = (RunFailMode)Enum.Parse( typeof( RunFailMode ), failText );
+                    if (rule.RunFail == RunFailMode.Over)
                     {
                         try
                         {
-                            string failOver = changeNode.Attributes[cfa_FailLimit].Value;
-                            change.RunFailOverLimit = int.Parse( failOver );
+                            string failOver = ruleNode.Attributes[cfa_FailLimit].Value;
+                            rule.RunFailOverLimit = int.Parse( failOver );
                         }
                         catch( Exception failEx )
                         {
-                            string msg = String.Format( "Found no integer 'Limit' for Change ID [{0}].", change.ID );
+                            string msg = String.Format( "Found no integer 'Limit' for Rule ID [{0}].", rule.ID );
                             throw new Exception( msg, failEx );
                         }
                     }
                 }
                 catch (ArgumentException argEx)
                 {
-                    throw new Exception( String.Format( "Change ID [{0}] has an unknown {1} value [{2}].", change.ID, cfa_FailMode, failText ), argEx );
+                    throw new Exception( String.Format( "Rule ID [{0}] has an unknown {1} value [{2}].", rule.ID, cfa_FailMode, failText ), argEx );
                 }
             }
 
             // can't do it because I'm not upg'd to XDoc and XElems yet...
-            //string ruleText = changeNode.ChildNodes.First( c => c.NodeType == XmlNodeType.Text );
+            //string ruleText = ruleNode.ChildNodes.First( c => c.NodeType == XmlNodeType.Text );
             var sb = new StringBuilder();
-            foreach (XmlNode child in changeNode.ChildNodes)
+            foreach (XmlNode child in ruleNode.ChildNodes)
             {
                 switch (child.NodeType)
                 {
@@ -90,7 +90,7 @@ namespace swept
                     break;
 
                 case XmlNodeType.Element:
-                    change.SeeAlsos.Add( SeeAlso_FromNode( child ) );
+                    rule.SeeAlsos.Add( SeeAlso_FromNode( child ) );
                     break;
 
                 default:
@@ -98,12 +98,12 @@ namespace swept
                 }
             }
             string ruleText = sb.ToString();
-            change.Subquery = BuildChangeRuleQuery( ruleText );
+            rule.Subquery = BuildRuleQuery( ruleText );
 
-            return change;
+            return rule;
         }
 
-        internal ISubquery BuildChangeRuleQuery( string queryText )
+        internal ISubquery BuildRuleQuery( string queryText )
         {
             var lexer = new ChangeRuleLexer( new ANTLRStringStream( queryText ) );
             var parser = new ChangeRuleParser( new CommonTokenStream( lexer ) );

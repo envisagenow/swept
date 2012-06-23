@@ -1,5 +1,5 @@
 ﻿//  Swept:  Software Enhancement Progress Tracking.
-//  Copyright (c) 2011 Jason Cole and Envisage Technologies Corp.
+//  Copyright (c) 2009, 2012 Jason Cole and Envisage Technologies Corp.
 //  This software is open source, MIT license.  See the file LICENSE for details.
 using System;
 using System.Collections.Generic;
@@ -18,8 +18,8 @@ namespace swept
 
     public class ProjectLibrarian : IHearIDEEvents
     {
-        //  The Change Catalog holds things the team wants to improve in this solution.
-        internal ChangeCatalog _changeCatalog;
+        //  The Rule Catalog holds things the team wants to improve in this solution.
+        internal RuleCatalog _ruleCatalog;
 
         internal IStorageAdapter _storageAdapter;
         internal EventSwitchboard _switchboard;
@@ -33,7 +33,7 @@ namespace swept
             _storageAdapter = storageAdapter;
             _switchboard = switchboard;
 
-            _changeCatalog = new ChangeCatalog();
+            _ruleCatalog = new RuleCatalog();
             _allTasks = new List<Task>();
         }
 
@@ -75,11 +75,11 @@ namespace swept
             XmlDocument libraryDoc = GetLibraryDocument( libraryPath );
 
             XmlPort port = new XmlPort();
-            _changeCatalog = port.ChangeCatalog_FromXmlDocument( libraryDoc );
+            _ruleCatalog = port.RuleCatalog_FromXmlDocument( libraryDoc );
 
             // TODO:  Watch for FileSystem-level change events on the library file, and reload?
             
-            _switchboard.Raise_ChangeCatalogUpdated(_changeCatalog);
+            _switchboard.Raise_RuleCatalogUpdated(_ruleCatalog);
         }
 
         private XmlDocument GetLibraryDocument( string libraryPath )
@@ -105,7 +105,7 @@ namespace swept
         private void CloseSolution()
         {
             _allTasks.Clear();
-            _changeCatalog = null;
+            _ruleCatalog = null;
         }
 
         internal void OpenSourceFile( string name, string content )
@@ -120,16 +120,16 @@ namespace swept
         private List<Task> GetTasksForFile( SourceFile file )
         {
             var tasks = new List<Task>();
-            foreach (var change in _changeCatalog.GetSortedChanges())
+            foreach (var rule in _ruleCatalog.GetSortedRules())
             {
-                tasks.AddRange( Task.FromChangesForFile( change, file ) );
+                tasks.AddRange( Task.FromRuleForFile( rule, file ) );
             }
             return tasks;
         }
 
-        public List<Change> GetSortedChanges()
+        public List<Rule> GetSortedRules()
         {
-            return _changeCatalog.GetSortedChanges();
+            return _ruleCatalog.GetSortedRules();
         }
 
         private void CloseSourceFile( string name )

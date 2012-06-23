@@ -52,7 +52,7 @@ namespace swept.Addin
             {
                 studioTaskList.TaskItems.Add( 
                     "Swept", 
-                    sweptTask.Change.ID, 
+                    sweptTask.Rule.ID, 
                     sweptTask.Description, 
                     vsTaskPriority.vsTaskPriorityMedium, 
                     vsTaskIcon.vsTaskIconNone, 

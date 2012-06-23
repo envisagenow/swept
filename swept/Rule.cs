@@ -29,7 +29,7 @@ namespace swept
         Increase,
     }
 
-    public class Change
+    public class Rule
     {
         public RunFailMode RunFail { get; set; }
         public List<SeeAlso> SeeAlsos { get; set; }
@@ -37,7 +37,7 @@ namespace swept
         public string Description { get; internal set; }
         public int RunFailOverLimit { get; set; }
 
-        public Change()
+        public Rule()
         {
             SeeAlsos = new List<SeeAlso>();
         }
@@ -47,7 +47,7 @@ namespace swept
         public ClauseMatch GetMatches( SourceFile file )
         {
             ClauseMatch match = Subquery.Answer( file );
-            match.Change = this;
+            match.Rule = this;
             return match;
         }
     }

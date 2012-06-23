@@ -40,11 +40,11 @@ namespace swept.Tests
             var historyXml = XDocument.Parse( string.Format(
 @"<RunHistory>
   <Run Number=""{3}"" DateTime=""{2}"" Passed=""false"">
-    <Change ID=""{0}"" Violations=""{1}"" />
-    <Change ID=""always the same"" Violations=""44"" />
+    <Rule ID=""{0}"" Violations=""{1}"" />
+    <Rule ID=""always the same"" Violations=""44"" />
   </Run>
   <Run Number=""1100"" DateTime=""1/1/2022 3:20:14 PM"" Passed=""true"">
-    <Change ID=""always the same"" Violations=""44"" />
+    <Rule ID=""always the same"" Violations=""44"" />
   </Run>
 
 </RunHistory>", "silly problem", violationsCount, dateString, runNumber ) );

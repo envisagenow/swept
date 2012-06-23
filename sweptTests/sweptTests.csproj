@@ -78,7 +78,7 @@
     <Compile Include="DSL\Grammar_tests.cs" />
     <Compile Include="Console\ArgumentsTests.cs" />
     <Compile Include="Console\BuildLibrarianTests.cs" />
-    <Compile Include="ChangeCatalogTests.cs" />
+    <Compile Include="RuleCatalogTests.cs" />
     <Compile Include="Console\GathererTests.cs" />
     <Compile Include="DSL\DSL_tests_base.cs" />
     <Compile Include="DSL\NodeFactory_tests.cs" />
@@ -93,7 +93,7 @@
     <Compile Include="MockStorageAdapter.cs" />
     <Compile Include="SubscriberTests.cs" />
     <Compile Include="TaskTests.cs" />
-    <Compile Include="ChangeTests.cs" />
+    <Compile Include="RuleTests.cs" />
     <Compile Include="EventSwitchboardTests.cs" />
     <Compile Include="ProjectLibrarianTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

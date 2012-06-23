@@ -1,5 +1,5 @@
 ﻿//  Swept:  Software Enhancement Progress Tracking.
-//  Copyright (c) 2012 Jason Cole and Envisage Technologies Corp.
+//  Copyright (c) 2009, 2012 Jason Cole and Envisage Technologies Corp.
 //  This software is open source, MIT license.  See the file LICENSE for details.
 using System;
 using System.Linq;
@@ -9,33 +9,33 @@ namespace swept
 {
     public class Gatherer
     {
-        private IEnumerable<Change> _changes;
-        private IEnumerable<string> _files;
-        private IStorageAdapter _storageAdapter;
+        private readonly IEnumerable<Rule> _rules;
+        private readonly IEnumerable<string> _files;
+        private readonly IStorageAdapter _storage;
 
-        public Gatherer( IEnumerable<Change> changes, IEnumerable<string> files, IStorageAdapter storageAdapter )
+        public Gatherer( IEnumerable<Rule> rules, IEnumerable<string> files, IStorageAdapter storageAdapter )
         {
-            _changes = changes;
+            _rules = rules;
             _files = files;
-            _storageAdapter = storageAdapter;
+            _storage = storageAdapter;
         }
 
-        public Dictionary<Change, Dictionary<SourceFile, ClauseMatch>> GetMatchesPerChange()
+        public Dictionary<Rule, Dictionary<SourceFile, ClauseMatch>> GetMatchesPerRule()
         {
-            var result = new Dictionary<Change, Dictionary<SourceFile,ClauseMatch>>();
+            var result = new Dictionary<Rule, Dictionary<SourceFile,ClauseMatch>>();
 
             foreach (string fileName in _files)
             {
-                var sourceFile = _storageAdapter.LoadFile( fileName );
+                var sourceFile = _storage.LoadFile( fileName );
 
-                foreach (var change in _changes.OrderBy( c => c.ID ))
+                foreach (var rule in _rules.OrderBy( c => c.ID ))
                 {
-                    var match = change.Subquery.Answer( sourceFile );
+                    var match = rule.Subquery.Answer( sourceFile );
 
-                    if (!result.ContainsKey( change ))
-                        result[change] = new Dictionary<SourceFile, ClauseMatch>();
+                    if (!result.ContainsKey( rule ))
+                        result[rule] = new Dictionary<SourceFile, ClauseMatch>();
 
-                    result[change][sourceFile] = match;
+                    result[rule][sourceFile] = match;
                 }
             }
 

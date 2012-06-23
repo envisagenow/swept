@@ -1,5 +1,5 @@
 //  Swept:  Software Enhancement Progress Tracking.
-//  Copyright (c) 2011 Jason Cole and Envisage Technologies Corp.
+//  Copyright (c) 2009, 2012 Jason Cole and Envisage Technologies Corp.
 //  This software is open source, MIT license.  See the file LICENSE for details.
 using System;
 using System.Collections.Generic;
@@ -8,25 +8,25 @@ namespace swept
 {
     public class Task
     {
-        public SourceFile File { get; private set; }
-        public int LineNumber { get; private set; }
-        public Change Change { get; private set; }
-        public IEnumerable<SeeAlso> SeeAlsos { get { return Change.SeeAlsos; } }
-        public string Description { get { return Change.Description; } }
+        public readonly SourceFile File;
+        public readonly int LineNumber;
+        public readonly Rule Rule;
+        public IEnumerable<SeeAlso> SeeAlsos { get { return Rule.SeeAlsos; } }
+        public string Description { get { return Rule.Description; } }
 
-        public Task( Change change, SourceFile file, int line )
+        public Task( Rule rule, SourceFile file, int line )
         {
-            Change = change;
+            Rule = rule;
             File = file;
             LineNumber = line;
         }
 
-        public static List<Task> FromChangesForFile( Change change, SourceFile sourceFile )
+        public static List<Task> FromRuleForFile( Rule rule, SourceFile sourceFile )
         {
-            return FromMatch( change.GetMatches( sourceFile ), change, sourceFile );
+            return FromMatch( rule.GetMatches( sourceFile ), rule, sourceFile );
         }
 
-        public static List<Task> FromMatch( ClauseMatch match, Change change, SourceFile file )
+        public static List<Task> FromMatch( ClauseMatch match, Rule rule, SourceFile file )
         {
             List<Task> tasks = new List<Task>();
             if (!match.DoesMatch) return tasks;
@@ -37,12 +37,12 @@ namespace swept
                 LineMatch lineMatch = match as LineMatch;
                 foreach (int line in lineMatch.Lines)
                 {
-                    tasks.Add( new Task( change, file, line ) );
+                    tasks.Add( new Task( rule, file, line ) );
                 }
             }
             else
             {
-                tasks.Add( new Task( change, file, 1 ) );
+                tasks.Add( new Task( rule, file, 1 ) );
             }
 
             return tasks;

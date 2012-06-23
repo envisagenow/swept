@@ -1,5 +1,5 @@
 //  Swept:  Software Enhancement Progress Tracking.
-//  Copyright (c) 2011 Jason Cole and Envisage Technologies Corp.
+//  Copyright (c) 2009, 2012 Jason Cole and Envisage Technologies Corp.
 //  This software is open source, MIT license.  See the file LICENSE for details.
 using System.Collections.Generic;
 using System;
@@ -17,14 +17,14 @@ namespace swept
         public List<string> Names;
     }
 
-    public class ChangeEventArgs : EventArgs
+    public class RuleEventArgs : EventArgs
     {
-        public Change Change;
+        public Rule Rule;
     }
 
-    public class ChangeCatalogEventArgs : EventArgs
+    public class RuleCatalogEventArgs : EventArgs
     {
-        public ChangeCatalog Catalog;
+        public RuleCatalog Catalog;
     }
 
     public class SeeAlsoEventArgs : EventArgs

@@ -20,12 +20,12 @@ namespace swept.Tests
         [Test]
         public void Empty_inputs_lead_to_empty_results()
         {
-            List<Change> changes = new List<Change>();
+            List<Rule> changes = new List<Rule>();
             List<string> files = new List<string>();
             MockStorageAdapter storage = new MockStorageAdapter();
             Gatherer gatherer = new Gatherer( changes, files, storage );
 
-            var results = gatherer.GetMatchesPerChange();
+            var results = gatherer.GetMatchesPerRule();
 
             Assert.That( results, Is.Not.Null );
             Assert.That( results.Count, Is.EqualTo( 0 ) );
@@ -34,12 +34,12 @@ namespace swept.Tests
         [Test]
         public void Empty_Change_list_leads_to_empty_results()
         {
-            List<Change> changes = new List<Change>();
+            List<Rule> changes = new List<Rule>();
             List<string> files = new List<string> { FILEONE };
             MockStorageAdapter storage = new MockStorageAdapter();
             Gatherer gatherer = new Gatherer( changes, files, storage );
 
-            var results = gatherer.GetMatchesPerChange();
+            var results = gatherer.GetMatchesPerRule();
 
             Assert.That( results, Is.Not.Null );
             Assert.That( results.Count, Is.EqualTo( 0 ) );
@@ -50,9 +50,9 @@ namespace swept.Tests
         {
             List<string> files = new List<string> { FILEONE, FILETWO };
             MockStorageAdapter storage = new MockStorageAdapter();
-            Gatherer gatherer = new Gatherer( new List<Change>(), files, storage );
+            Gatherer gatherer = new Gatherer( new List<Rule>(), files, storage );
 
-            var results = gatherer.GetMatchesPerChange();
+            var results = gatherer.GetMatchesPerRule();
 
             Assert.That( storage.DidLoad( FILEONE ) );
             Assert.That( storage.DidLoad( FILETWO ) );
@@ -62,14 +62,14 @@ namespace swept.Tests
         [Test]
         public void Gatherer_one_change_one_file_leads_to_one_result()
         {
-            List<Change> changes = new List<Change>();
-            Change change = new Change() { Subquery = new QueryLanguageNode { Language = FileLanguage.CSharp } };
+            List<Rule> changes = new List<Rule>();
+            Rule change = new Rule() { Subquery = new QueryLanguageNode { Language = FileLanguage.CSharp } };
             changes.Add( change );
             List<string> files = new List<string> { FILEONE };
             MockStorageAdapter storage = new MockStorageAdapter();
             Gatherer gatherer = new Gatherer( changes, files, storage );
 
-            Dictionary<Change, Dictionary<SourceFile,ClauseMatch>> results = gatherer.GetMatchesPerChange();
+            Dictionary<Rule, Dictionary<SourceFile,ClauseMatch>> results = gatherer.GetMatchesPerRule();
 
             Assert.That( results.Count, Is.EqualTo( 1 ) );
             Assert.That( results.Keys.First(), Is.SameAs( change ) );
@@ -83,14 +83,14 @@ namespace swept.Tests
         [Test]
         public void Gatherer_one_change_two_files_leads_to_one_key_with_list_of_two()
         {
-            List<Change> changes = new List<Change>();
-            Change change = new Change() { Subquery = new QueryFileNameNode( "one" ) };
+            List<Rule> changes = new List<Rule>();
+            Rule change = new Rule() { Subquery = new QueryFileNameNode( "one" ) };
             changes.Add( change );
             List<string> files = new List<string> { FILEONE, FILETWO };
             MockStorageAdapter storage = new MockStorageAdapter();
             Gatherer gatherer = new Gatherer( changes, files, storage );
 
-            var results = gatherer.GetMatchesPerChange();
+            var results = gatherer.GetMatchesPerRule();
 
             Assert.That( results.Count, Is.EqualTo( 1 ) );
             Assert.That( results.Keys.First(), Is.SameAs( change ) );
@@ -102,16 +102,16 @@ namespace swept.Tests
         [Test]
         public void Gatherer_two_changes_one_file_leads_to_two_results()
         {
-            List<Change> changes = new List<Change>();
-            Change change1 = new Change() { Subquery = new QueryContentNode( "woof" ) };
-            Change change2 = new Change() { Subquery = new QueryFileNameNode( "one" ) };
+            List<Rule> changes = new List<Rule>();
+            Rule change1 = new Rule() { Subquery = new QueryContentNode( "woof" ) };
+            Rule change2 = new Rule() { Subquery = new QueryFileNameNode( "one" ) };
             changes.Add( change1 );
             changes.Add( change2 );
             List<string> files = new List<string> { FILEONE };
             MockStorageAdapter storage = new MockStorageAdapter();
             Gatherer gatherer = new Gatherer( changes, files, storage );
 
-            var results = gatherer.GetMatchesPerChange();
+            var results = gatherer.GetMatchesPerRule();
 
             Assert.That( results.Count, Is.EqualTo( 2 ) );
             Assert.That( results.Keys.ElementAt( 0 ), Is.SameAs( change1 ) );

@@ -15,14 +15,14 @@ namespace swept.Tests
     {
         private FailChecker _checker;
         private RunHistory _history;
-        private Dictionary<Change, Dictionary<SourceFile, ClauseMatch>> _runResults;
+        private Dictionary<Rule, Dictionary<SourceFile, ClauseMatch>> _runResults;
 
         [SetUp]
         public void Setup()
         {
             _history = new RunHistory();
             _checker = new FailChecker( _history );
-            _runResults = new Dictionary<Change, Dictionary<SourceFile, ClauseMatch>>();
+            _runResults = new Dictionary<Rule, Dictionary<SourceFile, ClauseMatch>>();
         }
 
         [Test]
@@ -33,9 +33,9 @@ namespace swept.Tests
         }
 
         [Test]
-        public void When_we_violate_a_FailAny_Change_we_fail()
+        public void When_we_violate_a_FailAny_Rule_we_fail()
         {
-            Change change = new Change() { ID = "644", Description = "Major problem!", RunFail = RunFailMode.Any };
+            Rule rule = new Rule() { ID = "644", Description = "Major problem!", RunFail = RunFailMode.Any };
             Dictionary<SourceFile, ClauseMatch> sourceClauseMatch = new Dictionary<SourceFile, ClauseMatch>();
 
             SourceFile failedSource = new SourceFile( "some_file.cs" );
@@ -43,7 +43,7 @@ namespace swept.Tests
 
             sourceClauseMatch[failedSource] = failedClause;
 
-            _runResults[change] = sourceClauseMatch;
+            _runResults[rule] = sourceClauseMatch;
 
             var failures = _checker.Check( _runResults );
 
@@ -52,12 +52,12 @@ namespace swept.Tests
         }
 
         [Test]
-        public void When_we_have_no_tasks_in_a_FailAny_Change_we_do_not_fail()
+        public void When_we_have_no_tasks_in_a_FailAny_Rule_we_do_not_fail()
         {
-            Change change = new Change() { ID = "644", Description = "Major problem!", RunFail = RunFailMode.Any };
+            Rule rule = new Rule() { ID = "644", Description = "Major problem!", RunFail = RunFailMode.Any };
             Dictionary<SourceFile, ClauseMatch> sourceClauseMatch = new Dictionary<SourceFile, ClauseMatch>();
 
-            _runResults[change] = sourceClauseMatch;
+            _runResults[rule] = sourceClauseMatch;
 
             var failures = _checker.Check( _runResults );
 
@@ -65,9 +65,9 @@ namespace swept.Tests
         }
 
         [Test]
-        public void When_we_violate_a_BuildFail_None_Change_we_do_not_fail()
+        public void When_we_violate_a_BuildFail_None_Rule_we_do_not_fail()
         {
-            Change change = new Change() { ID = "644", Description="Not a problem.", RunFail = RunFailMode.None };
+            Rule rule = new Rule() { ID = "644", Description="Not a problem.", RunFail = RunFailMode.None };
             Dictionary<SourceFile, ClauseMatch> sourceClauseMatch = new Dictionary<SourceFile, ClauseMatch>();
 
             SourceFile failedSource = new SourceFile( "some_file.cs" );
@@ -75,19 +75,19 @@ namespace swept.Tests
 
             sourceClauseMatch[failedSource] = failedClause;
 
-            var changes = new Dictionary< Change, Dictionary<SourceFile, ClauseMatch> >();
-            changes[change] = sourceClauseMatch;
+            var rules = new Dictionary< Rule, Dictionary<SourceFile, ClauseMatch> >();
+            rules[rule] = sourceClauseMatch;
 
-            var failures = _checker.Check( changes );
+            var failures = _checker.Check( rules );
 
             Assert.That( failures.Count(), Is.EqualTo( 0 ) );
         }
 
         [Test]
-        public void When_we_violate_multiple_BuildFail_Any_Changes_we_report_all_failures()
+        public void When_we_violate_multiple_BuildFail_Any_Rules_we_report_all_failures()
         {
-            var change = new Change() { ID = "191", Description = "Major problem!", RunFail = RunFailMode.Any };
-            var change2 = new Change() { ID = "200", Description = "Major problem!", RunFail = RunFailMode.Any };
+            var rule = new Rule() { ID = "191", Description = "Major problem!", RunFail = RunFailMode.Any };
+            var rule2 = new Rule() { ID = "200", Description = "Major problem!", RunFail = RunFailMode.Any };
             var sourceClauseMatch = new Dictionary<SourceFile, ClauseMatch>();
             var sourceClauseMatch2 = new Dictionary<SourceFile, ClauseMatch>();
 
@@ -99,8 +99,8 @@ namespace swept.Tests
             ClauseMatch failedClause2 = new LineMatch( new List<int> { 23, 65, 81 } );
             sourceClauseMatch2[failedSource2] = failedClause2;
 
-            _runResults[change] = sourceClauseMatch;
-            _runResults[change2] = sourceClauseMatch2;
+            _runResults[rule] = sourceClauseMatch;
+            _runResults[rule2] = sourceClauseMatch2;
 
             var failures = _checker.Check( _runResults );
 
@@ -112,7 +112,7 @@ namespace swept.Tests
         [Test]
         public void When_we_exceed_BuildFail_Over_limit_we_fail()
         {
-            var change = new Change() {
+            var rule = new Rule() {
                 ID = "200",
                 Description = "Major problem!",
                 RunFail = RunFailMode.Over,
@@ -124,7 +124,7 @@ namespace swept.Tests
             ClauseMatch failedClause = new LineMatch( new List<int> { 23, 65, 81 } );
             sourceClauseMatch[failedSource] = failedClause;
 
-            _runResults[change] = sourceClauseMatch;
+            _runResults[rule] = sourceClauseMatch;
 
             var failures = _checker.Check( _runResults );
 
@@ -135,7 +135,7 @@ namespace swept.Tests
         [Test]
         public void When_we_violate_BuildFail_Over_but_do_not_exceed_limit_we_do_not_fail()
         {
-            var change = new Change() {
+            var rule = new Rule() {
                 ID = "191",
                 Description = "Major problem!",
                 RunFail = RunFailMode.Over,
@@ -147,7 +147,7 @@ namespace swept.Tests
             ClauseMatch failedClause = new LineMatch( new List<int> { 1, 44 } );
             sourceClauseMatch[failedSource] = failedClause;
 
-            _runResults[change] = sourceClauseMatch;
+            _runResults[rule] = sourceClauseMatch;
 
             var failures = _checker.Check( _runResults );
 
@@ -157,7 +157,7 @@ namespace swept.Tests
         [Test]
         public void When_failures_increase_on_a_FailMode_Increase_rule_we_break()
         {
-            var change = new Change()
+            var rule = new Rule()
             {
                 ID = "300",
                 Description = "Major problem!",
@@ -169,7 +169,7 @@ namespace swept.Tests
             ClauseMatch failedClause = new LineMatch( new List<int> { 1, 44, 68, 70, 79, 102, 111, 194, 198, 292, 321, 334, 345, 367 } );
             sourceClauseMatch[failedSource] = failedClause;
 
-            _runResults[change] = sourceClauseMatch;
+            _runResults[rule] = sourceClauseMatch;
 
             var vio = new Dictionary<string, int>();
             vio["300"] = 10;

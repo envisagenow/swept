@@ -14,8 +14,8 @@ namespace swept
     {
         static internal string emptyCatalogText = 
 @"<SweptProjectData>
-<ChangeCatalog>
-</ChangeCatalog>
+<RuleCatalog>
+</RuleCatalog>
 </SweptProjectData>";
 
         static internal XmlDocument emptyCatalogDoc
@@ -27,13 +27,6 @@ namespace swept
                 return doc;
             }
         }
-
-        //public void Save(string fileName, string xmlText)
-        //{
-        //    var doc = new XmlDocument();
-        //    doc.LoadXml( xmlText );
-        //    doc.Save( fileName );
-        //}
 
         public XmlDocument LoadLibrary( string libraryPath )
         {

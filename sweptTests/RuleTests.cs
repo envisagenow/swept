@@ -9,24 +9,24 @@ using System.Collections.Generic;
 namespace swept.Tests
 {
     [TestFixture]
-    public class ChangeTests
+    public class RuleTests
     {
         [Test]
         public void collects_SeeAlsos()
         {
-            Change change = new Change();
-            change.SeeAlsos.Add( new SeeAlso { Description = "Go here", Target = "here.com", TargetType = TargetType.URL } );
+            Rule rule = new Rule();
+            rule.SeeAlsos.Add( new SeeAlso { Description = "Go here", Target = "here.com", TargetType = TargetType.URL } );
             // TODO: finish this test
         }
 
         [Test]
         public void BuildFail_Default_None_is_settable()
         {
-            Change change = new Change();
-            Assert.That( change.RunFail, Is.EqualTo( RunFailMode.None ) );
+            Rule rule = new Rule();
+            Assert.That( rule.RunFail, Is.EqualTo( RunFailMode.None ) );
 
-            change.RunFail = RunFailMode.Any;
-            Assert.That( change.RunFail, Is.EqualTo( RunFailMode.Any ) );
+            rule.RunFail = RunFailMode.Any;
+            Assert.That( rule.RunFail, Is.EqualTo( RunFailMode.Any ) );
         }
     }
 }

@@ -1,5 +1,5 @@
 ﻿//  Swept:  Software Enhancement Progress Tracking.
-//  Copyright (c) 2012 Jason Cole and Envisage Technologies Corp.
+//  Copyright (c) 2009, 2012 Jason Cole and Envisage Technologies Corp.
 //  This software is open source, MIT license.  See the file LICENSE for details.
 using NUnit.Framework;
 using swept;
@@ -11,14 +11,13 @@ using System.Collections.Generic;
 
 namespace swept.Tests
 {
-    [CoverageExclude]
     [TestFixture]
     public class ProjectLibrarianTests
     {
         private ProjectLibrarian Horace;
 
         private string _testingSolutionPath;
-        private ChangeCatalog _changeCatalog;
+        private RuleCatalog _ruleCatalog;
         private MockStorageAdapter _storageAdapter;
 
         private EventSwitchboard _switchboard;
@@ -36,7 +35,7 @@ namespace swept.Tests
                 LibraryPath = Path.ChangeExtension( _testingSolutionPath, "swept.library" )
             };
 
-            _changeCatalog = Horace._changeCatalog;
+            _ruleCatalog = Horace._ruleCatalog;
             _tasks = null;
         }
 
@@ -46,21 +45,21 @@ namespace swept.Tests
         }
 
         [Test]
-        public void Can_GetSortedChanges()
+        public void Can_GetSortedRules()
         {
-            Change a_17 = new Change { ID = "a_17", };
-            Change a_177 = new Change { ID = "a_177", };
-            Change b_52 = new Change { ID = "b_52", };
+            Rule a_17 = new Rule { ID = "a_17", };
+            Rule a_177 = new Rule { ID = "a_177", };
+            Rule b_52 = new Rule { ID = "b_52", };
 
-            _changeCatalog._changes.Clear();
-            _changeCatalog.Add( b_52 );
-            _changeCatalog.Add( a_17 );
-            _changeCatalog.Add( a_177 );
+            _ruleCatalog._rules.Clear();
+            _ruleCatalog.Add( b_52 );
+            _ruleCatalog.Add( a_17 );
+            _ruleCatalog.Add( a_177 );
 
-            var changes = Horace.GetSortedChanges();
-            Assert.That( changes[0].ID, Is.EqualTo( a_17.ID ) );
-            Assert.That( changes[1].ID, Is.EqualTo( a_177.ID ) );
-            Assert.That( changes[2].ID, Is.EqualTo( b_52.ID ) );
+            var rules = Horace.GetSortedRules();
+            Assert.That( rules[0].ID, Is.EqualTo( a_17.ID ) );
+            Assert.That( rules[1].ID, Is.EqualTo( a_177.ID ) );
+            Assert.That( rules[2].ID, Is.EqualTo( b_52.ID ) );
         }
 
 
@@ -74,16 +73,16 @@ namespace swept.Tests
         }
 
         [Test]
-        public void OpenSolution_finding_Swept_Library_will_load_Changes()
+        public void OpenSolution_finding_Swept_Library_will_load_Rules()
         {
             _storageAdapter.LibraryDoc = new XmlDocument();
-            _storageAdapter.LibraryDoc.LoadXml( TestProbe.SingleChangeLibrary_text );
+            _storageAdapter.LibraryDoc.LoadXml( TestProbe.SingleRuleLibrary_text );
             Horace.Hear_SolutionOpened( this, Get_testfile_FileEventArgs() );
 
-            Assert.AreEqual( 1, Horace._changeCatalog._changes.Count );
-            Change change = Horace._changeCatalog._changes[0];
-            Assert.AreEqual( "Update to use persister", change.Description );
-            var dq = change.Subquery as QueryLanguageNode;
+            Assert.AreEqual( 1, Horace._ruleCatalog._rules.Count );
+            Rule rule = Horace._ruleCatalog._rules[0];
+            Assert.AreEqual( "Update to use persister", rule.Description );
+            var dq = rule.Subquery as QueryLanguageNode;
             Assert.AreEqual( FileLanguage.CSharp, dq.Language );
         }
 
@@ -95,7 +94,7 @@ namespace swept.Tests
 
             Horace.Hear_SolutionOpened( this, Get_testfile_FileEventArgs() );
 
-            Assert.AreEqual( 0, _changeCatalog._changes.Count );
+            Assert.AreEqual( 0, _ruleCatalog._rules.Count );
         }
 
         [Test]
@@ -104,7 +103,7 @@ namespace swept.Tests
             _storageAdapter.ThrowBadXmlException = true;
             Horace.Hear_SolutionOpened( this, Get_testfile_FileEventArgs() );
 
-            Assert.AreEqual( 0, _changeCatalog._changes.Count );
+            Assert.AreEqual( 0, _ruleCatalog._rules.Count );
         }
 
         [Test]
@@ -153,12 +152,12 @@ namespace swept.Tests
         public void OpenFile_will_Add_new_FileMatch_to_Tasks()
         {
             _switchboard.Event_TaskListChanged += Listen_for_TasksChanged_Event;
-            Change allCSharpMustGo = new Change
+            Rule allCSharpMustGo = new Rule
             {
                 Description = "We hate CSharp.", 
                 Subquery = new QueryLanguageNode { Language = FileLanguage.CSharp } 
             };
-            Horace._changeCatalog.Add( allCSharpMustGo );
+            Horace._ruleCatalog.Add( allCSharpMustGo );
 
             Horace.OpenSourceFile( "foo.cs", "//hello, world!" );
 

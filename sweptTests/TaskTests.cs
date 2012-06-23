@@ -53,7 +53,7 @@ namespace swept.Tests
         {
             var match = new FileMatch( true );
             string description = "XML must have correct namespace.";
-            var change = new Change { Description = description };
+            var change = new Rule { Description = description };
 
             List<Task> tasks = Task.FromMatch( match, change, null );
             Assert.That( tasks.Count, Is.EqualTo( 1 ) );

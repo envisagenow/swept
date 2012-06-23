@@ -1,5 +1,5 @@
 ﻿//  Swept:  Software Enhancement Progress Tracking.
-//  Copyright (c) 2012 Jason Cole and Envisage Technologies Corp.
+//  Copyright (c) 2009, 2012 Jason Cole and Envisage Technologies Corp.
 //  This software is open source, MIT license.  See the file LICENSE for details.
 using System;
 
@@ -7,7 +7,7 @@ namespace swept.Tests
 {
     public class MockEventListener : IHearIDEEvents
     {
-        #region ISweptEventListener Members
+        #region IHearIDEEvents Members
 
         public FileEventArgs SolutionOpened_args;
         public void Hear_SolutionOpened( object sender, FileEventArgs args )

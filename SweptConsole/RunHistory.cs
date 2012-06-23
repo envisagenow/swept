@@ -1,5 +1,5 @@
 //  Swept:  Software Enhancement Progress Tracking.
-//  Copyright (c) 2012 Jason Cole and Envisage Technologies Corp.
+//  Copyright (c) 2009, 2012 Jason Cole and Envisage Technologies Corp.
 //  This software is open source, MIT license.  See the file LICENSE for details.
 using System;
 using System.Collections.Generic;
@@ -32,24 +32,24 @@ namespace swept
             Runs = new List<RunHistoryEntry>();
         }
 
-        public RunHistoryEntry GenerateEntry( Dictionary<Change, Dictionary<SourceFile, ClauseMatch>> changeViolations, DateTime runDateTime )
+        public RunHistoryEntry GenerateEntry( Dictionary<Rule, Dictionary<SourceFile, ClauseMatch>> ruleViolations, DateTime runDateTime )
         {
             var checker = new FailChecker( this );
-            var failures = checker.Check( changeViolations );
+            var failures = checker.Check( ruleViolations );
 
             var entry = new RunHistoryEntry { Passed = (failures.Count == 0) };
             entry.Number = NextRunNumber;
             entry.Date = runDateTime;
 
-            foreach( var keyChange in changeViolations.Keys )
+            foreach( var keyRule in ruleViolations.Keys )
             {
-                entry.Violations[keyChange.ID] = countViolations( changeViolations[keyChange] );
+                entry.Violations[keyRule.ID] = countViolations( ruleViolations[keyRule] );
             }
 
             return entry;
         }
 
-        public int WaterlineFor( string ChangeID )
+        public int WaterlineFor( string ruleID )
         {
             RunHistoryEntry mostRecentlyPassed = null;
 
@@ -63,9 +63,9 @@ namespace swept
             {
                 return HighWaterLine;
             }
-            else if (mostRecentlyPassed.Violations.ContainsKey( ChangeID ))
+            else if (mostRecentlyPassed.Violations.ContainsKey( ruleID ))
             {
-                return mostRecentlyPassed.Violations[ChangeID];
+                return mostRecentlyPassed.Violations[ruleID];
             }
             else
             {

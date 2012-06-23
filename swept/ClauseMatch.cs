@@ -1,5 +1,5 @@
 ﻿//  Swept:  Software Enhancement Progress Tracking.
-//  Copyright (c) 2012 Jason Cole and Envisage Technologies Corp.
+//  Copyright (c) 2009, 2012 Jason Cole and Envisage Technologies Corp.
 //  This software is open source, MIT license.  See the file LICENSE for details.
 using System;
 using System.Collections.Generic;
@@ -9,7 +9,7 @@ namespace swept
 {
     public abstract class ClauseMatch
     {
-        public Change Change { get; set; }
+        public Rule Rule { get; set; }
 
         public abstract ClauseMatch Union( ClauseMatch other );
         public abstract ClauseMatch Union( IEnumerable<int> lines );
@@ -87,7 +87,7 @@ namespace swept
             this.does = does;
         }
 
-        private bool does;
+        private readonly bool does;
         public override bool DoesMatch
         {
             get { return does; }

@@ -32,7 +32,7 @@ namespace swept.Tests
             _storage.RunHistory = XDocument.Parse(
 @"<RunHistory>
   <Run Number=""22"" DateTime=""4/4/2012 10:25:02 AM"" Passed=""True"">
-    <Change ID=""foo"" Violations=""2"" />
+    <Rule ID=""foo"" Violations=""2"" />
   </Run>
 </RunHistory>" );
             
@@ -84,10 +84,10 @@ namespace swept.Tests
             var expectedHistory =
 @"<RunHistory>
   <Run Number=""22"" DateTime=""4/4/2012 10:25:02 AM"" Passed=""False"">
-    <Change ID=""foo"" Violations=""2"" />
+    <Rule ID=""foo"" Violations=""2"" />
   </Run>
   <Run Number=""23"" DateTime=""4/7/2012 10:25:03 AM"" Passed=""True"">
-    <Change ID=""bar"" Violations=""0"" />
+    <Rule ID=""bar"" Violations=""0"" />
   </Run>
 </RunHistory>";
 
@@ -99,25 +99,25 @@ namespace swept.Tests
         {
             string empty_report = "<SweptBuildReport TotalTasks=\"0\" />";
 
-            string report = _librarian.ReportOn( new Dictionary<Change, Dictionary<SourceFile, ClauseMatch>>() );
+            string report = _librarian.ReportOn( new Dictionary<Rule, Dictionary<SourceFile, ClauseMatch>>() );
 
             Assert.That( report, Is.EqualTo( empty_report ) );
         }
 
         [Test]
-        public void single_Change_single_SourceFile_report()
+        public void single_Rule_single_SourceFile_report()
         {
             var expectedReport = XDocument.Parse(
 @"<SweptBuildReport TotalTasks='4'>
-    <Change ID='HTML 01' Description='Improve browser compatibility' TotalTasks='4'>
+    <Rule ID='HTML 01' Description='Improve browser compatibility' TotalTasks='4'>
         <SourceFile Name='bar.htm' TaskCount='4' />
-    </Change>
+    </Rule>
 </SweptBuildReport>"
             );
 
-            var changes = new Dictionary<Change, Dictionary<SourceFile,ClauseMatch>>();
+            var rules = new Dictionary<Rule, Dictionary<SourceFile,ClauseMatch>>();
 
-            var change = new Change
+            var rule = new Rule
             {
                 ID = "HTML 01",
                 Subquery = new QueryLanguageNode { Language = FileLanguage.HTML },
@@ -128,40 +128,40 @@ namespace swept.Tests
 
             var fileMatches = new Dictionary<SourceFile, ClauseMatch>();
             fileMatches[bar] = new LineMatch( new List<int> { 1, 12, 123, 1234 } );
-            changes.Add( change, fileMatches );
+            rules.Add( rule, fileMatches );
 
-            string report = _librarian.ReportOn( changes );
+            string report = _librarian.ReportOn( rules );
 
             Assert.That( report, Is.EqualTo( expectedReport.ToString() ) );
         }
 
         [Test]
-        public void multiple_Change_multiple_SourceFile_report()
+        public void multiple_Rule_multiple_SourceFile_report()
         {
             var expectedReport = XDocument.Parse(
 @"
 <SweptBuildReport TotalTasks='10'>
-    <Change 
+    <Rule 
         ID='DomainEvents 01' 
         Description='Use DomainEvents instead of AcadisUserPersister and AuditRecordPersister'
         TotalTasks='4'>
         
         <SourceFile Name='foo.cs' TaskCount='1' />
         <SourceFile Name='goo.cs' TaskCount='3' />
-    </Change>
-    <Change 
+    </Rule>
+    <Rule 
         ID='HTML 01' 
         Description='Improve browser compatibility across IE versions'
         TotalTasks='6'>
 
         <SourceFile Name='bar.htm' TaskCount='4' />
         <SourceFile Name='shmoo.aspx' TaskCount='2' />
-    </Change>
+    </Rule>
 </SweptBuildReport>
 "
             );
 
-            var csharpChange = new Change
+            var csharpRule = new Rule
             {
                 ID = "DomainEvents 01",
                 Description = "Use DomainEvents instead of AcadisUserPersister and AuditRecordPersister"
@@ -174,7 +174,7 @@ namespace swept.Tests
             csharpFiles[foo] = new FileMatch(true);
             csharpFiles[goo] = new LineMatch(new List<int> { 1, 2, 3 });
 
-            var htmlChange = new Change
+            var htmlRule = new Rule
             {
                 ID = "HTML 01",
                 Subquery = new QueryLanguageNode { Language = FileLanguage.HTML },
@@ -188,11 +188,11 @@ namespace swept.Tests
             htmlFiles[bar] = new LineMatch(new List<int> { 1, 2, 3, 4 });
             htmlFiles[shmoo] = new LineMatch(new List<int> { 8, 12 });
 
-            var changes = new Dictionary<Change, Dictionary<SourceFile, ClauseMatch>>();
-            changes[csharpChange] = csharpFiles;
-            changes[htmlChange] = htmlFiles;
+            var rules = new Dictionary<Rule, Dictionary<SourceFile, ClauseMatch>>();
+            rules[csharpRule] = csharpFiles;
+            rules[htmlRule] = htmlFiles;
 
-            string report = _librarian.ReportOn(changes);
+            string report = _librarian.ReportOn(rules);
 
             Assert.That(report, Is.EqualTo(expectedReport.ToString()));
         }
@@ -203,18 +203,18 @@ namespace swept.Tests
             var expectedReport = XDocument.Parse(
 @"
 <SweptBuildReport TotalTasks='1'>
-    <Change 
+    <Rule 
         ID='DomainEvents 01' 
         Description='Use DomainEvents instead of AcadisUserPersister and AuditRecordPersister'
         TotalTasks='1'>
         
         <SourceFile Name='foo.cs' TaskCount='1' />
-    </Change>
+    </Rule>
 </SweptBuildReport>
 "
             );
 
-            var csharpChange = new Change
+            var csharpRule = new Rule
             {
                 ID = "DomainEvents 01",
                 Description = "Use DomainEvents instead of AcadisUserPersister and AuditRecordPersister"
@@ -229,10 +229,10 @@ namespace swept.Tests
             csharpFiles[goo] = new FileMatch(false);
             csharpFiles[boo] = new LineMatch( new int[] {} );
 
-            var changes = new Dictionary<Change, Dictionary<SourceFile, ClauseMatch>>();
-            changes[csharpChange] = csharpFiles;
+            var rules = new Dictionary<Rule, Dictionary<SourceFile, ClauseMatch>>();
+            rules[csharpRule] = csharpFiles;
 
-            string report = _librarian.ReportOn(changes);
+            string report = _librarian.ReportOn(rules);
 
             Assert.That(report, Is.EqualTo(expectedReport.ToString()));
         }

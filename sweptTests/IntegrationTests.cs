@@ -1,5 +1,5 @@
 ﻿//  Swept:  Software Enhancement Progress Tracking.
-//  Copyright (c) 2012 Jason Cole and Envisage Technologies Corp.
+//  Copyright (c) 2009, 2012 Jason Cole and Envisage Technologies Corp.
 //  This software is open source, MIT license.  See the file LICENSE for details.
 using System;
 using NUnit.Framework;
@@ -25,13 +25,13 @@ namespace swept.Tests
         }
 
         [Test]
-        public void When_SolutionOpened_all_change_catalog_references_updated()
+        public void When_SolutionOpened_all_RuleCatalog_references_updated()
         {
-            ChangeCatalog oldCatalog = _librarian._changeCatalog;
+            RuleCatalog oldCatalog = _librarian._ruleCatalog;
 
             _switchboard.Raise_SolutionOpened( @"c:\different\place\for.sln" );
             
-            ChangeCatalog newCatalog = _librarian._changeCatalog;
+            RuleCatalog newCatalog = _librarian._ruleCatalog;
             Assert.That( newCatalog, Is.Not.SameAs( oldCatalog ) );
         }
 

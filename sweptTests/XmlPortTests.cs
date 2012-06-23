@@ -11,66 +11,66 @@ namespace swept.Tests
     [TestFixture]
     public class XmlPortTests
     {
-        private ChangeCatalog getChangeCatalog( string changeText )
+        private RuleCatalog getRuleCatalog( string ruleText )
         {
             XmlDocument xml = new XmlDocument();
-            xml.LoadXml( changeText );
+            xml.LoadXml( ruleText );
             var port = new XmlPort();
-            return port.ChangeCatalog_FromXmlDocument( xml );
+            return port.RuleCatalog_FromXmlDocument( xml );
         }
 
         [Test]
         public void Populates_FailMode_from_attribute()
         {
-            var cat = getChangeCatalog( "<SweptProjectData><ChangeCatalog><Change ID='this' FailMode='Any'> ^CSharp </Change></ChangeCatalog></SweptProjectData>" );
-            List<Change> changes = cat.GetSortedChanges();
-            Assert.That( changes.Count, Is.EqualTo( 1 ) );
+            var cat = getRuleCatalog( "<SweptProjectData><RuleCatalog><Rule ID='this' FailMode='Any'> ^CSharp </Rule></RuleCatalog></SweptProjectData>" );
+            List<Rule> rules = cat.GetSortedRules();
+            Assert.That( rules.Count, Is.EqualTo( 1 ) );
 
-            Assert.That( changes[0].RunFail, Is.EqualTo( RunFailMode.Any ) );
+            Assert.That( rules[0].RunFail, Is.EqualTo( RunFailMode.Any ) );
         }
 
         [Test]
         public void Populates_FailMode_increase_from_attribute()
         {
-            var cat = getChangeCatalog( "<SweptProjectData><ChangeCatalog><Change ID='this' FailMode='Increase'> ^CSharp </Change></ChangeCatalog></SweptProjectData>" );
-            List<Change> changes = cat.GetSortedChanges();
-            Assert.That( changes.Count, Is.EqualTo( 1 ) );
+            var cat = getRuleCatalog( "<SweptProjectData><RuleCatalog><Rule ID='this' FailMode='Increase'> ^CSharp </Rule></RuleCatalog></SweptProjectData>" );
+            List<Rule> rules = cat.GetSortedRules();
+            Assert.That( rules.Count, Is.EqualTo( 1 ) );
 
-            Assert.That( changes[0].RunFail, Is.EqualTo( RunFailMode.Increase ) );
+            Assert.That( rules[0].RunFail, Is.EqualTo( RunFailMode.Increase ) );
         }
 
         [Test]
         public void Populates_FailOver_Limit_from_attribute()
         {
-            var cat = getChangeCatalog( "<SweptProjectData><ChangeCatalog><Change ID='this' FailMode='Over' Limit='2'> ^CSharp </Change></ChangeCatalog></SweptProjectData>" );
-            List<Change> changes = cat.GetSortedChanges();
-            Assert.That( changes.Count, Is.EqualTo( 1 ) );
+            var cat = getRuleCatalog( "<SweptProjectData><RuleCatalog><Rule ID='this' FailMode='Over' Limit='2'> ^CSharp </Rule></RuleCatalog></SweptProjectData>" );
+            List<Rule> rules = cat.GetSortedRules();
+            Assert.That( rules.Count, Is.EqualTo( 1 ) );
 
-            Assert.That( changes[0].RunFail, Is.EqualTo( RunFailMode.Over ) );
-            Assert.That( changes[0].RunFailOverLimit, Is.EqualTo( 2 ) );
+            Assert.That( rules[0].RunFail, Is.EqualTo( RunFailMode.Over ) );
+            Assert.That( rules[0].RunFailOverLimit, Is.EqualTo( 2 ) );
         }
 
         [Test]
-        public void ChangeCatalog_from_IncorrectXML_Throws()
+        public void RuleCatalog_from_IncorrectXML_Throws()
         {
-            var ex = Assert.Throws<Exception>( () => getChangeCatalog( "<x>eek!</x>" ) );
-            Assert.That( ex.Message, Is.EqualTo( "Document must have a <ChangeCatalog> node inside a <SweptProjectData> node.  Please supply one." ) );
+            var ex = Assert.Throws<Exception>( () => getRuleCatalog( "<x>eek!</x>" ) );
+            Assert.That( ex.Message, Is.EqualTo( "Document must have a <RuleCatalog> node inside a <SweptProjectData> node.  Please supply one." ) );
         }
 
         [Test]
         public void FailMode_parse_gives_clear_exception_on_invalid_value()
         {
-            string badMode = "<SweptProjectData><ChangeCatalog><Change ID='this' FailMode='Fake'> ^CSharp </Change></ChangeCatalog></SweptProjectData>";
-            var ex = Assert.Throws<Exception>( () => getChangeCatalog( badMode ) );
-            Assert.That( ex.Message, Is.EqualTo( "Change ID [this] has an unknown FailMode value [Fake]." ) );
+            string badMode = "<SweptProjectData><RuleCatalog><Rule ID='this' FailMode='Fake'> ^CSharp </Rule></RuleCatalog></SweptProjectData>";
+            var ex = Assert.Throws<Exception>( () => getRuleCatalog( badMode ) );
+            Assert.That( ex.Message, Is.EqualTo( "Rule ID [this] has an unknown FailMode value [Fake]." ) );
         }
 
         [Test]
         public void FailOver_Limit_gripes_when_missing_or_gibberish()
         {
-            string badLimit = "<SweptProjectData><ChangeCatalog><Change ID='this' FailMode='Over' Limit='asfdfds'> ^CSharp </Change></ChangeCatalog></SweptProjectData>";
-            Exception ex = Assert.Throws<Exception>( () => getChangeCatalog( badLimit ) );
-            Assert.That( ex.Message, Is.EqualTo( "Found no integer 'Limit' for Change ID [this]." ) );
+            string badLimit = "<SweptProjectData><RuleCatalog><Rule ID='this' FailMode='Over' Limit='asfdfds'> ^CSharp </Rule></RuleCatalog></SweptProjectData>";
+            Exception ex = Assert.Throws<Exception>( () => getRuleCatalog( badLimit ) );
+            Assert.That( ex.Message, Is.EqualTo( "Found no integer 'Limit' for Rule ID [this]." ) );
         }
     }
 }
