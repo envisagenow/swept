@@ -21,7 +21,7 @@ namespace swept
         }
 
 
-        public string ReportOn( Dictionary<Rule, Dictionary<SourceFile, ClauseMatch>> filesPerRule )
+        public string ReportOn( Dictionary<Rule, FileProblems> filesPerRule )
         {
             XDocument report_doc = new XDocument();
             XElement report_root = new XElement( "SweptBuildReport" );
@@ -74,7 +74,7 @@ namespace swept
                 return string.Empty;
             else
             {
-                var plurality = failures.Count > 1 ? "s" : "";
+                var plurality = failures.Count == 1 ? "" : "s";
 
                 string failuresText = "";
                 foreach (string fail in failures)
@@ -105,8 +105,7 @@ namespace swept
             XDocument doc;
             try
             {
-                //doc = _storage.LoadRunHistory( _args.History );
-                doc = _storage.LoadRunHistory();
+                doc = _storage.LoadRunHistory( _args.History );
             }
             catch (FileNotFoundException)
             {
@@ -169,7 +168,7 @@ namespace swept
                 report_root.Add( runElement );
             }
 
-            _storage.SaveRunHistory( report );
+            _storage.SaveRunHistory( report, _args.History );
         }
 
     }

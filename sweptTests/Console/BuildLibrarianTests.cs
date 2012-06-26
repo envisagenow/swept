@@ -99,7 +99,7 @@ namespace swept.Tests
         {
             string empty_report = "<SweptBuildReport TotalTasks=\"0\" />";
 
-            string report = _librarian.ReportOn( new Dictionary<Rule, Dictionary<SourceFile, ClauseMatch>>() );
+            string report = _librarian.ReportOn( new Dictionary<Rule, FileProblems>() );
 
             Assert.That( report, Is.EqualTo( empty_report ) );
         }
@@ -115,7 +115,7 @@ namespace swept.Tests
 </SweptBuildReport>"
             );
 
-            var rules = new Dictionary<Rule, Dictionary<SourceFile,ClauseMatch>>();
+            var rules = new Dictionary<Rule, FileProblems>();
 
             var rule = new Rule
             {
@@ -126,7 +126,7 @@ namespace swept.Tests
 
             var bar = new SourceFile( "bar.htm" );
 
-            var fileMatches = new Dictionary<SourceFile, ClauseMatch>();
+            var fileMatches = new FileProblems();
             fileMatches[bar] = new LineMatch( new List<int> { 1, 12, 123, 1234 } );
             rules.Add( rule, fileMatches );
 
@@ -170,7 +170,7 @@ namespace swept.Tests
             SourceFile foo = new SourceFile("foo.cs");
             SourceFile goo = new SourceFile("goo.cs");
 
-            var csharpFiles = new Dictionary<SourceFile, ClauseMatch>();
+            var csharpFiles = new FileProblems();
             csharpFiles[foo] = new FileMatch(true);
             csharpFiles[goo] = new LineMatch(new List<int> { 1, 2, 3 });
 
@@ -184,11 +184,11 @@ namespace swept.Tests
             SourceFile bar = new SourceFile("bar.htm");
             SourceFile shmoo = new SourceFile("shmoo.aspx");
 
-            var htmlFiles = new Dictionary<SourceFile, ClauseMatch>();
+            var htmlFiles = new FileProblems();
             htmlFiles[bar] = new LineMatch(new List<int> { 1, 2, 3, 4 });
             htmlFiles[shmoo] = new LineMatch(new List<int> { 8, 12 });
 
-            var rules = new Dictionary<Rule, Dictionary<SourceFile, ClauseMatch>>();
+            var rules = new Dictionary<Rule, FileProblems>();
             rules[csharpRule] = csharpFiles;
             rules[htmlRule] = htmlFiles;
 
@@ -224,12 +224,12 @@ namespace swept.Tests
             SourceFile goo = new SourceFile("goo.cs");
             SourceFile boo = new SourceFile("boo.cs");
 
-            var csharpFiles = new Dictionary<SourceFile, ClauseMatch>();
+            var csharpFiles = new FileProblems();
             csharpFiles[foo] = new FileMatch(true);
             csharpFiles[goo] = new FileMatch(false);
             csharpFiles[boo] = new LineMatch( new int[] {} );
 
-            var rules = new Dictionary<Rule, Dictionary<SourceFile, ClauseMatch>>();
+            var rules = new Dictionary<Rule, FileProblems>();
             rules[csharpRule] = csharpFiles;
 
             string report = _librarian.ReportOn(rules);

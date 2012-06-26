@@ -80,6 +80,20 @@ namespace swept.Tests
             Assert.That( args.History, Is.EqualTo( Path.Combine( searchFolder, foundHistory ) ) );
         }
 
+        [TestCase( "foo.custom.library.name", "foo.custom.history.name" )]
+        [TestCase( "foo.custom.odd", "foo.custom.odd.history" )]
+        public void Missing_History_arg_will_assume_name_from_library_name( string libName, string expectedHistoryName )
+        {
+            var searchFolder = "f:\\work\\search_here";
+            var foundFiles = new List<string>();
+            _storage.FilesInFolder[searchFolder] = foundFiles;
+
+            var argsText = new string[] { "library:" + libName, "folder:" + searchFolder };
+            var args = new Arguments( argsText, _storage, Console.Out );
+
+            Assert.That( args.History, Is.EqualTo( Path.Combine( searchFolder, expectedHistoryName ) ) );
+        }
+
         [Test]
         public void Missing_Library_arg_will_throw_when_no_library_found_in_folder()
         {

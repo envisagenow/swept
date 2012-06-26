@@ -88,14 +88,15 @@ namespace swept
             }
         }
 
-        public void SaveRunHistory( XDocument runHistory )
+        public void SaveRunHistory( XDocument runHistory, string fileName )
         {
-            throw new NotImplementedException();
+            runHistory.Save( fileName );
         }
 
-        public XDocument LoadRunHistory()
+        public XDocument LoadRunHistory( string historyPath )
         {
-            throw new NotImplementedException();
+            var historyText = File.ReadAllText( historyPath );
+            return XDocument.Parse( historyText );
         }
     }
 }

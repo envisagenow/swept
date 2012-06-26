@@ -14,7 +14,7 @@ namespace swept
         {
             try
             {
-                execute( args, new StorageAdapter(), Console.Out, Console.Error );
+                execute( args, new StorageAdapter(), Console.Out, Console.Error, DateTime.Now );
             }
             catch (Exception ex)
             {
@@ -23,7 +23,7 @@ namespace swept
             }
         }
 
-        private static void execute( string[] args, IStorageAdapter storage, TextWriter reportWriter, TextWriter errorWriter )
+        private static void execute( string[] args, IStorageAdapter storage, TextWriter reportWriter, TextWriter errorWriter, DateTime startTime )
         {
             var arguments = new Arguments( args, storage, reportWriter );
             if (arguments.AreInvalid)
@@ -51,10 +51,9 @@ namespace swept
             var reportXML = buildReporter.ReportOn( results );
             reportWriter.WriteLine( reportXML );
 
-            ////todo Run history looks like:
             var runHistory = buildReporter.ReadRunHistory();
-            //// add the current run's results to the history
-            //buildReporter.WriteRunHistory( runHistory );
+            var newRun = runHistory.GenerateEntry( results, startTime );
+            runHistory.AddRun( newRun );
 
             int failureCode = 0;
 
@@ -67,6 +66,8 @@ namespace swept
 
                 failureCode = 10;
             }
+
+            buildReporter.WriteRunHistory( runHistory );
 
             Environment.Exit( failureCode );
         }

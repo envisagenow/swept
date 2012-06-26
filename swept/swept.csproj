@@ -126,11 +126,10 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <None Include="diagrams\Files_Changes_Matches.cd" />
-    <None Include="diagrams\clauses_and_tasks.cd" />
-    <None Include="diagrams\GUI_connection.cd" />
-    <None Include="diagrams\swept_diagram.cd" />
     <None Include="DSL\ChangeRule.g" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="diagrams\" />
   </ItemGroup>
   <PropertyGroup>
     <UseHostCompilerIfAvailable>False</UseHostCompilerIfAvailable>

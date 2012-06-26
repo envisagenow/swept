@@ -70,18 +70,14 @@ namespace swept.Tests
         }
 
         [Test]
-        public void Waterline_disregards_failed_runs()
+        public void Failed_runs_do_not_alter_waterline()
         {
-            var run = new RunHistoryEntry();
-            run.Number = 401;
+            var run = new RunHistoryEntry() { Number = 401, Passed = true };
             run.Violations["Eliminate Crystal Reports"] = 6;
-            run.Passed = true;
             _history.AddRun( run );
 
-            var failingRun = new RunHistoryEntry();
-            failingRun.Number = 402;
+            var failingRun = new RunHistoryEntry() { Number = 402, Passed = false };
             failingRun.Violations["Eliminate Crystal Reports"] = 718;
-            failingRun.Passed = false;
             _history.AddRun( failingRun );
 
             Assert.That( _history.WaterlineFor( "Eliminate Crystal Reports" ), Is.EqualTo( 6 ) );
@@ -97,7 +93,7 @@ namespace swept.Tests
                 RunFail = RunFailMode.Over,
                 RunFailOverLimit = 20
             };
-            var sourceClauseMatch = new Dictionary<SourceFile, ClauseMatch>();
+            var sourceClauseMatch = new FileProblems();
 
             var failedSource = new SourceFile( "some_file.cs" );
 
@@ -109,11 +105,11 @@ namespace swept.Tests
             ClauseMatch failedClause = new LineMatch( violationLines );
             sourceClauseMatch[failedSource] = failedClause;
 
-            var ruleViolations = new Dictionary<Rule, Dictionary<SourceFile, ClauseMatch>>();
+            var ruleViolations = new Dictionary<Rule, FileProblems>();
             ruleViolations[rule] = sourceClauseMatch;
 
 
-            var noMatches = new Dictionary<SourceFile, ClauseMatch>();
+            var noMatches = new FileProblems();
             var happyRule = new Rule
             {
                 ID = "no problem",

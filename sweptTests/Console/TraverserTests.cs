@@ -136,8 +136,8 @@ namespace swept.Tests
 
             var ex = Assert.Throws<Exception>( () => traverser.GetProjectFiles() );
             Assert.That( ex.Message.Contains( "C:\\missing\\folder'" ) );
-            Assert.That( ex.Message.Contains( "Perhaps you expected a different current dir." ) );
-            Assert.That( ex.Message.Contains( "specify a different 'folder:' argument" ) );
+            Assert.That( ex.Message.Contains( "Perhaps you expected a different working folder" ) );
+            Assert.That( ex.Message.Contains( "'folder:' argument" ) );
         }
     }
 }

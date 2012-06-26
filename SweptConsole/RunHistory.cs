@@ -4,12 +4,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
 namespace swept
 {
+
+    public class FileProblems : Dictionary<SourceFile, ClauseMatch> { }
+
     public class RunHistory
     {
-        public const int HighWaterLine = 4000;
+        public const int HighWaterLine = int.MaxValue;
 
         public int NextRunNumber
         {
@@ -32,7 +34,7 @@ namespace swept
             Runs = new List<RunHistoryEntry>();
         }
 
-        public RunHistoryEntry GenerateEntry( Dictionary<Rule, Dictionary<SourceFile, ClauseMatch>> ruleViolations, DateTime runDateTime )
+        public RunHistoryEntry GenerateEntry( Dictionary<Rule, FileProblems> ruleViolations, DateTime runDateTime )
         {
             var checker = new FailChecker( this );
             var failures = checker.Check( ruleViolations );
@@ -73,12 +75,12 @@ namespace swept
             }
         }
 
-        private int countViolations( Dictionary<SourceFile, ClauseMatch> problemsPerFile )
+        private int countViolations( FileProblems fileProblems )
         {
             int count = 0;
-            foreach (SourceFile source in problemsPerFile.Keys)
+            foreach (SourceFile file in fileProblems.Keys)
             {
-                count += problemsPerFile[source].Count;
+                count += fileProblems[file].Count;
             }
             return count;
         }

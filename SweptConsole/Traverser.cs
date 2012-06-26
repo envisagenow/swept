@@ -61,8 +61,8 @@ namespace swept
                 if (ioex.Message.StartsWith( "Could not find a part of the path " ))
                 {
                     var msg = string.Format( 
-                        "{0}{1}Perhaps you expected a different current dir.{1}Perhaps you need to specify a different 'folder:' argument.", 
-                        ioex.Message, Environment.NewLine );
+                        "{0}{1}Perhaps you expected a different working folder than [{2}]?{1}That can be controlled from the command line with the 'folder:' argument.", 
+                        ioex.Message, Environment.NewLine, _args.Folder );
                     throw new Exception( msg, ioex );
                 }
                 throw;

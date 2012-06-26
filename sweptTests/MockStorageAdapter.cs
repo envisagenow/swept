@@ -110,13 +110,15 @@ namespace swept.Tests
             return _loadedFiles.Contains( fileName );
         }
 
-        public void SaveRunHistory( XDocument runHistory )
+        public string SavedHistoryFileName;
+        public void SaveRunHistory( XDocument runHistory, string fileName )
         {
             RunHistory = runHistory;
+            SavedHistoryFileName = fileName;
         }
 
         public Exception RunHistoryNotFoundException { get; set; }
-        public XDocument LoadRunHistory()
+        public XDocument LoadRunHistory( string historyPath )
         {
             if (RunHistoryNotFoundException != null)
                 throw RunHistoryNotFoundException;

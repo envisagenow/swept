@@ -4,26 +4,25 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Xml.Linq;
 
 namespace swept
 {
     public class FailChecker
     {
+        public readonly RunHistory History;
         public FailChecker( RunHistory history )
         {
             History = history;
         }
 
-        public RunHistory History { get; private set; }
 
-        public List<string> Check( Dictionary<Rule, Dictionary<SourceFile, ClauseMatch>> ruleViolations )
+        public List<string> Check( Dictionary<Rule, FileProblems> ruleFileProblems )
         {
             var failures = new List<string>();
 
-            foreach (var rule in ruleViolations.Keys)
+            foreach (var rule in ruleFileProblems.Keys)
             {
-                int count = countViolations( ruleViolations[rule] );
+                int count = countViolations( ruleFileProblems[rule] );
 
                 int threshold;
                 switch (rule.RunFail)
@@ -62,12 +61,12 @@ namespace swept
         }
 
         //todo, move to a more general purpose location
-        private int countViolations( Dictionary<SourceFile, ClauseMatch> problemsPerFile )
+        private int countViolations( FileProblems fileProblems )
         {
             int count = 0;
-            foreach (SourceFile source in problemsPerFile.Keys)
+            foreach (SourceFile source in fileProblems.Keys)
             {
-                count += problemsPerFile[source].Count;
+                count += fileProblems[source].Count;
             }
             return count;
         }

@@ -69,7 +69,7 @@ namespace swept.Tests
             MockStorageAdapter storage = new MockStorageAdapter();
             Gatherer gatherer = new Gatherer( changes, files, storage );
 
-            Dictionary<Rule, Dictionary<SourceFile,ClauseMatch>> results = gatherer.GetMatchesPerRule();
+            Dictionary<Rule, FileProblems> results = gatherer.GetMatchesPerRule();
 
             Assert.That( results.Count, Is.EqualTo( 1 ) );
             Assert.That( results.Keys.First(), Is.SameAs( change ) );

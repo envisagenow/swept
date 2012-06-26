@@ -6,6 +6,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.IO;
 using System.Diagnostics;
+using System.Text.RegularExpressions;
 
 namespace swept
 {
@@ -62,8 +63,8 @@ NYI files:  A comma-separated list of files to search for violations.  Not
         {
             get
             {
-                return @"Swept version 0.3, Swept core version 0.5.1
-Copyright (c) 2012 Jason Cole and Envisage Technologies Corp.
+                return @"Swept version 0.4, Swept core version 0.6.0
+Copyright (c) 2009, 2012 Jason Cole and Envisage Technologies Corp.
 This software is open source, MIT license.  See the file LICENSE for details.
 ";
             }
@@ -164,15 +165,18 @@ This software is open source, MIT license.  See the file LICENSE for details.
 
             if (string.IsNullOrEmpty( History ))
             {
-                var possibilities = storageAdapter.GetFilesInFolder( Folder, "*.swept.history" );
-                int resultCount = possibilities.Count();
+                var candidates = storageAdapter.GetFilesInFolder( Folder, "*.swept.history" );
+                int candidateCount = candidates.Count();
 
-                if (resultCount == 1)
-                    History = possibilities.First();
-                else if (resultCount == 0)
-                    History = "like the library file, just s/library/history/, except the user may have put their own custom name for the library in which doesn't contain the substring 'library'.";
+                if (candidateCount == 1)
+                    History = candidates.First();
+                else if (candidateCount == 0)
+                {
+                    History = Regex.Replace( Library, "library", "history" );
+                    if (History == Library)
+                        History = Library + ".history";
+                }
             }
-
 
             if (!Exclude.Any())
             {
