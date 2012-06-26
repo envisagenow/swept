@@ -6,6 +6,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Xml.Linq;
 using System.IO;
+using System.Text;
 
 namespace swept
 {
@@ -21,7 +22,15 @@ namespace swept
         }
 
 
-        public string ReportOn( Dictionary<Rule, FileProblems> filesPerRule )
+        public string ReportOn( Dictionary<Rule, FileProblems> filesPerRule, RunHistory runHistory )
+        {
+            if (_args.Check)
+                return ReportCheckResult( filesPerRule, runHistory );
+            else
+                return ReportXmlResult( filesPerRule );
+        }
+
+        private static string ReportXmlResult( Dictionary<Rule, FileProblems> filesPerRule )
         {
             XDocument report_doc = new XDocument();
             XElement report_root = new XElement( "SweptBuildReport" );
@@ -67,7 +76,6 @@ namespace swept
             report_doc.Add( report_root );
             return report_doc.ToString();
         }
-
         public string ReportBuildFailures( List<string> failures )
         {
             if (failures.Count == 0)
@@ -85,6 +93,28 @@ namespace swept
                 string failureMessage = "Swept failed due to build breaking rule failure{0}:\n{1}";
                 return string.Format( failureMessage, plurality, failuresText );
             }
+        }
+
+        public string ReportCheckResult( Dictionary<Rule, FileProblems> filesPerRule, RunHistory runHistory )
+        {
+
+            List<string> problemLines = Check( filesPerRule, runHistory );
+
+            var sb = new StringBuilder();
+
+            if (problemLines.Count > 0)
+            {
+                foreach (var line in problemLines)
+                {
+                    sb.AppendLine( line );
+                }
+            }
+            else
+            {
+                sb.AppendLine("Swept check passed!");
+            }
+
+            return sb.ToString();
         }
 
         public XElement GenerateBuildFailureXML( List<string> failures )
@@ -169,6 +199,61 @@ namespace swept
             }
 
             _storage.SaveRunHistory( report, _args.History );
+        }
+
+        public List<string> Check( Dictionary<Rule, FileProblems> ruleFileProblems, RunHistory history )
+        {
+            var failures = new List<string>();
+
+            foreach (var rule in ruleFileProblems.Keys)
+            {
+                int count = countViolations( ruleFileProblems[rule] );
+
+                int threshold;
+                switch (rule.RunFail)
+                {
+                case RunFailMode.Any:
+                    threshold = 0;
+                    break;
+
+                case RunFailMode.Over:
+                    threshold = rule.RunFailOverLimit;
+                    break;
+
+                case RunFailMode.Increase:
+                    threshold = history.WaterlineFor( rule.ID );
+                    break;
+
+                case RunFailMode.None:
+                    threshold = int.MaxValue;
+                    break;
+
+                default:
+                    throw new Exception( String.Format( "I do not know how to check a failure mode of [{0}].  Please extend FailChecker.Check.", rule.RunFail ) );
+                }
+
+                string thresholdPhrase = (threshold == 0) ? "any" : "over [" + threshold + "]";
+
+                if (count > threshold)
+                {
+                    string failureText = string.Format( "Rule [{0}] has been violated [{1}] times, and it breaks the build if there are {2} violations.", rule.ID, count, thresholdPhrase );
+                    failures.Add( failureText );
+                }
+
+            }
+
+            return failures;
+        }
+
+        //todo, move to a more general purpose location
+        private int countViolations( FileProblems fileProblems )
+        {
+            int count = 0;
+            foreach (SourceFile source in fileProblems.Keys)
+            {
+                count += fileProblems[source].Count;
+            }
+            return count;
         }
 
     }

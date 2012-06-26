@@ -77,12 +77,12 @@ namespace swept.Tests
         {
             RuleCatalog cat = new RuleCatalog();
 
-            Rule a_17a = new Rule { ID = "a_17" };
-            Rule a_17b = new Rule { ID = "a_17" };
+            Rule a_17a = new Rule { ID = "a_17", Description = "I was here first!" };
+            Rule a_17b = new Rule { ID = "a_17", Description = "You impostor!" };
 
             cat.Add( a_17a );
             var ex = Assert.Throws<Exception>( () => cat.Add( a_17b ) );
-            Assert.That( ex.Message, Is.EqualTo( "There is already a rule with the ID [a_17]." ));
+            Assert.That( ex.Message, Is.EqualTo( "Swept cannot add the rule \"You impostor!\" with the ID [a_17], the rule \"I was here first!\" already has that ID." ));
         }
 
     }

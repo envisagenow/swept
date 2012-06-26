@@ -29,8 +29,9 @@ namespace swept
 
         public void Add( Rule rule )
         {
-            if( _rules.Exists( c => c.ID == rule.ID) )
-                throw new Exception( string.Format( "There is already a rule with the ID [{0}].", rule.ID ) );
+            var priorRule = _rules.SingleOrDefault( r => r.ID == rule.ID );
+            if( priorRule != null )
+                throw new Exception( string.Format( "Swept cannot add the rule \"{0}\" with the ID [{1}], the rule \"{2}\" already has that ID.", rule.Description, rule.ID, priorRule.Description ) );
             _rules.Add( rule );
         }
     }

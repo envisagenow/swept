@@ -20,6 +20,7 @@ namespace swept
         public IEnumerable<string> Exclude { get; private set; }
         public bool Piping { get; private set; }
         public PipeSource PipeSource { get; private set; }
+        public bool Check { get; private set; }
 
         public string Output { get; private set; }
 
@@ -77,6 +78,7 @@ This software is open source, MIT license.  See the file LICENSE for details.
             Folder = string.Empty;
             Exclude = new List<string>();
             Output = string.Empty;
+            Check = false;
 
             List<string> exceptionMessages = new List<string>();
 
@@ -100,6 +102,10 @@ This software is open source, MIT license.  See the file LICENSE for details.
                     case "/?":
                         writer.Write( UsageMessage );
                         return;
+
+                    case "check":
+                        Check = true;
+                        continue;
 
                     default:
                         exceptionMessages.Add( String.Format( "Don't understand the input [{0}].  Try 'swept h' for help with arguments.", s ) );

@@ -42,6 +42,57 @@ namespace swept.Tests
         }
 
         [Test]
+        public void With_no_violations_the_check_report_is_cheerful()
+        {
+            Dictionary<Rule, FileProblems> problems = new Dictionary<Rule, FileProblems>();
+            string message = _librarian.ReportCheckResult( problems, null );
+
+            Assert.That( message, Is.EqualTo( "Swept check passed!" + Environment.NewLine ) );
+        }
+
+        [Test, Ignore("new setup needed")]
+        public void With_a_violation_the_check_report_complains()
+        {
+            var history = new RunHistory();
+            RunHistoryEntry entry = new RunHistoryEntry { Passed = true, Number = 1 };
+            entry.Violations["NET-001"] = 18;
+            history.AddRun( entry );
+
+
+            var net_001 = new Rule { ID = "NET-001", RunFail = RunFailMode.Increase };
+
+
+            Dictionary<Rule, FileProblems> problems = new Dictionary<Rule, FileProblems>();
+            FileProblems net_001_problems = new FileProblems();
+
+            problems[net_001] = net_001_problems;
+            string message = _librarian.ReportCheckResult( problems, null );
+
+
+            //string problem = "Rule [NET-001] has been violated [22] times, and it breaks the build if there are over [18] violations.";
+
+            //List<string> problemLines = new List<string>();
+            //problemLines.Add( problem );
+            //string message = _librarian.ReportCheckResult( problemLines );
+
+            //Assert.That( message, Is.EqualTo( problem + Environment.NewLine ) );
+        }
+
+        [Test, Ignore()]
+        public void With_violations_the_check_report_complains()
+        {
+            //List<string> problemLines = new List<string>();
+            //string problem = "Rule [NET-001] has been violated [22] times, and it breaks the build if there are over [18] violations.";
+            //string anotherProblem = "Rule [ETC-002] has been violated [7] times, and it breaks the build if there are over [6] violations.";
+            //problemLines.Add( problem );
+            //problemLines.Add( anotherProblem );
+            //string message = _librarian.ReportCheckResult( problemLines );
+
+            //string expectedMessage = problem + Environment.NewLine + anotherProblem + Environment.NewLine;
+            //Assert.That( message, Is.EqualTo( expectedMessage ) );
+        }
+
+        [Test]
         public void When_run_history_is_missing_a_new_one_is_created()
         {
             _storage.RunHistoryNotFoundException = new FileNotFoundException();
@@ -99,7 +150,7 @@ namespace swept.Tests
         {
             string empty_report = "<SweptBuildReport TotalTasks=\"0\" />";
 
-            string report = _librarian.ReportOn( new Dictionary<Rule, FileProblems>() );
+            string report = _librarian.ReportOn( new Dictionary<Rule, FileProblems>(), null );
 
             Assert.That( report, Is.EqualTo( empty_report ) );
         }
@@ -130,7 +181,7 @@ namespace swept.Tests
             fileMatches[bar] = new LineMatch( new List<int> { 1, 12, 123, 1234 } );
             rules.Add( rule, fileMatches );
 
-            string report = _librarian.ReportOn( rules );
+            string report = _librarian.ReportOn( rules, null );
 
             Assert.That( report, Is.EqualTo( expectedReport.ToString() ) );
         }
@@ -192,7 +243,7 @@ namespace swept.Tests
             rules[csharpRule] = csharpFiles;
             rules[htmlRule] = htmlFiles;
 
-            string report = _librarian.ReportOn(rules);
+            string report = _librarian.ReportOn(rules, null);
 
             Assert.That(report, Is.EqualTo(expectedReport.ToString()));
         }
@@ -232,7 +283,7 @@ namespace swept.Tests
             var rules = new Dictionary<Rule, FileProblems>();
             rules[csharpRule] = csharpFiles;
 
-            string report = _librarian.ReportOn(rules);
+            string report = _librarian.ReportOn(rules, null);
 
             Assert.That(report, Is.EqualTo(expectedReport.ToString()));
         }

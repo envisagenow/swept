@@ -47,27 +47,34 @@ namespace swept
 
             var results = gatherer.GetMatchesPerRule();
 
-            var buildReporter = new BuildLibrarian( arguments, storage );
-            var reportXML = buildReporter.ReportOn( results );
-            reportWriter.WriteLine( reportXML );
+            var buildLibrarian = new BuildLibrarian( arguments, storage );
 
-            var runHistory = buildReporter.ReadRunHistory();
+            var runHistory = buildLibrarian.ReadRunHistory();
+
+            if (arguments.Check)
+            {
+                string checkMessage = String.Format( "Swept checking [{0}] with rules in [{1}] on {2}...", "s:\\code\\swept", "swept.2010.swept.library", "6/26/2012 10:58 AM" );
+                reportWriter.WriteLine( checkMessage );
+            }
+            {
+                var reportXML = buildLibrarian.ReportOn( results, runHistory );
+                reportWriter.WriteLine( reportXML );
+            }
             var newRun = runHistory.GenerateEntry( results, startTime );
             runHistory.AddRun( newRun );
 
             int failureCode = 0;
 
-            FailChecker checker = new FailChecker( runHistory );
-            var failures = checker.Check( results );
+            var failures = buildLibrarian.Check( results, runHistory );
             if (failures.Any())
             {
-                var message = buildReporter.ReportBuildFailures( failures );
+                var message = buildLibrarian.ReportBuildFailures( failures );
                 errorWriter.WriteLine( message );
 
                 failureCode = 10;
             }
 
-            buildReporter.WriteRunHistory( runHistory );
+            buildLibrarian.WriteRunHistory( runHistory );
 
             Environment.Exit( failureCode );
         }

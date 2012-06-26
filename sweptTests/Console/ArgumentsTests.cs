@@ -66,6 +66,20 @@ namespace swept.Tests
             Assert.That( output, Is.EqualTo( Arguments.VersionMessage ) );
         }
 
+        //[Test]
+        //public void Check_emits_line_describing_folder_library_and_datetime()
+        //{
+        //    string output;
+        //    using (var writer = new StringWriter())
+        //    {
+        //        new Arguments( new string[] { "check" }, _storage, writer );
+        //        writer.Close();
+        //        output = writer.ToString();
+        //    }
+        //    // TODO: set 'now' in the arguments, and extend the message to have the date/time
+        //    Assert.That( output, Is.StringStarting( "Swept checking [somewhere] with rules in [some file] on" ) );
+        //}
+
         [Test]
         public void Missing_History_arg_will_use_single_history_found_in_folder()
         {

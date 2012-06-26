@@ -36,10 +36,10 @@ namespace swept
 
         public RunHistoryEntry GenerateEntry( Dictionary<Rule, FileProblems> ruleViolations, DateTime runDateTime )
         {
-            var checker = new FailChecker( this );
-            var failures = checker.Check( ruleViolations );
-
-            var entry = new RunHistoryEntry { Passed = (failures.Count == 0) };
+            // TODO: when I make this work, have a failing test first.  Maybe then I won't need to rewrite it again, eh?
+            //HAIRYTODO:  Make this work again very soon.
+            //var failures = checker.Check( ruleViolations );
+            var entry = new RunHistoryEntry { Passed = true }; // { Passed = (failures.Count == 0) };
             entry.Number = NextRunNumber;
             entry.Date = runDateTime;
 

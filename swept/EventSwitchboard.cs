@@ -8,8 +8,6 @@ namespace swept
 {
     public class EventSwitchboard
     {
-        private ProjectLibrarian Librarian { get; set; }
-
         public void Hear_TaskLocationSought( object sender, TaskEventArgs args )
         {
             // TODO: transmit this to the IDE.

@@ -13,7 +13,7 @@ namespace swept.Tests
     [TestFixture]
     public class RunFail_tests
     {
-        private FailChecker _checker;
+        private BuildLibrarian _checker;
         private RunHistory _history;
         private Dictionary<Rule, FileProblems> _runResults;
 
@@ -21,14 +21,14 @@ namespace swept.Tests
         public void Setup()
         {
             _history = new RunHistory();
-            _checker = new FailChecker( _history );
+            _checker = new BuildLibrarian( null, null );
             _runResults = new Dictionary<Rule, FileProblems>();
         }
 
         [Test]
         public void Zero_Violations_do_not_fail()
         {
-            var problems = _checker.Check( _runResults );
+            var problems = _checker.Check( _runResults, _history );
             Assert.That( problems.Count(), Is.EqualTo( 0 ) );
         }
 
@@ -45,7 +45,7 @@ namespace swept.Tests
 
             _runResults[rule] = sourceClauseMatch;
 
-            var failures = _checker.Check( _runResults );
+            var failures = _checker.Check( _runResults, _history );
 
             Assert.That( failures.Count(), Is.EqualTo( 1 ) );
             Assert.That( failures[0], Is.EqualTo( "Rule [644] has been violated [2] times, and it breaks the build if there are any violations." ) );
@@ -59,7 +59,7 @@ namespace swept.Tests
 
             _runResults[rule] = sourceClauseMatch;
 
-            var failures = _checker.Check( _runResults );
+            var failures = _checker.Check( _runResults, _history );
 
             Assert.That( failures.Count(), Is.EqualTo( 0 ) );
         }
@@ -78,7 +78,7 @@ namespace swept.Tests
             var rules = new Dictionary<Rule, FileProblems>();
             rules[rule] = sourceClauseMatch;
 
-            var failures = _checker.Check( rules );
+            var failures = _checker.Check( rules, _history );
 
             Assert.That( failures.Count(), Is.EqualTo( 0 ) );
         }
@@ -102,7 +102,7 @@ namespace swept.Tests
             _runResults[rule] = sourceClauseMatch;
             _runResults[rule2] = sourceClauseMatch2;
 
-            var failures = _checker.Check( _runResults );
+            var failures = _checker.Check( _runResults, _history );
 
             Assert.That( failures.Count(), Is.EqualTo( 2 ) );
             Assert.That( failures[0], Is.EqualTo( "Rule [191] has been violated [2] times, and it breaks the build if there are any violations." ) );
@@ -126,7 +126,7 @@ namespace swept.Tests
 
             _runResults[rule] = sourceClauseMatch;
 
-            var failures = _checker.Check( _runResults );
+            var failures = _checker.Check( _runResults, _history );
 
             Assert.That( failures.Count(), Is.EqualTo( 1 ) );
             Assert.That( failures[0], Is.EqualTo( "Rule [200] has been violated [3] times, and it breaks the build if there are over [2] violations." ) );
@@ -149,7 +149,7 @@ namespace swept.Tests
 
             _runResults[rule] = sourceClauseMatch;
 
-            var failures = _checker.Check( _runResults );
+            var failures = _checker.Check( _runResults, _history );
 
             Assert.That( failures.Count(), Is.EqualTo( 0 ) );
         }
@@ -176,7 +176,7 @@ namespace swept.Tests
 
             _history.AddRun( new RunHistoryEntry { Date = DateTime.Now.AddDays( -7 ), Number = 1704, Violations = vio, Passed = true } );
 
-            var failures = _checker.Check( _runResults );
+            var failures = _checker.Check( _runResults, _history );
 
             Assert.That( failures.Count(), Is.EqualTo( 1 ) );
             Assert.That( failures[0], Is.EqualTo( "Rule [300] has been violated [14] times, and it breaks the build if there are over [10] violations." ) );
