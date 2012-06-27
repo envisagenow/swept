@@ -51,32 +51,36 @@ namespace swept
 
             var runHistory = buildLibrarian.ReadRunHistory();
 
-            if (arguments.Check)
-            {
-                string checkMessage = String.Format( "Swept checking [{0}] with rules in [{1}] on {2}...", "s:\\code\\swept", "swept.2010.swept.library", "6/26/2012 10:58 AM" );
-                reportWriter.WriteLine( checkMessage );
-            }
-            {
-                var reportXML = buildLibrarian.ReportOn( results, runHistory );
-                reportWriter.WriteLine( reportXML );
-            }
+            string header = buildLibrarian.GetConsoleHeader( startTime );
+            reportWriter.Write( header );
 
+            var report = buildLibrarian.ReportOn( results, runHistory );
+            reportWriter.WriteLine( report );
 
-            var newRun = buildLibrarian.GenerateEntry(results, runHistory, startTime);
+            RunHistoryEntry newRun = buildLibrarian.GenerateEntry( startTime );
             runHistory.AddRun( newRun );
 
             int failureCode = 0;
 
-            var failures = buildLibrarian.ListRunFailures( results, runHistory );
-            if (failures.Any())
+            //goal:
+            if (!newRun.Passed)
             {
-                var message = buildLibrarian.ReportBuildFailures( failures );
+                var message = buildLibrarian.ReportFailures();
                 errorWriter.WriteLine( message );
 
                 failureCode = 10;
             }
 
-            buildLibrarian.WriteRunHistory( runHistory );
+            //var failures = buildLibrarian.ListRunFailures( results, runHistory );
+            //if (failures.Any())
+            //{
+            //    var message = buildLibrarian.ReportBuildFailures();
+            //    errorWriter.WriteLine( message );
+
+            //    failureCode = 10;
+            //}
+
+            buildLibrarian.WriteRunHistory();
 
             Environment.Exit( failureCode );
         }

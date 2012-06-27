@@ -15,6 +15,9 @@ namespace swept
     {
         private readonly IStorageAdapter _storage;
         private readonly Arguments _args;
+        internal List<string> _failures;
+        private Dictionary<Rule, FileProblems> _filesPerRule;
+        private RunHistory _runHistory;
 
         public BuildLibrarian( Arguments args, IStorageAdapter storage )
         {
@@ -22,39 +25,69 @@ namespace swept
             _storage = storage;
         }
 
+        public string GetConsoleHeader(DateTime runtime)
+        {
+            return (_args.Check ? String.Format( "Swept checking [{0}] with rules in [{1}] on {2}...{3}", _storage.GetCWD(), _args.Library, runtime.ToString( "G" ), Environment.NewLine ) : string.Empty);
+        }
+
         public string ReportOn( Dictionary<Rule, FileProblems> filesPerRule, RunHistory runHistory )
         {
+            _filesPerRule = filesPerRule;
+            _runHistory = runHistory;
+            _failures = ListRunFailures( filesPerRule, runHistory );
+
+            
             if (_args.Check)
-                return ReportCheckResult( filesPerRule, runHistory );
+                return ReportCheckResult();
             else
-                return ReportXmlResult( filesPerRule );
+                return ReportXmlResult();
         }
 
-        public string ReportCheckResult(Dictionary<Rule, FileProblems> filesPerRule, RunHistory runHistory)
+        public string ReportFailures()
         {
-            List<string> problemLines = ListRunFailures(filesPerRule, runHistory);
-
-            if (!problemLines.Any())
-                return "Swept check passed!\r\n";
-
-            var sb = new StringBuilder();
-
-            if (problemLines.Count > 0)
-            {
-                foreach (var line in problemLines)
-                {
-                    sb.AppendLine(line);
-                }
-            }
+            if (_failures.Count == 0)
+                return string.Empty;
             else
             {
-                sb.AppendLine("Swept check passed!");
-            }
+                var plurality = _failures.Count == 1 ? "" : "s";
 
-            return sb.ToString();
+                string failuresText = "";
+                foreach (string fail in _failures)
+                {
+                    failuresText += fail + Environment.NewLine;
+                }
+
+                //string failureMessage = "Swept failed due to build breaking rule failure{0}:\n{1}";
+                //return string.Format( failureMessage, plurality, failuresText );
+                return failuresText;
+            }
         }
 
-        private static string ReportXmlResult( Dictionary<Rule, FileProblems> filesPerRule )
+        public string ReportCheckResult()
+        {
+            if (!_failures.Any())
+                return "Swept check passed!\r\n";
+            else
+                return "Swept check failed!\r\n";
+
+            //var sb = new StringBuilder();
+
+            //if (_failures.Count > 0)
+            //{
+            //    foreach (var line in _failures)
+            //    {
+            //        sb.AppendLine(line);
+            //    }
+            //}
+            //else
+            //{
+            //    sb.AppendLine("Swept check passed!");
+            //}
+
+            //return sb.ToString();
+        }
+
+        private string ReportXmlResult()
         {
             XDocument report_doc = new XDocument();
             XElement report_root = new XElement( "SweptBuildReport" );
@@ -65,7 +98,7 @@ namespace swept
             //  report_root.Add( failures_element );
 
             int totalTasks = 0;
-            foreach (Rule rule in filesPerRule.Keys.OrderBy( c => c.ID ))
+            foreach (Rule rule in _filesPerRule.Keys.OrderBy( c => c.ID ))
             {
                 int totalTasksPerRule = 0;
 
@@ -74,7 +107,7 @@ namespace swept
                     new XAttribute( "Description", rule.Description )
                 );
 
-                var fileMatches = filesPerRule[rule];
+                var fileMatches = _filesPerRule[rule];
                 foreach (SourceFile file in fileMatches.Keys.OrderBy( file => file.Name ))
                 {
                     var match = fileMatches[file];
@@ -102,16 +135,16 @@ namespace swept
             return report_doc.ToString();
         }
 
-        public string ReportBuildFailures( List<string> failures )
+        public string ReportBuildFailures()
         {
-            if (failures.Count == 0)
+            if (_failures.Count == 0)
                 return string.Empty;
             else
             {
-                var plurality = failures.Count == 1 ? "" : "s";
+                var plurality = _failures.Count == 1 ? "" : "s";
 
                 string failuresText = "";
-                foreach (string fail in failures)
+                foreach (string fail in _failures)
                 {
                     failuresText += fail + "\n";
                 }
@@ -121,11 +154,11 @@ namespace swept
             }
         }
 
-        public XElement GenerateBuildFailureXML( List<string> failures )
+        public XElement GenerateBuildFailureXML()
         {
             XElement xml = new XElement( "SweptBuildFailures" );
 
-            foreach (string fail in failures)
+            foreach (string fail in _failures)
             {
                 XElement xmlFailure = new XElement( "SweptBuildFailure", fail );
                 xml.Add( xmlFailure );
@@ -174,14 +207,14 @@ namespace swept
             return runHistory;
         }
 
-        public void WriteRunHistory( RunHistory runHistory )
+        public void WriteRunHistory()
         {
             var report = new XDocument();
 
             XElement report_root = new XElement( "RunHistory" );
             report.Add( report_root );
 
-            foreach (var run in runHistory.Runs)
+            foreach (var run in _runHistory.Runs)
             {
                 var runElement = new XElement( "Run",
                     new XAttribute( "Number", run.Number ),
@@ -205,19 +238,18 @@ namespace swept
             _storage.SaveRunHistory( report, _args.History );
         }
 
-        public RunHistoryEntry GenerateEntry(Dictionary<Rule, FileProblems> runDetails, RunHistory runHistory, DateTime runDateTime)
+        public RunHistoryEntry GenerateEntry( DateTime runDateTime )
         {
             // TODO: when I make this work, have a failing test first.  Maybe then I won't need to rewrite it again, eh?
-            var failures = ListRunFailures( runDetails, runHistory );
             var entry = new RunHistoryEntry {
-                Passed = (failures.Count == 0),
-                Number = runHistory.NextRunNumber, 
+                Passed = (_failures.Count == 0),
+                Number = _runHistory.NextRunNumber, 
                 Date = runDateTime 
             };
 
-            foreach (var keyRule in runDetails.Keys)
+            foreach (var keyRule in _filesPerRule.Keys)
             {
-                entry.Violations[keyRule.ID] = countViolations(runDetails[keyRule]);
+                entry.Violations[keyRule.ID] = countViolations( _filesPerRule[keyRule] );
             }
 
             return entry;

@@ -83,7 +83,8 @@ namespace swept.Tests
             RunHistory runHistory = new RunHistory();
             runHistory.AddRun(new RunHistoryEntry { Number = 776, Passed = true } );
 
-            RunHistoryEntry entry = _librarian.GenerateEntry(ruleViolations, runHistory, nowish);
+            _librarian.ReportOn( ruleViolations, runHistory );
+            RunHistoryEntry entry = _librarian.GenerateEntry(nowish);
 
             Assert.That(entry.Number, Is.EqualTo(777));
             Assert.That(entry.Date, Is.EqualTo(nowish));
@@ -123,60 +124,14 @@ namespace swept.Tests
             RunHistory runHistory = new RunHistory();
             runHistory.AddRun(new RunHistoryEntry { Number = 887, Passed = true });
 
-            RunHistoryEntry entry = _librarian.GenerateEntry(ruleViolations, runHistory, nowish);
+            _librarian.ReportOn( ruleViolations, runHistory );
+            RunHistoryEntry entry = _librarian.GenerateEntry(nowish);
 
             Assert.That(entry.Number, Is.EqualTo(888));
             Assert.That(entry.Date, Is.EqualTo(nowish));
             Assert.That(entry.Violations.Count, Is.EqualTo(1));
             Assert.That(entry.Violations[rule.ID], Is.EqualTo(7));
             Assert.That(entry.Passed, Is.False);
-        }
-
-        [Test]
-        public void With_no_violations_the_check_report_is_cheerful()
-        {
-            Dictionary<Rule, FileProblems> problems = new Dictionary<Rule, FileProblems>();
-            string message = _librarian.ReportCheckResult( problems, null );
-
-            Assert.That( message, Is.EqualTo( "Swept check passed!" + Environment.NewLine ) );
-        }
-
-        [Test]
-        public void With_a_violation_the_check_report_complains()
-        {
-            var history = new RunHistory();
-            RunHistoryEntry entry = new RunHistoryEntry { Passed = true, Number = 1 };
-            entry.Violations["NET-001"] = 4;
-            history.AddRun(entry);
-
-            var net_001 = new Rule { ID = "NET-001", RunFail = RunFailMode.Increase };
-
-            FileProblems net_001_problems = new FileProblems();
-            var file = new SourceFile("troubled.cs");
-            var lines = new List<int>(new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 });
-            var match = new LineMatch(lines);
-            net_001_problems[file] = match;
-
-            Dictionary<Rule, FileProblems> problems = new Dictionary<Rule, FileProblems>();
-            problems[net_001] = net_001_problems;
-            string message = _librarian.ReportCheckResult(problems, history);
-
-            string expectedMessage = "Rule [NET-001] has been violated [9] times, and it breaks the build if there are over [4] violations.\r\n";
-            Assert.That(message, Is.EqualTo(expectedMessage));
-        }
-
-        [Test, Ignore()]
-        public void With_violations_the_check_report_complains()
-        {
-            //List<string> problemLines = new List<string>();
-            //string problem = "Rule [NET-001] has been violated [22] times, and it breaks the build if there are over [18] violations.";
-            //string anotherProblem = "Rule [ETC-002] has been violated [7] times, and it breaks the build if there are over [6] violations.";
-            //problemLines.Add( problem );
-            //problemLines.Add( anotherProblem );
-            //string message = _librarian.ReportCheckResult( problemLines );
-
-            //string expectedMessage = problem + Environment.NewLine + anotherProblem + Environment.NewLine;
-            //Assert.That( message, Is.EqualTo( expectedMessage ) );
         }
 
         [Test]
@@ -204,8 +159,6 @@ namespace swept.Tests
                 Passed = false
             } );
 
-            _librarian.WriteRunHistory( runHistory );
-
             Dictionary<string, int> violationsNext = new Dictionary<string, int>();
             violationsNext.Add( "bar", 0 );
             runHistory.AddRun( new RunHistoryEntry
@@ -216,7 +169,8 @@ namespace swept.Tests
                 Passed = true
             } );
 
-            _librarian.WriteRunHistory( runHistory );
+            _librarian.ReportOn( new Dictionary<Rule, FileProblems>(), runHistory);
+            _librarian.WriteRunHistory();
 
 
             var expectedHistory =
