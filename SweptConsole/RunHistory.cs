@@ -34,23 +34,6 @@ namespace swept
             Runs = new List<RunHistoryEntry>();
         }
 
-        public RunHistoryEntry GenerateEntry( Dictionary<Rule, FileProblems> ruleViolations, DateTime runDateTime )
-        {
-            // TODO: when I make this work, have a failing test first.  Maybe then I won't need to rewrite it again, eh?
-            //HAIRYTODO:  Make this work again very soon.
-            //var failures = checker.Check( ruleViolations );
-            var entry = new RunHistoryEntry { Passed = true }; // { Passed = (failures.Count == 0) };
-            entry.Number = NextRunNumber;
-            entry.Date = runDateTime;
-
-            foreach( var keyRule in ruleViolations.Keys )
-            {
-                entry.Violations[keyRule.ID] = countViolations( ruleViolations[keyRule] );
-            }
-
-            return entry;
-        }
-
         public int WaterlineFor( string ruleID )
         {
             RunHistoryEntry mostRecentlyPassed = null;

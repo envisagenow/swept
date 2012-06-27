@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-// $ANTLR 3.3.1.7705 ..\\..\\DSL\\ChangeRule.g 2012-06-23 15:37:23
+// $ANTLR 3.3.1.7705 ..\\..\\DSL\\ChangeRule.g 2012-06-24 18:01:37
 
 // The variable 'variable' is assigned but its value is never used.
 #pragma warning disable 219
@@ -16,6 +16,7 @@
 #pragma warning disable 162
 
 
+//  Parser not CLS compliant.  I know.  Shh.
 #pragma warning disable 3021
 using System;
 using System.Text.RegularExpressions;
@@ -86,7 +87,7 @@ public partial class ChangeRuleParser : Antlr.Runtime.Parser
 	partial void LeaveRule_expression();
 
 	// $ANTLR start "expression"
-	// ..\\..\\DSL\\ChangeRule.g:31:8: public expression returns [ISubquery sq] : lhs= and_exp (op= ( OR | DIFFERENCE ) rhs= and_exp )* ;
+	// ..\\..\\DSL\\ChangeRule.g:33:8: public expression returns [ISubquery sq] : lhs= and_exp (op= ( OR | DIFFERENCE ) rhs= and_exp )* ;
 	[GrammarRule("expression")]
 	public ISubquery expression()
 	{
@@ -100,22 +101,22 @@ public partial class ChangeRuleParser : Antlr.Runtime.Parser
 		ISubquery rhs = default(ISubquery);
 
 		try { DebugEnterRule(GrammarFileName, "expression");
-		DebugLocation(31, 1);
+		DebugLocation(33, 1);
 		try
 		{
-			// ..\\..\\DSL\\ChangeRule.g:32:2: (lhs= and_exp (op= ( OR | DIFFERENCE ) rhs= and_exp )* )
+			// ..\\..\\DSL\\ChangeRule.g:34:2: (lhs= and_exp (op= ( OR | DIFFERENCE ) rhs= and_exp )* )
 			DebugEnterAlt(1);
-			// ..\\..\\DSL\\ChangeRule.g:32:4: lhs= and_exp (op= ( OR | DIFFERENCE ) rhs= and_exp )*
+			// ..\\..\\DSL\\ChangeRule.g:34:4: lhs= and_exp (op= ( OR | DIFFERENCE ) rhs= and_exp )*
 			{
-			DebugLocation(32, 7);
+			DebugLocation(34, 7);
 			PushFollow(Follow._and_exp_in_expression110);
 			lhs=and_exp();
 			PopFollow();
 
-			DebugLocation(32, 16);
+			DebugLocation(34, 16);
 			 sq = lhs; 
-			DebugLocation(32, 31);
-			// ..\\..\\DSL\\ChangeRule.g:32:31: (op= ( OR | DIFFERENCE ) rhs= and_exp )*
+			DebugLocation(34, 31);
+			// ..\\..\\DSL\\ChangeRule.g:34:31: (op= ( OR | DIFFERENCE ) rhs= and_exp )*
 			try { DebugEnterSubRule(1);
 			while (true)
 			{
@@ -134,9 +135,9 @@ public partial class ChangeRuleParser : Antlr.Runtime.Parser
 				{
 				case 1:
 					DebugEnterAlt(1);
-					// ..\\..\\DSL\\ChangeRule.g:32:32: op= ( OR | DIFFERENCE ) rhs= and_exp
+					// ..\\..\\DSL\\ChangeRule.g:34:32: op= ( OR | DIFFERENCE ) rhs= and_exp
 					{
-					DebugLocation(32, 34);
+					DebugLocation(34, 34);
 					op=(IToken)input.LT(1);
 					if (input.LA(1)==DIFFERENCE||input.LA(1)==OR)
 					{
@@ -150,12 +151,12 @@ public partial class ChangeRuleParser : Antlr.Runtime.Parser
 						throw mse;
 					}
 
-					DebugLocation(32, 56);
+					DebugLocation(34, 56);
 					PushFollow(Follow._and_exp_in_expression127);
 					rhs=and_exp();
 					PopFollow();
 
-					DebugLocation(32, 65);
+					DebugLocation(34, 65);
 					 sq = factory.Get( sq, op, rhs ); 
 
 					}
@@ -186,7 +187,7 @@ public partial class ChangeRuleParser : Antlr.Runtime.Parser
 			LeaveRule("expression", 1);
 			LeaveRule_expression();
 		}
-		DebugLocation(33, 1);
+		DebugLocation(35, 1);
 		} finally { DebugExitRule(GrammarFileName, "expression"); }
 		return sq;
 
@@ -198,7 +199,7 @@ public partial class ChangeRuleParser : Antlr.Runtime.Parser
 	partial void LeaveRule_and_exp();
 
 	// $ANTLR start "and_exp"
-	// ..\\..\\DSL\\ChangeRule.g:36:8: public and_exp returns [ISubquery sq] : lhs= unary (op= AND rhs= unary )* ;
+	// ..\\..\\DSL\\ChangeRule.g:38:8: public and_exp returns [ISubquery sq] : lhs= unary (op= AND rhs= unary )* ;
 	[GrammarRule("and_exp")]
 	public ISubquery and_exp()
 	{
@@ -212,22 +213,22 @@ public partial class ChangeRuleParser : Antlr.Runtime.Parser
 		ISubquery rhs = default(ISubquery);
 
 		try { DebugEnterRule(GrammarFileName, "and_exp");
-		DebugLocation(36, 1);
+		DebugLocation(38, 1);
 		try
 		{
-			// ..\\..\\DSL\\ChangeRule.g:37:2: (lhs= unary (op= AND rhs= unary )* )
+			// ..\\..\\DSL\\ChangeRule.g:39:2: (lhs= unary (op= AND rhs= unary )* )
 			DebugEnterAlt(1);
-			// ..\\..\\DSL\\ChangeRule.g:37:4: lhs= unary (op= AND rhs= unary )*
+			// ..\\..\\DSL\\ChangeRule.g:39:4: lhs= unary (op= AND rhs= unary )*
 			{
-			DebugLocation(37, 7);
+			DebugLocation(39, 7);
 			PushFollow(Follow._unary_in_and_exp163);
 			lhs=unary();
 			PopFollow();
 
-			DebugLocation(37, 14);
+			DebugLocation(39, 14);
 			 sq = lhs; 
-			DebugLocation(37, 29);
-			// ..\\..\\DSL\\ChangeRule.g:37:29: (op= AND rhs= unary )*
+			DebugLocation(39, 29);
+			// ..\\..\\DSL\\ChangeRule.g:39:29: (op= AND rhs= unary )*
 			try { DebugEnterSubRule(2);
 			while (true)
 			{
@@ -246,16 +247,16 @@ public partial class ChangeRuleParser : Antlr.Runtime.Parser
 				{
 				case 1:
 					DebugEnterAlt(1);
-					// ..\\..\\DSL\\ChangeRule.g:37:30: op= AND rhs= unary
+					// ..\\..\\DSL\\ChangeRule.g:39:30: op= AND rhs= unary
 					{
-					DebugLocation(37, 32);
+					DebugLocation(39, 32);
 					op=(IToken)Match(input,AND,Follow._AND_in_and_exp170); 
-					DebugLocation(37, 40);
+					DebugLocation(39, 40);
 					PushFollow(Follow._unary_in_and_exp174);
 					rhs=unary();
 					PopFollow();
 
-					DebugLocation(37, 47);
+					DebugLocation(39, 47);
 					 sq = factory.Get( sq, op, rhs ); 
 
 					}
@@ -286,7 +287,7 @@ public partial class ChangeRuleParser : Antlr.Runtime.Parser
 			LeaveRule("and_exp", 2);
 			LeaveRule_and_exp();
 		}
-		DebugLocation(38, 1);
+		DebugLocation(40, 1);
 		} finally { DebugExitRule(GrammarFileName, "and_exp"); }
 		return sq;
 
@@ -298,7 +299,7 @@ public partial class ChangeRuleParser : Antlr.Runtime.Parser
 	partial void LeaveRule_unary();
 
 	// $ANTLR start "unary"
-	// ..\\..\\DSL\\ChangeRule.g:42:1: unary returns [ISubquery sq] : (op= ( FILE | NOT ) rhs= unary |rhs= atom );
+	// ..\\..\\DSL\\ChangeRule.g:44:1: unary returns [ISubquery sq] : (op= ( FILE | NOT ) rhs= unary |rhs= atom );
 	[GrammarRule("unary")]
 	private ISubquery unary()
 	{
@@ -311,10 +312,10 @@ public partial class ChangeRuleParser : Antlr.Runtime.Parser
 		ISubquery rhs = default(ISubquery);
 
 		try { DebugEnterRule(GrammarFileName, "unary");
-		DebugLocation(42, 1);
+		DebugLocation(44, 1);
 		try
 		{
-			// ..\\..\\DSL\\ChangeRule.g:43:2: (op= ( FILE | NOT ) rhs= unary |rhs= atom )
+			// ..\\..\\DSL\\ChangeRule.g:45:2: (op= ( FILE | NOT ) rhs= unary |rhs= atom )
 			int alt3=2;
 			try { DebugEnterDecision(3, false);
 			int LA3_0 = input.LA(1);
@@ -338,9 +339,9 @@ public partial class ChangeRuleParser : Antlr.Runtime.Parser
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// ..\\..\\DSL\\ChangeRule.g:43:4: op= ( FILE | NOT ) rhs= unary
+				// ..\\..\\DSL\\ChangeRule.g:45:4: op= ( FILE | NOT ) rhs= unary
 				{
-				DebugLocation(43, 6);
+				DebugLocation(45, 6);
 				op=(IToken)input.LT(1);
 				if (input.LA(1)==FILE||input.LA(1)==NOT)
 				{
@@ -354,26 +355,26 @@ public partial class ChangeRuleParser : Antlr.Runtime.Parser
 					throw mse;
 				}
 
-				DebugLocation(43, 23);
+				DebugLocation(45, 23);
 				PushFollow(Follow._unary_in_unary240);
 				rhs=unary();
 				PopFollow();
 
-				DebugLocation(43, 30);
+				DebugLocation(45, 30);
 				 sq = factory.Get( op, rhs ); 
 
 				}
 				break;
 			case 2:
 				DebugEnterAlt(2);
-				// ..\\..\\DSL\\ChangeRule.g:44:4: rhs= atom
+				// ..\\..\\DSL\\ChangeRule.g:46:4: rhs= atom
 				{
-				DebugLocation(44, 7);
+				DebugLocation(46, 7);
 				PushFollow(Follow._atom_in_unary249);
 				rhs=atom();
 				PopFollow();
 
-				DebugLocation(44, 13);
+				DebugLocation(46, 13);
 				 sq = rhs; 
 
 				}
@@ -392,7 +393,7 @@ public partial class ChangeRuleParser : Antlr.Runtime.Parser
 			LeaveRule("unary", 3);
 			LeaveRule_unary();
 		}
-		DebugLocation(45, 1);
+		DebugLocation(47, 1);
 		} finally { DebugExitRule(GrammarFileName, "unary"); }
 		return sq;
 
@@ -404,7 +405,7 @@ public partial class ChangeRuleParser : Antlr.Runtime.Parser
 	partial void LeaveRule_atom();
 
 	// $ANTLR start "atom"
-	// ..\\..\\DSL\\ChangeRule.g:47:8: public atom returns [ISubquery sq] : (q= query | '(' q= expression ')' );
+	// ..\\..\\DSL\\ChangeRule.g:49:8: public atom returns [ISubquery sq] : (q= query | '(' q= expression ')' );
 	[GrammarRule("atom")]
 	public ISubquery atom()
 	{
@@ -416,10 +417,10 @@ public partial class ChangeRuleParser : Antlr.Runtime.Parser
 		ISubquery q = default(ISubquery);
 
 		try { DebugEnterRule(GrammarFileName, "atom");
-		DebugLocation(47, 1);
+		DebugLocation(49, 1);
 		try
 		{
-			// ..\\..\\DSL\\ChangeRule.g:48:2: (q= query | '(' q= expression ')' )
+			// ..\\..\\DSL\\ChangeRule.g:50:2: (q= query | '(' q= expression ')' )
 			int alt4=2;
 			try { DebugEnterDecision(4, false);
 			int LA4_0 = input.LA(1);
@@ -443,32 +444,32 @@ public partial class ChangeRuleParser : Antlr.Runtime.Parser
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// ..\\..\\DSL\\ChangeRule.g:48:4: q= query
+				// ..\\..\\DSL\\ChangeRule.g:50:4: q= query
 				{
-				DebugLocation(48, 5);
+				DebugLocation(50, 5);
 				PushFollow(Follow._query_in_atom270);
 				q=query();
 				PopFollow();
 
-				DebugLocation(48, 12);
+				DebugLocation(50, 12);
 				 sq = q; 
 
 				}
 				break;
 			case 2:
 				DebugEnterAlt(2);
-				// ..\\..\\DSL\\ChangeRule.g:49:4: '(' q= expression ')'
+				// ..\\..\\DSL\\ChangeRule.g:51:4: '(' q= expression ')'
 				{
-				DebugLocation(49, 4);
+				DebugLocation(51, 4);
 				Match(input,21,Follow._21_in_atom277); 
-				DebugLocation(49, 9);
+				DebugLocation(51, 9);
 				PushFollow(Follow._expression_in_atom281);
 				q=expression();
 				PopFollow();
 
-				DebugLocation(49, 21);
+				DebugLocation(51, 21);
 				Match(input,22,Follow._22_in_atom283); 
-				DebugLocation(49, 25);
+				DebugLocation(51, 25);
 				 sq = q; 
 
 				}
@@ -487,7 +488,7 @@ public partial class ChangeRuleParser : Antlr.Runtime.Parser
 			LeaveRule("atom", 4);
 			LeaveRule_atom();
 		}
-		DebugLocation(50, 1);
+		DebugLocation(52, 1);
 		} finally { DebugExitRule(GrammarFileName, "atom"); }
 		return sq;
 
@@ -499,7 +500,7 @@ public partial class ChangeRuleParser : Antlr.Runtime.Parser
 	partial void LeaveRule_query();
 
 	// $ANTLR start "query"
-	// ..\\..\\DSL\\ChangeRule.g:55:8: public query returns [ISubquery sq] : (op= ( FILE_NAME | LINES_MATCH ) r= regex | (op= FILE_LANGUAGE )? BARE_WORD );
+	// ..\\..\\DSL\\ChangeRule.g:57:8: public query returns [ISubquery sq] : (op= ( FILE_NAME | LINES_MATCH ) r= regex | (op= FILE_LANGUAGE )? BARE_WORD );
 	[GrammarRule("query")]
 	public ISubquery query()
 	{
@@ -513,10 +514,10 @@ public partial class ChangeRuleParser : Antlr.Runtime.Parser
 		Regex r = default(Regex);
 
 		try { DebugEnterRule(GrammarFileName, "query");
-		DebugLocation(55, 1);
+		DebugLocation(57, 1);
 		try
 		{
-			// ..\\..\\DSL\\ChangeRule.g:56:2: (op= ( FILE_NAME | LINES_MATCH ) r= regex | (op= FILE_LANGUAGE )? BARE_WORD )
+			// ..\\..\\DSL\\ChangeRule.g:58:2: (op= ( FILE_NAME | LINES_MATCH ) r= regex | (op= FILE_LANGUAGE )? BARE_WORD )
 			int alt6=2;
 			try { DebugEnterDecision(6, false);
 			int LA6_0 = input.LA(1);
@@ -540,9 +541,9 @@ public partial class ChangeRuleParser : Antlr.Runtime.Parser
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// ..\\..\\DSL\\ChangeRule.g:56:4: op= ( FILE_NAME | LINES_MATCH ) r= regex
+				// ..\\..\\DSL\\ChangeRule.g:58:4: op= ( FILE_NAME | LINES_MATCH ) r= regex
 				{
-				DebugLocation(56, 6);
+				DebugLocation(58, 6);
 				op=(IToken)input.LT(1);
 				if ((input.LA(1)>=FILE_NAME && input.LA(1)<=LINES_MATCH))
 				{
@@ -556,22 +557,22 @@ public partial class ChangeRuleParser : Antlr.Runtime.Parser
 					throw mse;
 				}
 
-				DebugLocation(56, 34);
+				DebugLocation(58, 34);
 				PushFollow(Follow._regex_in_query361);
 				r=regex();
 				PopFollow();
 
-				DebugLocation(56, 41);
+				DebugLocation(58, 41);
 				 sq = factory.GetQuery( op, r ); 
 
 				}
 				break;
 			case 2:
 				DebugEnterAlt(2);
-				// ..\\..\\DSL\\ChangeRule.g:57:4: (op= FILE_LANGUAGE )? BARE_WORD
+				// ..\\..\\DSL\\ChangeRule.g:59:4: (op= FILE_LANGUAGE )? BARE_WORD
 				{
-				DebugLocation(57, 6);
-				// ..\\..\\DSL\\ChangeRule.g:57:6: (op= FILE_LANGUAGE )?
+				DebugLocation(59, 6);
+				// ..\\..\\DSL\\ChangeRule.g:59:6: (op= FILE_LANGUAGE )?
 				int alt5=2;
 				try { DebugEnterSubRule(5);
 				try { DebugEnterDecision(5, false);
@@ -586,9 +587,9 @@ public partial class ChangeRuleParser : Antlr.Runtime.Parser
 				{
 				case 1:
 					DebugEnterAlt(1);
-					// ..\\..\\DSL\\ChangeRule.g:57:6: op= FILE_LANGUAGE
+					// ..\\..\\DSL\\ChangeRule.g:59:6: op= FILE_LANGUAGE
 					{
-					DebugLocation(57, 6);
+					DebugLocation(59, 6);
 					op=(IToken)Match(input,FILE_LANGUAGE,Follow._FILE_LANGUAGE_in_query370); 
 
 					}
@@ -597,9 +598,9 @@ public partial class ChangeRuleParser : Antlr.Runtime.Parser
 				}
 				} finally { DebugExitSubRule(5); }
 
-				DebugLocation(57, 22);
+				DebugLocation(59, 22);
 				BARE_WORD1=(IToken)Match(input,BARE_WORD,Follow._BARE_WORD_in_query373); 
-				DebugLocation(57, 32);
+				DebugLocation(59, 32);
 				 sq = factory.GetQuery( op, (BARE_WORD1!=null?BARE_WORD1.Text:null) ); 
 
 				}
@@ -618,7 +619,7 @@ public partial class ChangeRuleParser : Antlr.Runtime.Parser
 			LeaveRule("query", 5);
 			LeaveRule_query();
 		}
-		DebugLocation(58, 1);
+		DebugLocation(60, 1);
 		} finally { DebugExitRule(GrammarFileName, "query"); }
 		return sq;
 
@@ -630,7 +631,7 @@ public partial class ChangeRuleParser : Antlr.Runtime.Parser
 	partial void LeaveRule_regex();
 
 	// $ANTLR start "regex"
-	// ..\\..\\DSL\\ChangeRule.g:60:1: regex returns [Regex rex] : STRING_LITERAL ( BARE_WORD )? ;
+	// ..\\..\\DSL\\ChangeRule.g:62:1: regex returns [Regex rex] : STRING_LITERAL ( BARE_WORD )? ;
 	[GrammarRule("regex")]
 	private Regex regex()
 	{
@@ -643,17 +644,17 @@ public partial class ChangeRuleParser : Antlr.Runtime.Parser
 		IToken BARE_WORD3 = default(IToken);
 
 		try { DebugEnterRule(GrammarFileName, "regex");
-		DebugLocation(60, 1);
+		DebugLocation(62, 1);
 		try
 		{
-			// ..\\..\\DSL\\ChangeRule.g:61:2: ( STRING_LITERAL ( BARE_WORD )? )
+			// ..\\..\\DSL\\ChangeRule.g:63:2: ( STRING_LITERAL ( BARE_WORD )? )
 			DebugEnterAlt(1);
-			// ..\\..\\DSL\\ChangeRule.g:61:4: STRING_LITERAL ( BARE_WORD )?
+			// ..\\..\\DSL\\ChangeRule.g:63:4: STRING_LITERAL ( BARE_WORD )?
 			{
-			DebugLocation(61, 4);
+			DebugLocation(63, 4);
 			STRING_LITERAL2=(IToken)Match(input,STRING_LITERAL,Follow._STRING_LITERAL_in_regex391); 
-			DebugLocation(61, 19);
-			// ..\\..\\DSL\\ChangeRule.g:61:19: ( BARE_WORD )?
+			DebugLocation(63, 19);
+			// ..\\..\\DSL\\ChangeRule.g:63:19: ( BARE_WORD )?
 			int alt7=2;
 			try { DebugEnterSubRule(7);
 			try { DebugEnterDecision(7, false);
@@ -668,9 +669,9 @@ public partial class ChangeRuleParser : Antlr.Runtime.Parser
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// ..\\..\\DSL\\ChangeRule.g:61:19: BARE_WORD
+				// ..\\..\\DSL\\ChangeRule.g:63:19: BARE_WORD
 				{
-				DebugLocation(61, 19);
+				DebugLocation(63, 19);
 				BARE_WORD3=(IToken)Match(input,BARE_WORD,Follow._BARE_WORD_in_regex393); 
 
 				}
@@ -679,7 +680,7 @@ public partial class ChangeRuleParser : Antlr.Runtime.Parser
 			}
 			} finally { DebugExitSubRule(7); }
 
-			DebugLocation(61, 30);
+			DebugLocation(63, 30);
 			 rex = factory.GetRegex( (STRING_LITERAL2!=null?STRING_LITERAL2.Text:null), (BARE_WORD3!=null?BARE_WORD3.Text:null) ); 
 
 			}
@@ -696,7 +697,7 @@ public partial class ChangeRuleParser : Antlr.Runtime.Parser
 			LeaveRule("regex", 6);
 			LeaveRule_regex();
 		}
-		DebugLocation(62, 1);
+		DebugLocation(64, 1);
 		} finally { DebugExitRule(GrammarFileName, "regex"); }
 		return rex;
 

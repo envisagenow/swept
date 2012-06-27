@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Xml.Linq;
 using System.IO;
 using System.Text;
+using System.Diagnostics;
 
 namespace swept
 {
@@ -21,7 +22,6 @@ namespace swept
             _storage = storage;
         }
 
-
         public string ReportOn( Dictionary<Rule, FileProblems> filesPerRule, RunHistory runHistory )
         {
             if (_args.Check)
@@ -30,12 +30,37 @@ namespace swept
                 return ReportXmlResult( filesPerRule );
         }
 
+        public string ReportCheckResult(Dictionary<Rule, FileProblems> filesPerRule, RunHistory runHistory)
+        {
+            List<string> problemLines = ListRunFailures(filesPerRule, runHistory);
+
+            if (!problemLines.Any())
+                return "Swept check passed!\r\n";
+
+            var sb = new StringBuilder();
+
+            if (problemLines.Count > 0)
+            {
+                foreach (var line in problemLines)
+                {
+                    sb.AppendLine(line);
+                }
+            }
+            else
+            {
+                sb.AppendLine("Swept check passed!");
+            }
+
+            return sb.ToString();
+        }
+
         private static string ReportXmlResult( Dictionary<Rule, FileProblems> filesPerRule )
         {
             XDocument report_doc = new XDocument();
             XElement report_root = new XElement( "SweptBuildReport" );
 
-            //TODO Goal code:
+            //  TODO: Get failure details into this XML report
+            // Goal code:
             //  var failures_element = GetFailureReportElement( failures );
             //  report_root.Add( failures_element );
 
@@ -76,6 +101,7 @@ namespace swept
             report_doc.Add( report_root );
             return report_doc.ToString();
         }
+
         public string ReportBuildFailures( List<string> failures )
         {
             if (failures.Count == 0)
@@ -93,28 +119,6 @@ namespace swept
                 string failureMessage = "Swept failed due to build breaking rule failure{0}:\n{1}";
                 return string.Format( failureMessage, plurality, failuresText );
             }
-        }
-
-        public string ReportCheckResult( Dictionary<Rule, FileProblems> filesPerRule, RunHistory runHistory )
-        {
-
-            List<string> problemLines = Check( filesPerRule, runHistory );
-
-            var sb = new StringBuilder();
-
-            if (problemLines.Count > 0)
-            {
-                foreach (var line in problemLines)
-                {
-                    sb.AppendLine( line );
-                }
-            }
-            else
-            {
-                sb.AppendLine("Swept check passed!");
-            }
-
-            return sb.ToString();
         }
 
         public XElement GenerateBuildFailureXML( List<string> failures )
@@ -150,11 +154,11 @@ namespace swept
 
             foreach (var runXml in historyXml.Descendants( "Run" ))
             {
-                RunHistoryEntry run = new RunHistoryEntry();
-
-                run.Number = int.Parse( runXml.Attribute( "Number" ).Value );
-                run.Date = DateTime.Parse( runXml.Attribute( "DateTime" ).Value );
-                run.Passed = Boolean.Parse( runXml.Attribute( "Passed" ).Value );
+                var run = new RunHistoryEntry {
+                    Number = int.Parse(runXml.Attribute("Number").Value),
+                    Date = DateTime.Parse(runXml.Attribute("DateTime").Value),
+                    Passed = Boolean.Parse(runXml.Attribute("Passed").Value)
+                };
 
                 foreach (var ruleXml in runXml.Descendants( "Rule" ))
                 {
@@ -201,13 +205,31 @@ namespace swept
             _storage.SaveRunHistory( report, _args.History );
         }
 
-        public List<string> Check( Dictionary<Rule, FileProblems> ruleFileProblems, RunHistory history )
+        public RunHistoryEntry GenerateEntry(Dictionary<Rule, FileProblems> runDetails, RunHistory runHistory, DateTime runDateTime)
+        {
+            // TODO: when I make this work, have a failing test first.  Maybe then I won't need to rewrite it again, eh?
+            var failures = ListRunFailures( runDetails, runHistory );
+            var entry = new RunHistoryEntry {
+                Passed = (failures.Count == 0),
+                Number = runHistory.NextRunNumber, 
+                Date = runDateTime 
+            };
+
+            foreach (var keyRule in runDetails.Keys)
+            {
+                entry.Violations[keyRule.ID] = countViolations(runDetails[keyRule]);
+            }
+
+            return entry;
+        }
+
+        public List<string> ListRunFailures( Dictionary<Rule, FileProblems> runDetails, RunHistory history )
         {
             var failures = new List<string>();
 
-            foreach (var rule in ruleFileProblems.Keys)
+            foreach (var rule in runDetails.Keys)
             {
-                int count = countViolations( ruleFileProblems[rule] );
+                int count = countViolations( runDetails[rule] );
 
                 int threshold;
                 switch (rule.RunFail)
@@ -229,7 +251,9 @@ namespace swept
                     break;
 
                 default:
-                    throw new Exception( String.Format( "I do not know how to check a failure mode of [{0}].  Please extend FailChecker.Check.", rule.RunFail ) );
+                    System.Reflection.MethodBase thisMethod = new StackTrace().GetFrame(0).GetMethod();
+                    throw new Exception(String.Format("I do not know how to check a failure mode of [{0}].  Please extend {1}.{2}.", 
+                        rule.RunFail, thisMethod.ReflectedType, thisMethod.Name));
                 }
 
                 string thresholdPhrase = (threshold == 0) ? "any" : "over [" + threshold + "]";
@@ -245,13 +269,12 @@ namespace swept
             return failures;
         }
 
-        //todo, move to a more general purpose location
-        private int countViolations( FileProblems fileProblems )
+        private int countViolations( FileProblems ruleRunDetails )
         {
             int count = 0;
-            foreach (SourceFile source in fileProblems.Keys)
+            foreach (SourceFile source in ruleRunDetails.Keys)
             {
-                count += fileProblems[source].Count;
+                count += ruleRunDetails[source].Count;
             }
             return count;
         }

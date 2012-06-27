@@ -1,5 +1,5 @@
 ﻿//  Swept:  Software Enhancement Progress Tracking.
-//  Copyright (c) 2009, 2011 Jason Cole and Envisage Technologies Corp.
+//  Copyright (c) 2009, 2012 Jason Cole and Envisage Technologies Corp.
 //  This software is open source, MIT license.  See the file LICENSE for details.
 grammar ChangeRule;
 
@@ -8,9 +8,11 @@ options {
 }
 
 @lexer::header {
+//  Lexer not CLS compliant.  I know.  Shh.
 #pragma warning disable 3021
 }
 @header {
+//  Parser not CLS compliant.  I know.  Shh.
 #pragma warning disable 3021
 using System;
 using System.Text.RegularExpressions;

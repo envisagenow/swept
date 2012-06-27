@@ -3,8 +3,8 @@
 //  This software is open source, MIT license.  See the file LICENSE for details.
 using System;
 
-/// <summary>This excludes code from NCover coverage stats</summary>
 [CoverageExclude]
+/// <summary>This excludes code from NCover coverage stats</summary>
 public class CoverageExcludeAttribute : Attribute
 {
     private readonly string _reason;

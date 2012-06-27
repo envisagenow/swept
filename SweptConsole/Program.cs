@@ -60,12 +60,14 @@ namespace swept
                 var reportXML = buildLibrarian.ReportOn( results, runHistory );
                 reportWriter.WriteLine( reportXML );
             }
-            var newRun = runHistory.GenerateEntry( results, startTime );
+
+
+            var newRun = buildLibrarian.GenerateEntry(results, runHistory, startTime);
             runHistory.AddRun( newRun );
 
             int failureCode = 0;
 
-            var failures = buildLibrarian.Check( results, runHistory );
+            var failures = buildLibrarian.ListRunFailures( results, runHistory );
             if (failures.Any())
             {
                 var message = buildLibrarian.ReportBuildFailures( failures );

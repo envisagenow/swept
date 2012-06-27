@@ -41,6 +41,97 @@ namespace swept.Tests
             Assert.That( runHistory.Runs.Count, Is.EqualTo(1) );
         }
 
+
+        [Test]
+        public void Can_generate_run_entry_from_results()
+        {
+            var rule = new Rule()
+            {
+                ID = "basic entry",
+                Description = "simple",
+                RunFail = RunFailMode.Over,
+                RunFailOverLimit = 20
+            };
+            var sourceClauseMatch = new FileProblems();
+
+            var failedSource = new SourceFile("some_file.cs");
+
+            List<int> violationLines = new List<int>();
+            for (int i = 0; i < 7; i++)
+            {
+                violationLines.Add((i * 7) + 22);  //arbitrary lines throughout the source file had this problem.
+            }
+            ClauseMatch failedClause = new LineMatch(violationLines);
+            sourceClauseMatch[failedSource] = failedClause;
+
+            var ruleViolations = new Dictionary<Rule, FileProblems>();
+            ruleViolations[rule] = sourceClauseMatch;
+
+
+            var noMatches = new FileProblems();
+            var happyRule = new Rule
+            {
+                ID = "no problem",
+                Description = "the app reports rules with no issues",
+                RunFail = RunFailMode.Any,
+            };
+
+            ruleViolations[happyRule] = noMatches;
+
+            DateTime nowish = DateTime.Now;
+
+            RunHistory runHistory = new RunHistory();
+            runHistory.AddRun(new RunHistoryEntry { Number = 776, Passed = true } );
+
+            RunHistoryEntry entry = _librarian.GenerateEntry(ruleViolations, runHistory, nowish);
+
+            Assert.That(entry.Number, Is.EqualTo(777));
+            Assert.That(entry.Date, Is.EqualTo(nowish));
+            Assert.That(entry.Violations.Count, Is.EqualTo(2));
+            Assert.That(entry.Violations[rule.ID], Is.EqualTo(7));
+            Assert.That(entry.Violations[happyRule.ID], Is.EqualTo(0));
+            Assert.That(entry.Passed, Is.True);
+        }
+
+        [Test]
+        public void Can_generate_failing_run_entry_from_results()
+        {
+            var rule = new Rule()
+            {
+                ID = "basic entry",
+                Description = "simple",
+                RunFail = RunFailMode.Over,
+                RunFailOverLimit = 2
+            };
+            var sourceClauseMatch = new FileProblems();
+
+            var failedSource = new SourceFile("some_file.cs");
+
+            List<int> violationLines = new List<int>();
+            for (int i = 0; i < 7; i++)
+            {
+                violationLines.Add((i * 7) + 22);  //arbitrary lines throughout the source file had this problem.
+            }
+            ClauseMatch failedClause = new LineMatch(violationLines);
+            sourceClauseMatch[failedSource] = failedClause;
+
+            var ruleViolations = new Dictionary<Rule, FileProblems>();
+            ruleViolations[rule] = sourceClauseMatch;
+
+            DateTime nowish = DateTime.Now;
+
+            RunHistory runHistory = new RunHistory();
+            runHistory.AddRun(new RunHistoryEntry { Number = 887, Passed = true });
+
+            RunHistoryEntry entry = _librarian.GenerateEntry(ruleViolations, runHistory, nowish);
+
+            Assert.That(entry.Number, Is.EqualTo(888));
+            Assert.That(entry.Date, Is.EqualTo(nowish));
+            Assert.That(entry.Violations.Count, Is.EqualTo(1));
+            Assert.That(entry.Violations[rule.ID], Is.EqualTo(7));
+            Assert.That(entry.Passed, Is.False);
+        }
+
         [Test]
         public void With_no_violations_the_check_report_is_cheerful()
         {
@@ -50,32 +141,28 @@ namespace swept.Tests
             Assert.That( message, Is.EqualTo( "Swept check passed!" + Environment.NewLine ) );
         }
 
-        [Test, Ignore("new setup needed")]
+        [Test]
         public void With_a_violation_the_check_report_complains()
         {
             var history = new RunHistory();
             RunHistoryEntry entry = new RunHistoryEntry { Passed = true, Number = 1 };
-            entry.Violations["NET-001"] = 18;
-            history.AddRun( entry );
-
+            entry.Violations["NET-001"] = 4;
+            history.AddRun(entry);
 
             var net_001 = new Rule { ID = "NET-001", RunFail = RunFailMode.Increase };
 
+            FileProblems net_001_problems = new FileProblems();
+            var file = new SourceFile("troubled.cs");
+            var lines = new List<int>(new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 });
+            var match = new LineMatch(lines);
+            net_001_problems[file] = match;
 
             Dictionary<Rule, FileProblems> problems = new Dictionary<Rule, FileProblems>();
-            FileProblems net_001_problems = new FileProblems();
-
             problems[net_001] = net_001_problems;
-            string message = _librarian.ReportCheckResult( problems, null );
+            string message = _librarian.ReportCheckResult(problems, history);
 
-
-            //string problem = "Rule [NET-001] has been violated [22] times, and it breaks the build if there are over [18] violations.";
-
-            //List<string> problemLines = new List<string>();
-            //problemLines.Add( problem );
-            //string message = _librarian.ReportCheckResult( problemLines );
-
-            //Assert.That( message, Is.EqualTo( problem + Environment.NewLine ) );
+            string expectedMessage = "Rule [NET-001] has been violated [9] times, and it breaks the build if there are over [4] violations.\r\n";
+            Assert.That(message, Is.EqualTo(expectedMessage));
         }
 
         [Test, Ignore()]

@@ -21,16 +21,16 @@ namespace swept
         //  The Rule Catalog holds things the team wants to improve in this solution.
         internal RuleCatalog _ruleCatalog;
 
-        internal IStorageAdapter _storageAdapter;
+        internal IStorageAdapter _storage;
         internal EventSwitchboard _switchboard;
 
-        private List<Task> _allTasks;
+        private readonly List<Task> _allTasks;
         public string SolutionPath { get; internal set; }
         public string LibraryPath {get; set;}
 
         public ProjectLibrarian( IStorageAdapter storageAdapter, EventSwitchboard switchboard )
         {
-            _storageAdapter = storageAdapter;
+            _storage = storageAdapter;
             _switchboard = switchboard;
 
             _ruleCatalog = new RuleCatalog();
@@ -87,7 +87,7 @@ namespace swept
             XmlDocument doc;
             try
             {
-                doc = _storageAdapter.LoadLibrary( libraryPath );
+                doc = _storage.LoadLibrary( libraryPath );
             }
             catch (XmlException xex)
             {

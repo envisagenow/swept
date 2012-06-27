@@ -83,53 +83,5 @@ namespace swept.Tests
             Assert.That( _history.WaterlineFor( "Eliminate Crystal Reports" ), Is.EqualTo( 6 ) );
         }
 
-        [Test]
-        public void Can_generate_run_entry_from_results()
-        {
-            var rule = new Rule()
-            {
-                ID = "basic entry",
-                Description = "simple",
-                RunFail = RunFailMode.Over,
-                RunFailOverLimit = 20
-            };
-            var sourceClauseMatch = new FileProblems();
-
-            var failedSource = new SourceFile( "some_file.cs" );
-
-            List<int> violationLines = new List<int>();
-            for (int i = 0; i < 7; i++)
-            {
-                violationLines.Add( (i * 7) + 22 );  //arbitrary lines throughout the source file had this problem.
-            }
-            ClauseMatch failedClause = new LineMatch( violationLines );
-            sourceClauseMatch[failedSource] = failedClause;
-
-            var ruleViolations = new Dictionary<Rule, FileProblems>();
-            ruleViolations[rule] = sourceClauseMatch;
-
-
-            var noMatches = new FileProblems();
-            var happyRule = new Rule
-            {
-                ID = "no problem",
-                Description = "the app reports rules with no issues",
-                RunFail = RunFailMode.Any,
-            };
-
-            ruleViolations[happyRule] = noMatches;
-
-            DateTime nowish = DateTime.Now;
-
-            RunHistoryEntry entry = _history.GenerateEntry( ruleViolations, nowish );
-
-            Assert.That( entry.Number, Is.EqualTo( 1 ) );
-            Assert.That( entry.Date, Is.EqualTo( nowish ) );
-            Assert.That( entry.Violations.Count, Is.EqualTo( 2 ) );
-            Assert.That( entry.Violations[rule.ID], Is.EqualTo( 7 ) );
-            Assert.That( entry.Violations[happyRule.ID], Is.EqualTo( 0 ) );
-            Assert.That( entry.Passed, Is.True );
-        }
-
     }
 }
