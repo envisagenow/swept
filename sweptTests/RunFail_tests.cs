@@ -35,7 +35,7 @@ namespace swept.Tests
         [Test]
         public void When_we_violate_a_FailAny_Rule_we_fail()
         {
-            Rule rule = new Rule() { ID = "644", Description = "Major problem!", RunFail = RunFailMode.Any };
+            Rule rule = new Rule() { ID = "644", Description = "Major problem!", FailOn = RuleFailOn.Any };
             var sourceClauseMatch = new FileProblems();
 
             SourceFile failedSource = new SourceFile( "some_file.cs" );
@@ -54,7 +54,7 @@ namespace swept.Tests
         [Test]
         public void When_we_have_no_tasks_in_a_FailAny_Rule_we_do_not_fail()
         {
-            Rule rule = new Rule() { ID = "644", Description = "Major problem!", RunFail = RunFailMode.Any };
+            Rule rule = new Rule() { ID = "644", Description = "Major problem!", FailOn = RuleFailOn.Any };
             var sourceClauseMatch = new FileProblems();
 
             _runResults[rule] = sourceClauseMatch;
@@ -67,7 +67,7 @@ namespace swept.Tests
         [Test]
         public void When_we_violate_a_BuildFail_None_Rule_we_do_not_fail()
         {
-            Rule rule = new Rule() { ID = "644", Description="Not a problem.", RunFail = RunFailMode.None };
+            Rule rule = new Rule() { ID = "644", Description="Not a problem.", FailOn = RuleFailOn.None };
             var sourceClauseMatch = new FileProblems();
 
             SourceFile failedSource = new SourceFile( "some_file.cs" );
@@ -86,8 +86,8 @@ namespace swept.Tests
         [Test]
         public void When_we_violate_multiple_BuildFail_Any_Rules_we_report_all_failures()
         {
-            var rule = new Rule() { ID = "191", Description = "Major problem!", RunFail = RunFailMode.Any };
-            var rule2 = new Rule() { ID = "200", Description = "Major problem!", RunFail = RunFailMode.Any };
+            var rule = new Rule() { ID = "191", Description = "Major problem!", FailOn = RuleFailOn.Any };
+            var rule2 = new Rule() { ID = "200", Description = "Major problem!", FailOn = RuleFailOn.Any };
             var sourceClauseMatch = new FileProblems();
             var sourceClauseMatch2 = new FileProblems();
 
@@ -115,7 +115,7 @@ namespace swept.Tests
             var rule = new Rule() {
                 ID = "200",
                 Description = "Major problem!",
-                RunFail = RunFailMode.Over,
+                FailOn = RuleFailOn.Over,
                 RunFailOverLimit = 2
             };
             var sourceClauseMatch = new FileProblems();
@@ -138,7 +138,7 @@ namespace swept.Tests
             var rule = new Rule() {
                 ID = "191",
                 Description = "Major problem!",
-                RunFail = RunFailMode.Over,
+                FailOn = RuleFailOn.Over,
                 RunFailOverLimit = 2
             };
             var sourceClauseMatch = new FileProblems();
@@ -161,7 +161,7 @@ namespace swept.Tests
             {
                 ID = "300",
                 Description = "Major problem!",
-                RunFail = RunFailMode.Increase,
+                FailOn = RuleFailOn.Increase,
             };
             var sourceClauseMatch = new FileProblems();
 
@@ -171,10 +171,15 @@ namespace swept.Tests
 
             _runResults[rule] = sourceClauseMatch;
 
-            var vio = new Dictionary<string, int>();
-            vio["300"] = 10;
+            var results = new Dictionary<string,RuleResult>();
+            results["300"] = new RuleResult { Violations = 10 };
 
-            _history.AddRun( new RunHistoryEntry { Date = DateTime.Now.AddDays( -7 ), Number = 1704, Violations = vio, Passed = true } );
+            _history.AddRun( new RunHistoryEntry { 
+                Date = DateTime.Now.AddDays( -7 ), 
+                Number = 1704, 
+                RuleResults = results, 
+                Passed = true 
+            } );
 
             var failures = _checker.ListRunFailures( _runResults, _history );
 

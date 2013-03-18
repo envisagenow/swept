@@ -7,16 +7,16 @@ using System.Linq;
 
 namespace swept
 {
-    public class RunHistoryEntry
+    public class RuleResult
     {
-        public int Number;
-        public DateTime Date;
-        public Dictionary<string, RuleResult> RuleResults;
-        public bool Passed;
+        public string ID;
+        public int Violations;
+        public int Prior;
+        public bool Breaking;
+        public RuleFailOn FailOn;
 
-        public RunHistoryEntry()
+        public RuleResult()
         {
-            RuleResults = new Dictionary<string, RuleResult>();
         }
     }
 }

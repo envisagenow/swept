@@ -84,7 +84,7 @@ namespace swept
             catch
             {
                 Console.Out.WriteLine( String.Format( "LoadFile( {0} ) failed.", fileName ) );
-                throw;
+                return null;
             }
         }
 
@@ -97,6 +97,14 @@ namespace swept
         {
             var historyText = File.ReadAllText( historyPath );
             return XDocument.Parse( historyText );
+        }
+
+        public TextWriter GetOutputWriter( string outputLocation )
+        {
+            if (string.IsNullOrEmpty( outputLocation ))
+                return Console.Out;
+
+            return new StreamWriter( File.Create(outputLocation) );
         }
     }
 }

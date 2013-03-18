@@ -27,6 +27,7 @@ namespace swept
             foreach (string fileName in _files)
             {
                 var sourceFile = _storage.LoadFile( fileName );
+                if (sourceFile == null) continue;
 
                 foreach (var rule in _rules.OrderBy( c => c.ID ))
                 {

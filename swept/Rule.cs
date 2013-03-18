@@ -21,7 +21,7 @@ namespace swept
         Unknown,
     }
 
-    public enum RunFailMode
+    public enum RuleFailOn
     {
         None,
         Any,
@@ -31,7 +31,7 @@ namespace swept
 
     public class Rule
     {
-        public RunFailMode RunFail { get; set; }
+        public RuleFailOn FailOn { get; set; }
         public List<SeeAlso> SeeAlsos { get; set; }
         public string ID { get; internal set; }
         public string Description { get; internal set; }

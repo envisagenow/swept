@@ -20,6 +20,10 @@ namespace swept.Tests
         public string CWD = String.Empty;
         public bool ThrowBadXmlException;
 
+        public TextWriter GetOutputWriter( string output )
+        {
+            throw new NotImplementedException();
+        }
         public MockStorageAdapter()
         {
             setDocFromText( StorageAdapter.emptyCatalogText );

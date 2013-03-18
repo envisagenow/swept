@@ -24,7 +24,7 @@ namespace swept.Tests
         public void malformed_args_throw()
         {
             var argsText = new string[] { "bad-argument", "library:unused" };
-            var ex = Assert.Throws<Exception>( () => new Arguments( argsText, _storage, Console.Out ) );
+            var ex = Assert.Throws<Exception>( () => new Arguments( argsText, _storage ) );
 
             Assert.That( ex.Message, Is.EqualTo( "Don't understand the input [bad-argument].  Try 'swept h' for help with arguments." ) );
         }
@@ -33,7 +33,7 @@ namespace swept.Tests
         public void unknown_args_throw()
         {
             var argsText = new string[] { "oddity:unrecognized_arg_name", "library:unused" };
-            var ex = Assert.Throws<Exception>( () => new Arguments(argsText, _storage, Console.Out) );
+            var ex = Assert.Throws<Exception>( () => new Arguments(argsText, _storage) );
             
             Assert.That( ex.Message, Is.EqualTo( "Don't recognize the argument [oddity]." ) );
         }
@@ -43,10 +43,12 @@ namespace swept.Tests
         [TestCase( "/?" )]
         public void Request_for_help_works( string help )
         {
+            var args = new Arguments( new string[] { help }, _storage );
+
             string output;
             using (StringWriter writer = new StringWriter())
             {
-                new Arguments( new string[] { help }, _storage, writer );
+                args.DisplayMessages( writer );
                 writer.Close();
                 output = writer.ToString();
             }
@@ -56,10 +58,11 @@ namespace swept.Tests
         [Test]
         public void Version_emits_version_and_copyright()
         {
+            var args = new Arguments( new string[] { "version" }, _storage );
             string output;
             using (var writer = new StringWriter())
             {
-                new Arguments( new string[] { "version" }, _storage, writer );
+                args.DisplayMessages( writer );
                 writer.Close();
                 output = writer.ToString();
             }
@@ -89,7 +92,7 @@ namespace swept.Tests
             _storage.FilesInFolder[searchFolder] = foundFiles;
 
             var argsText = new string[] { "folder:" + searchFolder };
-            var args = new Arguments( argsText, _storage, Console.Out );
+            var args = new Arguments( argsText, _storage );
 
             Assert.That( args.History, Is.EqualTo( Path.Combine( searchFolder, foundHistory ) ) );
         }
@@ -103,7 +106,7 @@ namespace swept.Tests
             _storage.FilesInFolder[searchFolder] = foundFiles;
 
             var argsText = new string[] { "library:" + libName, "folder:" + searchFolder };
-            var args = new Arguments( argsText, _storage, Console.Out );
+            var args = new Arguments( argsText, _storage );
 
             Assert.That( args.History, Is.EqualTo( Path.Combine( searchFolder, expectedHistoryName ) ) );
         }
@@ -115,7 +118,7 @@ namespace swept.Tests
             _storage.FilesInFolder[searchFolder] = new List<string>();
             var argsText = new string[] { "folder:" + searchFolder };
 
-            var ex = Assert.Throws<Exception>( () => new Arguments( argsText, _storage, Console.Out ) );
+            var ex = Assert.Throws<Exception>( () => new Arguments( argsText, _storage ) );
             
             Assert.That( ex.Message, Is.EqualTo( String.Format("No library found in folder [{0}].", searchFolder ) ) );
         }
@@ -129,7 +132,7 @@ namespace swept.Tests
             _storage.FilesInFolder[searchFolder] = foundFiles;
 
             var argsText = new string[] { "folder:" + searchFolder };
-            var args = new Arguments( argsText, _storage, Console.Out );
+            var args = new Arguments( argsText, _storage );
 
             Assert.That( args.Library, Is.EqualTo( Path.Combine( searchFolder, foundLibrary ) ) );
         }
@@ -143,7 +146,7 @@ namespace swept.Tests
             _storage.FilesInFolder[searchFolder] = foundFiles;
             var argsText = new string[] { "folder:" + searchFolder };
 
-            var ex = Assert.Throws<Exception>( () => new Arguments( argsText, _storage, Console.Out ) );
+            var ex = Assert.Throws<Exception>( () => new Arguments( argsText, _storage ) );
 
             Assert.That( ex.Message, Is.EqualTo( String.Format( "Too many libraries (*.swept.library) found in folder [{0}].", searchFolder ) ) );
         }
@@ -152,7 +155,7 @@ namespace swept.Tests
         public void args_recognize_base_folder()
         {
             var argsText = new string[] { "folder:f:\\work\\project", "library:c:\\foo.library" };
-            var args = new Arguments( argsText, _storage, Console.Out );
+            var args = new Arguments( argsText, _storage );
             Assert.That( args.Folder, Is.EqualTo( @"f:\work\project" ) );
         }
 
@@ -160,7 +163,7 @@ namespace swept.Tests
         public void folder_is_cwd_if_not_supplied_in_args()
         {
             var argsText = new string[] { "library:fizzbuzz.swept.library" };
-            var args = new Arguments( argsText, _storage, Console.Out );
+            var args = new Arguments( argsText, _storage );
             Assert.That( args.Folder, Is.EqualTo( "d:\\code\\project" ) );
         }
 
@@ -168,7 +171,7 @@ namespace swept.Tests
         public void library_with_relative_path_has_project_folder_prepended()
         {
             var argsText = new string[] { "library:fizzbuzz.swept.library" };
-            var args = new Arguments( argsText, _storage, Console.Out );
+            var args = new Arguments( argsText, _storage );
             Assert.That( args.Library, Is.EqualTo( "d:\\code\\project\\fizzbuzz.swept.library" ) );
         }
 
@@ -176,7 +179,7 @@ namespace swept.Tests
         public void library_with_absolute_path_is_unchanged()
         {
             var argsText = new string[] { "folder:f:\\work\\project", "library:E:\\work_items\\fizzbuzz.swept.library" };
-            var args = new Arguments( argsText, _storage, Console.Out );
+            var args = new Arguments( argsText, _storage );
             Assert.That( args.Library, Is.EqualTo( "E:\\work_items\\fizzbuzz.swept.library" ) );
         }
 
@@ -184,7 +187,7 @@ namespace swept.Tests
         public void args_can_exclude_multiple_folders()
         {
             var argsText = new string[] { "exclude:lib,build,database", "library:unused" };
-            var args = new Arguments( argsText, _storage, Console.Out );
+            var args = new Arguments( argsText, _storage );
 
             Assert.That( args.Exclude.Count(), Is.EqualTo( 3 ) );
         }
@@ -192,12 +195,32 @@ namespace swept.Tests
         [Test]
         public void svnin_is_unary_bool_false_by_default()
         {
-            var args = new Arguments( new string[] { "library:unused" }, _storage, Console.Out );
+            var args = new Arguments( new string[] { "library:unused" }, _storage );
             Assert.That( args.Piping, Is.False );
 
-            args = new Arguments( new string[] { "pipe:svn", "library:unused" }, _storage, Console.Out );
+            args = new Arguments( new string[] { "pipe:svn", "library:unused" }, _storage );
             Assert.That( args.Piping );
             Assert.That( args.PipeSource, Is.EqualTo( PipeSource.SVN ) );
+        }
+
+        [Test]
+        public void Can_set_filename_for_Details_xml_output()
+        {
+            var args = new Arguments( new string[] { "library:unused" }, _storage );
+            Assert.That( args.DetailsFileName, Is.Empty );
+
+            args = new Arguments( new string[] { "details:flahnam.out", "library:unused" }, _storage );
+            Assert.That( args.DetailsFileName, Is.EqualTo( "flahnam.out" ) );
+        }
+
+        [Test]
+        public void Can_set_filename_for_Summary_xml_output()
+        {
+            var args = new Arguments( new string[] { "library:unused" }, _storage );
+            Assert.That( args.SummaryFileName, Is.Empty );
+
+            args = new Arguments( new string[] { "summary:flahnam.out", "library:unused" }, _storage );
+            Assert.That( args.SummaryFileName, Is.EqualTo( "flahnam.out" ) );
         }
     }
 }

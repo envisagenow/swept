@@ -27,7 +27,9 @@ namespace swept
 
         public string GetConsoleHeader(DateTime runtime)
         {
-            return (_args.Check ? String.Format( "Swept checking [{0}] with rules in [{1}] on {2}...{3}", _storage.GetCWD(), _args.Library, runtime.ToString( "G" ), Environment.NewLine ) : string.Empty);
+            if (!_args.Check)
+                return string.Empty;
+            return String.Format( "Swept checking [{0}] with rules in [{1}] on {2}...{3}", _storage.GetCWD(), _args.Library, runtime.ToString( "G" ), Environment.NewLine );
         }
 
         public string ReportOn( Dictionary<Rule, FileProblems> filesPerRule, RunHistory runHistory )
@@ -48,43 +50,20 @@ namespace swept
             if (_failures.Count == 0)
                 return string.Empty;
             else
-            {
-                var plurality = _failures.Count == 1 ? "" : "s";
-
-                string failuresText = "";
-                foreach (string fail in _failures)
-                {
-                    failuresText += fail + Environment.NewLine;
-                }
-
-                //string failureMessage = "Swept failed due to build breaking rule failure{0}:\n{1}";
-                //return string.Format( failureMessage, plurality, failuresText );
-                return failuresText;
-            }
+                return "Error:  " + string.Join( "\r\nError:  ", _failures.ToArray() ) + "\r\n";
         }
 
         public string ReportCheckResult()
         {
-            if (!_failures.Any())
+            return ReportCheckResult( _failures );
+        }
+
+        public string ReportCheckResult( List<string> failures )
+        {
+            if (!failures.Any())
                 return "Swept check passed!\r\n";
             else
                 return "Swept check failed!\r\n";
-
-            //var sb = new StringBuilder();
-
-            //if (_failures.Count > 0)
-            //{
-            //    foreach (var line in _failures)
-            //    {
-            //        sb.AppendLine(line);
-            //    }
-            //}
-            //else
-            //{
-            //    sb.AppendLine("Swept check passed!");
-            //}
-
-            //return sb.ToString();
         }
 
         private string ReportXmlResult()
@@ -181,6 +160,7 @@ namespace swept
             return ReadRunHistory( doc );
         }
 
+        private RunHistoryEntry _latestPassingRun = null;
         public RunHistory ReadRunHistory( XDocument historyXml )
         {
             RunHistory runHistory = new RunHistory();
@@ -198,10 +178,22 @@ namespace swept
                     string ruleID = ruleXml.Attribute( "ID" ).Value;
 
                     int ruleViolations = int.Parse( ruleXml.Attribute( "Violations" ).Value );
-                    run.Violations.Add( ruleID, ruleViolations );
+                    int rulePrior = int.Parse( ruleXml.Attribute( "Prior" ).Value );
+                    bool ruleBreaking = bool.Parse( ruleXml.Attribute( "Breaking" ).Value );
+                    RuleFailOn ruleFailOn = (RuleFailOn)Enum.Parse( typeof( RuleFailOn ), ruleXml.Attribute( "FailOn" ).Value );
+                    run.RuleResults[ruleID] = new RuleResult {
+                        ID = ruleID,
+                        Violations = ruleViolations,
+                        Prior = rulePrior,
+                        FailOn = ruleFailOn,
+                        Breaking = ruleBreaking
+                    };
                 }
 
                 runHistory.Runs.Add( run );
+
+                if (run.Passed)
+                    _latestPassingRun = run;
             }
 
             return runHistory;
@@ -222,11 +214,14 @@ namespace swept
                     new XAttribute( "Passed", run.Passed.ToString() ) 
                 );
 
-                foreach (var violation in run.Violations)
+                foreach (RuleResult result in run.RuleResults.Values.OrderBy( r => r.ID ))
                 {
                     var ruleElement = new XElement( "Rule",
-                        new XAttribute( "ID", violation.Key ),
-                        new XAttribute( "Violations", violation.Value )
+                        new XAttribute( "ID", result.ID ),
+                        new XAttribute( "Violations", result.Violations ),
+                        new XAttribute( "Prior", result.Prior ),
+                        new XAttribute( "FailOn", result.FailOn ),
+                        new XAttribute( "Breaking", result.Breaking )
                     );
 
                     runElement.Add( ruleElement );
@@ -249,10 +244,48 @@ namespace swept
 
             foreach (var keyRule in _filesPerRule.Keys)
             {
-                entry.Violations[keyRule.ID] = countViolations( _filesPerRule[keyRule] );
+                int violations = countViolations(_filesPerRule[keyRule]);
+                entry.RuleResults[keyRule.ID] = GetRuleResult( keyRule, violations, _latestPassingRun );
             }
 
             return entry;
+        }
+
+        public RuleResult GetRuleResult( Rule ruleUnderTest, int violations, RunHistoryEntry priorSuccess )
+        {
+            int priorViolations = 0;
+
+            if (ruleUnderTest.FailOn == RuleFailOn.Over)
+                priorViolations = ruleUnderTest.RunFailOverLimit;
+
+            if (ruleUnderTest.FailOn == RuleFailOn.Increase)
+                priorViolations = violations;
+
+            if (priorSuccess != null)
+            {
+                if (priorSuccess.RuleResults.ContainsKey( ruleUnderTest.ID ))
+                    priorViolations = priorSuccess.RuleResults[ruleUnderTest.ID].Violations;
+            }
+
+            bool breaking = false;
+
+            if (ruleUnderTest.FailOn == RuleFailOn.Any)
+                breaking = violations > 0;
+
+            if (ruleUnderTest.FailOn == RuleFailOn.Over)
+                breaking = violations > ruleUnderTest.RunFailOverLimit;
+
+            if (ruleUnderTest.FailOn == RuleFailOn.Increase)
+                breaking = violations > priorViolations;
+
+            return new RuleResult
+            {
+                ID = ruleUnderTest.ID,
+                FailOn = ruleUnderTest.FailOn,
+                Violations = violations,
+                Prior = priorViolations,
+                Breaking = breaking
+            };
         }
 
         public List<string> ListRunFailures( Dictionary<Rule, FileProblems> runDetails, RunHistory history )
@@ -264,28 +297,28 @@ namespace swept
                 int count = countViolations( runDetails[rule] );
 
                 int threshold;
-                switch (rule.RunFail)
+                switch (rule.FailOn)
                 {
-                case RunFailMode.Any:
+                case RuleFailOn.Any:
                     threshold = 0;
                     break;
 
-                case RunFailMode.Over:
+                case RuleFailOn.Over:
                     threshold = rule.RunFailOverLimit;
                     break;
 
-                case RunFailMode.Increase:
+                case RuleFailOn.Increase:
                     threshold = history.WaterlineFor( rule.ID );
                     break;
 
-                case RunFailMode.None:
+                case RuleFailOn.None:
                     threshold = int.MaxValue;
                     break;
 
                 default:
                     System.Reflection.MethodBase thisMethod = new StackTrace().GetFrame(0).GetMethod();
                     throw new Exception(String.Format("I do not know how to check a failure mode of [{0}].  Please extend {1}.{2}.", 
-                        rule.RunFail, thisMethod.ReflectedType, thisMethod.Name));
+                        rule.FailOn, thisMethod.ReflectedType, thisMethod.Name));
                 }
 
                 string thresholdPhrase = (threshold == 0) ? "any" : "over [" + threshold + "]";

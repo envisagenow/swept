@@ -57,8 +57,8 @@ namespace swept
                 try
                 {
                     //  When, MS?:  rule.RunFail = Enum.Parse<RunFailMode>( failText );
-                    rule.RunFail = (RunFailMode)Enum.Parse( typeof( RunFailMode ), failText );
-                    if (rule.RunFail == RunFailMode.Over)
+                    rule.FailOn = (RuleFailOn)Enum.Parse( typeof( RuleFailOn ), failText );
+                    if (rule.FailOn == RuleFailOn.Over)
                     {
                         try
                         {

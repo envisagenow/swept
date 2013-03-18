@@ -26,7 +26,7 @@ namespace swept.Tests
             List<Rule> rules = cat.GetSortedRules();
             Assert.That( rules.Count, Is.EqualTo( 1 ) );
 
-            Assert.That( rules[0].RunFail, Is.EqualTo( RunFailMode.Any ) );
+            Assert.That( rules[0].FailOn, Is.EqualTo( RuleFailOn.Any ) );
         }
 
         [Test]
@@ -36,7 +36,7 @@ namespace swept.Tests
             List<Rule> rules = cat.GetSortedRules();
             Assert.That( rules.Count, Is.EqualTo( 1 ) );
 
-            Assert.That( rules[0].RunFail, Is.EqualTo( RunFailMode.Increase ) );
+            Assert.That( rules[0].FailOn, Is.EqualTo( RuleFailOn.Increase ) );
         }
 
         [Test]
@@ -46,7 +46,7 @@ namespace swept.Tests
             List<Rule> rules = cat.GetSortedRules();
             Assert.That( rules.Count, Is.EqualTo( 1 ) );
 
-            Assert.That( rules[0].RunFail, Is.EqualTo( RunFailMode.Over ) );
+            Assert.That( rules[0].FailOn, Is.EqualTo( RuleFailOn.Over ) );
             Assert.That( rules[0].RunFailOverLimit, Is.EqualTo( 2 ) );
         }
 

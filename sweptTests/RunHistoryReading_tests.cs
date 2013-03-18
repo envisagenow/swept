@@ -18,7 +18,7 @@ namespace swept.Tests
         public void Setup()
         {
             var storage = new MockStorageAdapter();
-            var args = new Arguments( new string[] { "library:foo.library", "history:foo.history" }, storage, Console.Out );
+            var args = new Arguments( new string[] { "library:foo.library", "history:foo.history" }, storage );
             _librarian = new BuildLibrarian( args, storage );
         }
 
@@ -36,19 +36,18 @@ namespace swept.Tests
         [TestCase( 14, "5/11/2012 7:28:02 AM", 54 )]
         public void We_can_read_history_from_XML_into_domain( int runNumber, string dateString, int violationsCount )
         {
-
+            //  Don't overanalyze this expecting it to make domain sense
             var historyXml = XDocument.Parse( string.Format(
 @"<RunHistory>
   <Run Number=""{3}"" DateTime=""{2}"" Passed=""false"">
-    <Rule ID=""{0}"" Violations=""{1}"" />
-    <Rule ID=""always the same"" Violations=""44"" />
+    <Rule ID=""{0}"" Violations=""{1}"" FailOn=""Increase"" Prior=""38"" Breaking=""true"" />
+    <Rule ID=""always the same"" Violations=""44"" FailOn=""None"" Prior=""44"" Breaking=""false"" />
   </Run>
   <Run Number=""1100"" DateTime=""1/1/2022 3:20:14 PM"" Passed=""true"">
-    <Rule ID=""always the same"" Violations=""44"" />
+    <Rule ID=""always the same"" Violations=""44"" FailOn=""None"" Prior=""44"" Breaking=""false"" />
   </Run>
 
 </RunHistory>", "silly problem", violationsCount, dateString, runNumber ) );
-
 
             RunHistory history = _librarian.ReadRunHistory( historyXml );
 
@@ -56,15 +55,26 @@ namespace swept.Tests
             Assert.That( firstRun.Date, Is.EqualTo( DateTime.Parse( dateString ) ) );
             Assert.That( firstRun.Number, Is.EqualTo( runNumber ) );
 
-            Assert.That( firstRun.Violations["silly problem"], Is.EqualTo( violationsCount ) );
-            Assert.That( firstRun.Violations["always the same"], Is.EqualTo( 44 ) );
+            RuleResult sillyResult = firstRun.RuleResults["silly problem"];
+            Assert.That( sillyResult.Violations, Is.EqualTo( violationsCount ) );
+            Assert.That( sillyResult.ID, Is.EqualTo( "silly problem" ) );
+            Assert.That( sillyResult.Prior, Is.EqualTo( 38 ) );
+            Assert.That( sillyResult.FailOn, Is.EqualTo( RuleFailOn.Increase ) );
+            Assert.That( sillyResult.Breaking );
+
+            RuleResult sameResult = firstRun.RuleResults["always the same"];
+            Assert.That( sameResult.Violations, Is.EqualTo( 44 ) );
             Assert.That( firstRun.Passed, Is.False );
+            //Assert.That( firstRun.FailOn, Is.EqualTo( RunFailMode.Increase ) );
+            //Assert.That( firstRun.Prior, Is.EqualTo( 38 ) );
+            Assert.That( sameResult.Breaking, Is.False );
 
             RunHistoryEntry secondRun = history.Runs[1];
             Assert.That( secondRun.Date, Is.EqualTo( DateTime.Parse( "1/1/2022 3:20:14 PM" ) ) );
             Assert.That( secondRun.Number, Is.EqualTo( 1100 ) );
-            Assert.That( secondRun.Violations.Count(), Is.EqualTo( 1 ) );
+            Assert.That( secondRun.RuleResults.Count(), Is.EqualTo( 1 ) );
             Assert.That( secondRun.Passed );
+            //Assert.That( secondRun.FailOn, Is.EqualTo( RunFailMode.None ) );
         }
     }
 }

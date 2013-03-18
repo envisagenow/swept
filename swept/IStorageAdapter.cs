@@ -5,6 +5,7 @@ using System;
 using System.Xml;
 using System.Collections.Generic;
 using System.Xml.Linq;
+using System.IO;
 
 namespace swept
 {
@@ -21,5 +22,7 @@ namespace swept
 
         XDocument LoadRunHistory( string historyPath );
         void SaveRunHistory( XDocument runHistory, string fileName );
+
+        TextWriter GetOutputWriter( string outputLocation );
     }
 }

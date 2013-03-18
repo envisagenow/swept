@@ -21,8 +21,11 @@ namespace swept
         public bool Piping { get; private set; }
         public PipeSource PipeSource { get; private set; }
         public bool Check { get; private set; }
+        public bool ShowVersion { get; private set; }
+        public bool ShowUsage { get; private set; }
 
-        public string Output { get; private set; }
+        public string DetailsFileName { get; private set; }
+        public string SummaryFileName { get; private set; }
 
         public bool AreInvalid
         {
@@ -71,14 +74,17 @@ This software is open source, MIT license.  See the file LICENSE for details.
             }
         }
 
-        public Arguments( string[] args, IStorageAdapter storageAdapter, TextWriter writer )
+        public Arguments( string[] args, IStorageAdapter storageAdapter )
         {
             Library = string.Empty;
             History = string.Empty;
             Folder = string.Empty;
             Exclude = new List<string>();
-            Output = string.Empty;
+            DetailsFileName = string.Empty;
+            SummaryFileName = string.Empty;
             Check = false;
+            ShowUsage = false;
+            ShowVersion = false;
 
             List<string> exceptionMessages = new List<string>();
 
@@ -93,14 +99,14 @@ This software is open source, MIT license.  See the file LICENSE for details.
                         continue;
 
                     case "version":
-                        writer.Write( VersionMessage );
+                        ShowVersion = true;
                         return;
 
                     case "usage":
                     case "help":
                     case "h":
                     case "/?":
-                        writer.Write( UsageMessage );
+                        ShowUsage = true;
                         return;
 
                     case "check":
@@ -134,8 +140,12 @@ This software is open source, MIT license.  See the file LICENSE for details.
                 case "exclude":
                     Exclude = tokens[1].Split( ',' );
                     break;
-                case "output":
-                    Output = tokens[1];
+                case "details":
+                case "detail":
+                    DetailsFileName = tokens[1];
+                    break;
+                case "summary":
+                    SummaryFileName = tokens[1];
                     break;
                 case "pipe":
                     // TODO: Friendly let-down if they have an unrecognized VCS pipe-source
@@ -199,6 +209,15 @@ This software is open source, MIT license.  See the file LICENSE for details.
                 if (History[1] != ':')
                     History = Path.Combine( Folder, History );
             }
+        }
+
+        public void DisplayMessages( StringWriter writer )
+        {
+            if (ShowVersion)
+                writer.Write( VersionMessage );
+
+            if (ShowUsage)
+                writer.Write( UsageMessage );
         }
     }
 }

@@ -23,10 +23,10 @@ namespace swept.Tests
         public void BuildFail_Default_None_is_settable()
         {
             Rule rule = new Rule();
-            Assert.That( rule.RunFail, Is.EqualTo( RunFailMode.None ) );
+            Assert.That( rule.FailOn, Is.EqualTo( RuleFailOn.None ) );
 
-            rule.RunFail = RunFailMode.Any;
-            Assert.That( rule.RunFail, Is.EqualTo( RunFailMode.Any ) );
+            rule.FailOn = RuleFailOn.Any;
+            Assert.That( rule.FailOn, Is.EqualTo( RuleFailOn.Any ) );
         }
     }
 }

@@ -18,9 +18,8 @@ namespace swept.Tests
         [SetUp]
         public void Setup()
         {
-            _storage = new MockStorageAdapter();
-            _storage.CWD = "r:\\somefolder";
-            var args = new Arguments( new string[] { "library:foo.library", "history:foo.history" }, _storage, Console.Out );
+            _storage = new MockStorageAdapter() { CWD = "r:\\somefolder" };
+            var args = new Arguments( new string[] { "library:foo.library", "history:foo.history" }, _storage );
             _librarian = new BuildLibrarian( args, _storage );
         }
 
@@ -28,9 +27,23 @@ namespace swept.Tests
         [Test]
         public void Zero_Problems_produces_no_failure_text()
         {
+            var problems = new Dictionary<Rule, FileProblems>();
+            _librarian.ReportOn( problems, new RunHistory() );
             string failureText = _librarian.ReportBuildFailures();
 
             Assert.AreEqual( string.Empty, failureText );
+        }
+
+        [Test]
+        public void When_one_failure_occurs_text_is_correct()
+        {
+            string problemText = "fooblah";
+            var failures = new List<string> { problemText };
+            _librarian._failures = failures;
+            string failureText = _librarian.ReportBuildFailures();
+
+            var expectedFailureMessage = String.Format( "Swept failed due to build breaking rule failure:\n{0}\n", problemText );
+            Assert.AreEqual( expectedFailureMessage, failureText );
         }
 
         [Test]
@@ -53,32 +66,20 @@ namespace swept.Tests
 
             Assert.AreEqual( expectedFailureMessage, failureText );
         }
-
-        [Test]
-        public void When_one_failure_occurs_text_is_correct()
-        {
-            string problemText = "fooblah";
-            var failures = new List<string> { problemText };
-            _librarian._failures = failures;
-            string failureText = _librarian.ReportBuildFailures();
-
-            var expectedFailureMessage = String.Format( "Swept failed due to build breaking rule failure:\n{0}\n", problemText );
-            Assert.AreEqual( expectedFailureMessage, failureText );
-        }
         #endregion
 
         [Test]
         public void We_see_failure_list_when_we_Check()
         {
-            var args = new Arguments( new string[] { "library:foo.library", "history:foo.history", "check" }, _storage, Console.Out );
+            var args = new Arguments( new string[] { "library:foo.library", "history:foo.history", "check" }, _storage );
             _librarian = new BuildLibrarian( args, _storage );
 
             var history = new RunHistory();
             RunHistoryEntry entry = new RunHistoryEntry { Passed = true, Number = 1 };
-            entry.Violations["NET-001"] = 4;
+            entry.RuleResults["NET-001"] = new RuleResult { Violations = 4 };
             history.AddRun( entry );
 
-            var net_001 = new Rule { ID = "NET-001", RunFail = RunFailMode.Increase };
+            var net_001 = new Rule { ID = "NET-001", FailOn = RuleFailOn.Increase };
 
             FileProblems net_001_problems = new FileProblems();
             var file = new SourceFile( "troubled.cs" );
@@ -92,22 +93,20 @@ namespace swept.Tests
             _librarian.ReportOn( problems, history );
             string message = _librarian.ReportFailures();
 
-            string expectedMessage = "Rule [NET-001] has been violated [9] times, and it breaks the build if there are over [4] violations.\r\n";
+            string expectedMessage = "Error:  Rule [NET-001] has been violated [9] times, and it breaks the build if there are over [4] violations.\r\n";
             Assert.That( message, Is.EqualTo( expectedMessage ) );
         }
 
         [Test]
         public void We_see_expected_header_when_we_Check()
         {
-            var args = new Arguments( new string[] { "library:foo.library", "history:foo.history", "check" }, _storage, Console.Out );
+            var args = new Arguments( new string[] { "library:foo.library", "history:foo.history", "check" }, _storage );
             _librarian = new BuildLibrarian( args, _storage );
 
             var nowish = DateTime.Parse( "6/26/2012 10:58 AM" );
             string header = _librarian.GetConsoleHeader( nowish );
 
-            string library = System.IO.Path.Combine(_storage.CWD, "foo.library");
-            string expectedMessage = String.Format( "Swept checking [{0}] with rules in [{1}] on {2}...{3}", _storage.CWD, library, nowish.ToString( "G" ), Environment.NewLine );
-            Assert.That( header, Is.EqualTo( expectedMessage ) );
+            Assert.That( header, Is.EqualTo( "Swept checking [r:\\somefolder] with rules in [r:\\somefolder\\foo.library] on 6/26/2012 10:58:00 AM...\r\n" ) );
         }
 
         [Test]
@@ -120,32 +119,32 @@ namespace swept.Tests
         }
 
         [Test]
-        public void With_no_violations_the_check_report_is_cheerful()
+        public void With_no_violations_the_check_passes()
         {
-            Dictionary<Rule, FileProblems> problems = new Dictionary<Rule, FileProblems>();
+            var problems = new Dictionary<Rule, FileProblems>();
+            _librarian.ReportOn( problems, new RunHistory() );
             string message = _librarian.ReportCheckResult();
 
             Assert.That( message, Is.EqualTo( "Swept check passed!" + Environment.NewLine ) );
         }
 
         [Test]
-        public void With_a_violation_the_check_report_complains()
+        public void With_one_violation_the_check_fails()
         {
             var history = new RunHistory();
-            RunHistoryEntry entry = new RunHistoryEntry { Passed = true, Number = 1 };
-            entry.Violations["NET-001"] = 4;
+            var entry = new RunHistoryEntry { Passed = true, Number = 1 };
+            entry.RuleResults["NET-001"] = new RuleResult { Violations = 4 };
             history.AddRun( entry );
 
-            var net_001 = new Rule { ID = "NET-001", RunFail = RunFailMode.Increase, Description = "Good exception messages, please" };
+            var net_001_rule = new Rule { ID = "NET-001", FailOn = RuleFailOn.Increase, Description = "Good exception messages, please" };
 
-            FileProblems net_001_problems = new FileProblems();
             var file = new SourceFile( "troubled.cs" );
             var lines = new List<int>( new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 } );
-            var match = new LineMatch( lines );
-            net_001_problems[file] = match;
+            var net_001_problems = new FileProblems();
+            net_001_problems[file] = new LineMatch( lines );
 
-            Dictionary<Rule, FileProblems> problems = new Dictionary<Rule, FileProblems>();
-            problems[net_001] = net_001_problems;
+            var problems = new Dictionary<Rule, FileProblems>();
+            problems[net_001_rule] = net_001_problems;
             _librarian.ReportOn( problems, history );
             string message = _librarian.ReportCheckResult();
 
@@ -154,20 +153,20 @@ namespace swept.Tests
             Assert.That( message, Is.EqualTo( expectedMessage ) );
         }
 
-        [Test, Ignore()]
-        public void With_violations_the_check_report_complains()
+        [Test]
+        public void With_violations_the_check_fails()
         {
-            //List<string> problemLines = new List<string>();
-            //string problem = "Rule [NET-001] has been violated [22] times, and it breaks the build if there are over [18] violations.";
-            //string anotherProblem = "Rule [ETC-002] has been violated [7] times, and it breaks the build if there are over [6] violations.";
-            //problemLines.Add( problem );
-            //problemLines.Add( anotherProblem );
-            //string message = _librarian.ReportCheckResult( problemLines );
+            List<string> problemLines = new List<string>();
+            string problem = "Rule [NET-001] has been violated [22] times, and it breaks the build if there are over [18] violations.";
+            string anotherProblem = "Rule [ETC-002] has been violated [7] times, and it breaks the build if there are over [6] violations.";
+            problemLines.Add( problem );
+            problemLines.Add( anotherProblem );
+            string message = _librarian.ReportCheckResult( problemLines );
 
             //string expectedMessage = problem + Environment.NewLine + anotherProblem + Environment.NewLine;
-            //Assert.That( message, Is.EqualTo( expectedMessage ) );
+            string expectedMessage = "Swept check failed!" + Environment.NewLine;
+            Assert.That( message, Is.EqualTo( expectedMessage ) );
         }
-
 
         [Test]
         public void Zero_Problems_produces_empty_failure_XML()

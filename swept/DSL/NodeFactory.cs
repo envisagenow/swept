@@ -23,7 +23,7 @@ namespace swept.DSL
 
             default:
                 throw new NotImplementedException( string.Format( 
-                    "Swept factory has not learneed how to make a unary expression with operator [{0}].", OperatorName( op.Type ) ) );
+                    "Swept factory has not learned how to make a unary expression with operator [{0}].", OperatorName( op.Type ) ) );
             }
         }
 

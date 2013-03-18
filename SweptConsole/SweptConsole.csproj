@@ -67,6 +67,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Arguments.cs" />
+    <Compile Include="RuleResult.cs" />
     <Compile Include="RunHistory.cs" />
     <Compile Include="BuildLibrarian.cs" />
     <Compile Include="Gatherer.cs" />

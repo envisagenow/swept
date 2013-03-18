@@ -42,7 +42,7 @@ namespace swept.Tests
         {
             store_foo();
             var argsText = new string[] { "folder:c:\\foo", "exclude:c:\\foo", "library:foo.library", "history:foo.history" };
-            var args = new Arguments( argsText, null, Console.Out );
+            var args = new Arguments( argsText, null );
             var traverser = new Traverser( args, _storage );
 
             var files = traverser.GetProjectFiles();
@@ -55,7 +55,7 @@ namespace swept.Tests
         {
             store_foo();
             var argsText = new string[] { "folder:c:\\foo", "library:foo.library", "history:foo.history" };
-            var args = new Arguments( argsText, null, null );
+            var args = new Arguments( argsText, null );
             var traverser = new Traverser( args, _storage );
 
             List<string> files = traverser.GetProjectFiles().ToList();
@@ -69,7 +69,7 @@ namespace swept.Tests
         {
             store_foobar();
             var argsText = new string[] { "folder:c:\\foo", "library:foo.library", "history:foo.history" };
-            var args = new Arguments( argsText, null, null );
+            var args = new Arguments( argsText, null );
             var traverser = new Traverser( args, _storage );
 
             List<string> files = traverser.GetProjectFiles().ToList();
@@ -83,7 +83,7 @@ namespace swept.Tests
         {
             store_foobarsubsub();
             var argsText = new string[] { "folder:c:\\foo", "library:foo.library", "history:foo.history" };
-            var args = new Arguments( argsText, null, null );
+            var args = new Arguments( argsText, null );
             var traverser = new Traverser( args, _storage );
 
             var files = traverser.GetProjectFiles().ToList();
@@ -96,7 +96,7 @@ namespace swept.Tests
         {
             store_foobarsubsub();
             var argsText = new string[] { "folder:c:\\foo", "library:foo.library", "history:foo.history", "exclude:.*ubs.*" };
-            var args = new Arguments( argsText, null, null );
+            var args = new Arguments( argsText, null );
             var traverser = new Traverser( args, _storage );
 
             var files = traverser.GetProjectFiles().ToList();
@@ -113,7 +113,7 @@ namespace swept.Tests
             _storage.FilesInFolder["c:\\foo"] = filesInFoo;
 
             var argsText = new string[] { "folder:c:\\foo", "library:foo.library", "history:foo.history" };
-            var args = new Arguments( argsText, null, null );
+            var args = new Arguments( argsText, null );
             var traverser = new Traverser( args, _storage );
 
             traverser.WhiteListPattern = @"\.(cs|html)$";
@@ -131,7 +131,7 @@ namespace swept.Tests
             _storage.GetFilesInFolder_Throw( ioex );
 
             var argsText = new string[] { "folder:c:\\foo", "library:foo.library", "history:foo.history" };
-            var args = new Arguments( argsText, null, null );
+            var args = new Arguments( argsText, null );
             var traverser = new Traverser( args, _storage );
 
             var ex = Assert.Throws<Exception>( () => traverser.GetProjectFiles() );

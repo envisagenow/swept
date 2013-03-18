@@ -21,7 +21,7 @@ namespace swept.Tests
         public void SetUp()
         {
             _storage = new MockStorageAdapter();
-            _args = new Arguments( new string[] { "library:foo.library", "history:foo.history" }, _storage, Console.Out );
+            _args = new Arguments( new string[] { "library:foo.library", "history:foo.history" }, _storage );
             _librarian = new BuildLibrarian( _args, _storage );
         }
 
@@ -32,7 +32,7 @@ namespace swept.Tests
             _storage.RunHistory = XDocument.Parse(
 @"<RunHistory>
   <Run Number=""22"" DateTime=""4/4/2012 10:25:02 AM"" Passed=""True"">
-    <Rule ID=""foo"" Violations=""2"" />
+    <Rule ID=""foo"" Violations=""2"" Prior=""2"" FailOn=""None"" Breaking=""false"" />
   </Run>
 </RunHistory>" );
             
@@ -49,19 +49,19 @@ namespace swept.Tests
             {
                 ID = "basic entry",
                 Description = "simple",
-                RunFail = RunFailMode.Over,
+                FailOn = RuleFailOn.Over,
                 RunFailOverLimit = 20
             };
             var sourceClauseMatch = new FileProblems();
 
-            var failedSource = new SourceFile("some_file.cs");
+            var failedSource = new SourceFile( "some_file.cs" );
 
             List<int> violationLines = new List<int>();
             for (int i = 0; i < 7; i++)
             {
-                violationLines.Add((i * 7) + 22);  //arbitrary lines throughout the source file had this problem.
+                violationLines.Add( (i * 7) + 22 );  //arbitrary lines throughout the source file had this problem.
             }
-            ClauseMatch failedClause = new LineMatch(violationLines);
+            ClauseMatch failedClause = new LineMatch( violationLines );
             sourceClauseMatch[failedSource] = failedClause;
 
             var ruleViolations = new Dictionary<Rule, FileProblems>();
@@ -73,7 +73,7 @@ namespace swept.Tests
             {
                 ID = "no problem",
                 Description = "the app reports rules with no issues",
-                RunFail = RunFailMode.Any,
+                FailOn = RuleFailOn.Any,
             };
 
             ruleViolations[happyRule] = noMatches;
@@ -81,17 +81,116 @@ namespace swept.Tests
             DateTime nowish = DateTime.Now;
 
             RunHistory runHistory = new RunHistory();
-            runHistory.AddRun(new RunHistoryEntry { Number = 776, Passed = true } );
+            RunHistoryEntry entryOld = new RunHistoryEntry { Number = 776, Passed = true };
+            //ABEND entry.RuleResults.Add()
+            runHistory.AddRun( entryOld );
 
             _librarian.ReportOn( ruleViolations, runHistory );
-            RunHistoryEntry entry = _librarian.GenerateEntry(nowish);
+            RunHistoryEntry entry = _librarian.GenerateEntry( nowish );
 
-            Assert.That(entry.Number, Is.EqualTo(777));
-            Assert.That(entry.Date, Is.EqualTo(nowish));
-            Assert.That(entry.Violations.Count, Is.EqualTo(2));
-            Assert.That(entry.Violations[rule.ID], Is.EqualTo(7));
-            Assert.That(entry.Violations[happyRule.ID], Is.EqualTo(0));
-            Assert.That(entry.Passed, Is.True);
+            Assert.That( entry.Number, Is.EqualTo( 777 ) );
+            Assert.That( entry.Date, Is.EqualTo( nowish ) );
+            Assert.That( entry.RuleResults.Count, Is.EqualTo( 2 ) );
+            Assert.That( entry.RuleResults[rule.ID].Violations, Is.EqualTo( 7 ) );
+            Assert.That( entry.RuleResults[happyRule.ID].Violations, Is.EqualTo( 0 ) );
+            Assert.That( entry.Passed, Is.True );
+
+            Assert.Fail( "Need real values from history." );
+        }
+
+        //GenEntry with
+        //no prior success
+        //latest success contains rule
+        //latest success does not contain rule
+        //and test Prior and Breaking values for
+        //Any, Over (when met and when exceeded)
+        //Increase (when exceeded)
+
+        // TODO: get rid of RunResult.FailOn, Breaking makes it redundant
+
+        [Test]
+        public void GenEntry_Increase_noPrior()
+        {
+            string id = "PE6-5000";
+            RunHistoryEntry priorSuccess = null;
+            Rule rut = new Rule { ID = id, FailOn = RuleFailOn.Increase };
+
+            RuleResult result = _librarian.GetRuleResult( rut, 7, priorSuccess );
+
+            Assert.That( result.ID, Is.EqualTo( id ) );
+            Assert.That( result.FailOn, Is.EqualTo( RuleFailOn.Increase ) );
+            Assert.That( result.Violations, Is.EqualTo( 7 ) );
+            Assert.That( result.Prior, Is.EqualTo( 7 ) );
+            Assert.That( result.Breaking, Is.False );
+        }
+
+        [Test]
+        public void GenEntry_Increase_PriorWasBetter()
+        {
+            string id = "PE6-5000";
+            RunHistoryEntry priorSuccess = new RunHistoryEntry();
+            priorSuccess.RuleResults[id] = new RuleResult { ID = id, Violations = 2 };
+            Rule rut = new Rule { ID = id, FailOn = RuleFailOn.Increase };
+
+            RuleResult result = _librarian.GetRuleResult( rut, 7, priorSuccess );
+
+            Assert.That( result.ID, Is.EqualTo( id ) );
+            Assert.That( result.FailOn, Is.EqualTo( RuleFailOn.Increase ) );
+            Assert.That( result.Violations, Is.EqualTo( 7 ) );
+            Assert.That( result.Prior, Is.EqualTo( 2 ) );
+            Assert.That( result.Breaking, Is.True );
+        }
+
+        [Test]
+        public void GenEntry_Increase_PriorHasNoEntryForThisRule()
+        {
+            string id = "PE6-5000";
+            RunHistoryEntry priorSuccess = new RunHistoryEntry();
+            priorSuccess.RuleResults["by a different name"] = new RuleResult { ID = "by a different name", Violations = 2 };
+            Rule rut = new Rule { ID = id, FailOn = RuleFailOn.Increase };
+
+            RuleResult result = _librarian.GetRuleResult( rut, 7, priorSuccess );
+
+            Assert.That( result.ID, Is.EqualTo( id ) );
+            Assert.That( result.FailOn, Is.EqualTo( RuleFailOn.Increase ) );
+            Assert.That( result.Violations, Is.EqualTo( 7 ) );
+            Assert.That( result.Prior, Is.EqualTo( 7 ) );
+            Assert.That( result.Breaking, Is.False );
+        }
+
+
+        [Test]
+        public void GenEntry_Any_PriorHasNoEntryForThisRule()
+        {
+            string id = "PE6-5000";
+            RunHistoryEntry priorSuccess = new RunHistoryEntry();
+            priorSuccess.RuleResults["by a different name"] = new RuleResult { ID = "by a different name", Violations = 2 };
+            Rule rut = new Rule { ID = id, FailOn = RuleFailOn.Any };
+
+            RuleResult result = _librarian.GetRuleResult( rut, 7, priorSuccess );
+
+            Assert.That( result.ID, Is.EqualTo( id ) );
+            Assert.That( result.FailOn, Is.EqualTo( RuleFailOn.Any ) );
+            Assert.That( result.Violations, Is.EqualTo( 7 ) );
+            Assert.That( result.Prior, Is.EqualTo( 0 ) );  // an argument could be made for 7.
+            Assert.That( result.Breaking, Is.True );
+        }
+
+        [Test]
+        public void GenEntry_Over_PriorHasNoEntryForThisRule()
+        {
+            string id = "PE6-5000";
+            RunHistoryEntry priorSuccess = new RunHistoryEntry();
+            priorSuccess.RuleResults["by a different name"] = new RuleResult { ID = "by a different name", Violations = 2 };
+            Rule rut = new Rule { ID = id, FailOn = RuleFailOn.Over, RunFailOverLimit = 5 };
+
+            RuleResult result = _librarian.GetRuleResult( rut, 7, priorSuccess );
+
+            Assert.That( result.ID, Is.EqualTo( id ) );
+            Assert.That( result.FailOn, Is.EqualTo( RuleFailOn.Over ) );
+            Assert.That( result.Violations, Is.EqualTo( 7 ) );
+            Assert.That( result.Prior, Is.EqualTo( 5 ) );  // an argument could be made for 7.
+            Assert.That( result.Breaking, Is.True );
         }
 
         [Test]
@@ -101,7 +200,7 @@ namespace swept.Tests
             {
                 ID = "basic entry",
                 Description = "simple",
-                RunFail = RunFailMode.Over,
+                FailOn = RuleFailOn.Over,
                 RunFailOverLimit = 2
             };
             var sourceClauseMatch = new FileProblems();
@@ -129,8 +228,8 @@ namespace swept.Tests
 
             Assert.That(entry.Number, Is.EqualTo(888));
             Assert.That(entry.Date, Is.EqualTo(nowish));
-            Assert.That(entry.Violations.Count, Is.EqualTo(1));
-            Assert.That(entry.Violations[rule.ID], Is.EqualTo(7));
+            Assert.That(entry.RuleResults.Count, Is.EqualTo(1));
+            Assert.That(entry.RuleResults[rule.ID].Violations, Is.EqualTo(7));
             Assert.That(entry.Passed, Is.False);
         }
 
@@ -149,23 +248,23 @@ namespace swept.Tests
         public void When_we_write_run_history_it_is_stored_to_disk()
         {
             var runHistory = new RunHistory();
-            var violations = new Dictionary<string, int>();
-            violations.Add( "foo", 2 );
+            var results = new Dictionary<string, RuleResult>();
+            results.Add( "foo", new RuleResult { ID = "foo", Violations = 2, Prior = 1, FailOn = RuleFailOn.Increase, Breaking = true } );
             runHistory.AddRun( new RunHistoryEntry
             {
                 Number = 22,
                 Date = DateTime.Parse( "4/4/2012 10:25:02 AM" ),
-                Violations = violations,
+                RuleResults = results,
                 Passed = false
             } );
 
-            Dictionary<string, int> violationsNext = new Dictionary<string, int>();
-            violationsNext.Add( "bar", 0 );
+            var resultsNext = new Dictionary<string, RuleResult>();
+            resultsNext.Add( "bar", new RuleResult { ID = "bar", Violations = 0, Prior = 2, FailOn = RuleFailOn.None, Breaking = false } );
             runHistory.AddRun( new RunHistoryEntry
             {
                 Number = 23,
                 Date = DateTime.Parse( "4/7/2012 10:25:03 AM" ),
-                Violations = violationsNext,
+                RuleResults = resultsNext,
                 Passed = true
             } );
 
@@ -176,10 +275,10 @@ namespace swept.Tests
             var expectedHistory =
 @"<RunHistory>
   <Run Number=""22"" DateTime=""4/4/2012 10:25:02 AM"" Passed=""False"">
-    <Rule ID=""foo"" Violations=""2"" />
+    <Rule ID=""foo"" Violations=""2"" Prior=""1"" FailOn=""Increase"" Breaking=""true"" />
   </Run>
   <Run Number=""23"" DateTime=""4/7/2012 10:25:03 AM"" Passed=""True"">
-    <Rule ID=""bar"" Violations=""0"" />
+    <Rule ID=""bar"" Violations=""0"" Prior=""2"" FailOn=""None"" Breaking=""false"" />
   </Run>
 </RunHistory>";
 

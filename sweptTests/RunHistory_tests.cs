@@ -44,8 +44,8 @@ namespace swept.Tests
 
             var run = new RunHistoryEntry { Passed = true };
             run.Number = 401;
-            run.Violations["Eliminate Crystal Reports"] = 6;
-            run.Violations["Update widgets to widgets 2.0"] = 45;
+            run.RuleResults["Eliminate Crystal Reports"] = new RuleResult { Violations = 6 };
+            run.RuleResults["Update widgets to widgets 2.0"] = new RuleResult { Violations = 45 };
             _history.AddRun( run );
 
             Assert.That( _history.WaterlineFor( "Eliminate Crystal Reports" ), Is.EqualTo( 6 ) );
@@ -63,7 +63,7 @@ namespace swept.Tests
         {
             var run = new RunHistoryEntry();
             run.Number = 401;
-            run.Violations["Eliminate Crystal Reports"] = 6;
+            run.RuleResults["Eliminate Crystal Reports"] = new RuleResult { Violations = 6 };
             _history.AddRun( run );
 
             Assert.That( _history.WaterlineFor( "Update widgets to widgets 2.0" ), Is.EqualTo( RunHistory.HighWaterLine ) );
@@ -73,11 +73,11 @@ namespace swept.Tests
         public void Failed_runs_do_not_alter_waterline()
         {
             var run = new RunHistoryEntry() { Number = 401, Passed = true };
-            run.Violations["Eliminate Crystal Reports"] = 6;
+            run.RuleResults["Eliminate Crystal Reports"] = new RuleResult { Violations = 6 };
             _history.AddRun( run );
 
             var failingRun = new RunHistoryEntry() { Number = 402, Passed = false };
-            failingRun.Violations["Eliminate Crystal Reports"] = 718;
+            failingRun.RuleResults["Eliminate Crystal Reports"] = new RuleResult { Violations = 718 };
             _history.AddRun( failingRun );
 
             Assert.That( _history.WaterlineFor( "Eliminate Crystal Reports" ), Is.EqualTo( 6 ) );

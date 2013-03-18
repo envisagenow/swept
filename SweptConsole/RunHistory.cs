@@ -48,9 +48,9 @@ namespace swept
             {
                 return HighWaterLine;
             }
-            else if (mostRecentlyPassed.Violations.ContainsKey( ruleID ))
+            else if (mostRecentlyPassed.RuleResults.ContainsKey( ruleID ))
             {
-                return mostRecentlyPassed.Violations[ruleID];
+                return mostRecentlyPassed.RuleResults[ruleID].Violations;
             }
             else
             {
