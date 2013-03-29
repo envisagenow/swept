@@ -20,9 +20,9 @@ namespace swept
             _storage = storageAdapter;
         }
 
-        public Dictionary<Rule, FileProblems> GetMatchesPerRule()
+        public RuleTasks GetRuleTasks()
         {
-            var result = new Dictionary<Rule, FileProblems>();
+            var result = new RuleTasks();
 
             foreach (string fileName in _files)
             {
@@ -34,7 +34,7 @@ namespace swept
                     var match = rule.Subquery.Answer( sourceFile );
 
                     if (!result.ContainsKey( rule ))
-                        result[rule] = new FileProblems();
+                        result[rule] = new FileTasks();
 
                     result[rule][sourceFile] = match;
                 }

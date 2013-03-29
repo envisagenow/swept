@@ -4,35 +4,77 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 namespace swept
 {
-
-    public class FileProblems : Dictionary<SourceFile, ClauseMatch> { }
+    public class FileTasks : Dictionary<SourceFile, ClauseMatch> { }
+    public class RuleTasks : Dictionary<Rule, FileTasks> { }
 
     public class RunHistory
     {
         public const int HighWaterLine = int.MaxValue;
 
+
+        private List<RunHistoryEntry> _Runs;
+        public IEnumerable<RunHistoryEntry> Runs { get { return _Runs; } }
+        public RunHistoryEntry LatestPassingRun { get; private set; }
+
+        public RunHistory()
+        {
+            _Runs = new List<RunHistoryEntry>();
+        }
+
+
         public int NextRunNumber
         {
             get
             {
-                if (Runs.Count == 0) return 1;
+                if (Runs.Count() == 0) return 1;
                 else return Runs.Max( r => r.Number )  + 1;
             }
         }
 
-        public List<RunHistoryEntry> Runs;
-
-        public void AddRun( RunHistoryEntry run )
+        public void AddEntry( RunHistoryEntry run )
         {
-            Runs.Add( run );
+            _Runs.Add( run );
+
+            if (run.Passed)
+            {
+                if (LatestPassingRun == null || LatestPassingRun.Number < run.Number)
+                    LatestPassingRun = run;
+            }
         }
 
-        public RunHistory()
+        public int GetThreshold( Rule rule )
         {
-            Runs = new List<RunHistoryEntry>();
+            int threshold;
+            switch (rule.FailOn)
+            {
+            case RuleFailOn.Any:
+                threshold = 0;
+                break;
+
+            case RuleFailOn.Over:
+                threshold = rule.RunFailOverLimit;
+                break;
+
+            case RuleFailOn.Increase:
+                threshold = WaterlineFor( rule.ID );
+                break;
+
+            case RuleFailOn.None:
+                threshold = int.MaxValue;
+                break;
+
+            default:
+                System.Reflection.MethodBase thisMethod = new System.Diagnostics.StackTrace().GetFrame( 0 ).GetMethod();
+                throw new Exception( String.Format( "I do not know how to check a failure mode of [{0}].  Please extend {1}.{2}.",
+                    rule.FailOn, thisMethod.ReflectedType, thisMethod.Name ) );
+            }
+
+            return threshold;
         }
+
 
         public int WaterlineFor( string ruleID )
         {
@@ -56,16 +98,6 @@ namespace swept
             {
                 return HighWaterLine;
             }
-        }
-
-        private int countViolations( FileProblems fileProblems )
-        {
-            int count = 0;
-            foreach (SourceFile file in fileProblems.Keys)
-            {
-                count += fileProblems[file].Count;
-            }
-            return count;
         }
 
     }

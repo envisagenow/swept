@@ -45,7 +45,7 @@ namespace swept.Tests
             var args = new Arguments( argsText, null );
             var traverser = new Traverser( args, _storage );
 
-            var files = traverser.GetProjectFiles();
+            var files = traverser.GetFilesToScan();
 
             Assert.That( files.Count(), Is.EqualTo( 0 ) );
         }
@@ -58,7 +58,7 @@ namespace swept.Tests
             var args = new Arguments( argsText, null );
             var traverser = new Traverser( args, _storage );
 
-            List<string> files = traverser.GetProjectFiles().ToList();
+            List<string> files = traverser.GetFilesToScan().ToList();
             Assert.That( files.Count, Is.EqualTo( 2 ) );
             Assert.That( files[0], Is.EqualTo( @"c:\foo\foo.cs" ) );
             Assert.That( files[1], Is.EqualTo( @"c:\foo\foo.html" ) );
@@ -72,7 +72,7 @@ namespace swept.Tests
             var args = new Arguments( argsText, null );
             var traverser = new Traverser( args, _storage );
 
-            List<string> files = traverser.GetProjectFiles().ToList();
+            List<string> files = traverser.GetFilesToScan().ToList();
             Assert.That( files.Count, Is.EqualTo( 4 ) );
             Assert.That( files[2], Is.EqualTo( @"c:\foo\bar\bar.cs" ) );
             Assert.That( files[3], Is.EqualTo( @"c:\foo\bar\bar.html" ) );
@@ -86,7 +86,7 @@ namespace swept.Tests
             var args = new Arguments( argsText, null );
             var traverser = new Traverser( args, _storage );
 
-            var files = traverser.GetProjectFiles().ToList();
+            var files = traverser.GetFilesToScan().ToList();
             Assert.That( files[4], Is.EqualTo( @"c:\foo\bar\subsub\sub1.cs" ) );
             Assert.That( files[5], Is.EqualTo( @"c:\foo\bar\subsub\sub2.html" ) );
         }
@@ -99,7 +99,7 @@ namespace swept.Tests
             var args = new Arguments( argsText, null );
             var traverser = new Traverser( args, _storage );
 
-            var files = traverser.GetProjectFiles().ToList();
+            var files = traverser.GetFilesToScan().ToList();
 
             Assert.That( files.Count, Is.EqualTo( 4 ) );
             Assert.That( files[2], Is.EqualTo( @"c:\foo\bar\bar.cs" ) );
@@ -117,7 +117,7 @@ namespace swept.Tests
             var traverser = new Traverser( args, _storage );
 
             traverser.WhiteListPattern = @"\.(cs|html)$";
-            List<string> files = traverser.GetProjectFiles().ToList();
+            List<string> files = traverser.GetFilesToScan().ToList();
 
             Assert.That( files.Count, Is.EqualTo( 2 ) );
             Assert.That( files[0], Is.EqualTo( @"c:\foo\foo.cs" ) );
@@ -134,7 +134,7 @@ namespace swept.Tests
             var args = new Arguments( argsText, null );
             var traverser = new Traverser( args, _storage );
 
-            var ex = Assert.Throws<Exception>( () => traverser.GetProjectFiles() );
+            var ex = Assert.Throws<Exception>( () => traverser.GetFilesToScan() );
             Assert.That( ex.Message.Contains( "C:\\missing\\folder'" ) );
             Assert.That( ex.Message.Contains( "Perhaps you expected a different working folder" ) );
             Assert.That( ex.Message.Contains( "'folder:' argument" ) );

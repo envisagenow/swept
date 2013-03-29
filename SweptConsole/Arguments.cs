@@ -25,7 +25,7 @@ namespace swept
         public bool ShowUsage { get; private set; }
 
         public string DetailsFileName { get; private set; }
-        public string SummaryFileName { get; private set; }
+        public string DeltaFileName { get; private set; }
 
         public bool AreInvalid
         {
@@ -36,14 +36,14 @@ namespace swept
         {
             get
             {
-                return @"SweptConsole usage:
-> SweptConsole library:my_solution.swept.library output:logs\swept_report.xml
-> SweptConsole folder:c:\code\project exclude:.svn,bin,build
+                return @"Swept usage:
+> Swept library:my_solution.swept.library details:logs\swept_report.xml
+> Swept folder:c:\code\project exclude:.svn,bin,build
   Arguments:
     help:  Or 'h' or 'usage', gets this message.
     version:  Prints a brief version and credits message, and terminates.
     debug:  Triggers a Debugger.Launch(), then continues as usual.
-    folder:  The top folder SweptConsole will sweep for rule violations.
+    folder:  The top folder Swept will sweep for rule violations.
         If no folder is specified, the current working directory is used.
     library:  The Swept rules library file to check against.
         If no library is specified, Swept checks the top folder for a file 
@@ -53,10 +53,14 @@ namespace swept
     pipe:svn:  Indicates that standard In will contain the output from an
         svn status command, and these files will be used as the file list
         to search for violations.
+    details:  The filename to get the detailed XML of the run.
+    history:  The filename to read and update to maintain the delta.
+        If no history file is specified, the library filename is used,
+        with the '.library' suffix replaced with '.history'.
+    delta:  The filename to get the delta of red-line rules.
+        If no delta file is specified, the console gets a text delta report.
 ---
 Features below are Not Yet Implemented:
-NYI output:  The file that will get the output of SweptConsole.  If none is
-        specified, the report goes to standard Out.
 NYI files:  A comma-separated list of files to search for violations.  Not
         compatible with the 'folder' argument.
 ";
@@ -81,7 +85,7 @@ This software is open source, MIT license.  See the file LICENSE for details.
             Folder = string.Empty;
             Exclude = new List<string>();
             DetailsFileName = string.Empty;
-            SummaryFileName = string.Empty;
+            DeltaFileName = string.Empty;
             Check = false;
             ShowUsage = false;
             ShowVersion = false;
@@ -144,8 +148,8 @@ This software is open source, MIT license.  See the file LICENSE for details.
                 case "detail":
                     DetailsFileName = tokens[1];
                     break;
-                case "summary":
-                    SummaryFileName = tokens[1];
+                case "delta":
+                    DeltaFileName = tokens[1];
                     break;
                 case "pipe":
                     // TODO: Friendly let-down if they have an unrecognized VCS pipe-source

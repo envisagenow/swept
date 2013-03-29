@@ -25,7 +25,7 @@ namespace swept.Tests
             MockStorageAdapter storage = new MockStorageAdapter();
             Gatherer gatherer = new Gatherer( changes, files, storage );
 
-            var results = gatherer.GetMatchesPerRule();
+            var results = gatherer.GetRuleTasks();
 
             Assert.That( results, Is.Not.Null );
             Assert.That( results.Count, Is.EqualTo( 0 ) );
@@ -39,7 +39,7 @@ namespace swept.Tests
             MockStorageAdapter storage = new MockStorageAdapter();
             Gatherer gatherer = new Gatherer( changes, files, storage );
 
-            var results = gatherer.GetMatchesPerRule();
+            var results = gatherer.GetRuleTasks();
 
             Assert.That( results, Is.Not.Null );
             Assert.That( results.Count, Is.EqualTo( 0 ) );
@@ -52,7 +52,7 @@ namespace swept.Tests
             MockStorageAdapter storage = new MockStorageAdapter();
             Gatherer gatherer = new Gatherer( new List<Rule>(), files, storage );
 
-            var results = gatherer.GetMatchesPerRule();
+            var results = gatherer.GetRuleTasks();
 
             Assert.That( storage.DidLoad( FILEONE ) );
             Assert.That( storage.DidLoad( FILETWO ) );
@@ -69,7 +69,7 @@ namespace swept.Tests
             MockStorageAdapter storage = new MockStorageAdapter();
             Gatherer gatherer = new Gatherer( changes, files, storage );
 
-            Dictionary<Rule, FileProblems> results = gatherer.GetMatchesPerRule();
+            Dictionary<Rule, FileTasks> results = gatherer.GetRuleTasks();
 
             Assert.That( results.Count, Is.EqualTo( 1 ) );
             Assert.That( results.Keys.First(), Is.SameAs( change ) );
@@ -90,7 +90,7 @@ namespace swept.Tests
             MockStorageAdapter storage = new MockStorageAdapter();
             Gatherer gatherer = new Gatherer( changes, files, storage );
 
-            var results = gatherer.GetMatchesPerRule();
+            var results = gatherer.GetRuleTasks();
 
             Assert.That( results.Count, Is.EqualTo( 1 ) );
             Assert.That( results.Keys.First(), Is.SameAs( change ) );
@@ -111,7 +111,7 @@ namespace swept.Tests
             MockStorageAdapter storage = new MockStorageAdapter();
             Gatherer gatherer = new Gatherer( changes, files, storage );
 
-            var results = gatherer.GetMatchesPerRule();
+            var results = gatherer.GetRuleTasks();
 
             Assert.That( results.Count, Is.EqualTo( 2 ) );
             Assert.That( results.Keys.ElementAt( 0 ), Is.SameAs( change1 ) );

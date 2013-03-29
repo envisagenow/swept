@@ -214,13 +214,13 @@ namespace swept.Tests
         }
 
         [Test]
-        public void Can_set_filename_for_Summary_xml_output()
+        public void Can_set_filename_for_Delta_xml_output()
         {
             var args = new Arguments( new string[] { "library:unused" }, _storage );
-            Assert.That( args.SummaryFileName, Is.Empty );
+            Assert.That( args.DeltaFileName, Is.Empty );
 
-            args = new Arguments( new string[] { "summary:flahnam.out", "library:unused" }, _storage );
-            Assert.That( args.SummaryFileName, Is.EqualTo( "flahnam.out" ) );
+            args = new Arguments( new string[] { "delta:flahnam.out", "library:unused" }, _storage );
+            Assert.That( args.DeltaFileName, Is.EqualTo( "flahnam.out" ) );
         }
     }
 }

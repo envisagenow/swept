@@ -31,48 +31,69 @@ namespace swept
 
             int failureCode = 0;
 
-            using (TextWriter reportWriter = storage.GetOutputWriter( arguments.DetailsFileName ))
+            EventSwitchboard switchboard = new EventSwitchboard();
+            ProjectLibrarian librarian = new ProjectLibrarian( storage, switchboard );
+
+            Subscriber subscriber = new Subscriber();
+            subscriber.Subscribe( switchboard, librarian );
+            // TODO: subscriber.SubscribeExceptions( switchboard, this );
+
+            var traverser = new Traverser( arguments, storage );
+            var files = traverser.GetFilesToScan();
+
+            librarian.OpenLibrary( arguments.Library );
+            var rules = librarian.GetSortedRules();
+
+            var gatherer = new Gatherer( rules, files, storage );
+            var ruleTasks = gatherer.GetRuleTasks();
+
+            var buildLibrarian = new BuildLibrarian( arguments, storage );
+            var runHistory = buildLibrarian.ReadRunHistory();
+
+            string header = string.Empty;
+            if (arguments.Check)
+                header = String.Format( "Swept checking [{0}] with rules in [{1}] on {2}...{3}", storage.GetCWD(), arguments.Library, startTime.ToString( "G" ), Environment.NewLine );
+
+
+            var inspector = new RunInspector( runHistory );
+            var failures = inspector.ListRunFailures( ruleTasks );
+            BuildReporter reporter = new BuildReporter();
+            string detailReport;
+            
+            if (arguments.Check)
+                detailReport = reporter.ReportCheckResult( failures );
+            else
+                detailReport = reporter.ReportDetailsXml( ruleTasks );
+
+            RunHistoryEntry newRun = inspector.GenerateEntry( startTime, ruleTasks );
+            runHistory.AddEntry( newRun );
+
+            buildLibrarian.WriteRunHistory( runHistory );
+
+            using (TextWriter detailWriter = storage.GetOutputWriter( arguments.DetailsFileName ))
             {
+                detailWriter.Write( header );
+                detailWriter.WriteLine( detailReport );
+                detailWriter.Flush();
+            }
 
-                EventSwitchboard switchboard = new EventSwitchboard();
-                ProjectLibrarian librarian = new ProjectLibrarian( storage, switchboard );
+            //if (arguments.SummaryFileName != string.Empty)
+            //{
+            using (TextWriter deltaWriter = storage.GetOutputWriter( arguments.DeltaFileName ))
+            {
+                var delta = new BreakageDelta { Failures = failures, Fixes = new List<string>() };
+                //!!!#!#!#!#!#!!#!#!#!#!#!#!#!#!!#!#!#!##!#!!#!#!###!#!!!!#!#!#!#!##!#!
 
-                Subscriber subscriber = new Subscriber();
-                subscriber.Subscribe( switchboard, librarian );
-                // TODO: subscriber.SubscribeExceptions( switchboard, this );
+                var deltaXml = reporter.GenerateBuildDeltaXml( delta );
+                deltaWriter.Write( deltaXml.ToString() );
+                deltaWriter.Flush();
+            }
+            //}
 
-                var traverser = new Traverser( arguments, storage );
-                IEnumerable<string> fileNames = traverser.GetProjectFiles();
-
-                librarian.OpenLibrary( arguments.Library );
-
-                var rules = librarian.GetSortedRules();
-
-                var gatherer = new Gatherer( rules, fileNames, storage );
-
-                var results = gatherer.GetMatchesPerRule();
-
-                var buildLibrarian = new BuildLibrarian( arguments, storage );
-
-                var runHistory = buildLibrarian.ReadRunHistory();
-
-                string header = buildLibrarian.GetConsoleHeader( startTime );
-                reportWriter.Write( header );
-
-                var report = buildLibrarian.ReportOn( results, runHistory );
-                reportWriter.WriteLine( report );
-
-                RunHistoryEntry newRun = buildLibrarian.GenerateEntry( startTime );
-                runHistory.AddRun( newRun );
-
-                if (!newRun.Passed)
-                {
-                    Console.Out.WriteLine( buildLibrarian.ReportFailures() );
-                    //failureCode = 10;
-                }
-
-                buildLibrarian.WriteRunHistory();
-                reportWriter.Flush();
+            if (!newRun.Passed)
+            {
+                Console.Out.WriteLine( failures );
+                failureCode = 10;
             }
 
             Environment.Exit( failureCode );

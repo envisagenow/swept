@@ -22,7 +22,7 @@ namespace swept
 
         public string WhiteListPattern { get; set; }
 
-        public IEnumerable<string> GetProjectFiles()
+        public IEnumerable<string> GetFilesToScan()
         {
             try
             {

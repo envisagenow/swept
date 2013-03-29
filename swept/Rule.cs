@@ -21,6 +21,8 @@ namespace swept
         Unknown,
     }
 
+    // TODO: get rid of RuleFailOn.Over, .Increase obsoletes it
+
     public enum RuleFailOn
     {
         None,

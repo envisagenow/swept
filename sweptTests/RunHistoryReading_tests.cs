@@ -29,7 +29,7 @@ namespace swept.Tests
 
             RunHistory history = _librarian.ReadRunHistory( historyXml );
 
-            Assert.That( history.Runs.Count, Is.EqualTo( 0 ) );
+            Assert.That( history.Runs.Count(), Is.EqualTo( 0 ) );
         }
 
         [TestCase( 12, "9/14/2012 2:44:02 AM", 60 )]
@@ -51,25 +51,25 @@ namespace swept.Tests
 
             RunHistory history = _librarian.ReadRunHistory( historyXml );
 
-            RunHistoryEntry firstRun = history.Runs[0];
+            RunHistoryEntry firstRun = history.Runs.ElementAt( 0 );
             Assert.That( firstRun.Date, Is.EqualTo( DateTime.Parse( dateString ) ) );
             Assert.That( firstRun.Number, Is.EqualTo( runNumber ) );
 
-            RuleResult sillyResult = firstRun.RuleResults["silly problem"];
+            HistoricRuleResult sillyResult = firstRun.RuleResults["silly problem"];
             Assert.That( sillyResult.Violations, Is.EqualTo( violationsCount ) );
             Assert.That( sillyResult.ID, Is.EqualTo( "silly problem" ) );
             Assert.That( sillyResult.Prior, Is.EqualTo( 38 ) );
             Assert.That( sillyResult.FailOn, Is.EqualTo( RuleFailOn.Increase ) );
             Assert.That( sillyResult.Breaking );
 
-            RuleResult sameResult = firstRun.RuleResults["always the same"];
+            HistoricRuleResult sameResult = firstRun.RuleResults["always the same"];
             Assert.That( sameResult.Violations, Is.EqualTo( 44 ) );
             Assert.That( firstRun.Passed, Is.False );
             //Assert.That( firstRun.FailOn, Is.EqualTo( RunFailMode.Increase ) );
             //Assert.That( firstRun.Prior, Is.EqualTo( 38 ) );
             Assert.That( sameResult.Breaking, Is.False );
 
-            RunHistoryEntry secondRun = history.Runs[1];
+            RunHistoryEntry secondRun = history.Runs.ElementAt( 1 );
             Assert.That( secondRun.Date, Is.EqualTo( DateTime.Parse( "1/1/2022 3:20:14 PM" ) ) );
             Assert.That( secondRun.Number, Is.EqualTo( 1100 ) );
             Assert.That( secondRun.RuleResults.Count(), Is.EqualTo( 1 ) );

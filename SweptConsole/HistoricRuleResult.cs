@@ -7,16 +7,12 @@ using System.Linq;
 
 namespace swept
 {
-    public class RuleResult
+    public class HistoricRuleResult
     {
         public string ID;
         public int Violations;
         public int Prior;
         public bool Breaking;
         public RuleFailOn FailOn;
-
-        public RuleResult()
-        {
-        }
     }
 }

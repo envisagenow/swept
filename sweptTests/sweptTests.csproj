@@ -71,8 +71,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="RunFailReporting_tests.cs" />
+    <Compile Include="HistoricRuleResult_tests.cs" />
+    <Compile Include="Extension_tests.cs" />
+    <Compile Include="Reporting_tests.cs" />
     <Compile Include="RunFail_tests.cs" />
+    <Compile Include="RunFix_tests.cs" />
     <Compile Include="RunHistoryReading_tests.cs" />
     <Compile Include="ClauseMatch_tests.cs" />
     <Compile Include="DSL\Grammar_tests.cs" />

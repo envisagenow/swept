@@ -11,12 +11,12 @@ namespace swept
     {
         public int Number;
         public DateTime Date;
-        public Dictionary<string, RuleResult> RuleResults;
         public bool Passed;
+        public Dictionary<string, HistoricRuleResult> RuleResults;
 
         public RunHistoryEntry()
         {
-            RuleResults = new Dictionary<string, RuleResult>();
+            RuleResults = new Dictionary<string, HistoricRuleResult>();
         }
     }
 }
