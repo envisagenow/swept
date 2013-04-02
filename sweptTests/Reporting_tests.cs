@@ -64,28 +64,10 @@ namespace swept.Tests
         [Test]
         public void We_see_failure_list_when_we_Check()
         {
-            var runHistory = new RunHistory();
-            RunHistoryEntry entry = new RunHistoryEntry { Passed = true, Number = 1 };
-            entry.RuleResults["NET-001"] = new HistoricRuleResult { Violations = 4 };
-            runHistory.AddEntry( entry );
-
-            var net_001 = new Rule { ID = "NET-001", FailOn = RuleFailOn.Increase };
-
-            FileTasks net_001_problems = new FileTasks();
-            var file = new SourceFile( "troubled.cs" );
-            var lines = new List<int>( new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 } );
-            var match = new LineMatch( lines );
-            net_001_problems[file] = match;
-
-            var RuleTasks = new RuleTasks();
-            RuleTasks[net_001] = net_001_problems;
-
-            // I think this is moot? _librarian.ReportOn( RuleTasks, runHistory );
-            var inspector = new RunInspector( runHistory );
-            var failures = inspector.ListRunFailures( RuleTasks );
+            List<string> failures = new List<string> { "Rule [NET-001] has [9] tasks, and it breaks the build if there are over [4] tasks." };
             string message = _reporter.ReportFailures( failures );
 
-            string expectedMessage = "Error:  Rule [NET-001] has been violated [9] times, and it breaks the build if there are over [4] violations.\r\n";
+            string expectedMessage = "Error:  Rule [NET-001] has [9] tasks, and it breaks the build if there are over [4] tasks.\r\n";
             Assert.That( message, Is.EqualTo( expectedMessage ) );
         }
 

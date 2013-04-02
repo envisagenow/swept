@@ -54,15 +54,23 @@ namespace swept
                 {
                     string ruleID = ruleXml.Attribute( "ID" ).Value;
 
-                    int ruleViolations = int.Parse( ruleXml.Attribute( "Violations" ).Value );
-                    int rulePrior = int.Parse( ruleXml.Attribute( "Prior" ).Value );
+                    var taskCountAttr = ruleXml.Attribute( "TaskCount" );
+                    if (taskCountAttr == null)
+                        taskCountAttr = ruleXml.Attribute( "Violations" );
+                    int taskCount = int.Parse( taskCountAttr.Value );
+
+                    var thresholdAttr = ruleXml.Attribute( "Threshold" );
+                    if (thresholdAttr == null)
+                        thresholdAttr = ruleXml.Attribute( "Prior" );
+                    int threshold = int.Parse( thresholdAttr.Value );
+
                     bool ruleBreaking = bool.Parse( ruleXml.Attribute( "Breaking" ).Value );
                     RuleFailOn ruleFailOn = (RuleFailOn)Enum.Parse( typeof( RuleFailOn ), ruleXml.Attribute( "FailOn" ).Value );
                     run.RuleResults[ruleID] = new HistoricRuleResult
                     {
                         ID = ruleID,
-                        Violations = ruleViolations,
-                        Prior = rulePrior,
+                        TaskCount = taskCount,
+                        Threshold = threshold,
                         FailOn = ruleFailOn,
                         Breaking = ruleBreaking
                     };
@@ -96,8 +104,8 @@ namespace swept
                 {
                     var ruleElement = new XElement( "Rule",
                         new XAttribute( "ID", result.ID ),
-                        new XAttribute( "Violations", result.Violations ),
-                        new XAttribute( "Prior", result.Prior ),
+                        new XAttribute( "TaskCount", result.TaskCount ),
+                        new XAttribute( "Threshold", result.Threshold ),
                         new XAttribute( "FailOn", result.FailOn ),
                         new XAttribute( "Breaking", result.Breaking )
                     );
@@ -110,11 +118,5 @@ namespace swept
 
             _storage.SaveRunHistory( report, _args.History );
         }
-
-        //  #######################################################################################
-        //  #############################   Everything under here better leave town afore sunset.
-
-
-        // ########################  Reporting
     }
 }

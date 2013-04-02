@@ -4,12 +4,13 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.Xml.Linq;
 
 namespace swept
 {
     public class RunInspector
     {
-        private RunHistory _runHistory;
+        private readonly RunHistory _runHistory;
         public RunInspector( RunHistory runHistory )
         {
             _runHistory = runHistory;
@@ -17,58 +18,132 @@ namespace swept
 
         public RunHistoryEntry GenerateEntry( DateTime runDateTime, RuleTasks ruleTasks )
         {
-            List<string> failures = ListRunFailures( ruleTasks );
-
             var entry = new RunHistoryEntry
             {
-                Passed = (failures.Count == 0),
+                Passed = (CountRunFailures( ruleTasks ) == 0),
                 Number = _runHistory.NextRunNumber,
                 Date = runDateTime
             };
 
             foreach (var keyRule in ruleTasks.Keys)
             {
-                int violations = countViolations( ruleTasks[keyRule] );
+                int violations = ruleTasks[keyRule].CountTasks();
                 entry.RuleResults[keyRule.ID] = GetRuleResult( keyRule, violations, _runHistory.LatestPassingRun );
             }
 
             return entry;
         }
 
-        public List<string> ListRunFailures( RuleTasks ruleTasks )
+        public XElement GenerateDeltaXml( RunHistoryEntry entry )
         {
-            var failures = new List<string>();
+            var doc = new XElement( "SweptBreakageDelta" );
+
+            var fails = ListRunFailureIDs( entry );
+
+            foreach (var failure in fails)
+            {
+                var result = entry.RuleResults[failure];
+                doc.Add( new XElement( "DeltaItem",
+                    new XAttribute( "ID", result.ID ),
+                    new XAttribute( "Limit", result.Threshold ),
+                    new XAttribute( "Current", result.TaskCount ),
+                    new XAttribute( "Outcome", "Fail" )
+                ) );
+            }
+
+            if (fails.Count == 0)
+            {
+                var fixes = ListRunFixes( entry );
+                foreach (var fix in fixes)
+                {
+                    doc.Add( new XElement( "DeltaItem",
+                        new XAttribute( "ID", "644" ),
+                        new XAttribute( "Limit", "2" ),
+                        new XAttribute( "Current", "0" ),
+                        new XAttribute( "Outcome", "Fix" )
+                    ) );
+                }
+            }
+
+            return doc;
+        }
+
+        public int CountRunFailures( RuleTasks ruleTasks )
+        {
+            int failures = 0;
 
             foreach (var rule in ruleTasks.Keys)
             {
-                int count = countViolations( ruleTasks[rule] );
-
+                int taskCount = ruleTasks[rule].CountTasks();
                 int threshold = _runHistory.GetThreshold( rule );
-                if (count > threshold)
-                {
-                    failures.Add( string.Format(
-                        "Rule [{0}] has been violated [{1}] {2}, and it breaks the build if there are {3} violations.",
-                        rule.ID, count, "time".Plurs( count ),
-                        (threshold == 0) ? "any" : string.Concat( "over [", threshold, "]" )
-                    ) );
-                }
+
+                if (taskCount > threshold)
+                    failures++;
             }
 
             return failures;
         }
 
-        public List<string> ListRunFixes( RuleTasks ruleTasks )
+        public List<string> ListRunFailureIDs( RunHistoryEntry entry )
         {
-            //!!!
+            var failures = new List<string>();
+
+            foreach (var ruleID in entry.RuleResults.Keys)
+            {
+                var result = entry.RuleResults[ruleID];
+                if (result.Breaking && result.TaskCount > result.Threshold)
+                {
+                    failures.Add( ruleID );
+                }
+            }
+            return failures;
+        }
+
+        public List<string> ListRunFailureMessages( RunHistoryEntry entry )
+        {
+            return ListRunFailureIDs( entry ).Select( 
+                id => reportFailLine( entry.RuleResults[id] )
+            ).ToList();
+        }
+
+        private string reportFailLine( HistoricRuleResult result )
+        {
+            return string.Format(
+                "Rule [{0}] has [{1}] {2}, and it breaks the build if there are {3} tasks.",
+                result.ID, result.TaskCount, "task".Plurs( result.TaskCount ),
+                (result.Threshold == 0) ? "any" : string.Concat( "over [", result.Threshold, "]" )
+            );
+        }
+
+        public List<string> ListRunFixes( RunHistoryEntry currentEntry )
+        {
             var fixes = new List<string>();
+            if (_runHistory.LatestPassingRun == null)
+                return fixes;
+
+            foreach (string priorRuleID in _runHistory.LatestPassingRun.RuleResults.Keys)
+            {
+                int waterline = _runHistory.WaterlineFor( priorRuleID );
+                if (currentEntry.RuleResults.ContainsKey( priorRuleID ))
+                {
+                    HistoricRuleResult result = currentEntry.RuleResults[priorRuleID];
+                    if (result.TaskCount < waterline)
+                        fixes.Add( priorRuleID );
+                }
+                else
+                {
+                    fixes.Add( priorRuleID );
+                }
+            }
+
             return fixes;
         }
 
-
-        private int countViolations( FileTasks fileTasks )
+        internal string reportFixLine( HistoricRuleResult priorResult, HistoricRuleResult currentResult )
         {
-            return fileTasks.Keys.Sum( file => fileTasks[file].Count );
+            return "augh";
         }
+
 
         public HistoricRuleResult GetRuleResult( Rule ruleUnderTest, int violations, RunHistoryEntry priorSuccess )
         {
@@ -83,7 +158,7 @@ namespace swept
             if (priorSuccess != null)
             {
                 if (priorSuccess.RuleResults.ContainsKey( ruleUnderTest.ID ))
-                    priorViolations = priorSuccess.RuleResults[ruleUnderTest.ID].Violations;
+                    priorViolations = priorSuccess.RuleResults[ruleUnderTest.ID].TaskCount;
             }
 
             bool breaking = false;
@@ -101,8 +176,8 @@ namespace swept
             {
                 ID = ruleUnderTest.ID,
                 FailOn = ruleUnderTest.FailOn,
-                Violations = violations,
-                Prior = priorViolations,
+                TaskCount = violations,
+                Threshold = priorViolations,
                 Breaking = breaking
             };
         }

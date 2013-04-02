@@ -10,8 +10,8 @@ namespace swept
     public class HistoricRuleResult
     {
         public string ID;
-        public int Violations;
-        public int Prior;
+        public int TaskCount;
+        public int Threshold;
         public bool Breaking;
         public RuleFailOn FailOn;
     }

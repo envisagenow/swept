@@ -34,7 +34,7 @@ namespace swept.Tests
             _storage.RunHistory = XDocument.Parse(
 @"<RunHistory>
   <Run Number=""22"" DateTime=""4/4/2012 10:25:02 AM"" Passed=""True"">
-    <Rule ID=""foo"" Violations=""2"" Prior=""2"" FailOn=""None"" Breaking=""false"" />
+    <Rule ID=""foo"" TaskCount=""2"" Threshold=""2"" FailOn=""None"" Breaking=""false"" />
   </Run>
 </RunHistory>" );
             
@@ -58,7 +58,7 @@ namespace swept.Tests
         {
             var runHistory = new RunHistory();
             var results = new Dictionary<string, HistoricRuleResult>();
-            results.Add( "foo", new HistoricRuleResult { ID = "foo", Violations = 2, Prior = 1, FailOn = RuleFailOn.Increase, Breaking = true } );
+            results.Add( "foo", new HistoricRuleResult { ID = "foo", TaskCount = 2, Threshold = 1, FailOn = RuleFailOn.Increase, Breaking = true } );
             runHistory.AddEntry( new RunHistoryEntry
             {
                 Number = 22,
@@ -68,7 +68,7 @@ namespace swept.Tests
             } );
 
             var resultsNext = new Dictionary<string, HistoricRuleResult>();
-            resultsNext.Add( "bar", new HistoricRuleResult { ID = "bar", Violations = 0, Prior = 2, FailOn = RuleFailOn.None, Breaking = false } );
+            resultsNext.Add( "bar", new HistoricRuleResult { ID = "bar", TaskCount = 0, Threshold = 2, FailOn = RuleFailOn.None, Breaking = false } );
             runHistory.AddEntry( new RunHistoryEntry
             {
                 Number = 23,
@@ -82,10 +82,10 @@ namespace swept.Tests
             var expectedHistory =
 @"<RunHistory>
   <Run Number=""22"" DateTime=""4/4/2012 10:25:02 AM"" Passed=""False"">
-    <Rule ID=""foo"" Violations=""2"" Prior=""1"" FailOn=""Increase"" Breaking=""true"" />
+    <Rule ID=""foo"" TaskCount=""2"" Threshold=""1"" FailOn=""Increase"" Breaking=""true"" />
   </Run>
   <Run Number=""23"" DateTime=""4/7/2012 10:25:03 AM"" Passed=""True"">
-    <Rule ID=""bar"" Violations=""0"" Prior=""2"" FailOn=""None"" Breaking=""false"" />
+    <Rule ID=""bar"" TaskCount=""0"" Threshold=""2"" FailOn=""None"" Breaking=""false"" />
   </Run>
 </RunHistory>";
 

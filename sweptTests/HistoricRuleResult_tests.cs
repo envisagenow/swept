@@ -40,8 +40,8 @@ namespace swept.Tests
 
             Assert.That( result.ID, Is.EqualTo( id ) );
             Assert.That( result.FailOn, Is.EqualTo( RuleFailOn.Increase ) );
-            Assert.That( result.Violations, Is.EqualTo( 7 ) );
-            Assert.That( result.Prior, Is.EqualTo( 7 ) );
+            Assert.That( result.TaskCount, Is.EqualTo( 7 ) );
+            Assert.That( result.Threshold, Is.EqualTo( 7 ) );
             Assert.That( result.Breaking, Is.False );
         }
 
@@ -50,7 +50,7 @@ namespace swept.Tests
         {
             string id = "PE6-5000";
             RunHistoryEntry priorSuccess = new RunHistoryEntry();
-            priorSuccess.RuleResults[id] = new HistoricRuleResult { ID = id, Violations = 2 };
+            priorSuccess.RuleResults[id] = new HistoricRuleResult { ID = id, TaskCount = 2 };
             Rule rut = new Rule { ID = id, FailOn = RuleFailOn.Increase };
 
             var inspector = new RunInspector( null );
@@ -58,8 +58,8 @@ namespace swept.Tests
 
             Assert.That( result.ID, Is.EqualTo( id ) );
             Assert.That( result.FailOn, Is.EqualTo( RuleFailOn.Increase ) );
-            Assert.That( result.Violations, Is.EqualTo( 7 ) );
-            Assert.That( result.Prior, Is.EqualTo( 2 ) );
+            Assert.That( result.TaskCount, Is.EqualTo( 7 ) );
+            Assert.That( result.Threshold, Is.EqualTo( 2 ) );
             Assert.That( result.Breaking, Is.True );
         }
 
@@ -68,15 +68,15 @@ namespace swept.Tests
         {
             string id = "PE6-5000";
             RunHistoryEntry priorSuccess = new RunHistoryEntry();
-            priorSuccess.RuleResults["by a different name"] = new HistoricRuleResult { ID = "by a different name", Violations = 2 };
+            priorSuccess.RuleResults["by a different name"] = new HistoricRuleResult { ID = "by a different name", TaskCount = 2 };
             Rule rut = new Rule { ID = id, FailOn = RuleFailOn.Increase };
 
             HistoricRuleResult result = _inspector.GetRuleResult( rut, 7, priorSuccess );
 
             Assert.That( result.ID, Is.EqualTo( id ) );
             Assert.That( result.FailOn, Is.EqualTo( RuleFailOn.Increase ) );
-            Assert.That( result.Violations, Is.EqualTo( 7 ) );
-            Assert.That( result.Prior, Is.EqualTo( 7 ) );
+            Assert.That( result.TaskCount, Is.EqualTo( 7 ) );
+            Assert.That( result.Threshold, Is.EqualTo( 7 ) );
             Assert.That( result.Breaking, Is.False );
         }
 
@@ -86,15 +86,15 @@ namespace swept.Tests
         {
             string id = "PE6-5000";
             RunHistoryEntry priorSuccess = new RunHistoryEntry();
-            priorSuccess.RuleResults["by a different name"] = new HistoricRuleResult { ID = "by a different name", Violations = 2 };
+            priorSuccess.RuleResults["by a different name"] = new HistoricRuleResult { ID = "by a different name", TaskCount = 2 };
             Rule rut = new Rule { ID = id, FailOn = RuleFailOn.Any };
 
             HistoricRuleResult result = _inspector.GetRuleResult( rut, 7, priorSuccess );
 
             Assert.That( result.ID, Is.EqualTo( id ) );
             Assert.That( result.FailOn, Is.EqualTo( RuleFailOn.Any ) );
-            Assert.That( result.Violations, Is.EqualTo( 7 ) );
-            Assert.That( result.Prior, Is.EqualTo( 0 ) );  // an argument could be made for 7.
+            Assert.That( result.TaskCount, Is.EqualTo( 7 ) );
+            Assert.That( result.Threshold, Is.EqualTo( 0 ) );  // an argument could be made for 7.
             Assert.That( result.Breaking, Is.True );
         }
 
@@ -103,15 +103,15 @@ namespace swept.Tests
         {
             string id = "PE6-5000";
             RunHistoryEntry priorSuccess = new RunHistoryEntry();
-            priorSuccess.RuleResults["by a different name"] = new HistoricRuleResult { ID = "by a different name", Violations = 2 };
+            priorSuccess.RuleResults["by a different name"] = new HistoricRuleResult { ID = "by a different name", TaskCount = 2 };
             Rule rut = new Rule { ID = id, FailOn = RuleFailOn.Over, RunFailOverLimit = 5 };
 
             HistoricRuleResult result = _inspector.GetRuleResult( rut, 7, priorSuccess );
 
             Assert.That( result.ID, Is.EqualTo( id ) );
             Assert.That( result.FailOn, Is.EqualTo( RuleFailOn.Over ) );
-            Assert.That( result.Violations, Is.EqualTo( 7 ) );
-            Assert.That( result.Prior, Is.EqualTo( 5 ) );  // an argument could be made for 7.
+            Assert.That( result.TaskCount, Is.EqualTo( 7 ) );
+            Assert.That( result.Threshold, Is.EqualTo( 5 ) );  // an argument could be made for 7.
             Assert.That( result.Breaking, Is.True );
         }
 
@@ -160,8 +160,8 @@ namespace swept.Tests
             Assert.That( entry.Number, Is.EqualTo( 777 ) );
             Assert.That( entry.Date, Is.EqualTo( nowish ) );
             Assert.That( entry.RuleResults.Count, Is.EqualTo( 2 ) );
-            Assert.That( entry.RuleResults[rule.ID].Violations, Is.EqualTo( 7 ) );
-            Assert.That( entry.RuleResults[happyRule.ID].Violations, Is.EqualTo( 0 ) );
+            Assert.That( entry.RuleResults[rule.ID].TaskCount, Is.EqualTo( 7 ) );
+            Assert.That( entry.RuleResults[happyRule.ID].TaskCount, Is.EqualTo( 0 ) );
             Assert.That( entry.Passed, Is.True );
         }
 
@@ -201,7 +201,7 @@ namespace swept.Tests
             Assert.That( entry.Number, Is.EqualTo( 888 ) );
             Assert.That( entry.Date, Is.EqualTo( nowish ) );
             Assert.That( entry.RuleResults.Count, Is.EqualTo( 1 ) );
-            Assert.That( entry.RuleResults[rule.ID].Violations, Is.EqualTo( 7 ) );
+            Assert.That( entry.RuleResults[rule.ID].TaskCount, Is.EqualTo( 7 ) );
             Assert.That( entry.Passed, Is.False );
         }
     }

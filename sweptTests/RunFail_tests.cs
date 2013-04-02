@@ -29,10 +29,10 @@ namespace swept.Tests
         }
 
         [Test]
-        public void Zero_Violations_do_not_fail()
+        public void Zero_Tasks_do_not_fail()
         {
-            var failures = _inspector.ListRunFailures( _ruleTasks );
-            Assert.That( failures.Count(), Is.EqualTo( 0 ) );
+            var failures = _inspector.CountRunFailures( _ruleTasks );
+            Assert.That( failures, Is.EqualTo( 0 ) );
         }
 
         [Test]
@@ -48,11 +48,34 @@ namespace swept.Tests
 
             _ruleTasks[rule] = sourceClauseMatch;
 
-            var failures = _inspector.ListRunFailures( _ruleTasks );
+            var failures = _inspector.CountRunFailures( _ruleTasks );
+
+            Assert.That( failures, Is.EqualTo( 1 ) );
+            //Assert.That( failures[0], Is.EqualTo( "Rule [644] has [2] tasks, and it breaks the build if there are any tasks." ) );
+        }
+
+        [Test]
+        public void temp_Can_ListRunFailures_with_RunHistoryEntry()
+        {
+            var oldEntry = _inspector.GenerateEntry( DateTime.Now.AddDays( -2 ), _ruleTasks );
+            var fooResult = new HistoricRuleResult
+            {
+                ID = "No more Foo!",
+                Breaking = true,
+                FailOn = RuleFailOn.Increase,
+                Threshold = 221,
+                TaskCount = 222,
+            };
+            oldEntry.RuleResults.Add( "No more Foo!", fooResult );
+            //oldEntry.Passed = false;
+
+            var failures = _inspector.ListRunFailureMessages( oldEntry );
 
             Assert.That( failures.Count(), Is.EqualTo( 1 ) );
-            Assert.That( failures[0], Is.EqualTo( "Rule [644] has been violated [2] times, and it breaks the build if there are any violations." ) );
+            Assert.That( failures[0], Is.EqualTo( "Rule [No more Foo!] has [222] tasks, and it breaks the build if there are over [221] tasks." ) );
         }
+
+
 
         [Test]
         public void When_we_have_no_tasks_in_a_FailAny_Rule_we_do_not_fail()
@@ -62,9 +85,9 @@ namespace swept.Tests
 
             _ruleTasks[rule] = sourceClauseMatch;
 
-            var failures = _inspector.ListRunFailures( _ruleTasks );
+            var failures = _inspector.CountRunFailures( _ruleTasks );
 
-            Assert.That( failures.Count(), Is.EqualTo( 0 ) );
+            Assert.That( failures, Is.EqualTo( 0 ) );
         }
 
         [Test]
@@ -81,9 +104,9 @@ namespace swept.Tests
             var rules = new RuleTasks();
             rules[rule] = sourceClauseMatch;
 
-            var failures = _inspector.ListRunFailures( rules );
+            var failures = _inspector.CountRunFailures( rules );
 
-            Assert.That( failures.Count(), Is.EqualTo( 0 ) );
+            Assert.That( failures, Is.EqualTo( 0 ) );
         }
 
         [Test]
@@ -105,11 +128,11 @@ namespace swept.Tests
             _ruleTasks[rule] = sourceClauseMatch;
             _ruleTasks[rule2] = sourceClauseMatch2;
 
-            var failures = _inspector.ListRunFailures( _ruleTasks );
+            var failures = _inspector.CountRunFailures( _ruleTasks );
 
-            Assert.That( failures.Count(), Is.EqualTo( 2 ) );
-            Assert.That( failures[0], Is.EqualTo( "Rule [191] has been violated [2] times, and it breaks the build if there are any violations." ) );
-            Assert.That( failures[1], Is.EqualTo( "Rule [200] has been violated [3] times, and it breaks the build if there are any violations." ) );
+            Assert.That( failures, Is.EqualTo( 2 ) );
+            //Assert.That( failures[0], Is.EqualTo( "Rule [191] has [2] tasks, and it breaks the build if there are any tasks." ) );
+            //Assert.That( failures[1], Is.EqualTo( "Rule [200] has [3] tasks, and it breaks the build if there are any tasks." ) );
         }
 
         [Test]
@@ -129,10 +152,10 @@ namespace swept.Tests
 
             _ruleTasks[rule] = sourceClauseMatch;
 
-            var failures = _inspector.ListRunFailures( _ruleTasks );
+            var failures = _inspector.CountRunFailures( _ruleTasks );
 
-            Assert.That( failures.Count(), Is.EqualTo( 1 ) );
-            Assert.That( failures[0], Is.EqualTo( "Rule [200] has been violated [3] times, and it breaks the build if there are over [2] violations." ) );
+            Assert.That( failures, Is.EqualTo( 1 ) );
+            //Assert.That( failures[0], Is.EqualTo( "Rule [200] has [3] tasks, and it breaks the build if there are over [2] tasks." ) );
         }
 
         [Test]
@@ -152,9 +175,9 @@ namespace swept.Tests
 
             _ruleTasks[rule] = sourceClauseMatch;
 
-            var failures = _inspector.ListRunFailures( _ruleTasks );
+            var failures = _inspector.CountRunFailures( _ruleTasks );
 
-            Assert.That( failures.Count(), Is.EqualTo( 0 ) );
+            Assert.That( failures, Is.EqualTo( 0 ) );
         }
 
         [Test]
@@ -175,7 +198,7 @@ namespace swept.Tests
             _ruleTasks[rule] = sourceClauseMatch;
 
             var results = new Dictionary<string,HistoricRuleResult>();
-            results["300"] = new HistoricRuleResult { Violations = 10 };
+            results["300"] = new HistoricRuleResult { TaskCount = 10 };
 
             _history.AddEntry( new RunHistoryEntry { 
                 Date = DateTime.Now.AddDays( -7 ), 
@@ -184,10 +207,9 @@ namespace swept.Tests
                 Passed = true 
             } );
 
-            var failures = _inspector.ListRunFailures( _ruleTasks );
+            var failures = _inspector.CountRunFailures( _ruleTasks );
 
-            Assert.That( failures.Count(), Is.EqualTo( 1 ) );
-            Assert.That( failures[0], Is.EqualTo( "Rule [300] has been violated [14] times, and it breaks the build if there are over [10] violations." ) );
+            Assert.That( failures, Is.EqualTo( 1 ) );
         }
     }
 }

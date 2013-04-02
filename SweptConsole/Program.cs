@@ -56,17 +56,18 @@ namespace swept
 
 
             var inspector = new RunInspector( runHistory );
-            var failures = inspector.ListRunFailures( ruleTasks );
+            RunHistoryEntry newRunEntry = inspector.GenerateEntry( startTime, ruleTasks );
+            runHistory.AddEntry( newRunEntry );
+            var failures = inspector.ListRunFailureMessages( newRunEntry );
+
             BuildReporter reporter = new BuildReporter();
+
             string detailReport;
-            
             if (arguments.Check)
                 detailReport = reporter.ReportCheckResult( failures );
             else
                 detailReport = reporter.ReportDetailsXml( ruleTasks );
 
-            RunHistoryEntry newRun = inspector.GenerateEntry( startTime, ruleTasks );
-            runHistory.AddEntry( newRun );
 
             buildLibrarian.WriteRunHistory( runHistory );
 
@@ -90,7 +91,7 @@ namespace swept
             }
             //}
 
-            if (!newRun.Passed)
+            if (!newRunEntry.Passed)
             {
                 Console.Out.WriteLine( failures );
                 failureCode = 10;

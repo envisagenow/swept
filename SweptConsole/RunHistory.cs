@@ -7,13 +7,24 @@ using System.Linq;
 
 namespace swept
 {
-    public class FileTasks : Dictionary<SourceFile, ClauseMatch> { }
+    //  FileTasks collects a set of SourceFiles and where they need changes.
+    //  This 'where' is used per rule by the system, but is not technically 
+    //  tied to a single rule, so might be used in other ways.
+    public class FileTasks : Dictionary<SourceFile, ClauseMatch>
+    {
+        public int CountTasks()
+        {
+            return Keys.Sum( file => this[file].Count );
+        }
+    }
+
+    //  RuleTasks collects a set of rules and the FileTasks pertaining to them.
+    //  One RuleTasks object will hold all the problems Swept finds in a run.
     public class RuleTasks : Dictionary<Rule, FileTasks> { }
 
     public class RunHistory
     {
         public const int HighWaterLine = int.MaxValue;
-
 
         private List<RunHistoryEntry> _Runs;
         public IEnumerable<RunHistoryEntry> Runs { get { return _Runs; } }
@@ -75,31 +86,13 @@ namespace swept
             return threshold;
         }
 
-
         public int WaterlineFor( string ruleID )
         {
-            RunHistoryEntry mostRecentlyPassed = null;
+            if (LatestPassingRun != null && LatestPassingRun.RuleResults.ContainsKey( ruleID ))
+                return LatestPassingRun.RuleResults[ruleID].TaskCount;
 
-            foreach( var run in Runs )
-            {
-                if (run.Passed)
-                    mostRecentlyPassed = run;
-            }
-
-            if (mostRecentlyPassed == null)
-            {
-                return HighWaterLine;
-            }
-            else if (mostRecentlyPassed.RuleResults.ContainsKey( ruleID ))
-            {
-                return mostRecentlyPassed.RuleResults[ruleID].Violations;
-            }
-            else
-            {
-                return HighWaterLine;
-            }
+            return HighWaterLine;
         }
 
     }
-
 }
