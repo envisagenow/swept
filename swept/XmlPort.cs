@@ -37,7 +37,6 @@ namespace swept
         public const string cfa_ID = "ID";
         public const string cfa_Description = "Description";
         public const string cfa_FailMode = "FailMode";
-        public const string cfa_FailLimit = "Limit";
 
         private Rule Rule_FromNode( XmlNode ruleNode )
         {
@@ -56,21 +55,8 @@ namespace swept
                 string failText = ruleNode.Attributes[cfa_FailMode].Value;
                 try
                 {
-                    //  When, MS?:  rule.RunFail = Enum.Parse<RunFailMode>( failText );
+                    //  When, MS?:  rule.FailOn = Enum.Parse<RuleFailOn>( failText );
                     rule.FailOn = (RuleFailOn)Enum.Parse( typeof( RuleFailOn ), failText );
-                    if (rule.FailOn == RuleFailOn.Over)
-                    {
-                        try
-                        {
-                            string failOver = ruleNode.Attributes[cfa_FailLimit].Value;
-                            rule.RunFailOverLimit = int.Parse( failOver );
-                        }
-                        catch( Exception failEx )
-                        {
-                            string msg = String.Format( "Found no integer 'Limit' for Rule ID [{0}].", rule.ID );
-                            throw new Exception( msg, failEx );
-                        }
-                    }
                 }
                 catch (ArgumentException argEx)
                 {

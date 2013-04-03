@@ -21,14 +21,6 @@ namespace swept.Tests
 
         }
 
-        //GenEntry with
-        //no prior success
-        //latest success contains rule
-        //latest success does not contain rule
-        //and test Prior and Breaking values for
-        //Any, Over (when met and when exceeded)
-        //Increase (when exceeded)
-
         [Test]
         public void GenEntry_Increase_noPrior()
         {
@@ -46,11 +38,12 @@ namespace swept.Tests
         }
 
         [Test]
-        public void GenEntry_Increase_PriorWasBetter()
+        public void RuleResult_fails_when_RuleFailOn_Increase_and_PriorWasBetter()
         {
             string id = "PE6-5000";
             RunHistoryEntry priorSuccess = new RunHistoryEntry();
-            priorSuccess.RuleResults[id] = new HistoricRuleResult { ID = id, TaskCount = 2 };
+
+            priorSuccess.AddResult( id, false, RuleFailOn.Increase, 2, 2 );
             Rule rut = new Rule { ID = id, FailOn = RuleFailOn.Increase };
 
             var inspector = new RunInspector( null );
@@ -64,11 +57,11 @@ namespace swept.Tests
         }
 
         [Test]
-        public void GenEntry_Increase_PriorHasNoEntryForThisRule()
+        public void RuleResult_passes_when_RuleFailOn_Increase_and_Prior_has_no_result_for_this_rule()
         {
             string id = "PE6-5000";
             RunHistoryEntry priorSuccess = new RunHistoryEntry();
-            priorSuccess.RuleResults["by a different name"] = new HistoricRuleResult { ID = "by a different name", TaskCount = 2 };
+            priorSuccess.AddResult( "by a different name", false, RuleFailOn.Increase, 2, 2 );
             Rule rut = new Rule { ID = id, FailOn = RuleFailOn.Increase };
 
             HistoricRuleResult result = _inspector.GetRuleResult( rut, 7, priorSuccess );
@@ -80,13 +73,12 @@ namespace swept.Tests
             Assert.That( result.Breaking, Is.False );
         }
 
-
         [Test]
-        public void GenEntry_Any_PriorHasNoEntryForThisRule()
+        public void RuleResult_fails_when_RuleFailOn_Any_and_Prior_has_no_result_for_this_rule()
         {
             string id = "PE6-5000";
             RunHistoryEntry priorSuccess = new RunHistoryEntry();
-            priorSuccess.RuleResults["by a different name"] = new HistoricRuleResult { ID = "by a different name", TaskCount = 2 };
+            priorSuccess.AddResult( "by a different name", false, RuleFailOn.Any, 0, 0 );
             Rule rut = new Rule { ID = id, FailOn = RuleFailOn.Any };
 
             HistoricRuleResult result = _inspector.GetRuleResult( rut, 7, priorSuccess );
@@ -99,31 +91,13 @@ namespace swept.Tests
         }
 
         [Test]
-        public void GenEntry_Over_PriorHasNoEntryForThisRule()
-        {
-            string id = "PE6-5000";
-            RunHistoryEntry priorSuccess = new RunHistoryEntry();
-            priorSuccess.RuleResults["by a different name"] = new HistoricRuleResult { ID = "by a different name", TaskCount = 2 };
-            Rule rut = new Rule { ID = id, FailOn = RuleFailOn.Over, RunFailOverLimit = 5 };
-
-            HistoricRuleResult result = _inspector.GetRuleResult( rut, 7, priorSuccess );
-
-            Assert.That( result.ID, Is.EqualTo( id ) );
-            Assert.That( result.FailOn, Is.EqualTo( RuleFailOn.Over ) );
-            Assert.That( result.TaskCount, Is.EqualTo( 7 ) );
-            Assert.That( result.Threshold, Is.EqualTo( 5 ) );  // an argument could be made for 7.
-            Assert.That( result.Breaking, Is.True );
-        }
-
-        [Test]
         public void Can_generate_run_entry_from_results()
         {
             var rule = new Rule()
             {
                 ID = "basic entry",
                 Description = "simple",
-                FailOn = RuleFailOn.Over,
-                RunFailOverLimit = 20
+                FailOn = RuleFailOn.Increase
             };
             var sourceClauseMatch = new FileTasks();
 
@@ -172,8 +146,7 @@ namespace swept.Tests
             {
                 ID = "basic entry",
                 Description = "simple",
-                FailOn = RuleFailOn.Over,
-                RunFailOverLimit = 2
+                FailOn = RuleFailOn.Any
             };
             var sourceClauseMatch = new FileTasks();
 

@@ -6,12 +6,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
 using NUnit.Framework;
-using swept.DSL;
 using System.IO;
 
 namespace swept.Tests
 {
-
     [TestFixture]
     public class BuildLibrarianTests
     {
@@ -56,26 +54,23 @@ namespace swept.Tests
         [Test]
         public void When_we_write_run_history_it_is_stored_to_disk()
         {
-            var runHistory = new RunHistory();
-            var results = new Dictionary<string, HistoricRuleResult>();
-            results.Add( "foo", new HistoricRuleResult { ID = "foo", TaskCount = 2, Threshold = 1, FailOn = RuleFailOn.Increase, Breaking = true } );
-            runHistory.AddEntry( new RunHistoryEntry
-            {
+            var entry = new RunHistoryEntry {
                 Number = 22,
                 Date = DateTime.Parse( "4/4/2012 10:25:02 AM" ),
-                RuleResults = results,
                 Passed = false
-            } );
+            };
+            entry.AddResult( "foo", true, RuleFailOn.Increase, 1, 2 );
 
-            var resultsNext = new Dictionary<string, HistoricRuleResult>();
-            resultsNext.Add( "bar", new HistoricRuleResult { ID = "bar", TaskCount = 0, Threshold = 2, FailOn = RuleFailOn.None, Breaking = false } );
-            runHistory.AddEntry( new RunHistoryEntry
-            {
+            var nextEntry = new RunHistoryEntry {
                 Number = 23,
                 Date = DateTime.Parse( "4/7/2012 10:25:03 AM" ),
-                RuleResults = resultsNext,
                 Passed = true
-            } );
+            };
+            nextEntry.AddResult( "bar", false, RuleFailOn.None, 2, 0 );
+
+            var runHistory = new RunHistory();
+            runHistory.AddEntry( entry );
+            runHistory.AddEntry( nextEntry );
 
             _librarian.WriteRunHistory( runHistory );
 

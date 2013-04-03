@@ -55,7 +55,7 @@ namespace swept.Tests
         }
 
         [Test]
-        public void temp_Can_ListRunFailures_with_RunHistoryEntry()
+        public void Can_ListRunFailureMessages_with_RunHistoryEntry()
         {
             var oldEntry = _inspector.GenerateEntry( DateTime.Now.AddDays( -2 ), _ruleTasks );
             var fooResult = new HistoricRuleResult
@@ -75,10 +75,8 @@ namespace swept.Tests
             Assert.That( failures[0], Is.EqualTo( "Rule [No more Foo!] has [222] tasks, and it breaks the build if there are over [221] tasks." ) );
         }
 
-
-
         [Test]
-        public void When_we_have_no_tasks_in_a_FailAny_Rule_we_do_not_fail()
+        public void When_we_have_no_tasks_in_a_FailOn_Any_Rule_we_do_not_fail()
         {
             Rule rule = new Rule() { ID = "644", Description = "Major problem!", FailOn = RuleFailOn.Any };
             var sourceClauseMatch = new FileTasks();
@@ -91,7 +89,7 @@ namespace swept.Tests
         }
 
         [Test]
-        public void When_we_violate_a_BuildFail_None_Rule_we_do_not_fail()
+        public void When_we_have_tasks_in_a_FailOn_None_Rule_we_do_not_fail()
         {
             Rule rule = new Rule() { ID = "644", Description="Not a problem.", FailOn = RuleFailOn.None };
             var sourceClauseMatch = new FileTasks();
@@ -110,7 +108,7 @@ namespace swept.Tests
         }
 
         [Test]
-        public void When_we_violate_multiple_BuildFail_Any_Rules_we_report_all_failures()
+        public void When_we_have_tasks_in_multiple_FailOn_Any_Rules_we_report_all_failures()
         {
             var rule = new Rule() { ID = "191", Description = "Major problem!", FailOn = RuleFailOn.Any };
             var rule2 = new Rule() { ID = "200", Description = "Major problem!", FailOn = RuleFailOn.Any };
@@ -136,52 +134,7 @@ namespace swept.Tests
         }
 
         [Test]
-        public void When_we_exceed_BuildFail_Over_limit_we_fail()
-        {
-            var rule = new Rule() {
-                ID = "200",
-                Description = "Major problem!",
-                FailOn = RuleFailOn.Over,
-                RunFailOverLimit = 2
-            };
-            var sourceClauseMatch = new FileTasks();
-
-            var failedSource = new SourceFile( "some_other_file.cs" );
-            ClauseMatch failedClause = new LineMatch( new List<int> { 23, 65, 81 } );
-            sourceClauseMatch[failedSource] = failedClause;
-
-            _ruleTasks[rule] = sourceClauseMatch;
-
-            var failures = _inspector.CountRunFailures( _ruleTasks );
-
-            Assert.That( failures, Is.EqualTo( 1 ) );
-            //Assert.That( failures[0], Is.EqualTo( "Rule [200] has [3] tasks, and it breaks the build if there are over [2] tasks." ) );
-        }
-
-        [Test]
-        public void When_we_violate_BuildFail_Over_but_do_not_exceed_limit_we_do_not_fail()
-        {
-            var rule = new Rule() {
-                ID = "191",
-                Description = "Major problem!",
-                FailOn = RuleFailOn.Over,
-                RunFailOverLimit = 2
-            };
-            var sourceClauseMatch = new FileTasks();
-
-            var failedSource = new SourceFile( "some_file.cs" );
-            ClauseMatch failedClause = new LineMatch( new List<int> { 1, 44 } );
-            sourceClauseMatch[failedSource] = failedClause;
-
-            _ruleTasks[rule] = sourceClauseMatch;
-
-            var failures = _inspector.CountRunFailures( _ruleTasks );
-
-            Assert.That( failures, Is.EqualTo( 0 ) );
-        }
-
-        [Test]
-        public void When_failures_increase_on_a_FailMode_Increase_rule_we_break()
+        public void When_tasks_increase_on_a_FailOn_Increase_rule_we_break()
         {
             var rule = new Rule()
             {

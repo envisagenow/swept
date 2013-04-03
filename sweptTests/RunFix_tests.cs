@@ -29,7 +29,7 @@ namespace swept.Tests
         public void Nothing_fixed_if_history_empty()
         {
             var entry = _inspector.GenerateEntry( DateTime.Now, _ruleTasks );
-            var fixes = _inspector.ListRunFixes( entry );
+            var fixes = _inspector.ListRunFixIDs( entry );
             Assert.That( fixes.Count(), Is.EqualTo( 0 ) );
         }
 
@@ -59,7 +59,7 @@ namespace swept.Tests
             };
             newEntry.RuleResults.Add( "No more Foo!", newFooResult );
 
-            var fixes = _inspector.ListRunFixes( newEntry );
+            var fixes = _inspector.ListRunFixIDs( newEntry );
             Assert.That( fixes.Count(), Is.EqualTo( 1 ) );
         }
 

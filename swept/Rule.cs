@@ -21,13 +21,10 @@ namespace swept
         Unknown,
     }
 
-    // TODO: get rid of RuleFailOn.Over, .Increase obsoletes it
-
     public enum RuleFailOn
     {
         None,
         Any,
-        Over,
         Increase,
     }
 
@@ -37,7 +34,6 @@ namespace swept
         public List<SeeAlso> SeeAlsos { get; set; }
         public string ID { get; internal set; }
         public string Description { get; internal set; }
-        public int RunFailOverLimit { get; set; }
 
         public Rule()
         {

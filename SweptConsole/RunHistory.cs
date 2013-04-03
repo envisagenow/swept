@@ -65,10 +65,6 @@ namespace swept
                 threshold = 0;
                 break;
 
-            case RuleFailOn.Over:
-                threshold = rule.RunFailOverLimit;
-                break;
-
             case RuleFailOn.Increase:
                 threshold = WaterlineFor( rule.ID );
                 break;

@@ -38,36 +38,44 @@ namespace swept
         {
             var doc = new XElement( "SweptBreakageDelta" );
 
-            var fails = ListRunFailureIDs( entry );
+            var failIDs = ListRunFailureIDs( entry );
 
-            foreach (var failure in fails)
+            foreach (var failID in failIDs)
             {
-                var result = entry.RuleResults[failure];
-                doc.Add( new XElement( "DeltaItem",
-                    new XAttribute( "ID", result.ID ),
-                    new XAttribute( "Limit", result.Threshold ),
-                    new XAttribute( "Current", result.TaskCount ),
-                    new XAttribute( "Outcome", "Fail" )
-                ) );
+                var result = entry.RuleResults[failID];
+                doc.Add( NewDeltaItem( failID, result.Threshold, result.TaskCount, "Fail" ) );
             }
 
-            if (fails.Count == 0)
+            if (failIDs.Count == 0)
             {
-                var fixes = ListRunFixes( entry );
-                foreach (var fix in fixes)
+                var fixIDs = ListRunFixIDs( entry );
+                foreach (var fixID in fixIDs)
                 {
-                    doc.Add( new XElement( "DeltaItem",
-                        new XAttribute( "ID", "644" ),
-                        new XAttribute( "Limit", "2" ),
-                        new XAttribute( "Current", "0" ),
-                        new XAttribute( "Outcome", "Fix" )
-                    ) );
+                    if (entry.RuleResults.ContainsKey( fixID ))
+                    {
+                        var result = entry.RuleResults[fixID];
+                        doc.Add( NewDeltaItem( fixID, result.Threshold, result.TaskCount, "Fix" ) );
+                    }
+                    else
+                    {
+                        var threshold = _runHistory.LatestPassingRun.RuleResults[fixID].TaskCount;
+                        doc.Add( NewDeltaItem( fixID, threshold, 0, "Gone" ) );
+                    }
                 }
             }
 
             return doc;
         }
 
+        private static XElement NewDeltaItem( string ruleID, int threshold, int taskCount, string outcome )
+        {
+            return new XElement( "DeltaItem",
+                new XAttribute( "ID", ruleID ),
+                new XAttribute( "Limit", threshold ),
+                new XAttribute( "Current", taskCount ),
+                new XAttribute( "Outcome", outcome )
+            );
+        }
         public int CountRunFailures( RuleTasks ruleTasks )
         {
             int failures = 0;
@@ -115,7 +123,7 @@ namespace swept
             );
         }
 
-        public List<string> ListRunFixes( RunHistoryEntry currentEntry )
+        public List<string> ListRunFixIDs( RunHistoryEntry currentEntry )
         {
             var fixes = new List<string>();
             if (_runHistory.LatestPassingRun == null)
@@ -139,18 +147,9 @@ namespace swept
             return fixes;
         }
 
-        internal string reportFixLine( HistoricRuleResult priorResult, HistoricRuleResult currentResult )
-        {
-            return "augh";
-        }
-
-
         public HistoricRuleResult GetRuleResult( Rule ruleUnderTest, int violations, RunHistoryEntry priorSuccess )
         {
             int priorViolations = 0;
-
-            if (ruleUnderTest.FailOn == RuleFailOn.Over)
-                priorViolations = ruleUnderTest.RunFailOverLimit;
 
             if (ruleUnderTest.FailOn == RuleFailOn.Increase)
                 priorViolations = violations;
@@ -165,9 +164,6 @@ namespace swept
 
             if (ruleUnderTest.FailOn == RuleFailOn.Any)
                 breaking = violations > 0;
-
-            if (ruleUnderTest.FailOn == RuleFailOn.Over)
-                breaking = violations > ruleUnderTest.RunFailOverLimit;
 
             if (ruleUnderTest.FailOn == RuleFailOn.Increase)
                 breaking = violations > priorViolations;

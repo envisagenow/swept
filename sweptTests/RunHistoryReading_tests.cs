@@ -65,8 +65,6 @@ namespace swept.Tests
             HistoricRuleResult sameResult = firstRun.RuleResults["always the same"];
             Assert.That( sameResult.TaskCount, Is.EqualTo( 44 ) );
             Assert.That( firstRun.Passed, Is.False );
-            //Assert.That( firstRun.FailOn, Is.EqualTo( RunFailMode.Increase ) );
-            //Assert.That( firstRun.Prior, Is.EqualTo( 38 ) );
             Assert.That( sameResult.Breaking, Is.False );
 
             RunHistoryEntry secondRun = history.Runs.ElementAt( 1 );

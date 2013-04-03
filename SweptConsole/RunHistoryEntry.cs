@@ -18,5 +18,19 @@ namespace swept
         {
             RuleResults = new Dictionary<string, HistoricRuleResult>();
         }
+
+        public HistoricRuleResult AddResult( string id, bool breaking, RuleFailOn ruleFailOn, int threshold, int taskCount )
+        {
+            var result = new HistoricRuleResult {
+                ID = id,
+                Breaking = breaking,
+                FailOn = ruleFailOn,
+                Threshold = threshold,
+                TaskCount = taskCount
+            };
+            RuleResults[id] = result;
+
+            return result;
+        }
     }
 }
