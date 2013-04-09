@@ -175,7 +175,8 @@ namespace swept
                 FailOn = ruleUnderTest.FailOn,
                 TaskCount = violations,
                 Threshold = priorViolations,
-                Breaking = breaking
+                Breaking = breaking,
+                Description = ruleUnderTest.Description
             };
         }
 

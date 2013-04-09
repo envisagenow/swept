@@ -2,6 +2,7 @@
 //  Copyright (c) 2009, 2012 Jason Cole and Envisage Technologies Corp.
 //  This software is open source, MIT license.  See the file LICENSE for details.
 using System;
+using System.Collections.Generic;
 using System.Xml;
 using swept.DSL;
 using Antlr.Runtime;
@@ -20,6 +21,32 @@ namespace swept
 
             return RuleCatalog_FromNode( node );
         }
+
+        public List<string> ExcludedFolders_FromXmlDocument( XmlDocument doc )
+        {
+            XmlNode node = doc.SelectSingleNode( "SweptProjectData/ExcludedFolders" );
+
+            if (node == null)
+                return new List<string>();
+
+            return ExcludedFolders_FromNode( node );
+        }
+
+        public List<string> ExcludedFolders_FromNode( XmlNode node )
+        {
+            var exclusions = new List<string>();
+
+            string rawText = node.InnerText;
+
+            var folders = rawText.Split( new string[] { "," }, StringSplitOptions.RemoveEmptyEntries );
+            foreach (var folder in folders)
+            {
+                exclusions.Add(folder.Trim());
+            }
+
+            return exclusions;
+        }
+
 
 
         public RuleCatalog RuleCatalog_FromNode( XmlNode node )

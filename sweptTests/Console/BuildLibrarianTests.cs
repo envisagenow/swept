@@ -32,7 +32,7 @@ namespace swept.Tests
             _storage.RunHistory = XDocument.Parse(
 @"<RunHistory>
   <Run Number=""22"" DateTime=""4/4/2012 10:25:02 AM"" Passed=""True"">
-    <Rule ID=""foo"" TaskCount=""2"" Threshold=""2"" FailOn=""None"" Breaking=""false"" />
+    <Rule ID=""foo"" TaskCount=""2"" Threshold=""2"" FailOn=""None"" Breaking=""false"" Description=""We must have less foo."" />
   </Run>
 </RunHistory>" );
             
@@ -77,10 +77,10 @@ namespace swept.Tests
             var expectedHistory =
 @"<RunHistory>
   <Run Number=""22"" DateTime=""4/4/2012 10:25:02 AM"" Passed=""False"">
-    <Rule ID=""foo"" TaskCount=""2"" Threshold=""1"" FailOn=""Increase"" Breaking=""true"" />
+    <Rule ID=""foo"" TaskCount=""2"" Threshold=""1"" FailOn=""Increase"" Breaking=""true"" Description=""Upgrade from old stylesheets"" />
   </Run>
   <Run Number=""23"" DateTime=""4/7/2012 10:25:03 AM"" Passed=""True"">
-    <Rule ID=""bar"" TaskCount=""0"" Threshold=""2"" FailOn=""None"" Breaking=""false"" />
+    <Rule ID=""bar"" TaskCount=""0"" Threshold=""2"" FailOn=""None"" Breaking=""false"" Description=""XML islands no longer supported"" />
   </Run>
 </RunHistory>";
 

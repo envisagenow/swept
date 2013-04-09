@@ -45,11 +45,14 @@ namespace swept
             subscriber.Subscribe( switchboard, librarian );
             // TODO: subscriber.SubscribeExceptions( switchboard, this );
 
+            librarian.OpenLibrary( arguments.Library );
+            var rules = librarian.GetSortedRules();
+
+            // Goal code:  var traverser = new Traverser( storage, arguments.Folder, librarian.ExcludedFolders );
             var traverser = new Traverser( arguments, storage );
             var files = traverser.GetFilesToScan();
 
-            librarian.OpenLibrary( arguments.Library );
-            var rules = librarian.GetSortedRules();
+           
 
             var gatherer = new Gatherer( rules, files, storage );
             var ruleTasks = gatherer.GetRuleTasks();
@@ -106,7 +109,8 @@ namespace swept
 
             if (!newRunEntry.Passed)
             {
-                Console.Out.WriteLine( failures );
+                foreach( string failure in failures )
+                    Console.Out.WriteLine( failure );
                 exitCode = 10;
             }
 

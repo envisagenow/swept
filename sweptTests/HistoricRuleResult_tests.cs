@@ -26,7 +26,7 @@ namespace swept.Tests
         {
             string id = "PE6-5000";
             RunHistoryEntry priorSuccess = null;
-            Rule rut = new Rule { ID = id, FailOn = RuleFailOn.Increase };
+            Rule rut = new Rule { ID = id, FailOn = RuleFailOn.Increase, Description = "Really very important." };
 
             HistoricRuleResult result = _inspector.GetRuleResult( rut, 7, priorSuccess );
 
@@ -35,6 +35,7 @@ namespace swept.Tests
             Assert.That( result.TaskCount, Is.EqualTo( 7 ) );
             Assert.That( result.Threshold, Is.EqualTo( 7 ) );
             Assert.That( result.Breaking, Is.False );
+            Assert.That( result.Description, Is.EqualTo( "Really very important." ) );
         }
 
         [Test]

@@ -64,6 +64,9 @@ namespace swept
                         thresholdAttr = ruleXml.Attribute( "Prior" );
                     int threshold = int.Parse( thresholdAttr.Value );
 
+                    var description = ruleXml.Attribute( "Description" ).Value;
+
+
                     bool ruleBreaking = bool.Parse( ruleXml.Attribute( "Breaking" ).Value );
                     RuleFailOn ruleFailOn = (RuleFailOn)Enum.Parse( typeof( RuleFailOn ), ruleXml.Attribute( "FailOn" ).Value );
                     run.RuleResults[ruleID] = new HistoricRuleResult
@@ -72,7 +75,8 @@ namespace swept
                         TaskCount = taskCount,
                         Threshold = threshold,
                         FailOn = ruleFailOn,
-                        Breaking = ruleBreaking
+                        Breaking = ruleBreaking,
+                        Description = description
                     };
                 }
 
@@ -107,7 +111,8 @@ namespace swept
                         new XAttribute( "TaskCount", result.TaskCount ),
                         new XAttribute( "Threshold", result.Threshold ),
                         new XAttribute( "FailOn", result.FailOn ),
-                        new XAttribute( "Breaking", result.Breaking )
+                        new XAttribute( "Breaking", result.Breaking ),
+                        new XAttribute( "Description", result.Description )
                     );
 
                     runElement.Add( ruleElement );

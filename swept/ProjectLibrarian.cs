@@ -132,6 +132,14 @@ namespace swept
             return _ruleCatalog.GetSortedRules();
         }
 
+        // public List<string> GetExcludedFolders()
+        public List<string> GetExcludedFolders()
+        {
+            return new List<string>();
+
+        }
+
+
         private void CloseSourceFile( string name )
         {
             _allTasks.RemoveAll( task => name == task.File.Name );

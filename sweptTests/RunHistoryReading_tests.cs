@@ -40,11 +40,11 @@ namespace swept.Tests
             var historyXml = XDocument.Parse( string.Format(
 @"<RunHistory>
   <Run Number=""{3}"" DateTime=""{2}"" Passed=""false"">
-    <Rule ID=""{0}"" TaskCount=""{1}"" FailOn=""Increase"" Threshold=""38"" Breaking=""true"" />
-    <Rule ID=""always the same"" TaskCount=""44"" FailOn=""None"" Threshold=""44"" Breaking=""false"" />
+    <Rule ID=""{0}"" TaskCount=""{1}"" FailOn=""Increase"" Threshold=""38"" Breaking=""true"" Description=""Optimism!"" />
+    <Rule ID=""always the same"" TaskCount=""44"" FailOn=""None"" Threshold=""44"" Breaking=""false"" Description=""Same as before"" />
   </Run>
   <Run Number=""1100"" DateTime=""1/1/2022 3:20:14 PM"" Passed=""true"">
-    <Rule ID=""always the same"" TaskCount=""44"" FailOn=""None"" Threshold=""44"" Breaking=""false"" />
+    <Rule ID=""always the same"" TaskCount=""44"" FailOn=""None"" Threshold=""44"" Breaking=""false"" Description=""Same as before"" />
   </Run>
 
 </RunHistory>", "silly problem", taskCount, dateString, runNumber ) );
@@ -61,11 +61,13 @@ namespace swept.Tests
             Assert.That( sillyResult.Threshold, Is.EqualTo( 38 ) );
             Assert.That( sillyResult.FailOn, Is.EqualTo( RuleFailOn.Increase ) );
             Assert.That( sillyResult.Breaking );
+            Assert.That( sillyResult.Description, Is.EqualTo( "Optimism!" ) );
 
             HistoricRuleResult sameResult = firstRun.RuleResults["always the same"];
             Assert.That( sameResult.TaskCount, Is.EqualTo( 44 ) );
             Assert.That( firstRun.Passed, Is.False );
             Assert.That( sameResult.Breaking, Is.False );
+            Assert.That( sameResult.Description, Is.EqualTo( "Same as before" ) );
 
             RunHistoryEntry secondRun = history.Runs.ElementAt( 1 );
             Assert.That( secondRun.Date, Is.EqualTo( DateTime.Parse( "1/1/2022 3:20:14 PM" ) ) );

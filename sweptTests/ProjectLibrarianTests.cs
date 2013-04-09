@@ -64,6 +64,15 @@ namespace swept.Tests
 
 
         [Test]
+        public void librarian_Excludedfolders_available()
+        {
+//            _storageAdapter.
+
+
+            Assert.That( Horace.GetExcludedFolders(), Is.Empty);
+        }
+
+        [Test]
         public void Swept_Library_opened_sought_in_expected_location()
         {
             Assert.AreEqual( @"f:\over\here.swept.library", Horace.LibraryPath );
