@@ -43,7 +43,7 @@ namespace swept.Tests
             string id = "PE6-5000";
             RunHistoryEntry priorSuccess = new RunHistoryEntry();
 
-            priorSuccess.AddResult( id, false, RuleFailOn.Increase, 2, 2 );
+            priorSuccess.AddResult( id, false, RuleFailOn.Increase, 2, 2, "Update JQuery framework" );
             Rule rut = new Rule { ID = id, FailOn = RuleFailOn.Increase };
 
             var inspector = new RunInspector( null );
@@ -61,7 +61,7 @@ namespace swept.Tests
         {
             string id = "PE6-5000";
             RunHistoryEntry priorSuccess = new RunHistoryEntry();
-            priorSuccess.AddResult( "by a different name", false, RuleFailOn.Increase, 2, 2 );
+            priorSuccess.AddResult( "PE7-1000", false, RuleFailOn.Increase, 2, 2, "Was PE6-5000" );
             Rule rut = new Rule { ID = id, FailOn = RuleFailOn.Increase };
 
             HistoricRuleResult result = _inspector.GetRuleResult( rut, 7, priorSuccess );
@@ -78,7 +78,7 @@ namespace swept.Tests
         {
             string id = "PE6-5000";
             RunHistoryEntry priorSuccess = new RunHistoryEntry();
-            priorSuccess.AddResult( "by a different name", false, RuleFailOn.Any, 0, 0 );
+            priorSuccess.AddResult( "PE7-1000", false, RuleFailOn.Increase, 2, 2, "Was PE6-5000" );
             Rule rut = new Rule { ID = id, FailOn = RuleFailOn.Any };
 
             HistoricRuleResult result = _inspector.GetRuleResult( rut, 7, priorSuccess );

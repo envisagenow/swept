@@ -59,14 +59,14 @@ namespace swept.Tests
                 Date = DateTime.Parse( "4/4/2012 10:25:02 AM" ),
                 Passed = false
             };
-            entry.AddResult( "foo", true, RuleFailOn.Increase, 1, 2 );
+            entry.AddResult( "foo", true, RuleFailOn.Increase, 1, 2, "Upgrade from old stylesheets" );
 
             var nextEntry = new RunHistoryEntry {
                 Number = 23,
                 Date = DateTime.Parse( "4/7/2012 10:25:03 AM" ),
                 Passed = true
             };
-            nextEntry.AddResult( "bar", false, RuleFailOn.None, 2, 0 );
+            nextEntry.AddResult( "bar", false, RuleFailOn.None, 2, 0, "XML islands no longer supported" );
 
             var runHistory = new RunHistory();
             runHistory.AddEntry( entry );

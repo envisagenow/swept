@@ -43,7 +43,7 @@ namespace swept
             foreach (var failID in failIDs)
             {
                 var result = entry.RuleResults[failID];
-                doc.Add( NewDeltaItem( failID, result.Threshold, result.TaskCount, "Fail" ) );
+                doc.Add( NewDeltaItem( failID, result.Threshold, result.TaskCount, "Fail", result.Description ) );
             }
 
             if (failIDs.Count == 0)
@@ -54,12 +54,12 @@ namespace swept
                     if (entry.RuleResults.ContainsKey( fixID ))
                     {
                         var result = entry.RuleResults[fixID];
-                        doc.Add( NewDeltaItem( fixID, result.Threshold, result.TaskCount, "Fix" ) );
+                        doc.Add( NewDeltaItem( fixID, result.Threshold, result.TaskCount, "Fix", result.Description ) );
                     }
                     else
                     {
-                        var threshold = _runHistory.LatestPassingRun.RuleResults[fixID].TaskCount;
-                        doc.Add( NewDeltaItem( fixID, threshold, 0, "Gone" ) );
+                        var result = _runHistory.LatestPassingRun.RuleResults[fixID];
+                        doc.Add( NewDeltaItem( fixID, result.Threshold, 0, "Gone", result.Description ) );
                     }
                 }
             }
@@ -67,13 +67,14 @@ namespace swept
             return doc;
         }
 
-        private static XElement NewDeltaItem( string ruleID, int threshold, int taskCount, string outcome )
+        private static XElement NewDeltaItem( string ruleID, int threshold, int taskCount, string outcome, string description )
         {
             return new XElement( "DeltaItem",
                 new XAttribute( "ID", ruleID ),
-                new XAttribute( "Limit", threshold ),
-                new XAttribute( "Current", taskCount ),
-                new XAttribute( "Outcome", outcome )
+                new XAttribute( "Threshold", threshold ),
+                new XAttribute( "TaskCount", taskCount ),
+                new XAttribute( "Outcome", outcome ),
+                new XAttribute( "Description", description )
             );
         }
         public int CountRunFailures( RuleTasks ruleTasks )

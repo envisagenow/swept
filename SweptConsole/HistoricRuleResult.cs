@@ -14,5 +14,6 @@ namespace swept
         public int Threshold;
         public bool Breaking;
         public RuleFailOn FailOn;
+        public string Description;
     }
 }

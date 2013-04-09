@@ -56,7 +56,7 @@ namespace swept.Tests
         }
 
         [Test]
-        public void Version_emits_version_and_copyright()
+        public void Version_emits_version_and_copyright_even_when_missing_library()
         {
             var args = new Arguments( new string[] { "version" }, _storage );
             string output;
@@ -114,13 +114,12 @@ namespace swept.Tests
         [Test]
         public void Missing_Library_arg_will_throw_when_no_library_found_in_folder()
         {
-            var searchFolder = "f:\\work\\search_here";
-            _storage.FilesInFolder[searchFolder] = new List<string>();
-            var argsText = new string[] { "folder:" + searchFolder };
+            _storage.FilesInFolder["f:\\work\\search_here"] = new List<string>();
+            var argsText = new string[] { "folder:f:\\work\\search_here" };
 
             var ex = Assert.Throws<Exception>( () => new Arguments( argsText, _storage ) );
-            
-            Assert.That( ex.Message, Is.EqualTo( String.Format("No library found in folder [{0}].", searchFolder ) ) );
+
+            Assert.That( ex.Message, Is.EqualTo( "A library is required for Swept to run.  No library found in folder [f:\\work\\search_here]." ) );
         }
 
         [Test]

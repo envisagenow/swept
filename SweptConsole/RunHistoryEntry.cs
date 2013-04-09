@@ -19,14 +19,16 @@ namespace swept
             RuleResults = new Dictionary<string, HistoricRuleResult>();
         }
 
-        public HistoricRuleResult AddResult( string id, bool breaking, RuleFailOn ruleFailOn, int threshold, int taskCount )
+        public HistoricRuleResult AddResult( string id, bool breaking, RuleFailOn ruleFailOn, int threshold, int taskCount, string description )
         {
             var result = new HistoricRuleResult {
                 ID = id,
                 Breaking = breaking,
                 FailOn = ruleFailOn,
                 Threshold = threshold,
-                TaskCount = taskCount
+                TaskCount = taskCount,
+                Description = description
+
             };
             RuleResults[id] = result;
 

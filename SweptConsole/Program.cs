@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Xml.Linq;
 
 namespace swept
 {
@@ -12,24 +13,30 @@ namespace swept
     {
         static void Main( string[] args )
         {
+            int exitCode = 0;
             try
             {
-                execute( args, new StorageAdapter(), DateTime.Now );
+                exitCode = execute( args, new StorageAdapter(), DateTime.Now );
             }
             catch (Exception ex)
             {
                 Console.Out.WriteLine( ex.Message + "\nStack trace:\n" + ex.StackTrace );
-                Environment.Exit( 20 );
+                exitCode = 20;
             }
+            Environment.Exit( exitCode );
         }
 
-        private static void execute( string[] args, IStorageAdapter storage, DateTime startTime )
+        private static int execute( string[] args, IStorageAdapter storage, DateTime startTime )
         {
             var arguments = new Arguments( args, storage );
-            if (arguments.AreInvalid)
-                return;
 
-            int failureCode = 0;
+            if (arguments.ShowUsage)
+                Console.Out.WriteLine( Arguments.UsageMessage );
+
+            if (arguments.AreInvalid)
+                return 8;
+
+            int exitCode = 0;
 
             EventSwitchboard switchboard = new EventSwitchboard();
             ProjectLibrarian librarian = new ProjectLibrarian( storage, switchboard );
@@ -57,6 +64,16 @@ namespace swept
 
             var inspector = new RunInspector( runHistory );
             RunHistoryEntry newRunEntry = inspector.GenerateEntry( startTime, ruleTasks );
+
+            XElement deltaXml = null;
+            if (!string.IsNullOrEmpty( arguments.DeltaFileName ))
+            {
+                //  The delta should be generated before adding the new entry to the history,
+                //  because if the new entry is passing, it will become the .LatestPassingRun, 
+                //  making the delta empty.
+                deltaXml = inspector.GenerateDeltaXml( newRunEntry );
+            }
+
             runHistory.AddEntry( newRunEntry );
             var failures = inspector.ListRunFailureMessages( newRunEntry );
 
@@ -78,26 +95,22 @@ namespace swept
                 detailWriter.Flush();
             }
 
-            //if (arguments.SummaryFileName != string.Empty)
-            //{
-            using (TextWriter deltaWriter = storage.GetOutputWriter( arguments.DeltaFileName ))
+            if (!string.IsNullOrEmpty( arguments.DeltaFileName ))
             {
-                var delta = new BreakageDelta { Failures = failures, Fixes = new List<string>() };
-                //!!!#!#!#!#!#!!#!#!#!#!#!#!#!#!!#!#!#!##!#!!#!#!###!#!!!!#!#!#!#!##!#!
-
-                var deltaXml = reporter.GenerateBuildDeltaXml( delta );
-                deltaWriter.Write( deltaXml.ToString() );
-                deltaWriter.Flush();
+                using (TextWriter deltaWriter = storage.GetOutputWriter( arguments.DeltaFileName ))
+                {
+                    deltaWriter.Write( deltaXml.ToString() );
+                    deltaWriter.Flush();
+                }
             }
-            //}
 
             if (!newRunEntry.Passed)
             {
                 Console.Out.WriteLine( failures );
-                failureCode = 10;
+                exitCode = 10;
             }
 
-            Environment.Exit( failureCode );
+            return exitCode;
         }
     }
 }

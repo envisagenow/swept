@@ -37,32 +37,33 @@ namespace swept
             get
             {
                 return @"Swept usage:
-> Swept library:my_solution.swept.library details:logs\swept_report.xml
-> Swept folder:c:\code\project exclude:.svn,bin,build
+> swept library:my_solution.swept.library details:logs\swept_report.xml
+> swept folder:c:\code\project exclude:.svn,bin,build
   Arguments:
     help:  Or 'h' or 'usage', gets this message.
     version:  Prints a brief version and credits message, and terminates.
     debug:  Triggers a Debugger.Launch(), then continues as usual.
     folder:  The top folder Swept will sweep for rule violations.
-        If no folder is specified, the current working directory is used.
+      If no folder is specified, the current working directory is used.
     library:  The Swept rules library file to check against.
-        If no library is specified, Swept checks the top folder for a file 
-        named '*.swept.library'.  If it finds exactly one, Swept will use it.
+      If no library is specified, Swept checks the top folder for a file 
+      named '*.swept.library'.  If it finds exactly one, Swept will use it.
+      Swept needs a library to run.
     exclude:  A comma-separated list of folders Swept will not search
-        within.  All folders below these are also excluded.
+      within.  All folders below these are also excluded.
     pipe:svn:  Indicates that standard In will contain the output from an
-        svn status command, and these files will be used as the file list
-        to search for violations.
+      svn status command, and these files will be used as the file list
+      to search for violations.
     details:  The filename to get the detailed XML of the run.
     history:  The filename to read and update to maintain the delta.
-        If no history file is specified, the library filename is used,
-        with the '.library' suffix replaced with '.history'.
+      If no history file is specified, the library filename is used,
+      with the '.library' suffix replaced with '.history'.
     delta:  The filename to get the delta of red-line rules.
-        If no delta file is specified, the console gets a text delta report.
+      If no delta file is specified, a text delta report goes to the console.
 ---
 Features below are Not Yet Implemented:
-NYI files:  A comma-separated list of files to search for violations.  Not
-        compatible with the 'folder' argument.
+*** files:  A comma-separated list of files to search for violations.  Not
+      compatible with the 'folder' argument.
 ";
             }
         }
@@ -104,7 +105,7 @@ This software is open source, MIT license.  See the file LICENSE for details.
 
                     case "version":
                         ShowVersion = true;
-                        return;
+                        continue;
 
                     case "usage":
                     case "help":
@@ -176,7 +177,7 @@ This software is open source, MIT license.  See the file LICENSE for details.
                 int resultCount = possibilities.Count();
 
                 if (resultCount == 0)
-                    exceptionMessages.Add( String.Format( "No library found in folder [{0}].", Folder ) );
+                    exceptionMessages.Add( String.Format( "A library is required for Swept to run.  No library found in folder [{0}].", Folder ) );
                 else if (resultCount > 1)
                     exceptionMessages.Add( String.Format( "Too many libraries (*.swept.library) found in folder [{0}].", Folder ) );
                 else
@@ -203,14 +204,14 @@ This software is open source, MIT license.  See the file LICENSE for details.
                 Exclude = new string [] { ".svn", "bin", ".gitignore", "lib", "Build", "exslt", "ScormEngineInterface", "FitnesseFixtures" };
             }
 
-            if (exceptionMessages.Any())
+            if (!ShowVersion && !ShowUsage && exceptionMessages.Any())
                 throw new Exception( string.Join( "\n", exceptionMessages.ToArray() ) );
 
             if (!string.IsNullOrEmpty( Folder ) && Folder[1] == ':')
             {
-                if (Library[1] != ':')
+                if (!string.IsNullOrEmpty( Library ) && Library[1] != ':')
                     Library = Path.Combine( Folder, Library );
-                if (History[1] != ':')
+                if (!string.IsNullOrEmpty( History ) && History[1] != ':')
                     History = Path.Combine( Folder, History );
             }
         }

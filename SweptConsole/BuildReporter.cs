@@ -10,33 +10,6 @@ namespace swept
 {
     public class BuildReporter
     {
-        public XElement GenerateBuildDeltaXml( BreakageDelta delta )
-        {
-            XElement xml = new XElement( "SweptBuildDeltas" );
-
-            foreach (string fail in delta.Failures)
-            {
-                XElement xmlFailure = new XElement( "SweptBuildFailure", fail );
-                xml.Add( xmlFailure );
-            }
-
-            foreach (string fix in delta.Fixes)
-            {
-                XElement xmlFix = new XElement( "SweptBuildFix", fix );
-                xml.Add( xmlFix );
-            }
-
-            return xml;
-        }
-
-        //public string ReportOn( RuleTasks ruleTasks, List<string> failures )
-        //{
-        //    if (_args.Check)
-        //        return ReportCheckResult( failures );
-        //    else
-        //        return ReportDetailsXml( ruleTasks );
-        //}
-
         public string ReportFailures( List<string> failures )
         {
             if (failures.Count == 0)
@@ -48,7 +21,7 @@ namespace swept
         public string ReportCheckResult( List<string> failures )
         {
             if (!failures.Any())
-                return "Swept check passed!\r\n";
+                return "Swept check passed.\r\n";
             else
                 return "Swept check failed!\r\n";
         }

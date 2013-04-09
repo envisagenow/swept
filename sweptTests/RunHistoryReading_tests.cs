@@ -36,7 +36,7 @@ namespace swept.Tests
         [TestCase( 14, "5/11/2012 7:28:02 AM", 54 )]
         public void We_can_read_history_from_XML_into_domain( int runNumber, string dateString, int taskCount )
         {
-            //  Don't overanalyze this expecting it to make domain sense
+            //  Don't overanalyze this history expecting it to make domain sense
             var historyXml = XDocument.Parse( string.Format(
 @"<RunHistory>
   <Run Number=""{3}"" DateTime=""{2}"" Passed=""false"">
@@ -72,7 +72,6 @@ namespace swept.Tests
             Assert.That( secondRun.Number, Is.EqualTo( 1100 ) );
             Assert.That( secondRun.RuleResults.Count(), Is.EqualTo( 1 ) );
             Assert.That( secondRun.Passed );
-            //Assert.That( secondRun.FailOn, Is.EqualTo( RunFailMode.None ) );
         }
     }
 }

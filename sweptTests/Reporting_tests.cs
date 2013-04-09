@@ -71,34 +71,12 @@ namespace swept.Tests
             Assert.That( message, Is.EqualTo( expectedMessage ) );
         }
 
-        // What's to be done about these?
-        //[Test]
-        //public void We_see_expected_header_when_we_Check()
-        //{
-        //    var args = new Arguments( new string[] { "library:foo.library", "history:foo.history", "check" }, _storage );
-        //    _librarian = new BuildLibrarian( args, _storage );
-
-        //    var nowish = DateTime.Parse( "6/26/2012 10:58 AM" );
-        //    string header = _reporter.GetConsoleHeader( nowish );
-
-        //    Assert.That( header, Is.EqualTo( "Swept checking [r:\\somefolder] with rules in [r:\\somefolder\\foo.library] on 6/26/2012 10:58:00 AM...\r\n" ) );
-        //}
-
-        //[Test]
-        //public void We_see_no_header_for_default_run()
-        //{
-        //    var nowish = DateTime.Parse( "6/26/2012 10:58 AM" );
-        //    string header = _reporter.GetConsoleHeader( nowish );
-
-        //    Assert.That( header, Is.Empty );
-        //}
-
         [Test]
         public void With_no_violations_the_check_passes()
         {
             string message = _reporter.ReportCheckResult( new List<string>() );
 
-            Assert.That( message, Is.EqualTo( "Swept check passed!" + Environment.NewLine ) );
+            Assert.That( message, Is.EqualTo( "Swept check passed." + Environment.NewLine ) );
         }
 
         [Test]
@@ -123,84 +101,6 @@ namespace swept.Tests
             string expectedMessage = "Swept check failed!" + Environment.NewLine;
             Assert.That( message, Is.EqualTo( expectedMessage ) );
         }
-
-        [Test]
-        public void Zero_failures_and_zero_fixes_produces_empty_delta_XML()
-        {
-            var delta = new BreakageDelta { Failures = new List<string>(), Fixes = new List<string>() };
-            var deltaXml = _reporter.GenerateBuildDeltaXml( delta );
-
-            Assert.AreEqual( "<SweptBuildDeltas />", deltaXml.ToString() );
-        }
-
-        [Test]
-        public void When_one_failure_occurs_delta_XML_is_correct()
-        {
-            var failures = new List<string> { "fooblah" };
-            var delta = new BreakageDelta { Failures = failures, Fixes = new List<string>() };
-            XElement deltaXml = _reporter.GenerateBuildDeltaXml( delta );
-
-            var expectedDeltaText =
-@"<SweptBuildDeltas>
-  <SweptBuildFailure>fooblah</SweptBuildFailure>
-</SweptBuildDeltas>";
-
-            Assert.AreEqual( expectedDeltaText, deltaXml.ToString() );
-        }
-
-        [Test]
-        public void When_multiple_failures_occur_XML_is_correct()
-        {
-            var failures = new List<string> { "fail1", "fail2" };
-            var delta = new BreakageDelta { Failures = failures, Fixes = new List<string>() };
-            XElement deltaXml = _reporter.GenerateBuildDeltaXml( delta );
-
-            var expectedDeltaText =
-@"<SweptBuildDeltas>
-  <SweptBuildFailure>fail1</SweptBuildFailure>
-  <SweptBuildFailure>fail2</SweptBuildFailure>
-</SweptBuildDeltas>";
-
-            Assert.AreEqual( expectedDeltaText, deltaXml.ToString() );
-        }
-
-//        [Test]
-//        public void When_one_fix_occurs_XML_is_correct()
-//        {
-//            var failures = new List<string>();
-
-//            var priorRun = new RunHistoryEntry { Passed = false, Number = 41 };
-//            priorRun.RuleResults["fail1"] = new RuleResult { Violations = 6, Breaking = true };
-//            var history = new RunHistory();
-//            history.AddRun( priorRun );
-
-//            XElement deltaXml = _librarian.GenerateBuildDeltaXml( failures, history );
-
-//            var expectedDeltaText =
-//@"<SweptBuildDeltas>
-//  <SweptBuildFix>fail1</SweptBuildFix>
-//</SweptBuildDeltas>";
-
-//            Assert.AreEqual( expectedDeltaText, deltaXml.ToString() );
-//        }
-
-        [Test]
-        public void When_one_fix_occurs_XML_is_correct()
-        {
-            var fixes = new List<string> { "Fix1!!1" };
-            var delta = new BreakageDelta { Failures = new List<string>(), Fixes = fixes };
-
-            XElement deltaXml = _reporter.GenerateBuildDeltaXml( delta );
-
-            var expectedDeltaText =
-@"<SweptBuildDeltas>
-  <SweptBuildFix>Fix1!!1</SweptBuildFix>
-</SweptBuildDeltas>";
-
-            Assert.AreEqual( expectedDeltaText, deltaXml.ToString() );
-        }
-
-
         [Test]
         public void No_task_data_creates_empty_report()
         {
