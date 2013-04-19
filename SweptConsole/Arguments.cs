@@ -23,6 +23,7 @@ namespace swept
         public bool Check { get; private set; }
         public bool ShowVersion { get; private set; }
         public bool ShowUsage { get; private set; }
+        public bool BreakOnDeltaDrop { get; private set; }
 
         public string DetailsFileName { get; private set; }
         public string DeltaFileName { get; private set; }
@@ -90,6 +91,7 @@ This software is open source, MIT license.  See the file LICENSE for details.
             Check = false;
             ShowUsage = false;
             ShowVersion = false;
+            BreakOnDeltaDrop = false;
 
             List<string> exceptionMessages = new List<string>();
 
@@ -97,8 +99,16 @@ This software is open source, MIT license.  See the file LICENSE for details.
             {
                 if (!s.Contains( ":" ))
                 {
-                    switch (s)
+                    switch (s.ToLower())
                     {
+                    case "check":
+                        Check = true;
+                        continue;
+
+                    case "breakondeltadrop":
+                        BreakOnDeltaDrop = true;
+                        continue;
+
                     case "debug":
                         Debugger.Launch();
                         continue;
@@ -113,10 +123,6 @@ This software is open source, MIT license.  See the file LICENSE for details.
                     case "/?":
                         ShowUsage = true;
                         return;
-
-                    case "check":
-                        Check = true;
-                        continue;
 
                     default:
                         exceptionMessages.Add( String.Format( "Don't understand the input [{0}].  Try 'swept h' for help with arguments.", s ) );

@@ -30,6 +30,19 @@ namespace swept.Tests
         }
 
         [Test]
+        public void BreakOnDeltaDrop_default_false()
+        {
+            var args = new Arguments( new string[] { "library:foo" }, _storage );
+
+            Assert.That( args.BreakOnDeltaDrop, Is.False );
+
+            args = new Arguments( new string[] { "library:foo", "BreakOnDeltaDrop" }, _storage );
+
+            Assert.That( args.BreakOnDeltaDrop );
+        }
+
+
+        [Test]
         public void unknown_args_throw()
         {
             var argsText = new string[] { "oddity:unrecognized_arg_name", "library:unused" };

@@ -52,8 +52,6 @@ namespace swept
             var traverser = new Traverser( arguments, storage );
             var files = traverser.GetFilesToScan();
 
-           
-
             var gatherer = new Gatherer( rules, files, storage );
             var ruleTasks = gatherer.GetRuleTasks();
 
@@ -111,7 +109,9 @@ namespace swept
             {
                 foreach( string failure in failures )
                     Console.Out.WriteLine( failure );
-                exitCode = 10;
+
+                if (arguments.BreakOnDeltaDrop)
+                    exitCode = 10;
             }
 
             return exitCode;
