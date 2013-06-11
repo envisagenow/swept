@@ -152,6 +152,8 @@ namespace swept.Tests
         public void OpenFile_will_Raise_TaskListChanged_Event()
         {
             _switchboard.Event_TaskListChanged += Listen_for_TasksChanged_Event;
+            Assert.That( _tasks, Is.Null );
+
             Horace.OpenSourceFile( "foo.cs", "//hello, world!" );
 
             Assert.That( _tasks, Is.Not.Null );
@@ -163,10 +165,11 @@ namespace swept.Tests
             _switchboard.Event_TaskListChanged += Listen_for_TasksChanged_Event;
             Rule allCSharpMustGo = new Rule
             {
-                Description = "We hate CSharp.", 
+                Description = "We hate CPound.", 
                 Subquery = new QueryLanguageNode { Language = FileLanguage.CSharp } 
             };
             Horace._ruleCatalog.Add( allCSharpMustGo );
+            Assert.That( _tasks, Is.Null );
 
             Horace.OpenSourceFile( "foo.cs", "//hello, world!" );
 
@@ -179,6 +182,5 @@ namespace swept.Tests
         {
             _tasks = e.Tasks;
         }
-        
     }
 }
