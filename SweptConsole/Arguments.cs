@@ -177,6 +177,11 @@ This software is open source, MIT license.  See the file LICENSE for details.
                 Folder = storageAdapter.GetCWD();
             }
 
+            if (!Folder.Contains( storageAdapter.GetCWD() ))
+            {
+                Folder = Path.Combine( storageAdapter.GetCWD() , Folder);
+            }
+
             if (string.IsNullOrEmpty( Library ))
             {
                 var possibilities = storageAdapter.GetFilesInFolder( Folder, "*.swept.library" );

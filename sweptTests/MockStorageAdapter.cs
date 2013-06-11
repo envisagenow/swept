@@ -6,6 +6,7 @@ using System.Xml;
 using System.Collections.Generic;
 using System.IO;
 using System.Xml.Linq;
+using System.Linq;
 
 namespace swept.Tests
 {
@@ -75,12 +76,16 @@ namespace swept.Tests
             if (_gfif_ioex != null)
                 throw _gfif_ioex;
 
-            if (FilesInFolder.ContainsKey( folder ))
-                return FilesInFolder[folder];
-
+            foreach (var key in FilesInFolder.Keys)
+            {
+                if (key.Equals( folder, StringComparison.InvariantCultureIgnoreCase ))
+                    return FilesInFolder[key];
+            }
             return new List<string>();
         }
 
+
+        // TODO: I should actually use the searchPattern in this overload
         public IEnumerable<string> GetFilesInFolder( string folder, string searchPattern )
         {
             if (FilesInFolder.ContainsKey( folder ))
@@ -91,8 +96,11 @@ namespace swept.Tests
 
         public IEnumerable<string> GetFoldersInFolder( string folder )
         {
-            if (FoldersInFolder.ContainsKey( folder ))
-                return FoldersInFolder[folder];
+            foreach (var key in FoldersInFolder.Keys)
+            {
+                if (key.Equals( folder, StringComparison.InvariantCultureIgnoreCase ))
+                    return FoldersInFolder[key];
+            }
 
             return new List<string>();
         }

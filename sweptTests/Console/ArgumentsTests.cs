@@ -42,6 +42,12 @@ namespace swept.Tests
         }
 
 
+        [Test, Ignore()]
+        public void library_path_is_properly_resolved_when_folder_is_specified()
+        {
+            
+        }
+
         [Test]
         public void unknown_args_throw()
         {
@@ -177,6 +183,31 @@ namespace swept.Tests
             var argsText = new string[] { "library:fizzbuzz.swept.library" };
             var args = new Arguments( argsText, _storage );
             Assert.That( args.Folder, Is.EqualTo( "d:\\code\\project" ) );
+        }
+
+        [Test]
+        public void folder_has_cwd_prefixed_if_relative()
+        {
+            var argsText = new string[] { "folder:project", "library:c:\\foo.library" };
+            _storage.CWD = "c:\\fun_code";
+            var args = new Arguments( argsText, _storage );
+            Assert.That( args.Folder, Is.EqualTo( @"c:\fun_code\project" ) );
+        }
+
+        [Test]
+        public void folder_is_unchanged_if_absolute()
+        {
+            var argsText = new string[] { "folder:c:\\project", "library:c:\\foo.library" };
+            _storage.CWD = "f:\\fun_code";
+            var args = new Arguments( argsText, _storage );
+            Assert.That( args.Folder, Is.EqualTo( @"c:\project" ) );
+        }
+
+        [Test]
+        public void path_combine_discards_first_arg_if_second_is_fully_qualified()
+        {
+            string folder = Path.Combine( "f:\\fun_code", "c:\\project" );
+            Assert.That( folder, Is.EqualTo( @"c:\project" ) );
         }
 
         [Test]

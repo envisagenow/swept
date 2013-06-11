@@ -20,6 +20,7 @@ namespace swept
     {
         //  The Rule Catalog holds things the team wants to improve in this solution.
         internal RuleCatalog _ruleCatalog;
+        internal List<string> _excludedFolders;
 
         internal IStorageAdapter _storage;
         internal EventSwitchboard _switchboard;
@@ -35,6 +36,7 @@ namespace swept
 
             _ruleCatalog = new RuleCatalog();
             _allTasks = new List<Task>();
+            _excludedFolders = new List<string>();
         }
 
 
@@ -132,11 +134,9 @@ namespace swept
             return _ruleCatalog.GetSortedRules();
         }
 
-        // public List<string> GetExcludedFolders()
         public List<string> GetExcludedFolders()
         {
-            return new List<string>();
-
+            return _excludedFolders;
         }
 
 

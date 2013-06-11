@@ -42,7 +42,7 @@ namespace swept.Tests
         {
             store_foo();
             var argsText = new string[] { "folder:c:\\foo", "exclude:c:\\foo", "library:foo.library", "history:foo.history" };
-            var args = new Arguments( argsText, null );
+            var args = new Arguments( argsText, _storage );
             var traverser = new Traverser( args, _storage );
 
             var files = traverser.GetFilesToScan();
@@ -55,7 +55,7 @@ namespace swept.Tests
         {
             store_foo();
             var argsText = new string[] { "folder:c:\\foo", "library:foo.library", "history:foo.history" };
-            var args = new Arguments( argsText, null );
+            var args = new Arguments( argsText, _storage );
             var traverser = new Traverser( args, _storage );
 
             List<string> files = traverser.GetFilesToScan().ToList();
@@ -69,7 +69,7 @@ namespace swept.Tests
         {
             store_foobar();
             var argsText = new string[] { "folder:c:\\foo", "library:foo.library", "history:foo.history" };
-            var args = new Arguments( argsText, null );
+            var args = new Arguments( argsText, _storage );
             var traverser = new Traverser( args, _storage );
 
             List<string> files = traverser.GetFilesToScan().ToList();
@@ -83,7 +83,7 @@ namespace swept.Tests
         {
             store_foobarsubsub();
             var argsText = new string[] { "folder:c:\\foo", "library:foo.library", "history:foo.history" };
-            var args = new Arguments( argsText, null );
+            var args = new Arguments( argsText, _storage );
             var traverser = new Traverser( args, _storage );
 
             var files = traverser.GetFilesToScan().ToList();
@@ -95,8 +95,9 @@ namespace swept.Tests
         public void traversal_omits_excluded_subsubfolders()
         {
             store_foobarsubsub();
-            var argsText = new string[] { "folder:c:\\foo", "library:foo.library", "history:foo.history", "exclude:.*ubs.*" };
-            var args = new Arguments( argsText, null );
+            _storage.CWD = "c:\\";
+            var argsText = new string[] { "folder:foo", "library:foo.library", "history:foo.history", "exclude:.*ubs.*" };
+            var args = new Arguments( argsText, _storage );
             var traverser = new Traverser( args, _storage );
 
             var files = traverser.GetFilesToScan().ToList();
@@ -107,13 +108,32 @@ namespace swept.Tests
         }
 
         [Test]
+        public void traversal_robust_across_arbitrary_miscapitalization()
+        {
+            store_foobarsubsub();
+            _storage.CWD = "C:\\";
+            var argsText = new string[] { "folder:foo", "library:foo.library", "history:foo.history", "exclude:.*ubs.*" };
+            var args = new Arguments( argsText, _storage );
+            var traverser = new Traverser( args, _storage );
+
+            var files = traverser.GetFilesToScan().ToList();
+
+            Assert.That( files.Count, Is.EqualTo( 4 ) );
+            Assert.That( files[2], Is.EqualTo( @"C:\foo\bar\bar.cs" ) );
+            Assert.That( files[3], Is.EqualTo( @"C:\foo\bar\bar.html" ) );
+        }
+
+
+        [Test]
         public void traversal_omits_file_extensions_not_whitelisted()
         {
             List<string> filesInFoo = new List<string> { "foo.cs", "foo.html", "foo.schnob", "foo.dll", "foo.pdb" };
             _storage.FilesInFolder["c:\\foo"] = filesInFoo;
 
-            var argsText = new string[] { "folder:c:\\foo", "library:foo.library", "history:foo.history" };
-            var args = new Arguments( argsText, null );
+            _storage.CWD = "c:\\";
+
+            var argsText = new string[] { "folder:foo", "library:foo.library", "history:foo.history" };
+            var args = new Arguments( argsText, _storage );
             var traverser = new Traverser( args, _storage );
 
             traverser.WhiteListPattern = @"\.(cs|html)$";
@@ -131,7 +151,7 @@ namespace swept.Tests
             _storage.GetFilesInFolder_Throw( ioex );
 
             var argsText = new string[] { "folder:c:\\foo", "library:foo.library", "history:foo.history" };
-            var args = new Arguments( argsText, null );
+            var args = new Arguments( argsText, _storage );
             var traverser = new Traverser( args, _storage );
 
             var ex = Assert.Throws<Exception>( () => traverser.GetFilesToScan() );
