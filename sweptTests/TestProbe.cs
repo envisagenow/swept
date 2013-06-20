@@ -19,5 +19,25 @@ namespace swept.Tests
 </SweptProjectData>";
             }
         }
+
+        public static string ExcludedFolderLibrary_text
+        {
+            get
+            {
+                return
+@"<SweptProjectData>
+
+<RuleCatalog>
+    <Rule ID='30-Persist' Description='Update to use persister'> ^CSharp </Rule>
+</RuleCatalog>
+
+  <ExcludedFolders>
+      .svn, bin, .gitignore, lib, Build, exslt, ScormEngineInterface, FitnesseFixtures
+  </ExcludedFolders>
+
+</SweptProjectData>";
+            }
+        }
+
     }
 }

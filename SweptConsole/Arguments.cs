@@ -210,11 +210,6 @@ This software is open source, MIT license.  See the file LICENSE for details.
                 }
             }
 
-            if (!Exclude.Any())
-            {
-                Exclude = new string [] { ".svn", "bin", ".gitignore", "lib", "Build", "exslt", "ScormEngineInterface", "FitnesseFixtures" };
-            }
-
             if (!ShowVersion && !ShowUsage && exceptionMessages.Any())
                 throw new Exception( string.Join( "\n", exceptionMessages.ToArray() ) );
 
@@ -235,5 +230,14 @@ This software is open source, MIT license.  See the file LICENSE for details.
             if (ShowUsage)
                 writer.Write( UsageMessage );
         }
+
+        public void FillExclusions( List<string> args )
+        {
+            if ( Exclude.Count() == 0 )
+            {
+                Exclude = args;
+            }
+        }
+
     }
 }

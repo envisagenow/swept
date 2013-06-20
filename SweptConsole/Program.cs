@@ -34,7 +34,10 @@ namespace swept
                 Console.Out.WriteLine( Arguments.UsageMessage );
 
             if (arguments.AreInvalid)
+            {
+                Console.Out.WriteLine( "Swept does not understand the given arguments.  Please correct them." );
                 return 8;
+            }
 
             int exitCode = 0;
 
@@ -47,6 +50,8 @@ namespace swept
 
             librarian.OpenLibrary( arguments.Library );
             var rules = librarian.GetSortedRules();
+
+            arguments.FillExclusions( librarian.GetExcludedFolders() );
 
             // Goal code:  var traverser = new Traverser( storage, arguments.Folder, librarian.ExcludedFolders );
             var traverser = new Traverser( arguments, storage );

@@ -66,10 +66,12 @@ namespace swept.Tests
         [Test]
         public void librarian_Excludedfolders_available()
         {
-//            _storageAdapter.
+            _storageAdapter.LibraryDoc = new XmlDocument();
+            _storageAdapter.LibraryDoc.LoadXml( TestProbe.ExcludedFolderLibrary_text );
 
+            Horace.Hear_SolutionOpened( this, Get_testfile_FileEventArgs() );
 
-            Assert.That( Horace.GetExcludedFolders(), Is.Empty);
+            Assert.That( Horace.GetExcludedFolders().Count, Is.EqualTo( 8 ) );
         }
 
         [Test]

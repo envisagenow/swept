@@ -79,8 +79,8 @@ namespace swept
             XmlPort port = new XmlPort();
             _ruleCatalog = port.RuleCatalog_FromXmlDocument( libraryDoc );
 
+            _excludedFolders = port.ExcludedFolders_FromXmlDocument( libraryDoc );
             // TODO:  Watch for FileSystem-level change events on the library file, and reload?
-            
             _switchboard.Raise_RuleCatalogUpdated(_ruleCatalog);
         }
 
