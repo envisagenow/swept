@@ -114,24 +114,24 @@ namespace swept
         {
             var openedFile = new SourceFile( name ) { Content = content };
 
-            var newTasks = GetTasksForFile( openedFile );
+            var newTasks = GetTasksForFile( openedFile, _ruleCatalog.GetSortedRules() );
             _allTasks.AddRange( newTasks );
             _switchboard.Raise_TaskListChanged( newTasks );
         }
 
-        private List<Task> GetTasksForFile( SourceFile file )
+        private List<Task> GetTasksForFile( SourceFile file, List<Rule> rules )
         {
             var tasks = new List<Task>();
-            foreach (var rule in _ruleCatalog.GetSortedRules())
+            foreach (var rule in rules)
             {
                 tasks.AddRange( Task.FromRuleForFile( rule, file ) );
             }
             return tasks;
         }
 
-        public List<Rule> GetSortedRules()
+        public List<Rule> GetSortedRules( List<string> specifiedRules )
         {
-            return _ruleCatalog.GetSortedRules();
+            return _ruleCatalog.GetSortedRules( specifiedRules );
         }
 
         public List<string> GetExcludedFolders()

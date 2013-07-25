@@ -56,12 +56,29 @@ namespace swept.Tests
             _ruleCatalog.Add( a_17 );
             _ruleCatalog.Add( a_177 );
 
-            var rules = Horace.GetSortedRules();
+            var rules = Horace.GetSortedRules( new List<string>() );
             Assert.That( rules[0].ID, Is.EqualTo( a_17.ID ) );
             Assert.That( rules[1].ID, Is.EqualTo( a_177.ID ) );
             Assert.That( rules[2].ID, Is.EqualTo( b_52.ID ) );
         }
 
+        [Test]
+        public void GetSortedRules_filters_on_rules_argument()
+        {
+            Rule a_17 = new Rule { ID = "a_17", };
+            Rule a_177 = new Rule { ID = "a_177", };
+            Rule b_52 = new Rule { ID = "b_52", };
+
+            _ruleCatalog._rules.Clear();
+            _ruleCatalog.Add( b_52 );
+            _ruleCatalog.Add( a_17 );
+            _ruleCatalog.Add( a_177 );
+
+            var rules = Horace.GetSortedRules( new List<string>() );
+            Assert.That( rules[0].ID, Is.EqualTo( a_17.ID ) );
+            Assert.That( rules[1].ID, Is.EqualTo( a_177.ID ) );
+            Assert.That( rules[2].ID, Is.EqualTo( b_52.ID ) );
+        }
 
         [Test]
         public void librarian_Excludedfolders_available()

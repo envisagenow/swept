@@ -14,19 +14,19 @@ namespace swept
 
     public class Arguments
     {
-        public string Library { get; private set; }
-        public string History { get; private set; }
-        public string Folder { get; private set; }
+        public bool BreakOnDeltaDrop { get; private set; }
+        public bool Check { get; private set; }
+        public string DeltaFileName { get; private set; }
+        public string DetailsFileName { get; private set; }
         public IEnumerable<string> Exclude { get; private set; }
+        public string Folder { get; private set; }
+        public string History { get; private set; }
+        public string Library { get; private set; }
         public bool Piping { get; private set; }
         public PipeSource PipeSource { get; private set; }
-        public bool Check { get; private set; }
         public bool ShowVersion { get; private set; }
         public bool ShowUsage { get; private set; }
-        public bool BreakOnDeltaDrop { get; private set; }
-
-        public string DetailsFileName { get; private set; }
-        public string DeltaFileName { get; private set; }
+        public List<string> SpecifiedRules { get; private set; }
 
         public bool AreInvalid
         {
@@ -82,16 +82,17 @@ This software is open source, MIT license.  See the file LICENSE for details.
 
         public Arguments( string[] args, IStorageAdapter storageAdapter )
         {
-            Library = string.Empty;
-            History = string.Empty;
-            Folder = string.Empty;
-            Exclude = new List<string>();
+            BreakOnDeltaDrop = false;
             DetailsFileName = string.Empty;
             DeltaFileName = string.Empty;
             Check = false;
+            Exclude = new List<string>();
+            Folder = string.Empty;
+            History = string.Empty;
+            Library = string.Empty;
             ShowUsage = false;
             ShowVersion = false;
-            BreakOnDeltaDrop = false;
+            SpecifiedRules = new List<string>();
 
             List<string> exceptionMessages = new List<string>();
 
@@ -101,12 +102,12 @@ This software is open source, MIT license.  See the file LICENSE for details.
                 {
                     switch (s.ToLower())
                     {
-                    case "check":
-                        Check = true;
-                        continue;
-
                     case "breakondeltadrop":
                         BreakOnDeltaDrop = true;
+                        continue;
+
+                    case "check":
+                        Check = true;
                         continue;
 
                     case "debug":
@@ -139,29 +140,42 @@ This software is open source, MIT license.  See the file LICENSE for details.
 
                 switch (tokens[0])
                 {
-                case "library":
-                    Library = tokens[1];
+                case "delta":
+                    DeltaFileName = tokens[1];
                     break;
-                case "history":
-                    History = tokens[1];
-                    break;
-                case "folder":
-                    Folder = tokens[1];
-                    break;
-                case "exclude":
-                    Exclude = tokens[1].Split( ',' );
-                    break;
+
                 case "details":
                 case "detail":
                     DetailsFileName = tokens[1];
                     break;
-                case "delta":
-                    DeltaFileName = tokens[1];
+
+                case "exclude":
+                    Exclude = tokens[1].Split( ',' );
                     break;
+
+                case "folder":
+                    Folder = tokens[1];
+                    break;
+
+                case "history":
+                    History = tokens[1];
+                    break;
+
+                case "library":
+                    Library = tokens[1];
+                    break;
+
                 case "pipe":
                     // TODO: Friendly let-down if they have an unrecognized VCS pipe-source
                     Piping = true;
                     PipeSource = (PipeSource)Enum.Parse( typeof( PipeSource ), tokens[1], true );
+                    break;
+
+                case "rule":
+                    if (tokens[1].IndexOf(",") == -1)
+                        SpecifiedRules.Add( tokens[1] );
+                    else
+                        SpecifiedRules.AddRange( tokens[1].Split( ',' ) );
                     break;
 
                 case null:

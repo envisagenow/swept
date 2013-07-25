@@ -252,6 +252,28 @@ namespace swept.Tests
         }
 
         [Test]
+        public void Can_specify_rule_to_run()
+        {
+            var args = new Arguments( new string[] { "library:unused" }, _storage );
+            Assert.That( args.SpecifiedRules.Count, Is.EqualTo( 0 ) );
+
+            args = new Arguments( new string[] { "rule:INT-002", "library:unused" }, _storage );
+            Assert.That( args.SpecifiedRules[0], Is.EqualTo( "INT-002" ) );
+        }
+
+        [Test]
+        public void Can_specify_rules_to_run()
+        {
+            var args = new Arguments( new string[] { "library:unused" }, _storage );
+            Assert.That( args.SpecifiedRules.Count, Is.EqualTo( 0 ) );
+
+            args = new Arguments( new string[] { "rule:INT-002,INT-003", "library:unused" }, _storage );
+            Assert.That( args.SpecifiedRules.Count, Is.EqualTo( 2 ) );
+            Assert.That( args.SpecifiedRules[0], Is.EqualTo( "INT-002" ) );
+            Assert.That( args.SpecifiedRules[1], Is.EqualTo( "INT-003" ) );
+        }
+
+        [Test]
         public void Can_set_filename_for_Delta_xml_output()
         {
             var args = new Arguments( new string[] { "library:unused" }, _storage );

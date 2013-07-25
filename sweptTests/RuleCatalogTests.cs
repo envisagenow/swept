@@ -64,7 +64,7 @@ namespace swept.Tests
             cat.Add( a_117 );
             cat.Add( a_18 );
 
-            var rules = cat.GetSortedRules();
+            var rules = cat.GetSortedRules( new List<string>() );
             Assert.That( rules[0].ID, Is.EqualTo( a_117.ID ) );
             Assert.That( rules[1].ID, Is.EqualTo( a_17.ID ) );
             Assert.That( rules[2].ID, Is.EqualTo( a_177.ID ) );
@@ -83,6 +83,31 @@ namespace swept.Tests
             cat.Add( a_17a );
             var ex = Assert.Throws<Exception>( () => cat.Add( a_17b ) );
             Assert.That( ex.Message, Is.EqualTo( "Swept cannot add the rule \"You impostor!\" with the ID [a_17], the rule \"I was here first!\" already has that ID." ));
+        }
+
+        [Test]
+        public void GetSortedRules_filters_when_list_specifies_rules()
+        {
+            var ruleList = new List<string> { "B_52", "a_117", "not_in_rule_list" };
+
+            Rule a_17 = new Rule { ID = "a_17", };
+            Rule a_18 = new Rule { ID = "a_18", };
+            Rule a_117 = new Rule { ID = "a_117", };
+            Rule a_177 = new Rule { ID = "a_177", };
+            Rule b_52 = new Rule { ID = "b_52", };
+
+            RuleCatalog cat = new RuleCatalog();
+
+            cat.Add( b_52 );
+            cat.Add( a_17 );
+            cat.Add( a_177 );
+            cat.Add( a_117 );
+            cat.Add( a_18 );
+
+            var rules = cat.GetSortedRules( ruleList );
+            Assert.That( rules.Count, Is.EqualTo( 2 ) );
+            Assert.That( rules[0].ID, Is.EqualTo( a_117.ID ) );
+            Assert.That( rules[1].ID, Is.EqualTo( b_52.ID ), "Case insensitive match on rule argument" );
         }
 
     }

@@ -49,7 +49,7 @@ namespace swept
             // TODO: subscriber.SubscribeExceptions( switchboard, this );
 
             librarian.OpenLibrary( arguments.Library );
-            var rules = librarian.GetSortedRules();
+            var rules = librarian.GetSortedRules( arguments.SpecifiedRules );
 
             arguments.FillExclusions( librarian.GetExcludedFolders() );
 

@@ -18,8 +18,16 @@ namespace swept
 
         public List<Rule> GetSortedRules()
         {
-            _rules.Sort( (left, right) => left.ID.CompareTo(right.ID) );
-            return _rules;
+            return GetSortedRules( new List<string>() );
+        }
+
+        public List<Rule> GetSortedRules( List<string> specifiedRules )
+        {
+            List<Rule> filteredRules = _rules;
+            if (specifiedRules.Count > 0)
+                filteredRules = _rules.Where( r => specifiedRules.Contains( r.ID, StringComparer.CurrentCultureIgnoreCase ) ).ToList();
+            filteredRules.Sort( ( left, right ) => left.ID.CompareTo( right.ID ) );
+            return filteredRules;
         }
 
         public List<Rule> GetRulesForFile( SourceFile file )
