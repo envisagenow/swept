@@ -72,7 +72,8 @@ namespace swept.Tests
             runHistory.AddEntry( entry );
             runHistory.AddEntry( nextEntry );
 
-            _librarian.WriteRunHistory( runHistory );
+            var librarian = new BuildLibrarian( new Arguments( new string[] { "trackhistory", "library:foo.library", "history:foo.history" }, _storage ), _storage );
+            librarian.WriteRunHistory( runHistory );
 
             var expectedHistory =
 @"<RunHistory>
@@ -87,5 +88,33 @@ namespace swept.Tests
             Assert.That( _storage.RunHistory.ToString(), Is.EqualTo( expectedHistory ) );
         }
 
+
+        [Test]
+        public void Run_history_is_not_stored_to_disk_when_trackhistory_arg_not_set()
+        {
+            var entry = new RunHistoryEntry
+            {
+                Number = 22,
+                Date = DateTime.Parse( "4/4/2012 10:25:02 AM" ),
+                Passed = false
+            };
+            entry.AddResult( "foo", true, RuleFailOn.Increase, 1, 2, "Upgrade from old stylesheets" );
+
+            var nextEntry = new RunHistoryEntry
+            {
+                Number = 23,
+                Date = DateTime.Parse( "4/7/2012 10:25:03 AM" ),
+                Passed = true
+            };
+            nextEntry.AddResult( "bar", false, RuleFailOn.None, 2, 0, "XML islands no longer supported" );
+
+            var runHistory = new RunHistory();
+            runHistory.AddEntry( entry );
+            runHistory.AddEntry( nextEntry );
+
+            _librarian.WriteRunHistory( runHistory );
+
+            Assert.That( _storage.RunHistory, Is.Null  );
+        }
     }
 }

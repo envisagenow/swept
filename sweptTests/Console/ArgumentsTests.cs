@@ -156,6 +156,22 @@ namespace swept.Tests
         }
 
         [Test]
+        public void args_track_history_defaults_false()
+        {
+            var argsText = new string[] { "library:c:\\foo.library" };
+            var args = new Arguments( argsText, _storage );
+            Assert.That( args.TrackHistory, Is.False );
+        }
+
+        [Test]
+        public void args_track_history_when_requested()
+        {
+            var argsText = new string[] { "trackHistory", "library:c:\\foo.library" };
+            var args = new Arguments( argsText, _storage );
+            Assert.That( args.TrackHistory, Is.True );
+        }
+
+        [Test]
         public void args_recognize_base_folder()
         {
             var argsText = new string[] { "folder:f:\\work\\project", "library:c:\\foo.library" };

@@ -27,6 +27,7 @@ namespace swept
         public bool ShowVersion { get; private set; }
         public bool ShowUsage { get; private set; }
         public List<string> SpecifiedRules { get; private set; }
+        public bool TrackHistory { get; set; }
 
         public bool AreInvalid
         {
@@ -61,6 +62,7 @@ namespace swept
       with the '.library' suffix replaced with '.history'.
     delta:  The filename to get the delta of red-line rules.
       If no delta file is specified, a text delta report goes to the console.
+    trackhistory:  Turns on tracking of result history.
 ---
 Features below are Not Yet Implemented:
 *** files:  A comma-separated list of files to search for violations.  Not
@@ -93,6 +95,7 @@ This software is open source, MIT license.  See the file LICENSE for details.
             ShowUsage = false;
             ShowVersion = false;
             SpecifiedRules = new List<string>();
+            TrackHistory = false;
 
             List<string> exceptionMessages = new List<string>();
 
@@ -124,6 +127,10 @@ This software is open source, MIT license.  See the file LICENSE for details.
                     case "/?":
                         ShowUsage = true;
                         return;
+
+                    case "trackhistory":
+                        TrackHistory = true;
+                        continue;
 
                     default:
                         exceptionMessages.Add( String.Format( "Don't understand the input [{0}].  Try 'swept h' for help with arguments.", s ) );
@@ -252,6 +259,7 @@ This software is open source, MIT license.  See the file LICENSE for details.
                 Exclude = args;
             }
         }
+
 
     }
 }

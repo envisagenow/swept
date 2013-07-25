@@ -91,6 +91,9 @@ namespace swept
 
         public void WriteRunHistory( RunHistory runHistory )
         {
+            if (!_args.TrackHistory)
+                return;
+
             var report = new XDocument();
 
             XElement report_root = new XElement( "RunHistory" );
