@@ -70,6 +70,7 @@ namespace swept
             }
 
             report_root.Add( new XAttribute( "TotalTasks", totalTasks ) );
+            report_root.Add( new XAttribute( "TotalFlags", 0 ) );
             report_doc.Add( report_root );
             return report_doc.ToString();
         }

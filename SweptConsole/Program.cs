@@ -65,8 +65,9 @@ namespace swept
 
             string header = string.Empty;
             if (arguments.Check)
-                header = String.Format( "Swept checking [{0}] with rules in [{1}] on {2}...{3}", storage.GetCWD(), arguments.Library, startTime.ToString( "G" ), Environment.NewLine );
-
+                header = String.Format( 
+                    "Swept checking [{0}] with rules in [{1}] on {2}...{3}", 
+                    storage.GetCWD(), arguments.Library, startTime.ToString( "G" ), Environment.NewLine );
 
             var inspector = new RunInspector( runHistory );
             RunHistoryEntry newRunEntry = inspector.GenerateEntry( startTime, ruleTasks );

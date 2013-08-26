@@ -129,8 +129,6 @@ namespace swept.Tests
             var failures = _inspector.CountRunFailures( _ruleTasks );
 
             Assert.That( failures, Is.EqualTo( 2 ) );
-            //Assert.That( failures[0], Is.EqualTo( "Rule [191] has [2] tasks, and it breaks the build if there are any tasks." ) );
-            //Assert.That( failures[1], Is.EqualTo( "Rule [200] has [3] tasks, and it breaks the build if there are any tasks." ) );
         }
 
         [Test]

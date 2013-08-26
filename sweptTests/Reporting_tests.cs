@@ -1,5 +1,5 @@
 ﻿//  Swept:  Software Enhancement Progress Tracking.
-//  Copyright (c) 2009, 2012 Jason Cole and Envisage Technologies Corp.
+//  Copyright (c) 2009, 2013 Jason Cole and Envisage Technologies Corp.
 //  This software is open source, MIT license.  See the file LICENSE for details.
 using System;
 using System.Collections.Generic;
@@ -14,6 +14,10 @@ namespace swept.Tests
     public class Reporting_tests
     {
         private BuildReporter _reporter;
+
+        const string PassedMessage = "Swept check passed.\r\n";
+        const string FailedMessage = "Swept check failed!\r\n";
+        const string EmptyReport = "<SweptBuildReport TotalTasks=\"0\" TotalFlags=\"0\" />";
 
         [SetUp]
         public void Setup()
@@ -61,13 +65,14 @@ namespace swept.Tests
         }
         #endregion
 
+        const string rawProblemText = "Rule [NET-001] has [9] tasks, and it breaks the build if there are over [4] tasks.";
+        const string expectedMessage = "Error:  " + rawProblemText + "\r\n";
         [Test]
         public void We_see_failure_list_when_we_Check()
         {
-            List<string> failures = new List<string> { "Rule [NET-001] has [9] tasks, and it breaks the build if there are over [4] tasks." };
+            List<string> failures = new List<string> { rawProblemText };
             string message = _reporter.ReportFailures( failures );
 
-            string expectedMessage = "Error:  Rule [NET-001] has [9] tasks, and it breaks the build if there are over [4] tasks.\r\n";
             Assert.That( message, Is.EqualTo( expectedMessage ) );
         }
 
@@ -76,7 +81,7 @@ namespace swept.Tests
         {
             string message = _reporter.ReportCheckResult( new List<string>() );
 
-            Assert.That( message, Is.EqualTo( "Swept check passed." + Environment.NewLine ) );
+            Assert.That( message, Is.EqualTo( PassedMessage ) );
         }
 
         [Test]
@@ -84,8 +89,7 @@ namespace swept.Tests
         {
             string message = _reporter.ReportCheckResult( new List<string> { "I'm agonized about this." } );
 
-            string expectedMessage = "Swept check failed!" + Environment.NewLine;
-            Assert.That( message, Is.EqualTo( expectedMessage ) );
+            Assert.That( message, Is.EqualTo( FailedMessage ) );
         }
 
         [Test]
@@ -98,24 +102,22 @@ namespace swept.Tests
             failures.Add( anotherProblem );
             string message = _reporter.ReportCheckResult( failures );
 
-            string expectedMessage = "Swept check failed!" + Environment.NewLine;
-            Assert.That( message, Is.EqualTo( expectedMessage ) );
+            Assert.That( message, Is.EqualTo( FailedMessage ) );
         }
+
         [Test]
         public void No_task_data_creates_empty_report()
         {
-            string empty_report = "<SweptBuildReport TotalTasks=\"0\" />";
-
             string report = new BuildReporter().ReportDetailsXml( new RuleTasks() );
 
-            Assert.That( report, Is.EqualTo( empty_report ) );
+            Assert.That( report, Is.EqualTo( EmptyReport ) );
         }
 
         [Test]
         public void single_Rule_single_SourceFile_report()
         {
             var expectedReport = XDocument.Parse(
-@"<SweptBuildReport TotalTasks='4'>
+@"<SweptBuildReport TotalTasks='4' TotalFlags='0'>
     <Rule ID='HTML 01' Description='Improve browser compatibility' TotalTasks='4'>
         <SourceFile Name='bar.htm' TaskCount='4' />
     </Rule>
@@ -147,7 +149,7 @@ namespace swept.Tests
         {
             var expectedReport = XDocument.Parse(
 @"
-<SweptBuildReport TotalTasks='10'>
+<SweptBuildReport TotalTasks='10' TotalFlags='0'>
     <Rule 
         ID='DomainEvents 01' 
         Description='Use DomainEvents instead of AcadisUserPersister and AuditRecordPersister'
@@ -209,7 +211,7 @@ namespace swept.Tests
         {
             var expectedReport = XDocument.Parse(
 @"
-<SweptBuildReport TotalTasks='1'>
+<SweptBuildReport TotalTasks='1' TotalFlags='0'>
     <Rule 
         ID='DomainEvents 01' 
         Description='Use DomainEvents instead of AcadisUserPersister and AuditRecordPersister'

@@ -121,7 +121,8 @@ namespace swept.Tests
 
             Assert.That( _history.LatestPassingRun, Is.SameAs( shouldBeLatest ) );
 
-            //  Can change if needed--though Date and Number sequences _should_ never diverge.
+            //  Latest based on number here to document it, rather than for need.
+            //  Specifically, if we change to latest based on date, I see no downside.
         }
     }
 }

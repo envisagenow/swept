@@ -42,25 +42,25 @@ namespace swept
 > swept library:my_solution.swept.library details:logs\swept_report.xml
 > swept folder:c:\code\project exclude:.svn,bin,build
   Arguments:
-    help:  Or 'h' or 'usage', gets this message.
-    version:  Prints a brief version and credits message, and terminates.
-    debug:  Triggers a Debugger.Launch(), then continues as usual.
-    folder:  The top folder Swept will sweep for rule violations.
+    help:      Or 'h' or 'usage', gets this message.
+    version:   Prints a brief version and credits message, and terminates.
+    debug:     Triggers a Debugger.Launch(), then continues as usual.
+    folder:    The top folder Swept will sweep for rule violations.
       If no folder is specified, the current working directory is used.
-    library:  The Swept rules library file to check against.
+    library:   The Swept rules library file to check against.
       If no library is specified, Swept checks the top folder for a file 
       named '*.swept.library'.  If it finds exactly one, Swept will use it.
       Swept needs a library to run.
-    exclude:  A comma-separated list of folders Swept will not search
+    exclude:   A comma-separated list of folders Swept will not search
       within.  All folders below these are also excluded.
     pipe:svn:  Indicates that standard In will contain the output from an
       svn status command, and these files will be used as the file list
       to search for violations.
-    details:  The filename to get the detailed XML of the run.
-    history:  The filename to read and update to maintain the delta.
+    details:   The filename to get the detailed XML of the run.
+    history:   The filename to read and update to maintain the delta.
       If no history file is specified, the library filename is used,
       with the '.library' suffix replaced with '.history'.
-    delta:  The filename to get the delta of red-line rules.
+    delta:     The filename to get the delta of red-line rules.
       If no delta file is specified, a text delta report goes to the console.
     trackhistory:  Turns on tracking of result history.
 ---

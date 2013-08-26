@@ -51,6 +51,7 @@ namespace swept
                     extensionLanguage[".ascx"] = FileLanguage.HTML;
                     extensionLanguage[".asp"] = FileLanguage.HTML;
                     extensionLanguage[".htm"] = FileLanguage.HTML;
+                    extensionLanguage[".master"] = FileLanguage.HTML;
                     extensionLanguage[".js"] = FileLanguage.JavaScript;
                     extensionLanguage[".csproj"] = FileLanguage.Project;
                     extensionLanguage[".vbproj"] = FileLanguage.Project;
@@ -83,8 +84,9 @@ namespace swept
 
         public static FileLanguage FileLanguageFromExtension( string fileExt )
         {
-            if (ExtensionLanguage.ContainsKey( fileExt ))
-                return ExtensionLanguage[fileExt];
+            string lowerExt = fileExt.ToLower();
+            if (ExtensionLanguage.ContainsKey( lowerExt ))
+                return ExtensionLanguage[lowerExt];
 
             return FileLanguage.Unknown;
         }
