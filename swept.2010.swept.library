@@ -1,0 +1,36 @@
+<SweptProjectData>
+  <RuleCatalog>
+
+#############################
+ID scheme:
+    NET-nnn:    Changes due to advances in the .NET framework, or my knowledge of it
+    INT-nnn:    Changes due to other changes internal to Swept
+    ETC-nnn:    Anything else
+
+
+
+<Rule ID="NET-001" Description="Eliminate XmlDocument, use XDocument" FailMode="Increase">
+    (^CSharp or @"\.g$") and ~"XmlDocument"
+</Rule>
+
+<Rule ID="INT-001" Description="Keep copyright modern and open source." FailMode="Increase">
+    ^CSharp except (*~/2009, 2013/ and *~/open source, MIT license/)
+        except @"ChangeRule.*er\.cs"
+</Rule>
+
+<Rule ID="ETC-001" Description="Watch TODOs" FailMode="None">
+    ^CSharp and ~/to ?do/i
+</Rule>
+
+<Rule ID="ETC-002" Description="I want exceptions to describe themselves from Swept's viewpoint." FailMode="Increase">
+    ^CSharp and ~/throw new \w*Exception/ and not ~/"Swept/
+</Rule>
+
+
+  </RuleCatalog>
+
+  <ExcludedFolders>
+      .svn, bin, .gitignore
+  </ExcludedFolders>
+
+</SweptProjectData>
