@@ -1,5 +1,5 @@
 //  Swept:  Software Enhancement Progress Tracking.
-//  Copyright (c) 2009, 2012 Jason Cole and Envisage Technologies Corp.
+//  Copyright (c) 2009, 2013 Jason Cole and Envisage Technologies Corp.
 //  This software is open source, MIT license.  See the file LICENSE for details.
 using System;
 using System.Collections.Generic;
@@ -123,6 +123,14 @@ namespace swept.Tests
 
             //  Latest based on number here to document it, rather than for need.
             //  Specifically, if we change to latest based on date, I see no downside.
+        }
+
+        [Test]
+        public void GetThreshold_of_unrecognized_type_complains_clearly()
+        {
+            var ex = Assert.Throws<Exception>( () => _history.GetThreshold( new Rule { FailOn = (RuleFailOn)(-1) } ) );
+            Assert.That( ex.Message, Is.StringContaining( "Swept does not know how to" ) );
+            Assert.That( ex.Message, Is.StringContaining( "Please extend" ) );
         }
     }
 }

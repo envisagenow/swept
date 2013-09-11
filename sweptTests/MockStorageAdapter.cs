@@ -12,11 +12,23 @@ namespace swept.Tests
 {
     class MockStorageAdapter : IStorageAdapter
     {
+        public MockStorageAdapter()
+        {
+            setDocFromText( StorageAdapter.emptyCatalogText );
+            FilesInFolder = new Dictionary<string, List<string>>();
+            FoldersInFolder = new Dictionary<string, List<string>>();
+            _loadedFiles = new List<string>();
+            FilesToFailToLoad = new List<string>();
+        }
+
+
         private List<string> _loadedFiles;
         public string FileName { get; set; }
-        public XmlDocument LibraryDoc { get; set; }
+        public XDocument ChangeDoc { get; set; }
+        public XDocument LibraryDoc { get; set; }
         public Dictionary<string, List<string>> FilesInFolder { get; set; }
         public Dictionary<string, List<string>> FoldersInFolder { get; set; }
+        public List<string> FilesToFailToLoad { get; set; }
         public XDocument RunHistory { get; set; }
         public string CWD = String.Empty;
         public bool ThrowBadXmlException;
@@ -25,18 +37,9 @@ namespace swept.Tests
         {
             throw new NotImplementedException();
         }
-        public MockStorageAdapter()
-        {
-            setDocFromText( StorageAdapter.emptyCatalogText );
-            FilesInFolder = new Dictionary<string, List<string>>();
-            FoldersInFolder = new Dictionary<string, List<string>>();
-            _loadedFiles = new List<string>();
-        }
-
         private void setDocFromText( string xmlText )
         {
-            LibraryDoc = new XmlDocument();
-            LibraryDoc.LoadXml( xmlText );
+            LibraryDoc = XDocument.Parse( xmlText );
         }
 
         private IOException _ll_ioex;
@@ -45,7 +48,7 @@ namespace swept.Tests
             _ll_ioex = ex;
         }
 
-        public XmlDocument LoadLibrary( string libraryPath )
+        public XDocument LoadLibrary( string libraryPath )
         {
             if (_ll_ioex != null)
                 throw _ll_ioex;
@@ -105,7 +108,6 @@ namespace swept.Tests
             return new List<string>();
         }
 
-
         public SourceFile LoadFile( string fileName )
         {
             if (!_loadedFiles.Contains( fileName ))
@@ -113,6 +115,7 @@ namespace swept.Tests
                 _loadedFiles.Add( fileName );
             }
 
+            if (FilesToFailToLoad.Contains( fileName )) return null;
             return new SourceFile( fileName );
         }
 
@@ -135,6 +138,14 @@ namespace swept.Tests
             if (RunHistoryNotFoundException != null)
                 throw RunHistoryNotFoundException;
             return RunHistory;
+        }
+
+        public Exception ChangeSetNotFoundException { get; set; }
+        public XDocument LoadChangeSet( string changeSetPath )
+        {
+            if (ChangeSetNotFoundException != null)
+                throw ChangeSetNotFoundException;
+            return ChangeDoc;
         }
     }
 }

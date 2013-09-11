@@ -1,5 +1,5 @@
 //  Swept:  Software Enhancement Progress Tracking.
-//  Copyright (c) 2009, 2012 Jason Cole and Envisage Technologies Corp.
+//  Copyright (c) 2009, 2013 Jason Cole and Envisage Technologies Corp.
 //  This software is open source, MIT license.  See the file LICENSE for details.
 using System;
 using System.Collections.Generic;
@@ -75,7 +75,7 @@ namespace swept
 
             default:
                 System.Reflection.MethodBase thisMethod = new System.Diagnostics.StackTrace().GetFrame( 0 ).GetMethod();
-                throw new Exception( String.Format( "I do not know how to check a failure mode of [{0}].  Please extend {1}.{2}.",
+                throw new Exception( String.Format( "Swept does not know how to check a failure mode of [{0}].  Please extend {1}.{2}.",
                     rule.FailOn, thisMethod.ReflectedType, thisMethod.Name ) );
             }
 

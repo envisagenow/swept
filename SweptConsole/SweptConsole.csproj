@@ -69,6 +69,8 @@
     <Compile Include="Arguments.cs" />
     <Compile Include="BreakageDelta.cs" />
     <Compile Include="BuildReporter.cs" />
+    <Compile Include="Commit.cs" />
+    <Compile Include="Flag.cs" />
     <Compile Include="HistoricRuleResult.cs" />
     <Compile Include="RunHistory.cs" />
     <Compile Include="BuildLibrarian.cs" />

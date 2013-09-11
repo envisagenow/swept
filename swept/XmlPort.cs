@@ -1,62 +1,62 @@
 ﻿//  Swept:  Software Enhancement Progress Tracking.
-//  Copyright (c) 2009, 2012 Jason Cole and Envisage Technologies Corp.
+//  Copyright (c) 2009, 2013 Jason Cole and Envisage Technologies Corp.
 //  This software is open source, MIT license.  See the file LICENSE for details.
 using System;
 using System.Collections.Generic;
-using System.Xml;
 using swept.DSL;
 using Antlr.Runtime;
-using System.Text;
+using System.Xml.Linq;
+using System.Linq;
 
 namespace swept
 {
     internal class XmlPort
     {
-        public RuleCatalog RuleCatalog_FromXmlDocument( XmlDocument doc )
+
+        public RuleCatalog RuleCatalog_FromXDocument( XDocument doc )
         {
-            XmlNode node = doc.SelectSingleNode( "SweptProjectData/RuleCatalog" );
+            XElement node = doc.Descendants("SweptProjectData").Descendants("RuleCatalog").SingleOrDefault();
 
             if (node == null)
                 throw new Exception( "Document must have a <RuleCatalog> node inside a <SweptProjectData> node.  Please supply one." );
 
-            return RuleCatalog_FromNode( node );
+            return RuleCatalog_FromElement( node );
         }
 
-        public List<string> ExcludedFolders_FromXmlDocument( XmlDocument doc )
+        public List<string> ExcludedFolders_FromXDocument( XDocument doc )
         {
-            XmlNode node = doc.SelectSingleNode( "SweptProjectData/ExcludedFolders" );
+            var projectData = doc.Descendants( "SweptProjectData" ).Single();
+            XElement node = projectData.Descendants( "ExcludedFolders" ).SingleOrDefault();
 
             if (node == null)
                 return new List<string>();
 
-            return ExcludedFolders_FromNode( node );
+            return ExcludedFolders_FromElement( node );
         }
 
-        public List<string> ExcludedFolders_FromNode( XmlNode node )
+        public List<string> ExcludedFolders_FromElement( XElement element )
         {
             var exclusions = new List<string>();
 
-            string rawText = node.InnerText;
+            string rawText = element.Value;
 
             var folders = rawText.Split( new string[] { "," }, StringSplitOptions.RemoveEmptyEntries );
             foreach (var folder in folders)
             {
-                exclusions.Add(folder.Trim());
+                exclusions.Add( folder.Trim() );
             }
 
             return exclusions;
         }
 
-
-
-        public RuleCatalog RuleCatalog_FromNode( XmlNode node )
+        public RuleCatalog RuleCatalog_FromElement( XElement element )
         {
             RuleCatalog cat = new RuleCatalog();
 
-            XmlNodeList rules = node.SelectNodes( "Rule" );
-            foreach (XmlNode ruleNode in rules)
+            var rules = element.Elements( "Rule" );
+            foreach (XElement ruleElement in rules)
             {
-                cat.Add( Rule_FromNode( ruleNode ) );
+                cat.Add( Rule_FromElement( ruleElement ) );
             }
             return cat;
         }
@@ -65,24 +65,26 @@ namespace swept
         public const string cfa_Description = "Description";
         public const string cfa_FailMode = "FailMode";
 
-        private Rule Rule_FromNode( XmlNode ruleNode )
+        private Rule Rule_FromElement( XElement ruleElement )
         {
             Rule rule = new Rule();
 
-            if (ruleNode.Attributes[cfa_ID] != null)
-                rule.ID = ruleNode.Attributes[cfa_ID].Value;
+            if (ruleElement.Attribute(cfa_ID) != null)
+                rule.ID = ruleElement.Attribute(cfa_ID).Value;
             else
                 throw new Exception( "Rules must have IDs at their top level." );
 
-            if (ruleNode.Attributes[cfa_Description] != null)
-                rule.Description = ruleNode.Attributes[cfa_Description].Value;
+            if (ruleElement.Attribute(cfa_Description) != null)
+                rule.Description = ruleElement.Attribute(cfa_Description).Value;
 
-            if (ruleNode.Attributes[cfa_FailMode] != null)
+            if (ruleElement.Attribute(cfa_FailMode) != null)
             {
-                string failText = ruleNode.Attributes[cfa_FailMode].Value;
+                string failText = ruleElement.Attribute(cfa_FailMode).Value;
                 try
                 {
-                    //  When, MS?:  rule.FailOn = Enum.Parse<RuleFailOn>( failText );
+                    //  When?:  rule.FailOn = RuleFailOn.Parse( failText );
+                    //  Or: rule.FailOn =  failText.To<RuleFailOn>();
+                    //  Or even:  rule.FailOn = Enum.Parse<RuleFailOn>( failText );
                     rule.FailOn = (RuleFailOn)Enum.Parse( typeof( RuleFailOn ), failText );
                 }
                 catch (ArgumentException argEx)
@@ -91,27 +93,12 @@ namespace swept
                 }
             }
 
-            // can't do it because I'm not upg'd to XDoc and XElems yet...
-            //string ruleText = ruleNode.ChildNodes.First( c => c.NodeType == XmlNodeType.Text );
-            var sb = new StringBuilder();
-            foreach (XmlNode child in ruleNode.ChildNodes)
+            foreach (var child in ruleElement.Descendants( "SeeAlso" ))
             {
-                switch (child.NodeType)
-                {
-                case XmlNodeType.Text:
-                    sb.AppendLine( child.Value.Trim() );
-                    break;
-
-                case XmlNodeType.Element:
-                    rule.SeeAlsos.Add( SeeAlso_FromNode( child ) );
-                    break;
-
-                default:
-                    throw new Exception( String.Format( "Not ready for child node [{0}] typed [{1}].", child.Value, child.NodeType ) );
-                }
+                rule.SeeAlsos.Add( SeeAlso_FromElement( child ) );
             }
-            string ruleText = sb.ToString();
-            rule.Subquery = BuildRuleQuery( ruleText );
+
+            rule.Subquery = BuildRuleQuery( ruleElement.Value );
 
             return rule;
         }
@@ -123,33 +110,32 @@ namespace swept
             
             return parser.expression();
         }
-    
-        public SeeAlso SeeAlso_FromNode( XmlNode node )
+
+        public SeeAlso SeeAlso_FromElement( XElement element )
         {
             SeeAlso seeAlso = new SeeAlso();
-            if (node.Attributes["Description"] != null)
+            if (element.Attribute("Description") != null)
             {
-                seeAlso.Description = node.Attributes["Description"].Value;
+                seeAlso.Description = element.Attribute("Description").Value;
             }
 
-            if (node.Attributes["Target"] != null)
+            if (element.Attribute("Target") != null)
             {
-                seeAlso.Target = node.Attributes["Target"].Value;
+                seeAlso.Target = element.Attribute("Target").Value;
             }
 
-            if (node.Attributes["TargetType"] != null)
+            if (element.Attribute("TargetType") != null)
             {
-                string typeString = node.Attributes["TargetType"].Value;
+                string typeString = element.Attribute("TargetType").Value;
                 seeAlso.TargetType = (TargetType)Enum.Parse( typeof( TargetType ), typeString );
             }
 
-            if (node.Attributes["Commit"] != null)
+            if (element.Attribute("Commit") != null)
             {
-                seeAlso.Commit = node.Attributes["Commit"].Value;
+                seeAlso.Commit = element.Attribute("Commit").Value;
             }
 
             return seeAlso;
         }
-
     }
 }

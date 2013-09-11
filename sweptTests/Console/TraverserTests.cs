@@ -1,5 +1,5 @@
 ﻿//  Swept:  Software Enhancement Progress Tracking.
-//  Copyright (c) 2009, 2012 Jason Cole and Envisage Technologies Corp.
+//  Copyright (c) 2009, 2013 Jason Cole and Envisage Technologies Corp.
 //  This software is open source, MIT license.  See the file LICENSE for details.
 using System;
 using System.Collections.Generic;
@@ -145,7 +145,7 @@ namespace swept.Tests
         }
 
         [Test]
-        public void Exception_path_wrong_upgraded_message()
+        public void Exception_path_wrong_has_upgraded_message()
         {
             var ioex = new IOException( "Could not find a part of the path 'C:\\missing\\folder'." );
             _storage.GetFilesInFolder_Throw( ioex );
@@ -158,6 +158,21 @@ namespace swept.Tests
             Assert.That( ex.Message.Contains( "C:\\missing\\folder'" ) );
             Assert.That( ex.Message.Contains( "Perhaps you expected a different working folder" ) );
             Assert.That( ex.Message.Contains( "'folder:' argument" ) );
+        }
+
+        [Test]
+        public void Unrecognized_IOException_passed_unchanged()
+        {
+            string unexpectedMessage = "NOBODY expects the Spanish IOException!";
+            var ioex = new IOException( unexpectedMessage );
+            _storage.GetFilesInFolder_Throw( ioex );
+
+            var argsText = new string[] { "folder:c:\\foo", "library:foo.library", "history:foo.history" };
+            var args = new Arguments( argsText, _storage );
+            var traverser = new Traverser( args, _storage );
+
+            var ex = Assert.Throws<IOException>( () => traverser.GetFilesToScan() );
+            Assert.That( ex.Message, Is.EqualTo( unexpectedMessage ) );
         }
     }
 }

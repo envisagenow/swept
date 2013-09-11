@@ -16,6 +16,7 @@ namespace swept.Tests
 
         private const string FILEONE = @"c:\work\one.cs";
         private const string FILETWO = @"c:\work\two.cs";
+        private const string FILETHREE = @"c:\work\three.cs";
 
         [Test]
         public void Empty_inputs_lead_to_empty_results()
@@ -97,6 +98,27 @@ namespace swept.Tests
 
             var fileMatches = results[change];
             Assert.That( fileMatches.Count, Is.EqualTo( 2 ) );
+        }
+
+        [Test]
+        public void Gatherer_when_file_fails_to_load_it_is_removed_from_list()
+        {
+            List<Rule> rules = new List<Rule>();
+            Rule rule = new Rule() { Subquery = new QueryFileNameNode( "one" ) };
+            rules.Add( rule );
+            List<string> files = new List<string> { FILEONE, FILETWO };
+            MockStorageAdapter storage = new MockStorageAdapter();
+            storage.FilesToFailToLoad.Add( FILEONE );
+            Gatherer gatherer = new Gatherer( rules, files, storage );
+
+            var results = gatherer.GetRuleTasks();
+
+            Assert.That( results.Count, Is.EqualTo( 1 ) );
+            Assert.That( results.Keys.First(), Is.SameAs( rule ) );
+
+            var fileMatches = results[rule];
+            Assert.That( fileMatches.Count, Is.EqualTo( 1 ) );
+            Assert.That( fileMatches.Keys.First().Name, Is.EqualTo( FILETWO ) );
         }
 
         [Test]

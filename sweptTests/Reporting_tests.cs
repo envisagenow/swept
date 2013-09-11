@@ -245,7 +245,5 @@ namespace swept.Tests
 
             Assert.That( report, Is.EqualTo( expectedReport.ToString() ) );
         }
-
-
     }
 }

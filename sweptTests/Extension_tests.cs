@@ -41,11 +41,12 @@ namespace swept.Tests
             Assert.That( converted, Is.EqualTo( "children" ) );
         }
 
-        [Test]
-        public void PlurFormat_for_phrases()
+        [TestCase( 1, "is 1 error" )]
+        [TestCase( 22, "are 22 errors" )]
+        public void PlurFormat_for_phrases( int count, string expected )
         {
-            string converted = "is 1 error".PlurFormat( 2, "are {0} errors" );
-            Assert.That( converted, Is.EqualTo( "are 2 errors" ) );
+            string converted = "is 1 error".PlurFormat( count, "are {0} errors" );
+            Assert.That( converted, Is.EqualTo( expected ) );
         }
     }
 }

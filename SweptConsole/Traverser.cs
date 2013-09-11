@@ -1,5 +1,5 @@
 ﻿//  Swept:  Software Enhancement Progress Tracking.
-//  Copyright (c) 2009, 2012 Jason Cole and Envisage Technologies Corp.
+//  Copyright (c) 2009, 2013 Jason Cole and Envisage Technologies Corp.
 //  This software is open source, MIT license.  See the file LICENSE for details.
 using System;
 using System.Collections.Generic;
@@ -17,7 +17,7 @@ namespace swept
         {
             _storageAdapter = storageAdapter;
             _args = args;
-            WhiteListPattern = @"\.(cs|as[cmp]x|x?html?|xml|txt|xslt?|css|js|vb|(cs|vb)proj|sln)$";
+            WhiteListPattern = @"\.(cs|as[chmp]x|x?html?|master|xml|txt|xslt?|css|js|vb|(cs|vb)proj|sln)$";
         }
 
         public string WhiteListPattern { get; set; }
@@ -27,32 +27,6 @@ namespace swept
             try
             {
                 List<string> projectFiles = new List<string>();
-                //string lineText;
-                //if (_args.Piping)
-                //{
-                //    while ((lineText = Console.In.ReadLine()) != null)
-                //    {
-                //        // TODO: Cleanup - Generalize/unplug - rough -- this code should be put into SVN reader.
-                //        if (lineText.Length > 9)
-                //        {
-                //            char firstChar = lineText[0];
-                //            if (firstChar == 'D')
-                //                continue; // Deleted file- skip
-                //            else if (firstChar == '?')
-                //                continue; // Not version controlled - skip
-
-                //            // assume - 'A' or 'M' for add or modify
-                //            string fileName = Path.Combine( _args.Folder, lineText.Substring( 8 ) );
-                //            projectFiles.Add( fileName );
-                //        }
-                //        else { } //TODO: handle non-status lines more methodically
-                //    }
-                //}
-                //else
-                //{
-                //    ListFilesInFolder( projectFiles, _args.Folder );
-                //}
-
                 ListFilesInFolder( projectFiles, _args.Folder );
                 return projectFiles;
             }
@@ -72,7 +46,6 @@ namespace swept
         private void ListFilesInFolder( List<string> projectFiles, string folder )
         {
             if (FolderIsExcluded( folder )) return;
-            if (FolderIsExcluded( Path.GetFileName( folder ))) return;
 
             foreach (string file in _storageAdapter.GetFilesInFolder( folder ))
             {

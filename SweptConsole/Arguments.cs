@@ -1,5 +1,5 @@
 ﻿//  Swept:  Software Enhancement Progress Tracking.
-//  Copyright (c) 2012 Jason Cole and Envisage Technologies Corp.
+//  Copyright (c) 2009, 2013 Jason Cole and Envisage Technologies Corp.
 //  This software is open source, MIT license.  See the file LICENSE for details.
 using System;
 using System.Linq;
@@ -15,6 +15,7 @@ namespace swept
     public class Arguments
     {
         public bool BreakOnDeltaDrop { get; private set; }
+        public string ChangeSet { get; private set; }
         public bool Check { get; private set; }
         public string DeltaFileName { get; private set; }
         public string DetailsFileName { get; private set; }
@@ -22,7 +23,6 @@ namespace swept
         public string Folder { get; private set; }
         public string History { get; private set; }
         public string Library { get; private set; }
-        public bool Piping { get; private set; }
         public PipeSource PipeSource { get; private set; }
         public bool ShowVersion { get; private set; }
         public bool ShowUsage { get; private set; }
@@ -85,9 +85,10 @@ This software is open source, MIT license.  See the file LICENSE for details.
         public Arguments( string[] args, IStorageAdapter storageAdapter )
         {
             BreakOnDeltaDrop = false;
+            ChangeSet = "new_commits.xml";
+            Check = false;
             DetailsFileName = string.Empty;
             DeltaFileName = string.Empty;
-            Check = false;
             Exclude = new List<string>();
             Folder = string.Empty;
             History = string.Empty;
@@ -147,6 +148,10 @@ This software is open source, MIT license.  See the file LICENSE for details.
 
                 switch (tokens[0])
                 {
+                case "changeset":
+                    ChangeSet = tokens[1];
+                    break;
+
                 case "delta":
                     DeltaFileName = tokens[1];
                     break;
@@ -174,7 +179,6 @@ This software is open source, MIT license.  See the file LICENSE for details.
 
                 case "pipe":
                     // TODO: Friendly let-down if they have an unrecognized VCS pipe-source
-                    Piping = true;
                     PipeSource = (PipeSource)Enum.Parse( typeof( PipeSource ), tokens[1], true );
                     break;
 

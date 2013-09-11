@@ -1,10 +1,11 @@
 ﻿//  Swept:  Software Enhancement Progress Tracking.
-//  Copyright (c) 2009, 2012 Jason Cole and Envisage Technologies Corp.
+//  Copyright (c) 2009, 2013 Jason Cole and Envisage Technologies Corp.
 //  This software is open source, MIT license.  See the file LICENSE for details.
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Xml;
+using System.Xml.Linq;
 
 namespace swept
 {
@@ -74,19 +75,19 @@ namespace swept
 
         public void OpenLibrary( string libraryPath )
         {
-            XmlDocument libraryDoc = GetLibraryDocument( libraryPath );
+            XDocument libraryDoc = GetLibraryDocument( libraryPath );
 
             XmlPort port = new XmlPort();
-            _ruleCatalog = port.RuleCatalog_FromXmlDocument( libraryDoc );
+            _ruleCatalog = port.RuleCatalog_FromXDocument( libraryDoc );
 
-            _excludedFolders = port.ExcludedFolders_FromXmlDocument( libraryDoc );
+            _excludedFolders = port.ExcludedFolders_FromXDocument( libraryDoc );
             // TODO:  Watch for FileSystem-level change events on the library file, and reload?
             _switchboard.Raise_RuleCatalogUpdated(_ruleCatalog);
         }
 
-        private XmlDocument GetLibraryDocument( string libraryPath )
+        private XDocument GetLibraryDocument( string libraryPath )
         {
-            XmlDocument doc;
+            XDocument doc;
             try
             {
                 doc = _storage.LoadLibrary( libraryPath );

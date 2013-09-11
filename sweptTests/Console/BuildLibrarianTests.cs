@@ -1,5 +1,5 @@
 ﻿//  Swept:  Software Enhancement Progress Tracking.
-//  Copyright (c) 2009, 2012 Jason Cole and Envisage Technologies Corp.
+//  Copyright (c) 2009, 2013 Jason Cole and Envisage Technologies Corp.
 //  This software is open source, MIT license.  See the file LICENSE for details.
 using System;
 using System.Collections.Generic;
@@ -116,5 +116,51 @@ namespace swept.Tests
 
             Assert.That( _storage.RunHistory, Is.Null  );
         }
+
+        [Test]
+        public void Empty_ChangeSet_XML_emits_empty_change_collection()
+        {
+            _storage.ChangeDoc = XDocument.Parse( "<new_commits></new_commits>" );
+            List<Commit> changes = _librarian.ReadChangeSet();
+            Assert.That( changes, Is.Empty );
+        }
+
+        private string commitXml = @"
+<new_commits version='1.0'>
+    <commit id='r46816' person='walter.punchline' time='2013-08-07 11:24:34 -0400 (Wed, 07 Aug 2013)' />
+    <commit id='r46817' person='carla.gargunza' time='2013-08-07 11:28:08 -0400 (Wed, 07 Aug 2013)' />
+    <commit id='r46818' person='ewige.quaston' time='2013-08-07 11:48:11 -0400 (Wed, 07 Aug 2013)' />
+</new_commits>
+";
+
+        [Test]
+        public void ChangeSet_XML_entries_are_populated()
+        {
+            _storage.ChangeDoc = XDocument.Parse( commitXml );
+            List<Commit> changes = _librarian.ReadChangeSet();
+
+            Assert.That( changes.Count, Is.EqualTo( 3 ) );
+            
+            var r46816 = changes[0];
+            Assert.That( r46816.ID, Is.EqualTo( "r46816" ) );
+            Assert.That( r46816.Person, Is.EqualTo( "walter.punchline" ) );
+            Assert.That( r46816.Time, Is.EqualTo( "2013-08-07 11:24:34 -0400 (Wed, 07 Aug 2013)" ) );
+
+            var r46818 = changes[2];
+            Assert.That( r46818.ID, Is.EqualTo( "r46818" ) );
+            Assert.That( r46818.Person, Is.EqualTo( "ewige.quaston" ) );
+            Assert.That( r46818.Time, Is.EqualTo( "2013-08-07 11:48:11 -0400 (Wed, 07 Aug 2013)" ) );
+        }
+
+        [Test]
+        public void Missing_ChangeSet_file_emits_empty_change_collection()
+        {
+            _storage.ChangeSetNotFoundException = new FileNotFoundException();
+
+            var changes = _librarian.ReadChangeSet();
+            Assert.That( changes.Count(), Is.EqualTo( 0 ) );
+        }
+
+
     }
 }

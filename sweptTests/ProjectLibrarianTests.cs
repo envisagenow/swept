@@ -8,6 +8,7 @@ using System.Xml;
 using System.IO;
 using swept.DSL;
 using System.Collections.Generic;
+using System.Xml.Linq;
 
 namespace swept.Tests
 {
@@ -83,8 +84,7 @@ namespace swept.Tests
         [Test]
         public void librarian_Excludedfolders_available()
         {
-            _storageAdapter.LibraryDoc = new XmlDocument();
-            _storageAdapter.LibraryDoc.LoadXml( TestProbe.ExcludedFolderLibrary_text );
+            _storageAdapter.LibraryDoc = XDocument.Parse( TestProbe.ExcludedFolderLibrary_text );
 
             Horace.Hear_SolutionOpened( this, Get_testfile_FileEventArgs() );
 
@@ -103,8 +103,7 @@ namespace swept.Tests
         [Test]
         public void OpenSolution_finding_Swept_Library_will_load_Rules()
         {
-            _storageAdapter.LibraryDoc = new XmlDocument();
-            _storageAdapter.LibraryDoc.LoadXml( TestProbe.SingleRuleLibrary_text );
+            _storageAdapter.LibraryDoc = XDocument.Parse( TestProbe.SingleRuleLibrary_text );
             Horace.Hear_SolutionOpened( this, Get_testfile_FileEventArgs() );
 
             Assert.AreEqual( 1, Horace._ruleCatalog._rules.Count );
@@ -117,8 +116,7 @@ namespace swept.Tests
         [Test]
         public void OpenSolution_with_no_Swept_Library_will_start_smoothly()
         {
-            _storageAdapter.LibraryDoc = new XmlDocument();
-            _storageAdapter.LibraryDoc.LoadXml( StorageAdapter.emptyCatalogText );
+            _storageAdapter.LibraryDoc = XDocument.Parse( StorageAdapter.emptyCatalogText );
 
             Horace.Hear_SolutionOpened( this, Get_testfile_FileEventArgs() );
 

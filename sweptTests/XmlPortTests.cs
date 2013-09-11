@@ -6,6 +6,7 @@ using System.Linq;
 using NUnit.Framework;
 using System.Xml;
 using System.Collections.Generic;
+using System.Xml.Linq;
 
 namespace swept.Tests
 {
@@ -14,18 +15,16 @@ namespace swept.Tests
     {
         private RuleCatalog getRuleCatalog( string ruleText )
         {
-            XmlDocument xml = new XmlDocument();
-            xml.LoadXml( ruleText );
+            XDocument xml = XDocument.Parse( ruleText );
             var port = new XmlPort();
-            return port.RuleCatalog_FromXmlDocument( xml );
+            return port.RuleCatalog_FromXDocument( xml );
         }
 
         private List<string> getExclusions( string catalogText )
         {
-            XmlDocument xml = new XmlDocument();
-            xml.LoadXml( catalogText );
+            XDocument xml = XDocument.Parse( catalogText );
             var port = new XmlPort();
-            return port.ExcludedFolders_FromXmlDocument( xml );
+            return port.ExcludedFolders_FromXDocument( xml );
         }
 
         [Test]

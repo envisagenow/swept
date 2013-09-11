@@ -1,5 +1,5 @@
 ﻿//  Swept:  Software Enhancement Progress Tracking.
-//  Copyright (c) 2009, 2012 Jason Cole and Envisage Technologies Corp.
+//  Copyright (c) 2009, 2013 Jason Cole and Envisage Technologies Corp.
 //  This software is open source, MIT license.  See the file LICENSE for details.
 using System;
 using System.Linq;
@@ -22,6 +22,40 @@ namespace swept
             _storage = storage;
         }
 
+
+        public List<Commit> ReadChangeSet()
+        {
+            XDocument doc;
+            try
+            {
+                doc = _storage.LoadChangeSet( _args.ChangeSet );
+            }
+            catch (FileNotFoundException)
+            {
+                doc = new XDocument( new XElement( "new_commits" ) );
+            }
+            return ReadChangeSet( doc );
+        }
+
+
+        public List<Commit> ReadChangeSet( XDocument changeDoc )
+        {
+            var changes = new List<Commit>();
+
+            foreach (var changeElem in changeDoc.Descendants( "commit" ))
+            {
+                var change = new Commit
+                {
+                    //<commit id='r46816' person='brian.eckelman' time='2013-08-07 11:24:34 -0400 (Wed, 07 Aug 2013)' />
+                    ID = changeElem.Attribute( "id" ).Value,
+                    Person = changeElem.Attribute( "person" ).Value,
+                    Time = changeElem.Attribute( "time" ).Value,
+                };
+                changes.Add( change );
+            }
+
+            return changes;
+        }
 
         public RunHistory ReadRunHistory()
         {
@@ -55,13 +89,9 @@ namespace swept
                     string ruleID = ruleXml.Attribute( "ID" ).Value;
 
                     var taskCountAttr = ruleXml.Attribute( "TaskCount" );
-                    if (taskCountAttr == null)
-                        taskCountAttr = ruleXml.Attribute( "Violations" );
                     int taskCount = int.Parse( taskCountAttr.Value );
 
                     var thresholdAttr = ruleXml.Attribute( "Threshold" );
-                    if (thresholdAttr == null)
-                        thresholdAttr = ruleXml.Attribute( "Prior" );
                     int threshold = int.Parse( thresholdAttr.Value );
 
                     var description = ruleXml.Attribute( "Description" ).Value;

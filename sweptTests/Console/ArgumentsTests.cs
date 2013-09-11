@@ -1,5 +1,5 @@
 ﻿//  Swept:  Software Enhancement Progress Tracking.
-//  Copyright (c) 2009, 2012 Jason Cole and Envisage Technologies Corp.
+//  Copyright (c) 2009, 2013 Jason Cole and Envisage Technologies Corp.
 //  This software is open source, MIT license.  See the file LICENSE for details.
 using System;
 using System.Linq;
@@ -247,14 +247,23 @@ namespace swept.Tests
         }
 
         [Test]
-        public void svnin_is_unary_bool_false_by_default()
+        public void PipeSource_None_by_default_set_by_Arg_pipe()
         {
             var args = new Arguments( new string[] { "library:unused" }, _storage );
-            Assert.That( args.Piping, Is.False );
+            Assert.That( args.PipeSource, Is.EqualTo( PipeSource.None ) );
 
             args = new Arguments( new string[] { "pipe:svn", "library:unused" }, _storage );
-            Assert.That( args.Piping );
             Assert.That( args.PipeSource, Is.EqualTo( PipeSource.SVN ) );
+        }
+
+        [Test]
+        public void changeset_is_filename_new_commits_by_default()
+        {
+            var args = new Arguments( new string[] { "library:unused" }, _storage );
+            Assert.That( args.ChangeSet, Is.EqualTo( "new_commits.xml" ) );
+
+            args = new Arguments( new string[] { "changeset:foo_changes.xml", "library:unused" }, _storage );
+            Assert.That( args.ChangeSet, Is.EqualTo( "foo_changes.xml" ) );
         }
 
         [Test]

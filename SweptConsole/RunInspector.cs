@@ -77,6 +77,7 @@ namespace swept
                 new XAttribute( "Description", description )
             );
         }
+
         public int CountRunFailures( RuleTasks ruleTasks )
         {
             int failures = 0;
@@ -178,6 +179,29 @@ namespace swept
                 Breaking = breaking,
                 Description = ruleUnderTest.Description
             };
+        }
+
+        public List<Flag> ReportNewFlags( List<Flag> existingFlags, RunHistoryEntry runResult, List<Commit> changeSet )
+        {
+            var flags = new List<Flag>();
+
+            foreach (var key in runResult.RuleResults.Keys)
+            {
+                var result = runResult.RuleResults[key];
+                if (result.Breaking)
+                {
+                    bool noWorseThanBefore = existingFlags.Exists( f => f.RuleID == result.ID && f.TaskCount >= result.TaskCount );
+                    if (noWorseThanBefore) continue;
+
+                    var flag = new Flag { 
+                        Threshold = result.Threshold,
+                        TaskCount = result.TaskCount,
+                    };
+                    flag.Changes.AddRange( changeSet );
+                    flags.Add( flag );
+                }
+            }
+            return flags;
         }
 
     }

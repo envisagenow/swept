@@ -1,5 +1,5 @@
 //  Swept:  Software Enhancement Progress Tracking.
-//  Copyright (c) 2011 Jason Cole and Envisage Technologies Corp.
+//  Copyright (c) 2009, 2013 Jason Cole and Envisage Technologies Corp.
 //  This software is open source, MIT license.  See the file LICENSE for details.
 using System;
 using System.IO;
@@ -18,37 +18,30 @@ namespace swept
 </RuleCatalog>
 </SweptProjectData>";
 
-        static internal XmlDocument emptyCatalogDoc
+        static internal XDocument emptyCatalogDoc
         {
             get
             {
-                var doc = new XmlDocument();
-                doc.LoadXml( emptyCatalogText );
-                return doc;
+                return XDocument.Parse( emptyCatalogText );
             }
         }
 
-        public XmlDocument LoadLibrary( string libraryPath )
+        public XDocument LoadLibrary( string libraryPath )
         {
             if (!File.Exists( libraryPath ))
             {
-                XmlDocument emptyDoc = new XmlDocument();
-                emptyDoc.LoadXml( emptyCatalogText );
-                return emptyDoc;
+                return emptyCatalogDoc;
             }
 
             using (XmlTextReader reader = new XmlTextReader( libraryPath ))
             {
                 try
                 {
-                    XmlDocument doc = new XmlDocument();
-                    doc.Load( reader );
-                    return doc;
+                    return XDocument.Load( reader );
                 }
                 catch (XmlException xe)
                 {
-                    string errInvalidXml = "File [{0}] was not valid XML.  Please check its contents.\n  Details: {1}";
-                    throw new Exception( string.Format( errInvalidXml, libraryPath, xe.Message ) );
+                    throw new Exception( string.Format( "Swept opened file [{0}] for its library, which was not valid XML.  Please check its contents.\n  Details: {1}", libraryPath, xe.Message ) );
                 }
             }
         }
@@ -97,6 +90,12 @@ namespace swept
         {
             var historyText = File.ReadAllText( historyPath );
             return XDocument.Parse( historyText );
+        }
+
+        public XDocument LoadChangeSet( string changeSetPath )
+        {
+            var changeText = File.ReadAllText( changeSetPath );
+            return XDocument.Parse( changeText );
         }
 
         public TextWriter GetOutputWriter( string outputLocation )

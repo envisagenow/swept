@@ -18,6 +18,15 @@ ID scheme:
         except @"ChangeRule.*er\.cs"
 </Rule>
 
+<Rule ID="INT-002" Description="Name test files consistently." FailMode="Increase">
+    ^CSharp and @/sweptTests/ except (@/\\Mock/ or @/_(base|tests).cs/)
+</Rule>
+
+<Rule ID="INT-003" Description="Unit test name/descriptions use underlines to separate words." FailMode="Increase">
+    ^CSharp and (@/sweptTests/ except @/\\Mock/) and ~/public void/ 
+        except ~/(SetUp|.+_.+_)/
+</Rule>
+
 <Rule ID="ETC-001" Description="Watch TODOs" FailMode="None">
     ^CSharp and ~/to ?do/i
 </Rule>
