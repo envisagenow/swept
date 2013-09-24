@@ -181,26 +181,38 @@ namespace swept
             };
         }
 
-        public List<Flag> ReportNewFlags( List<Flag> existingFlags, RunHistoryEntry runResult, List<Commit> changeSet )
+        public List<Flag> ReportUpdatedFlags( List<Flag> existingFlags, RunHistoryEntry runResult, List<Commit> changeSet )
         {
             var flags = new List<Flag>();
+
+            foreach (var existingFlag in existingFlags)
+            {
+                flags.Add(existingFlag);
+            }
 
             foreach (var key in runResult.RuleResults.Keys)
             {
                 var result = runResult.RuleResults[key];
-                if (result.Breaking)
-                {
-                    bool noWorseThanBefore = existingFlags.Exists( f => f.RuleID == result.ID && f.TaskCount >= result.TaskCount );
-                    if (noWorseThanBefore) continue;
 
-                    var flag = new Flag { 
+                if (result.Threshold >= result.TaskCount)
+                {
+                    flags.RemoveAll(f => f.RuleID == result.ID);
+                }
+                else
+                {
+                    var priorFlag = flags.LastOrDefault(f => f.RuleID == result.ID);
+                    if (priorFlag != null && priorFlag.TaskCount >= result.TaskCount) continue;
+
+                    var flag = new Flag
+                    {
                         Threshold = result.Threshold,
                         TaskCount = result.TaskCount,
                     };
-                    flag.Changes.AddRange( changeSet );
-                    flags.Add( flag );
+                    flag.Changes.AddRange(changeSet);
+                    flags.Add(flag);
                 }
             }
+
             return flags;
         }
 
