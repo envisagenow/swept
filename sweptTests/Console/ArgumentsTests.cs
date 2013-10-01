@@ -41,13 +41,6 @@ namespace swept.Tests
             Assert.That( args.BreakOnDeltaDrop );
         }
 
-
-        [Test, Ignore()]
-        public void library_path_is_properly_resolved_when_folder_is_specified()
-        {
-            
-        }
-
         [Test]
         public void unknown_args_throw()
         {

@@ -13,18 +13,23 @@ namespace swept.Tests
     [TestFixture]
     public class XmlPortTests
     {
+        XmlPort _port;
+
+        [SetUp]
+        public void SetUp()
+        {
+            _port = new XmlPort();
+        }
+
         private RuleCatalog getRuleCatalog( string ruleText )
         {
-            XDocument xml = XDocument.Parse( ruleText );
-            var port = new XmlPort();
-            return port.RuleCatalog_FromXDocument( xml );
+            return _port.RuleCatalog_FromXDocument( XDocument.Parse( ruleText ) );
         }
 
         private List<string> getExclusions( string catalogText )
         {
             XDocument xml = XDocument.Parse( catalogText );
-            var port = new XmlPort();
-            return port.ExcludedFolders_FromXDocument( xml );
+            return _port.ExcludedFolders_FromXDocument( xml );
         }
 
         [Test]
@@ -46,24 +51,22 @@ namespace swept.Tests
         }
 
 
-        [Test]
-        public void Populates_FailMode_from_attribute()
+        [TestCase( "Any", RuleFailOn.Any )]
+        [TestCase( "None", RuleFailOn.None )]
+        [TestCase( "Increase", RuleFailOn.Increase )]
+        public void Populates_FailMode( string failModeText, RuleFailOn failOn )
         {
-            var cat = getRuleCatalog( "<SweptProjectData><RuleCatalog><Rule ID='this' FailMode='Any'> ^CSharp </Rule></RuleCatalog></SweptProjectData>" );
-            List<Rule> rules = cat.GetSortedRules();
-            Assert.That( rules.Count, Is.EqualTo( 1 ) );
-
-            Assert.That( rules[0].FailOn, Is.EqualTo( RuleFailOn.Any ) );
+            var ruleElement = XElement.Parse( String.Format( "<Rule ID='this' FailMode='{0}'> ^CSharp </Rule>", failModeText ) );
+            var rule = _port.Rule_FromElement( ruleElement );
+            Assert.That( rule.FailOn, Is.EqualTo( failOn ) );
         }
 
         [Test]
-        public void Populates_FailMode_increase_from_attribute()
+        public void Populates_Note_from_child_element()
         {
-            var cat = getRuleCatalog( "<SweptProjectData><RuleCatalog><Rule ID='this' FailMode='Increase'> ^CSharp </Rule></RuleCatalog></SweptProjectData>" );
-            List<Rule> rules = cat.GetSortedRules();
-            Assert.That( rules.Count, Is.EqualTo( 1 ) );
-
-            Assert.That( rules[0].FailOn, Is.EqualTo( RuleFailOn.Increase ) );
+            var ruleElement = XElement.Parse( "<Rule ID='this'> ^CSharp <Note>This is peculiar.</Note> </Rule>" );
+            var rule = _port.Rule_FromElement( ruleElement );
+            Assert.That( rule.Notes, Is.EqualTo( "This is peculiar." ) );
         }
 
         [Test]
@@ -74,11 +77,17 @@ namespace swept.Tests
         }
 
         [Test]
-        public void FailMode_parse_gives_clear_exception_on_invalid_value()
+        public void FailMode_parse_failure_throws_clear_message_through_port()
         {
+            string parseFailMessage = "Rule with ID [this] has an unknown FailMode value [Fake].";
+
+            var ruleElement = XElement.Parse( "<Rule ID='this' FailMode='Fake'> ^CSharp </Rule>" );
+            var ruleParseException = Assert.Throws<Exception>( () => _port.Rule_FromElement( ruleElement ) );
+            Assert.That( ruleParseException.Message, Is.EqualTo( parseFailMessage ) );
+
             string badMode = "<SweptProjectData><RuleCatalog><Rule ID='this' FailMode='Fake'> ^CSharp </Rule></RuleCatalog></SweptProjectData>";
-            var ex = Assert.Throws<Exception>( () => getRuleCatalog( badMode ) );
-            Assert.That( ex.Message, Is.EqualTo( "Rule ID [this] has an unknown FailMode value [Fake]." ) );
+            var catalogParseException = Assert.Throws<Exception>( () => getRuleCatalog( badMode ) );
+            Assert.That( catalogParseException.Message, Is.EqualTo( parseFailMessage ) );
         }
     }
 }

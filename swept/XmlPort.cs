@@ -65,7 +65,7 @@ namespace swept
         public const string cfa_Description = "Description";
         public const string cfa_FailMode = "FailMode";
 
-        private Rule Rule_FromElement( XElement ruleElement )
+        protected internal Rule Rule_FromElement( XElement ruleElement )
         {
             Rule rule = new Rule();
 
@@ -89,9 +89,13 @@ namespace swept
                 }
                 catch (ArgumentException argEx)
                 {
-                    throw new Exception( String.Format( "Rule ID [{0}] has an unknown {1} value [{2}].", rule.ID, cfa_FailMode, failText ), argEx );
+                    throw new Exception( String.Format( "Rule with ID [{0}] has an unknown {1} value [{2}].", rule.ID, cfa_FailMode, failText ), argEx );
                 }
             }
+
+            XElement possibleNote = ruleElement.Elements( "Note" ).FirstOrDefault();
+            if (possibleNote != null)
+                rule.Notes = possibleNote.Value;
 
             foreach (var child in ruleElement.Descendants( "SeeAlso" ))
             {

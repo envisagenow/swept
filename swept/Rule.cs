@@ -31,6 +31,7 @@ namespace swept
     public class Rule
     {
         public RuleFailOn FailOn { get; set; }
+        public string Notes { get; set; }
         public List<SeeAlso> SeeAlsos { get; set; }
         public string ID { get; internal set; }
         public string Description { get; internal set; }

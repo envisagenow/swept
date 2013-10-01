@@ -32,7 +32,7 @@ namespace swept.Tests
             _storage.RunHistory = XDocument.Parse(
 @"<RunHistory>
   <Run Number=""22"" DateTime=""4/4/2012 10:25:02 AM"" Passed=""True"">
-    <Rule ID=""foo"" TaskCount=""2"" Threshold=""2"" FailOn=""None"" Breaking=""false"" Description=""We must have less foo."" />
+    <Rule ID=""foo"" TaskCount=""2"" Threshold=""2"" FailOn=""None"" Breaking=""false"" Description=""I want to keep my eyes on my level of foo."" />
   </Run>
 </RunHistory>" );
             
@@ -88,6 +88,18 @@ namespace swept.Tests
             Assert.That( _storage.RunHistory.ToString(), Is.EqualTo( expectedHistory ) );
         }
 
+        [Test, Ignore("Until we've got .Flags in the RunHistory")]
+        public void When_xml_contains_flag_elements_then_Flags_are_in_RunHistory()
+        {
+            _storage.RunHistory = XDocument.Parse(
+@"<RunHistory>
+    ...this is the dodgy part where I don't have the XML format for flags worked out...
+</RunHistory>" );
+
+            var runHistory = _librarian.ReadRunHistory();
+
+            //Assert.That( runHistory.Flags.Count(), Is.EqualTo( 1 ) );
+        }
 
         [Test]
         public void Run_history_is_not_stored_to_disk_when_trackhistory_arg_not_set()
