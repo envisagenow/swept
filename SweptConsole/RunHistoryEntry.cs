@@ -13,10 +13,12 @@ namespace swept
         public DateTime Date;
         public bool Passed;
         public Dictionary<string, HistoricRuleResult> RuleResults;
+        public List<Flag> Flags { get; set; }
 
         public RunHistoryEntry()
         {
             RuleResults = new Dictionary<string, HistoricRuleResult>();
+            Flags = new List<Flag>();
         }
 
         public HistoricRuleResult AddResult( string id, bool breaking, RuleFailOn ruleFailOn, int threshold, int taskCount, string description )

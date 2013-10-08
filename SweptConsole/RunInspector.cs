@@ -208,7 +208,7 @@ namespace swept
                         Threshold = result.Threshold,
                         TaskCount = result.TaskCount,
                     };
-                    flag.Changes.AddRange(changeSet);
+                    flag.Commits.AddRange(changeSet);
                     flags.Add(flag);
                 }
             }

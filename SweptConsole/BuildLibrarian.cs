@@ -14,8 +14,6 @@ namespace swept
         private readonly IStorageAdapter _storage;
         private readonly Arguments _args;
 
-        private RunHistoryEntry _latestPassingRun = null;
-
         public BuildLibrarian( Arguments args, IStorageAdapter storage )
         {
             _args = args;
@@ -77,46 +75,79 @@ namespace swept
 
             foreach (var runXml in historyXml.Descendants( "Run" ))
             {
-                var run = new RunHistoryEntry
-                {
-                    Number = int.Parse( runXml.Attribute( "Number" ).Value ),
-                    Date = DateTime.Parse( runXml.Attribute( "DateTime" ).Value ),
-                    Passed = Boolean.Parse( runXml.Attribute( "Passed" ).Value )
-                };
-
-                foreach (var ruleXml in runXml.Descendants( "Rule" ))
-                {
-                    string ruleID = ruleXml.Attribute( "ID" ).Value;
-
-                    var taskCountAttr = ruleXml.Attribute( "TaskCount" );
-                    int taskCount = int.Parse( taskCountAttr.Value );
-
-                    var thresholdAttr = ruleXml.Attribute( "Threshold" );
-                    int threshold = int.Parse( thresholdAttr.Value );
-
-                    var description = ruleXml.Attribute( "Description" ).Value;
-
-
-                    bool ruleBreaking = bool.Parse( ruleXml.Attribute( "Breaking" ).Value );
-                    RuleFailOn ruleFailOn = (RuleFailOn)Enum.Parse( typeof( RuleFailOn ), ruleXml.Attribute( "FailOn" ).Value );
-                    run.RuleResults[ruleID] = new HistoricRuleResult
-                    {
-                        ID = ruleID,
-                        TaskCount = taskCount,
-                        Threshold = threshold,
-                        FailOn = ruleFailOn,
-                        Breaking = ruleBreaking,
-                        Description = description
-                    };
-                }
-
+                var run = ParseRun( runXml );
                 runHistory.AddEntry( run );
-
-                if (run.Passed)
-                    _latestPassingRun = run;
             }
 
             return runHistory;
+        }
+
+        public RunHistoryEntry ParseRun( XElement runXml )
+        {
+            int number = int.Parse( runXml.Attribute( "Number" ).Value );
+            DateTime dateTime = DateTime.Parse( runXml.Attribute( "DateTime" ).Value );
+            bool passed = bool.Parse( runXml.Attribute( "Passed" ).Value );
+
+            RunHistoryEntry run = new RunHistoryEntry { Number = number, Date = dateTime, Passed = passed };
+
+            foreach (var ruleXml in runXml.Descendants( "Rule" ))
+            {
+                var rule = ParseRule( ruleXml );
+                run.RuleResults[rule.ID] = rule;
+            }
+
+            foreach (var flagXml in runXml.Descendants( "Flag" ))
+            {
+                var flag = ParseFlag( flagXml );
+                run.Flags.Add(flag);
+            }
+
+            return run;
+        }
+
+        public HistoricRuleResult ParseRule( XElement ruleXml )
+        {
+            string id = ruleXml.Attribute( "ID" ).Value;
+            int taskCount = int.Parse(ruleXml.Attribute( "TaskCount" ).Value);
+            int threshold = int.Parse( ruleXml.Attribute( "Threshold" ).Value );
+            bool breaking = bool.Parse( ruleXml.Attribute( "Breaking" ).Value );
+            RuleFailOn ruleFailOn = (RuleFailOn)Enum.Parse( typeof(RuleFailOn), ruleXml.Attribute( "FailOn" ).Value );
+            string description = ruleXml.Attribute( "Description" ).Value;
+
+            return new HistoricRuleResult{ 
+                ID = id, 
+                TaskCount = taskCount, 
+                Threshold = threshold,
+                Breaking = breaking, 
+                FailOn = ruleFailOn, 
+                Description = description
+            };
+        }
+
+        public Flag ParseFlag( XElement flagXml )
+        {
+            string id = flagXml.Attribute( "RuleID" ).Value;
+            int taskCount = int.Parse( flagXml.Attribute( "TaskCount" ).Value );
+            int threshold = int.Parse( flagXml.Attribute( "Threshold" ).Value );
+
+            Flag flag = new Flag { RuleID = id, TaskCount = taskCount, Threshold = threshold };
+
+            foreach (var commitXml in flagXml.Descendants( "Commit" ))
+            {
+                var commit = ParseCommit( commitXml );
+                flag.Commits.Add( commit );
+            }
+
+            return flag;
+        }
+
+        public Commit ParseCommit( XElement commitXml )
+        {
+            string ID = commitXml.Attribute( "ID" ).Value;
+            string person = commitXml.Attribute( "Person" ).Value;
+            string time = commitXml.Attribute( "Time" ).Value;
+
+            return new Commit { ID = ID, Person = person, Time = time };
         }
 
         public void WriteRunHistory( RunHistory runHistory )

@@ -10,13 +10,13 @@ namespace swept
     public class Flag
     {
         public string RuleID { get; set; }
-        public List<Commit> Changes { get; set; }
+        public List<Commit> Commits { get; set; }
         public int Threshold { get; set; }
         public int TaskCount { get; set; }
 
         public Flag()
         {
-            Changes = new List<Commit>();
+            Commits = new List<Commit>();
         }
     }
 

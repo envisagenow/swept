@@ -59,8 +59,8 @@ namespace swept.Tests
 
             Assert.That( flag.Threshold, Is.EqualTo( 9 ) );
             Assert.That( flag.TaskCount, Is.EqualTo( 12 ) );
-            Assert.That( flag.Changes.Count, Is.EqualTo( 1 ) );
-            Assert.That( flag.Changes[0], Is.SameAs( _firstChange ) );
+            Assert.That( flag.Commits.Count, Is.EqualTo( 1 ) );
+            Assert.That( flag.Commits[0], Is.SameAs( _firstChange ) );
         }
 
         [Test]
@@ -88,9 +88,9 @@ namespace swept.Tests
             var flags = _inspector.ReportUpdatedFlags( existingFlags, runResult, _changeSet );
             var flag = flags[0];
 
-            Assert.That( flag.Changes.Count, Is.EqualTo( 2 ) );
-            Assert.That( flag.Changes[0], Is.SameAs( _firstChange ) );
-            Assert.That( flag.Changes[1], Is.SameAs( secondChange ) );
+            Assert.That( flag.Commits.Count, Is.EqualTo( 2 ) );
+            Assert.That( flag.Commits[0], Is.SameAs( _firstChange ) );
+            Assert.That( flag.Commits[1], Is.SameAs( secondChange ) );
         }
 
         [Test]
