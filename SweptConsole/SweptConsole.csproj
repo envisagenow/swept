@@ -71,13 +71,13 @@
     <Compile Include="BuildReporter.cs" />
     <Compile Include="Commit.cs" />
     <Compile Include="Flag.cs" />
-    <Compile Include="HistoricRuleResult.cs" />
+    <Compile Include="RuleResult.cs" />
     <Compile Include="RunHistory.cs" />
     <Compile Include="BuildLibrarian.cs" />
     <Compile Include="Gatherer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RunHistoryEntry.cs" />
+    <Compile Include="RunEntry.cs" />
     <Compile Include="RunInspector.cs" />
     <Compile Include="Traverser.cs" />
   </ItemGroup>

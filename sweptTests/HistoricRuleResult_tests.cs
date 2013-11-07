@@ -25,10 +25,10 @@ namespace swept.Tests
         public void GenEntry_Increase_noPrior()
         {
             string id = "PE6-5000";
-            RunHistoryEntry priorSuccess = null;
+            RunEntry priorSuccess = null;
             Rule rut = new Rule { ID = id, FailOn = RuleFailOn.Increase, Description = "Really very important." };
 
-            HistoricRuleResult result = _inspector.GetRuleResult( rut, 7, priorSuccess );
+            RuleResult result = _inspector.GetRuleResult( rut, 7, priorSuccess );
 
             Assert.That( result.ID, Is.EqualTo( id ) );
             Assert.That( result.FailOn, Is.EqualTo( RuleFailOn.Increase ) );
@@ -42,13 +42,13 @@ namespace swept.Tests
         public void RuleResult_fails_when_RuleFailOn_Increase_and_PriorWasBetter()
         {
             string id = "PE6-5000";
-            RunHistoryEntry priorSuccess = new RunHistoryEntry();
+            RunEntry priorSuccess = new RunEntry();
 
             priorSuccess.AddResult( id, false, RuleFailOn.Increase, 2, 2, "Update JQuery framework" );
             Rule rut = new Rule { ID = id, FailOn = RuleFailOn.Increase };
 
             var inspector = new RunInspector( null );
-            HistoricRuleResult result = inspector.GetRuleResult( rut, 7, priorSuccess );
+            RuleResult result = inspector.GetRuleResult( rut, 7, priorSuccess );
 
             Assert.That( result.ID, Is.EqualTo( id ) );
             Assert.That( result.FailOn, Is.EqualTo( RuleFailOn.Increase ) );
@@ -61,11 +61,11 @@ namespace swept.Tests
         public void RuleResult_passes_when_RuleFailOn_Increase_and_Prior_has_no_result_for_this_rule()
         {
             string id = "PE6-5000";
-            RunHistoryEntry priorSuccess = new RunHistoryEntry();
+            RunEntry priorSuccess = new RunEntry();
             priorSuccess.AddResult( "PE7-1000", false, RuleFailOn.Increase, 2, 2, "Was PE6-5000" );
             Rule rut = new Rule { ID = id, FailOn = RuleFailOn.Increase };
 
-            HistoricRuleResult result = _inspector.GetRuleResult( rut, 7, priorSuccess );
+            RuleResult result = _inspector.GetRuleResult( rut, 7, priorSuccess );
 
             Assert.That( result.ID, Is.EqualTo( id ) );
             Assert.That( result.FailOn, Is.EqualTo( RuleFailOn.Increase ) );
@@ -78,11 +78,11 @@ namespace swept.Tests
         public void RuleResult_fails_when_RuleFailOn_Any_and_Prior_has_no_result_for_this_rule()
         {
             string id = "PE6-5000";
-            RunHistoryEntry priorSuccess = new RunHistoryEntry();
+            RunEntry priorSuccess = new RunEntry();
             priorSuccess.AddResult( "PE7-1000", false, RuleFailOn.Increase, 2, 2, "Was PE6-5000" );
             Rule rut = new Rule { ID = id, FailOn = RuleFailOn.Any };
 
-            HistoricRuleResult result = _inspector.GetRuleResult( rut, 7, priorSuccess );
+            RuleResult result = _inspector.GetRuleResult( rut, 7, priorSuccess );
 
             Assert.That( result.ID, Is.EqualTo( id ) );
             Assert.That( result.FailOn, Is.EqualTo( RuleFailOn.Any ) );
@@ -126,11 +126,11 @@ namespace swept.Tests
             ruleTasks[happyRule] = noMatches;
 
             RunHistory runHistory = new RunHistory();
-            runHistory.AddEntry( new RunHistoryEntry { Number = 776, Passed = true } );
+            runHistory.AddEntry( new RunEntry { Number = 776, Passed = true } );
 
             var inspector = new RunInspector( runHistory );
             DateTime nowish = DateTime.Now;
-            RunHistoryEntry entry = inspector.GenerateEntry( nowish, ruleTasks );
+            RunEntry entry = inspector.GenerateEntry( nowish, ruleTasks );
 
             Assert.That( entry.Number, Is.EqualTo( 777 ) );
             Assert.That( entry.Date, Is.EqualTo( nowish ) );
@@ -167,10 +167,10 @@ namespace swept.Tests
             DateTime nowish = DateTime.Now;
 
             RunHistory runHistory = new RunHistory();
-            runHistory.AddEntry( new RunHistoryEntry { Number = 887, Passed = true } );
+            runHistory.AddEntry( new RunEntry { Number = 887, Passed = true } );
 
             var inspector = new RunInspector( runHistory );
-            RunHistoryEntry entry = inspector.GenerateEntry( nowish, ruleTasks );
+            RunEntry entry = inspector.GenerateEntry( nowish, ruleTasks );
 
             Assert.That( entry.Number, Is.EqualTo( 888 ) );
             Assert.That( entry.Date, Is.EqualTo( nowish ) );

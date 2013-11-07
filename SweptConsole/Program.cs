@@ -70,7 +70,7 @@ namespace swept
                     storage.GetCWD(), arguments.Library, startTime.ToString( "G" ), Environment.NewLine );
 
             var inspector = new RunInspector( runHistory );
-            RunHistoryEntry newRunEntry = inspector.GenerateEntry( startTime, ruleTasks );
+            RunEntry newRunEntry = inspector.GenerateEntry( startTime, ruleTasks );
 
             XElement deltaXml = null;
             if (!string.IsNullOrEmpty( arguments.DeltaFileName ))

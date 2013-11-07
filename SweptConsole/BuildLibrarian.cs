@@ -66,33 +66,33 @@ namespace swept
             {
                 doc = new XDocument();
             }
-            return ReadRunHistory( doc );
+            return ParseRunHistory( doc );
         }
 
-        public RunHistory ReadRunHistory( XDocument historyXml )
+        public RunHistory ParseRunHistory( XDocument historyXml )
         {
             RunHistory runHistory = new RunHistory();
 
             foreach (var runXml in historyXml.Descendants( "Run" ))
             {
-                var run = ParseRun( runXml );
+                var run = ParseRunEntry( runXml );
                 runHistory.AddEntry( run );
             }
 
             return runHistory;
         }
 
-        public RunHistoryEntry ParseRun( XElement runXml )
+        public RunEntry ParseRunEntry( XElement runXml )
         {
             int number = int.Parse( runXml.Attribute( "Number" ).Value );
             DateTime dateTime = DateTime.Parse( runXml.Attribute( "DateTime" ).Value );
             bool passed = bool.Parse( runXml.Attribute( "Passed" ).Value );
 
-            RunHistoryEntry run = new RunHistoryEntry { Number = number, Date = dateTime, Passed = passed };
+            RunEntry run = new RunEntry { Number = number, Date = dateTime, Passed = passed };
 
             foreach (var ruleXml in runXml.Descendants( "Rule" ))
             {
-                var rule = ParseRule( ruleXml );
+                var rule = ParseRuleResult( ruleXml );
                 run.RuleResults[rule.ID] = rule;
             }
 
@@ -105,21 +105,21 @@ namespace swept
             return run;
         }
 
-        public HistoricRuleResult ParseRule( XElement ruleXml )
+        public RuleResult ParseRuleResult( XElement ruleXml )
         {
             string id = ruleXml.Attribute( "ID" ).Value;
-            int taskCount = int.Parse(ruleXml.Attribute( "TaskCount" ).Value);
+            int taskCount = int.Parse( ruleXml.Attribute( "TaskCount" ).Value );
             int threshold = int.Parse( ruleXml.Attribute( "Threshold" ).Value );
             bool breaking = bool.Parse( ruleXml.Attribute( "Breaking" ).Value );
-            RuleFailOn ruleFailOn = (RuleFailOn)Enum.Parse( typeof(RuleFailOn), ruleXml.Attribute( "FailOn" ).Value );
+            RuleFailOn ruleFailOn = (RuleFailOn)Enum.Parse( typeof( RuleFailOn ), ruleXml.Attribute( "FailOn" ).Value );
             string description = ruleXml.Attribute( "Description" ).Value;
 
-            return new HistoricRuleResult{ 
-                ID = id, 
-                TaskCount = taskCount, 
+            return new RuleResult {
+                ID = id,
+                TaskCount = taskCount,
                 Threshold = threshold,
-                Breaking = breaking, 
-                FailOn = ruleFailOn, 
+                Breaking = breaking,
+                FailOn = ruleFailOn,
                 Description = description
             };
         }
@@ -168,7 +168,7 @@ namespace swept
                     new XAttribute( "Passed", run.Passed.ToString() )
                 );
 
-                foreach (HistoricRuleResult result in run.RuleResults.Values.OrderBy( r => r.ID ))
+                foreach (RuleResult result in run.RuleResults.Values.OrderBy( r => r.ID ))
                 {
                     var ruleElement = new XElement( "Rule",
                         new XAttribute( "ID", result.ID ),

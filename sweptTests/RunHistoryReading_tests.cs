@@ -27,7 +27,7 @@ namespace swept.Tests
         {
             var historyXml = XDocument.Parse( "<RunHistory />" );
 
-            RunHistory history = _librarian.ReadRunHistory( historyXml );
+            RunHistory history = _librarian.ParseRunHistory( historyXml );
 
             Assert.That( history.Runs.Count(), Is.EqualTo( 0 ) );
         }
@@ -49,13 +49,13 @@ namespace swept.Tests
 
 </RunHistory>", "silly problem", taskCount, dateString, runNumber ) );
 
-            RunHistory history = _librarian.ReadRunHistory( historyXml );
+            RunHistory history = _librarian.ParseRunHistory( historyXml );
 
-            RunHistoryEntry firstRun = history.Runs.ElementAt( 0 );
+            RunEntry firstRun = history.Runs.ElementAt( 0 );
             Assert.That( firstRun.Date, Is.EqualTo( DateTime.Parse( dateString ) ) );
             Assert.That( firstRun.Number, Is.EqualTo( runNumber ) );
 
-            HistoricRuleResult sillyResult = firstRun.RuleResults["silly problem"];
+            RuleResult sillyResult = firstRun.RuleResults["silly problem"];
             Assert.That( sillyResult.TaskCount, Is.EqualTo( taskCount ) );
             Assert.That( sillyResult.ID, Is.EqualTo( "silly problem" ) );
             Assert.That( sillyResult.Threshold, Is.EqualTo( 38 ) );
@@ -63,13 +63,13 @@ namespace swept.Tests
             Assert.That( sillyResult.Breaking );
             Assert.That( sillyResult.Description, Is.EqualTo( "Optimism!" ) );
 
-            HistoricRuleResult sameResult = firstRun.RuleResults["always the same"];
+            RuleResult sameResult = firstRun.RuleResults["always the same"];
             Assert.That( sameResult.TaskCount, Is.EqualTo( 44 ) );
             Assert.That( firstRun.Passed, Is.False );
             Assert.That( sameResult.Breaking, Is.False );
             Assert.That( sameResult.Description, Is.EqualTo( "Same as before" ) );
 
-            RunHistoryEntry secondRun = history.Runs.ElementAt( 1 );
+            RunEntry secondRun = history.Runs.ElementAt( 1 );
             Assert.That( secondRun.Date, Is.EqualTo( DateTime.Parse( "1/1/2022 3:20:14 PM" ) ) );
             Assert.That( secondRun.Number, Is.EqualTo( 1100 ) );
             Assert.That( secondRun.RuleResults.Count(), Is.EqualTo( 1 ) );
@@ -79,7 +79,7 @@ namespace swept.Tests
         [Test]
         public void When_no_Flags_in_Run_XML_then_Flags_collection_empty()
         {
-            RunHistory history = _librarian.ReadRunHistory( XDocument.Parse( @"<RunHistory><Run Number='1' DateTime='10/4/2013 10:52 AM' Passed='False' /></RunHistory>" ) );
+            RunHistory history = _librarian.ParseRunHistory( XDocument.Parse( @"<RunHistory><Run Number='1' DateTime='10/4/2013 10:52 AM' Passed='False' /></RunHistory>" ) );
 
             var run = history.Runs.ElementAt( 0 );
 
@@ -120,7 +120,7 @@ namespace swept.Tests
     </Run>
 
 </RunHistory>";
-            RunHistory history = _librarian.ReadRunHistory( XDocument.Parse( historyXML ) );
+            RunHistory history = _librarian.ParseRunHistory( XDocument.Parse( historyXML ) );
 
             var run = history.Runs.ElementAt( 0 );
             var flags = run.Flags;
@@ -142,9 +142,9 @@ namespace swept.Tests
         [Test]
         public void ParseRun_parses_direct_attributes()
         {
-            RunHistoryEntry run;
+            RunEntry run;
             XElement runXml = XElement.Parse( "<Run Number='1' DateTime='10/4/2013 10:52 AM' Passed='False'/>" );
-            run = _librarian.ParseRun( runXml );
+            run = _librarian.ParseRunEntry( runXml );
             
             Assert.That( run.Number, Is.EqualTo( 1 ) );
             Assert.That( run.Date, Is.EqualTo( DateTime.Parse( "10/4/2013 10:52 AM" ) ) );
@@ -155,17 +155,17 @@ namespace swept.Tests
         public void ParseRun_collects_Rules()
         {
             string runXml = @"
-    <Run Number='1' DateTime='10/4/2013 10:52 AM' Passed='False'>
-        <Rule ID='MID-011' TaskCount='0' Threshold='0' FailOn='Increase' Breaking='false' Description='Align widgets to the left' />
-        <Rule ID='MID-033' TaskCount='14' Threshold='10' FailOn='Increase' Breaking='true' Description='Gadgets should be properly wired' />
+<Run Number='1' DateTime='10/4/2013 10:52 AM' Passed='False'>
+    <Rule ID='MID-011' TaskCount='0' Threshold='0' FailOn='Increase' Breaking='false' Description='Align widgets to the left' />
+    <Rule ID='MID-033' TaskCount='14' Threshold='10' FailOn='Increase' Breaking='true' Description='Gadgets should be properly wired' />
 
-        <Flag RuleID='MID-033' TaskCount='14' Threshold='10'>
-            <Commit ID='r10323' Person='bren.coppick' Time='10/4/2013 10:50 AM' />
-            <Commit ID='r10324' Person='will.meary' Time='10/4/2013 10:51 AM' />
-        </Flag>
-    </Run>
+    <Flag RuleID='MID-033' TaskCount='14' Threshold='10'>
+        <Commit ID='r10323' Person='bren.coppick' Time='10/4/2013 10:50 AM' />
+        <Commit ID='r10324' Person='will.meary' Time='10/4/2013 10:51 AM' />
+    </Flag>
+</Run>
 ";
-            var run = _librarian.ParseRun( XElement.Parse( runXml ) );
+            var run = _librarian.ParseRunEntry( XElement.Parse( runXml ) );
 
             Assert.That( run.RuleResults.Keys.Count(), Is.EqualTo( 2 ) );
         }
@@ -174,22 +174,22 @@ namespace swept.Tests
         public void ParseRun_collects_Flags()
         {
             string runXml = @"
-            <Run Number='1' DateTime='10/4/2013 10:52 AM' Passed='False'>
-                <Rule ID='MID-011' TaskCount='0' Threshold='0' FailOn='Increase' Breaking='false' Description='Align widgets to the left' />
-                <Rule ID='MID-033' TaskCount='14' Threshold='10' FailOn='Increase' Breaking='true' Description='Gadgets should be properly wired' />
+<Run Number='1' DateTime='10/4/2013 10:52 AM' Passed='False'>
+    <Rule ID='MID-011' TaskCount='0' Threshold='0' FailOn='Increase' Breaking='false' Description='Align widgets to the left' />
+    <Rule ID='MID-033' TaskCount='14' Threshold='10' FailOn='Increase' Breaking='true' Description='Gadgets should be properly wired' />
 
-                <Flag RuleID='MID-033' TaskCount='14' Threshold='10'>
-                    <Commit ID='r10323' Person='bren.coppick' Time='10/4/2013 10:50 AM' />
-                    <Commit ID='r10324' Person='will.meary' Time='10/4/2013 10:51 AM' />
-                </Flag>
+    <Flag RuleID='MID-033' TaskCount='14' Threshold='10'>
+        <Commit ID='r10323' Person='bren.coppick' Time='10/4/2013 10:50 AM' />
+        <Commit ID='r10324' Person='will.meary' Time='10/4/2013 10:51 AM' />
+    </Flag>
 
-                <Flag RuleID='MID-034' TaskCount='8' Threshold='5'>
-                    <Commit ID='r10325' Person='bren.coppick' Time='10/4/2013 11:50 AM' />
-                </Flag>
-            </Run>
-        ";
+    <Flag RuleID='MID-034' TaskCount='8' Threshold='5'>
+        <Commit ID='r10325' Person='bren.coppick' Time='10/4/2013 11:50 AM' />
+    </Flag>
+</Run>
+";
 
-            var run = _librarian.ParseRun( XElement.Parse( runXml ) );
+            var run = _librarian.ParseRunEntry( XElement.Parse( runXml ) );
 
             Assert.That( run.Flags.Count, Is.EqualTo( 2 ) );
         }
@@ -198,11 +198,11 @@ namespace swept.Tests
         public void ParseFlag_collects_Commits()
         {
             string flagXml = @"
-                <Flag RuleID='MID-033' TaskCount='14' Threshold='10'>
-                    <Commit ID='r10323' Person='bren.coppick' Time='10/4/2013 10:50 AM' />
-                    <Commit ID='r10324' Person='will.meary' Time='10/4/2013 10:51 AM' />
-                </Flag>
-        ";
+<Flag RuleID='MID-033' TaskCount='14' Threshold='10'>
+    <Commit ID='r10323' Person='bren.coppick' Time='10/4/2013 10:50 AM' />
+    <Commit ID='r10324' Person='will.meary' Time='10/4/2013 10:51 AM' />
+</Flag>
+";
 
             var flag = _librarian.ParseFlag( XElement.Parse( flagXml ) );
 
@@ -212,10 +212,10 @@ namespace swept.Tests
         [Test]
         public void ParseRule_parses_direct_attributes()
         {
-            HistoricRuleResult rule;
+            RuleResult rule;
             XElement ruleXml = XElement.Parse( "<Rule ID='MID-011' TaskCount='5' Threshold='7' FailOn='Increase' Breaking='false' Description='Align widgets to the left' />" );
 
-            rule = _librarian.ParseRule( ruleXml );
+            rule = _librarian.ParseRuleResult( ruleXml );
             Assert.That( rule.ID, Is.EqualTo( "MID-011" ) );
             Assert.That( rule.TaskCount, Is.EqualTo( 5 ) );
             Assert.That( rule.Threshold, Is.EqualTo( 7 ) );

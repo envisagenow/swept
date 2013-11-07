@@ -27,7 +27,7 @@ namespace swept.Tests
         public void When_no_existing_flags_and_no_violations_in_current_run_then_no_new_flags()
         {
             var existingFlags = new List<Flag>();
-            var runResult = new RunHistoryEntry();
+            var runResult = new RunEntry();
 
             var flags = _inspector.ReportUpdatedFlags( existingFlags, runResult, _changeSet );
 
@@ -38,15 +38,15 @@ namespace swept.Tests
         public void When_no_existing_flags_and_a_violation_in_current_run_then_a_new_flag()
         {
             var existingFlags = new List<Flag>();
-            var resultsDictionary = new Dictionary<string, HistoricRuleResult>();
-            resultsDictionary["foo"] = new HistoricRuleResult {
+            var resultsDictionary = new Dictionary<string, RuleResult>();
+            resultsDictionary["foo"] = new RuleResult {
                 FailOn = RuleFailOn.Increase,
                 TaskCount = 12,
                 Threshold = 9,
                 Breaking = true,
             };
 
-            var runResult = new RunHistoryEntry
+            var runResult = new RunEntry
             {
                 Passed = false,
                 RuleResults = resultsDictionary,
@@ -69,12 +69,12 @@ namespace swept.Tests
             // prior run
             var existingFlags = new List<Flag>();
 
-            var runResult = new RunHistoryEntry
+            var runResult = new RunEntry
             {
                 Passed = false,
-                RuleResults = new Dictionary<string, HistoricRuleResult>(),
+                RuleResults = new Dictionary<string, RuleResult>(),
             };
-            runResult.RuleResults["foo"] = new HistoricRuleResult
+            runResult.RuleResults["foo"] = new RuleResult
             {
                 FailOn = RuleFailOn.Increase,
                 TaskCount = 12,
@@ -100,12 +100,12 @@ namespace swept.Tests
             var existingFlags = new List<Flag> { new Flag { TaskCount = 12, Threshold = 9, RuleID = "INT-002" } };
 
             // current run
-            var runResult = new RunHistoryEntry
+            var runResult = new RunEntry
             {
                 Passed = false,
-                RuleResults = new Dictionary<string, HistoricRuleResult>(),
+                RuleResults = new Dictionary<string, RuleResult>(),
             };
-            runResult.RuleResults["foo"] = new HistoricRuleResult
+            runResult.RuleResults["foo"] = new RuleResult
             {
                 ID = "INT-002",
                 FailOn = RuleFailOn.Increase,
@@ -125,8 +125,8 @@ namespace swept.Tests
             var existingFlags = new List<Flag>();
             existingFlags.Add(new Flag { TaskCount = 12, Threshold = 9, RuleID = "INT-002" });
             existingFlags.Add(new Flag { TaskCount = 412, Threshold = 9, RuleID = "INT-002" });
-            var resultsDictionary = new Dictionary<string, HistoricRuleResult>();
-            resultsDictionary["foo"] = new HistoricRuleResult
+            var resultsDictionary = new Dictionary<string, RuleResult>();
+            resultsDictionary["foo"] = new RuleResult
             {
                 ID = "INT-002",
                 FailOn = RuleFailOn.Increase,
@@ -135,7 +135,7 @@ namespace swept.Tests
                 Breaking = false,
             };
 
-            var runResult = new RunHistoryEntry
+            var runResult = new RunEntry
             {
                 Passed = false,
                 RuleResults = resultsDictionary,
@@ -153,8 +153,8 @@ namespace swept.Tests
         {
             var existingFlags = new List<Flag>();
             existingFlags.Add(new Flag { TaskCount = 12, Threshold = 9, RuleID = "INT-002" });
-            var resultsDictionary = new Dictionary<string, HistoricRuleResult>();
-            resultsDictionary["foo"] = new HistoricRuleResult
+            var resultsDictionary = new Dictionary<string, RuleResult>();
+            resultsDictionary["foo"] = new RuleResult
             {
                 ID = "INT-002",
                 FailOn = RuleFailOn.Increase,
@@ -163,7 +163,7 @@ namespace swept.Tests
                 Breaking = true,
             };
 
-            var runResult = new RunHistoryEntry
+            var runResult = new RunEntry
             {
                 Passed = false,
                 RuleResults = resultsDictionary,
@@ -180,8 +180,8 @@ namespace swept.Tests
             var existingFlags = new List<Flag>();
             existingFlags.Add(new Flag { TaskCount = 12, Threshold = 9, RuleID = "INT-002" });
             existingFlags.Add(new Flag { TaskCount = 33, Threshold = 7, RuleID = "WEB-044" });
-            var resultsDictionary = new Dictionary<string, HistoricRuleResult>();
-            resultsDictionary["foo"] = new HistoricRuleResult
+            var resultsDictionary = new Dictionary<string, RuleResult>();
+            resultsDictionary["foo"] = new RuleResult
             {
                 ID = "INT-002",
                 FailOn = RuleFailOn.Increase,
@@ -190,7 +190,7 @@ namespace swept.Tests
                 Breaking = false,
             };
 
-            var runResult = new RunHistoryEntry
+            var runResult = new RunEntry
             {
                 Passed = false,
                 RuleResults = resultsDictionary,

@@ -7,23 +7,23 @@ using System.Linq;
 
 namespace swept
 {
-    public class RunHistoryEntry
+    public class RunEntry
     {
         public int Number;
         public DateTime Date;
         public bool Passed;
-        public Dictionary<string, HistoricRuleResult> RuleResults;
+        public Dictionary<string, RuleResult> RuleResults;
         public List<Flag> Flags { get; set; }
 
-        public RunHistoryEntry()
+        public RunEntry()
         {
-            RuleResults = new Dictionary<string, HistoricRuleResult>();
+            RuleResults = new Dictionary<string, RuleResult>();
             Flags = new List<Flag>();
         }
 
-        public HistoricRuleResult AddResult( string id, bool breaking, RuleFailOn ruleFailOn, int threshold, int taskCount, string description )
+        public RuleResult AddResult( string id, bool breaking, RuleFailOn ruleFailOn, int threshold, int taskCount, string description )
         {
-            var result = new HistoricRuleResult {
+            var result = new RuleResult {
                 ID = id,
                 Breaking = breaking,
                 FailOn = ruleFailOn,

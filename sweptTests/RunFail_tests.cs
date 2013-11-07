@@ -58,7 +58,7 @@ namespace swept.Tests
         public void Can_ListRunFailureMessages_with_RunHistoryEntry()
         {
             var oldEntry = _inspector.GenerateEntry( DateTime.Now.AddDays( -2 ), _ruleTasks );
-            var fooResult = new HistoricRuleResult
+            var fooResult = new RuleResult
             {
                 ID = "No more Foo!",
                 Breaking = true,
@@ -148,10 +148,10 @@ namespace swept.Tests
 
             _ruleTasks[rule] = sourceClauseMatch;
 
-            var results = new Dictionary<string,HistoricRuleResult>();
-            results["300"] = new HistoricRuleResult { TaskCount = 10 };
+            var results = new Dictionary<string,RuleResult>();
+            results["300"] = new RuleResult { TaskCount = 10 };
 
-            _history.AddEntry( new RunHistoryEntry { 
+            _history.AddEntry( new RunEntry { 
                 Date = DateTime.Now.AddDays( -7 ), 
                 Number = 1704, 
                 RuleResults = results, 

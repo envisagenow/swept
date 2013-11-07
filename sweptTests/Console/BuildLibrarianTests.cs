@@ -54,14 +54,14 @@ namespace swept.Tests
         [Test]
         public void When_we_write_run_history_it_is_stored_to_disk()
         {
-            var entry = new RunHistoryEntry {
+            var entry = new RunEntry {
                 Number = 22,
                 Date = DateTime.Parse( "4/4/2012 10:25:02 AM" ),
                 Passed = false
             };
             entry.AddResult( "foo", true, RuleFailOn.Increase, 1, 2, "Upgrade from old stylesheets" );
 
-            var nextEntry = new RunHistoryEntry {
+            var nextEntry = new RunEntry {
                 Number = 23,
                 Date = DateTime.Parse( "4/7/2012 10:25:03 AM" ),
                 Passed = true
@@ -88,23 +88,64 @@ namespace swept.Tests
             Assert.That( _storage.RunHistory.ToString(), Is.EqualTo( expectedHistory ) );
         }
 
-        [Test, Ignore("Until we've got .Flags in the RunHistory")]
+        [Test]
+        public void RunHistory_Flags_are_stored()
+        {
+            var entry = new RunEntry {
+                Number = 22,
+                Date = DateTime.Parse( "4/4/2012 10:25:02 AM" ),
+                Passed = false
+            };
+            entry.AddResult( "foo", true, RuleFailOn.Increase, 1, 2, "Upgrade from old stylesheets" );
+
+            var flag = new Flag {
+                RuleID = "foo",
+                TaskCount = 2,
+                Threshold = 1,
+            };
+            var runHistory = new RunHistory();
+            runHistory.AddEntry( entry );
+            entry.Flags.Add( flag );  //entry.AddFlag( flag );
+
+            var librarian = new BuildLibrarian( new Arguments( new string[] { "trackhistory", "library:foo.library", "history:foo.history" }, _storage ), _storage );
+            librarian.WriteRunHistory( runHistory );
+
+            var expectedHistory =
+@"<RunHistory>
+  <Run Number=""22"" DateTime=""4/4/2012 10:25:02 AM"" Passed=""False"">
+    <Rule ID=""foo"" TaskCount=""2"" Threshold=""1"" FailOn=""Increase"" Breaking=""true"" Description=""Upgrade from old stylesheets"" />
+    <Flag RuleID='foo' TaskCount='2' Threshold='1'>
+        <Commit ID='r10324' Person='will.meary' Time='4/4/2012 10:24:32 AM' />
+    </Flag>
+  </Run>
+</RunHistory>";
+
+            Assert.That( _storage.RunHistory.ToString(), Is.EqualTo( expectedHistory ) );
+        }
+
+        [Test]
         public void When_xml_contains_flag_elements_then_Flags_are_in_RunHistory()
         {
             _storage.RunHistory = XDocument.Parse(
 @"<RunHistory>
-    ...this is the dodgy part where I don't have the XML format for flags worked out...
+  <Run Number=""22"" DateTime=""4/4/2012 10:25:02 AM"" Passed=""False"">
+    <Rule ID=""foo"" TaskCount=""2"" Threshold=""1"" FailOn=""Increase"" Breaking=""true"" Description=""Upgrade from old stylesheets"" />
+
+    <Flag RuleID='foo' TaskCount='2' Threshold='1'>
+        <Commit ID='r10324' Person='will.meary' Time='4/4/2012 10:24:32 AM' />
+    </Flag>
+  </Run>
 </RunHistory>" );
 
             var runHistory = _librarian.ReadRunHistory();
 
-            //Assert.That( runHistory.Flags.Count(), Is.EqualTo( 1 ) );
+            Assert.That( runHistory.Runs.ElementAt(0).Flags.Count(), Is.EqualTo( 1 ) );
         }
 
         [Test]
         public void Run_history_is_not_stored_to_disk_when_trackhistory_arg_not_set()
         {
-            var entry = new RunHistoryEntry
+            var entry = new RunEntry
             {
                 Number = 22,
                 Date = DateTime.Parse( "4/4/2012 10:25:02 AM" ),
@@ -112,7 +153,7 @@ namespace swept.Tests
             };
             entry.AddResult( "foo", true, RuleFailOn.Increase, 1, 2, "Upgrade from old stylesheets" );
 
-            var nextEntry = new RunHistoryEntry
+            var nextEntry = new RunEntry
             {
                 Number = 23,
                 Date = DateTime.Parse( "4/7/2012 10:25:03 AM" ),

@@ -37,7 +37,7 @@ namespace swept.Tests
         public void One_fix_when_this_run_has_fewer_tasks_than_LatestPassingRun()
         {
             var oldEntry = _inspector.GenerateEntry( DateTime.Now.AddDays( -2 ), _ruleTasks );
-            var fooResult = new HistoricRuleResult {
+            var fooResult = new RuleResult {
                 FailOn = RuleFailOn.Increase,
                 ID = "No more Foo!",
                 Threshold = 221,
@@ -50,7 +50,7 @@ namespace swept.Tests
 
 
             var newEntry = _inspector.GenerateEntry( DateTime.Now, new RuleTasks() );
-            var newFooResult = new HistoricRuleResult {
+            var newFooResult = new RuleResult {
                 FailOn = RuleFailOn.Increase,
                 ID = "No more Foo!",
                 Threshold = 221,

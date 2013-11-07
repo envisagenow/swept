@@ -26,13 +26,13 @@ namespace swept
     {
         public const int HighWaterLine = int.MaxValue;
 
-        private List<RunHistoryEntry> _Runs;
-        public IEnumerable<RunHistoryEntry> Runs { get { return _Runs; } }
-        public RunHistoryEntry LatestPassingRun { get; private set; }
+        private List<RunEntry> _Runs;
+        public IEnumerable<RunEntry> Runs { get { return _Runs; } }
+        public RunEntry LatestPassingRun { get; private set; }
 
         public RunHistory()
         {
-            _Runs = new List<RunHistoryEntry>();
+            _Runs = new List<RunEntry>();
         }
 
 
@@ -45,7 +45,7 @@ namespace swept
             }
         }
 
-        public void AddEntry( RunHistoryEntry run )
+        public void AddEntry( RunEntry run )
         {
             _Runs.Add( run );
 

@@ -22,7 +22,7 @@ namespace swept.Tests
         [Test]
         public void Empty_RunHistory_causes_empty_delta()
         {
-            XElement delta = _inspector.GenerateDeltaXml( new RunHistoryEntry() );
+            XElement delta = _inspector.GenerateDeltaXml( new RunEntry() );
 
             Assert.That( delta.Descendants().Count(), Is.EqualTo( 0 ) );
         }
@@ -30,7 +30,7 @@ namespace swept.Tests
         [Test]
         public void Run_with_no_prior_passing_run_shows_empty_delta()
         {
-            RunHistoryEntry priorButFailingEntry = new RunHistoryEntry { Passed = false };
+            RunEntry priorButFailingEntry = new RunEntry { Passed = false };
 
             //  This rule result causes this run to fail.  Deltas only apply between the
             //  RunHistory.PriorPassingRun and the current run in hand.
@@ -43,7 +43,7 @@ namespace swept.Tests
             _runHistory.AddEntry( priorButFailingEntry );
             Assert.That( _runHistory.LatestPassingRun, Is.Null );
 
-            RunHistoryEntry entry = new RunHistoryEntry { Passed = true };
+            RunEntry entry = new RunEntry { Passed = true };
             entry.AddResult( "644", true, RuleFailOn.Increase, 10, 10, "Replace old stylesheets" );
 
             XElement delta = _inspector.GenerateDeltaXml( entry );
@@ -54,7 +54,7 @@ namespace swept.Tests
         [Test]
         public void Delta_shows_Failures()
         {
-            RunHistoryEntry entry = new RunHistoryEntry { Passed = false };
+            RunEntry entry = new RunEntry { Passed = false };
             entry.AddResult( "644", true, RuleFailOn.Any, 0, 2, "Absolutely no document.all." );
             entry.AddResult( "432", true, RuleFailOn.Increase, 10, 23, "Eliminate references to behavior files" );
 
@@ -71,12 +71,12 @@ namespace swept.Tests
         [Test]
         public void Delta_shows_Missing_rules()
         {
-            RunHistoryEntry priorPassingEntry = new RunHistoryEntry { Passed = true };
+            RunEntry priorPassingEntry = new RunEntry { Passed = true };
             priorPassingEntry.AddResult( "644", true, RuleFailOn.Increase, 10, 2, "Replace AjaxToolkit with JQuery" );
             priorPassingEntry.AddResult( "411", true, RuleFailOn.Increase, 20, 7, "Less of foo, please." );
             _runHistory.AddEntry( priorPassingEntry );
 
-            XElement delta = _inspector.GenerateDeltaXml( new RunHistoryEntry { Passed = true } );
+            XElement delta = _inspector.GenerateDeltaXml( new RunEntry { Passed = true } );
 
             Assert.That( delta.Descendants().Count(), Is.EqualTo( 2 ) );
             var goneElement = delta.Descendants().Single( x => x.Attribute( "ID" ).Value == "644" );
@@ -89,12 +89,12 @@ namespace swept.Tests
         [Test]
         public void Delta_shows_Fixes()
         {
-            RunHistoryEntry priorPassingEntry = new RunHistoryEntry { Passed = true };
+            RunEntry priorPassingEntry = new RunEntry { Passed = true };
             priorPassingEntry.AddResult( "644", true, RuleFailOn.Increase, 10, 2, "Descrip" );
             priorPassingEntry.AddResult( "411", true, RuleFailOn.Increase, 20, 7, "Less foo now!" );
             _runHistory.AddEntry( priorPassingEntry );
 
-            RunHistoryEntry newRun = new RunHistoryEntry { Passed = true };
+            RunEntry newRun = new RunEntry { Passed = true };
             newRun.AddResult( "644", true, RuleFailOn.Increase, 2, 1, "Descrip" );
             newRun.AddResult( "411", true, RuleFailOn.Increase, 7, 4, "Less foo now!" );
 
@@ -118,13 +118,13 @@ namespace swept.Tests
         [Test]
         public void Broken_rules_will_suppress_fixed_or_gone_rule_reporting()
         {
-            RunHistoryEntry priorPassingEntry = new RunHistoryEntry { Passed = true };
+            RunEntry priorPassingEntry = new RunEntry { Passed = true };
             priorPassingEntry.AddResult( "800", true, RuleFailOn.Increase, 8, 5, "foo" );
             priorPassingEntry.AddResult( "644", true, RuleFailOn.Increase, 10, 2, "bar" );
             priorPassingEntry.AddResult( "411", true, RuleFailOn.Increase, 20, 7, "baz" );
             _runHistory.AddEntry( priorPassingEntry );
 
-            RunHistoryEntry newRun = new RunHistoryEntry { Passed = false };
+            RunEntry newRun = new RunEntry { Passed = false };
             newRun.AddResult( "800", true, RuleFailOn.Increase, 5, 15, "foo" );
             //  A rule 644 result is missing from this run...
             newRun.AddResult( "411", true, RuleFailOn.Increase, 7, 4, "baz" );

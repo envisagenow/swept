@@ -16,9 +16,9 @@ namespace swept
             _runHistory = runHistory;
         }
 
-        public RunHistoryEntry GenerateEntry( DateTime runDateTime, RuleTasks ruleTasks )
+        public RunEntry GenerateEntry( DateTime runDateTime, RuleTasks ruleTasks )
         {
-            var entry = new RunHistoryEntry
+            var entry = new RunEntry
             {
                 Passed = (CountRunFailures( ruleTasks ) == 0),
                 Number = _runHistory.NextRunNumber,
@@ -34,7 +34,7 @@ namespace swept
             return entry;
         }
 
-        public XElement GenerateDeltaXml( RunHistoryEntry entry )
+        public XElement GenerateDeltaXml( RunEntry entry )
         {
             var doc = new XElement( "SweptBreakageDelta" );
 
@@ -94,7 +94,7 @@ namespace swept
             return failures;
         }
 
-        public List<string> ListRunFailureIDs( RunHistoryEntry entry )
+        public List<string> ListRunFailureIDs( RunEntry entry )
         {
             var failures = new List<string>();
 
@@ -109,14 +109,14 @@ namespace swept
             return failures;
         }
 
-        public List<string> ListRunFailureMessages( RunHistoryEntry entry )
+        public List<string> ListRunFailureMessages( RunEntry entry )
         {
             return ListRunFailureIDs( entry ).Select( 
                 id => reportFailLine( entry.RuleResults[id] )
             ).ToList();
         }
 
-        private string reportFailLine( HistoricRuleResult result )
+        private string reportFailLine( RuleResult result )
         {
             return string.Format(
                 "Rule [{0}] has [{1}] {2}, and it breaks the build if there are {3} tasks.",
@@ -125,7 +125,7 @@ namespace swept
             );
         }
 
-        public List<string> ListRunFixIDs( RunHistoryEntry currentEntry )
+        public List<string> ListRunFixIDs( RunEntry currentEntry )
         {
             var fixes = new List<string>();
             if (_runHistory.LatestPassingRun == null)
@@ -136,7 +136,7 @@ namespace swept
                 int waterline = _runHistory.WaterlineFor( priorRuleID );
                 if (currentEntry.RuleResults.ContainsKey( priorRuleID ))
                 {
-                    HistoricRuleResult result = currentEntry.RuleResults[priorRuleID];
+                    RuleResult result = currentEntry.RuleResults[priorRuleID];
                     if (result.TaskCount < waterline)
                         fixes.Add( priorRuleID );
                 }
@@ -149,7 +149,7 @@ namespace swept
             return fixes;
         }
 
-        public HistoricRuleResult GetRuleResult( Rule ruleUnderTest, int violations, RunHistoryEntry priorSuccess )
+        public RuleResult GetRuleResult( Rule ruleUnderTest, int violations, RunEntry priorSuccess )
         {
             int priorViolations = 0;
 
@@ -170,7 +170,7 @@ namespace swept
             if (ruleUnderTest.FailOn == RuleFailOn.Increase)
                 breaking = violations > priorViolations;
 
-            return new HistoricRuleResult
+            return new RuleResult
             {
                 ID = ruleUnderTest.ID,
                 FailOn = ruleUnderTest.FailOn,
@@ -181,7 +181,7 @@ namespace swept
             };
         }
 
-        public List<Flag> ReportUpdatedFlags( List<Flag> existingFlags, RunHistoryEntry runResult, List<Commit> changeSet )
+        public List<Flag> ReportUpdatedFlags( List<Flag> existingFlags, RunEntry runResult, List<Commit> changeSet )
         {
             var flags = new List<Flag>();
 

@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace swept
 {
-    public class HistoricRuleResult
+    public class RuleResult
     {
         public string ID;
         public int TaskCount;

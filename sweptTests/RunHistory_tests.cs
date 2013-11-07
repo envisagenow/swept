@@ -29,7 +29,7 @@ namespace swept.Tests
         [Test]
         public void Can_add_a_Run()
         {
-            var run = new RunHistoryEntry() { Number = 27 };
+            var run = new RunEntry() { Number = 27 };
             _history.AddEntry( run );
 
             Assert.That( _history.Runs.Count(), Is.EqualTo( 1 ) );
@@ -39,11 +39,11 @@ namespace swept.Tests
         [Test]
         public void Can_get_waterline_for_a_Rule()
         {
-            _history.AddEntry( new RunHistoryEntry() );
+            _history.AddEntry( new RunEntry() );
 
-            var entry = new RunHistoryEntry { Passed = true, Number = 401 };
-            entry.RuleResults["Eliminate Crystal Reports"] = new HistoricRuleResult { TaskCount = 6 };
-            entry.RuleResults["Update widgets to widgets 2.0"] = new HistoricRuleResult { TaskCount = 45 };
+            var entry = new RunEntry { Passed = true, Number = 401 };
+            entry.RuleResults["Eliminate Crystal Reports"] = new RuleResult { TaskCount = 6 };
+            entry.RuleResults["Update widgets to widgets 2.0"] = new RuleResult { TaskCount = 45 };
             _history.AddEntry( entry );
 
             Assert.That( _history.WaterlineFor( "Eliminate Crystal Reports" ), Is.EqualTo( 6 ) );
@@ -59,23 +59,25 @@ namespace swept.Tests
         [Test]
         public void Waterline_of_an_unfound_Rule_starts_high()
         {
-            var entry = new RunHistoryEntry() { Number = 401 };
-            entry.RuleResults["Eliminate Crystal Reports"] = new HistoricRuleResult { TaskCount = 6 };
+            var entry = new RunEntry() { Number = 401 };
+            entry.RuleResults["Eliminate Crystal Reports"] = new RuleResult { TaskCount = 6 };
             _history.AddEntry( entry );
 
             Assert.That( _history.WaterlineFor( "Update widgets to widgets 2.0" ), Is.EqualTo( RunHistory.HighWaterLine ) );
         }
 
+        // TODO: Change this decision.  It was a very plausible rationale, but misguided.
+        // I can use this later as an example of overthinking, or simply a mistake.
         [Test]
         public void Waterline_unchanged_by_failed_runs()
         {
-            var entry = new RunHistoryEntry() { Number = 401, Passed = true };
-            entry.RuleResults["Eliminate Crystal Reports"] = new HistoricRuleResult { TaskCount = 6 };
+            var entry = new RunEntry() { Number = 401, Passed = true };
+            entry.RuleResults["Eliminate Crystal Reports"] = new RuleResult { TaskCount = 6 };
             _history.AddEntry( entry );
 
             // even though the failed run has fewer tasks for this particular rule
-            var failingEntry = new RunHistoryEntry() { Number = 402, Passed = false };
-            failingEntry.RuleResults["Eliminate Crystal Reports"] = new HistoricRuleResult { TaskCount = 1 };
+            var failingEntry = new RunEntry() { Number = 402, Passed = false };
+            failingEntry.RuleResults["Eliminate Crystal Reports"] = new RuleResult { TaskCount = 1 };
             _history.AddEntry( failingEntry );
 
             Assert.That( _history.WaterlineFor( "Eliminate Crystal Reports" ), Is.EqualTo( 6 ) );
@@ -91,7 +93,7 @@ namespace swept.Tests
             Assert.That( _history.Runs.Count(), Is.EqualTo( 0 ) );
             Assert.Null( _history.LatestPassingRun );
 
-            _history.AddEntry( new RunHistoryEntry {
+            _history.AddEntry( new RunEntry {
                 Date = DateTime.Now,
                 Number = 1,
                 Passed = false
@@ -104,13 +106,13 @@ namespace swept.Tests
         [Test]
         public void LatestPassingRun_decides_latest_based_on_run_Number()
         {
-            RunHistoryEntry shouldBeLatest = new RunHistoryEntry {
+            RunEntry shouldBeLatest = new RunEntry {
                 Date = DateTime.Now,
                 Number = 2,
                 Passed = true
             };
 
-            RunHistoryEntry shouldNotBeLatest = new RunHistoryEntry {
+            RunEntry shouldNotBeLatest = new RunEntry {
                 Date = DateTime.Now.AddDays( 2 ),  // not latest even though it ran most recently
                 Number = 1,
                 Passed = true
