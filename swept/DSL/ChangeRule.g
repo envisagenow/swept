@@ -63,9 +63,6 @@ regex returns [Regex rex]
 	:	STRING_LITERAL BARE_WORD? { $rex = factory.GetRegex( $STRING_LITERAL.text, $BARE_WORD.text ); }
 	;
 
-//LANGUAGE:
-//	( 'CSharp' | 'CSS' | 'HTML' | 'JavaScript' | 'Project' | 'Solution' | 'VBNet' | 'XSLT' | 'Unknown' ) ;
-
 
 //	----------------------
 

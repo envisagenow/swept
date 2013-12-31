@@ -19,6 +19,7 @@ namespace swept
         Project,
         Solution,
         Unknown,
+        SQL,
     }
 
     public enum RuleFailOn

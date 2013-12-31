@@ -43,6 +43,7 @@ cxxxxxxxxx
         {
             Assert.AreEqual( FileLanguage.HTML, new SourceFile( "foo.aspx" ).Language );
             Assert.AreEqual( FileLanguage.CSharp, new SourceFile( "foo.cs" ).Language );
+            Assert.AreEqual( FileLanguage.SQL, new SourceFile( "foo.sql" ).Language );
         }
 
         [Test]

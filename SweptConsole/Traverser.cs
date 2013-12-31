@@ -17,7 +17,7 @@ namespace swept
         {
             _storageAdapter = storageAdapter;
             _args = args;
-            WhiteListPattern = @"\.(cs|as[chmp]x|x?html?|master|xml|txt|xslt?|css|js|vb|(cs|vb)proj|sln)$";
+            WhiteListPattern = @"\.(cs|as[chmp]x|x?html?|master|xml|txt|xslt?|css|js|vb|(cs|vb)proj|sln|sql)$";
         }
 
         public string WhiteListPattern { get; set; }

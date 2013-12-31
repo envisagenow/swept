@@ -59,6 +59,7 @@ namespace swept
                     extensionLanguage[".vb"] = FileLanguage.VBNet;
                     extensionLanguage[".xsl"] = FileLanguage.XSLT;
                     extensionLanguage[".xslt"] = FileLanguage.XSLT;
+                    extensionLanguage[".sql"] = FileLanguage.SQL;
                     extensionLanguage[""] = FileLanguage.None;
                 }
                 return extensionLanguage;
