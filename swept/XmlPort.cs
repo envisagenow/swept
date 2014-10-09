@@ -115,6 +115,17 @@ namespace swept
             return parser.expression();
         }
 
+        internal Rule GetAdHocRule(string queryText)
+        {
+            Rule rule = new Rule();
+
+            rule.ID = "adHoc_01";
+            rule.Description = queryText;
+            rule.Subquery = BuildRuleQuery(queryText);
+
+            return rule;
+        }
+
         public SeeAlso SeeAlso_FromElement( XElement element )
         {
             SeeAlso seeAlso = new SeeAlso();

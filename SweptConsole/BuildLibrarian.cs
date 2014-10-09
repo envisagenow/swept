@@ -180,6 +180,24 @@ namespace swept
                     );
 
                     runElement.Add( ruleElement );
+                    foreach (Flag flag in run.Flags.OrderBy(f => f.RuleID))
+                    {
+                        var flagElement = new XElement("Flag",
+                            new XAttribute("RuleID", flag.RuleID),
+                            new XAttribute("TaskCount", flag.TaskCount),
+                            new XAttribute("Threshold", flag.Threshold));
+
+                        foreach (Commit commit in flag.Commits)
+                        {
+                            var commitElment = new XElement("Commit",
+                                new XAttribute("ID", commit.ID),
+                                new XAttribute("Person", commit.Person),
+                                new XAttribute("Time", commit.Time));
+
+                            flagElement.Add(commitElment);
+                        }
+                        runElement.Add(flagElement);
+                    }
                 }
 
                 report_root.Add( runElement );

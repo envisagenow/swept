@@ -49,13 +49,14 @@ namespace swept
             // TODO: subscriber.SubscribeExceptions( switchboard, this );
 
             librarian.OpenLibrary( arguments.Library );
-            var rules = librarian.GetSortedRules( arguments.SpecifiedRules );
+
+            var rules = librarian.GetSortedRules( arguments.SpecifiedRules, arguments.AdHoc );
 
             arguments.FillExclusions( librarian.GetExcludedFolders() );
 
-            // Goal code:  var traverser = new Traverser( storage, arguments.Folder, librarian.ExcludedFolders );
             var traverser = new Traverser( arguments, storage );
             var files = traverser.GetFilesToScan();
+
 
             var gatherer = new Gatherer( rules, files, storage );
             var ruleTasks = gatherer.GetRuleTasks();

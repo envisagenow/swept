@@ -103,6 +103,13 @@ namespace swept.Tests
                 TaskCount = 2,
                 Threshold = 1,
             };
+
+            var commit = new Commit {
+                ID = "r10324",
+                Person = "will.meary",
+                Time = "4/4/2012 10:24:32 AM"
+            };
+            flag.Commits.Add(commit);
             var runHistory = new RunHistory();
             runHistory.AddEntry( entry );
             entry.Flags.Add( flag );  //entry.AddFlag( flag );
@@ -120,7 +127,7 @@ namespace swept.Tests
   </Run>
 </RunHistory>";
 
-            Assert.That( _storage.RunHistory.ToString(), Is.EqualTo( expectedHistory ) );
+            Assert.That( _storage.RunHistory.ToString(), Is.EqualTo( XDocument.Parse(expectedHistory).ToString()) );
         }
 
         [Test]

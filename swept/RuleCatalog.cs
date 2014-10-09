@@ -21,12 +21,24 @@ namespace swept
             return GetSortedRules( new List<string>() );
         }
 
-        public List<Rule> GetSortedRules( List<string> specifiedRules )
+        public List<Rule> GetSortedRules( List<string> specifiedRules, string adHocText = "" )
         {
-            List<Rule> filteredRules = _rules;
-            if (specifiedRules.Count > 0)
-                filteredRules = _rules.Where( r => specifiedRules.Contains( r.ID, StringComparer.CurrentCultureIgnoreCase ) ).ToList();
-            filteredRules.Sort( ( left, right ) => left.ID.CompareTo( right.ID ) );
+            List<Rule> filteredRules = new List<Rule>();
+
+           if (specifiedRules.Count > 0)
+               filteredRules = _rules.Where( r => specifiedRules.Contains( r.ID, StringComparer.CurrentCultureIgnoreCase ) ).ToList();            
+
+            if (!string.IsNullOrEmpty(adHocText))
+            {
+                Rule adHocRule = new XmlPort().GetAdHocRule(adHocText);
+                filteredRules.Add(adHocRule);
+            }
+
+            if (filteredRules.Count == 0)
+                filteredRules = _rules;
+
+            filteredRules.Sort((left, right) => left.ID.CompareTo(right.ID));
+
             return filteredRules;
         }
 

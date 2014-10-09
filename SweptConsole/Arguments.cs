@@ -28,6 +28,7 @@ namespace swept
         public bool ShowUsage { get; private set; }
         public List<string> SpecifiedRules { get; private set; }
         public bool TrackHistory { get; set; }
+        public string AdHoc { get; set; }
 
         public bool AreInvalid
         {
@@ -45,6 +46,8 @@ namespace swept
     help:      Or 'h' or 'usage', gets this message.
     version:   Prints a brief version and credits message, and terminates.
     debug:     Triggers a Debugger.Launch(), then continues as usual.
+    rule:      Followed by an ID, runs that rule from the catalog.
+    adhoc:     Followed by a literal rule, runs it in the current directory.
     folder:    The top folder Swept will sweep for rule violations.
       If no folder is specified, the current working directory is used.
     library:   The Swept rules library file to check against.
@@ -93,6 +96,7 @@ This software is open source, MIT license.  See the file LICENSE for details.
             Folder = string.Empty;
             History = string.Empty;
             Library = string.Empty;
+            AdHoc = string.Empty;
             ShowUsage = false;
             ShowVersion = false;
             SpecifiedRules = new List<string>();
@@ -127,8 +131,7 @@ This software is open source, MIT license.  See the file LICENSE for details.
                     case "h":
                     case "/?":
                         ShowUsage = true;
-                        return;
-
+                        return;                        
                     case "trackhistory":
                         TrackHistory = true;
                         continue;
@@ -187,6 +190,10 @@ This software is open source, MIT license.  See the file LICENSE for details.
                         SpecifiedRules.Add( tokens[1] );
                     else
                         SpecifiedRules.AddRange( tokens[1].Split( ',' ) );
+                    break;
+
+                case "adhoc":
+                    AdHoc = tokens[1].Replace("\"", "");
                     break;
 
                 case null:

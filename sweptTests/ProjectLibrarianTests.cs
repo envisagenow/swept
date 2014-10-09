@@ -46,7 +46,7 @@ namespace swept.Tests
         }
 
         [Test]
-        public void Can_GetSortedRules()
+        public void GetSortedRules_with_empty_rule_filters_returns_all_catalog_rules()
         {
             Rule a_17 = new Rule { ID = "a_17", };
             Rule a_177 = new Rule { ID = "a_177", };
@@ -61,6 +61,23 @@ namespace swept.Tests
             Assert.That( rules[0].ID, Is.EqualTo( a_17.ID ) );
             Assert.That( rules[1].ID, Is.EqualTo( a_177.ID ) );
             Assert.That( rules[2].ID, Is.EqualTo( b_52.ID ) );
+        }
+
+        [Test]
+        public void GetSortedRules_with_empty_rule_filters_and_adhoc_rule_returns_adhoc_rule()
+        {
+            Rule a_17 = new Rule 
+            {
+                ID = "a_17", 
+                
+            };
+
+            _ruleCatalog._rules.Clear();
+            _ruleCatalog.Add(a_17);
+
+            var rules = Horace.GetSortedRules(new List<string>(), "^CSharp and @'Test' and ~'ExpectedException'");
+            Assert.That(rules[0].ID, Is.EqualTo("adHoc_01"));
+            Assert.That(rules[0].Description, Is.EqualTo("^CSharp and @'Test' and ~'ExpectedException'"));
         }
 
         [Test]

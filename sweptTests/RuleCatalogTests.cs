@@ -40,6 +40,18 @@ namespace swept.Tests
             Assert.AreEqual( 0, rules.Count );
         }
 
+
+        [Test]
+        public void GetSortedRules_with_empty_rule_filters_and_adhoc_rule_returns_adhoc_rule_only()
+        {
+            var rules = cat.GetSortedRules(new List<string>(), "^CSharp and @'Test' and ~'ExpectedException'");
+            Assert.That(rules.Count, Is.EqualTo(1));
+            Assert.That(rules[0].ID, Is.EqualTo("adHoc_01"));
+            Assert.That(rules[0].Description, Is.EqualTo("^CSharp and @'Test' and ~'ExpectedException'"));
+        }
+
+
+
         [Test]
         public void Empty_Catalog_returns_empty_list()
         {

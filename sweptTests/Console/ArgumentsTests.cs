@@ -322,5 +322,13 @@ namespace swept.Tests
 
             Assert.That( args.Exclude.Count(), Is.EqualTo( 1 ) );
         }
+
+        [Test]
+        public void AdHoc_argument_is_recognized()
+        {
+            var args = new Arguments(new string[] { "library:unused", "adhoc:\"^CSharp and @'Test' and ~'ExpectedException'\"" }, _storage);
+
+            Assert.That(args.AdHoc, Is.EqualTo("^CSharp and @'Test' and ~'ExpectedException'"));
+        }
     }
 }

@@ -130,9 +130,9 @@ namespace swept
             return tasks;
         }
 
-        public List<Rule> GetSortedRules( List<string> specifiedRules )
+        public List<Rule> GetSortedRules( List<string> specifiedRules , string adHocRule = "")
         {
-            return _ruleCatalog.GetSortedRules( specifiedRules );
+            return _ruleCatalog.GetSortedRules( specifiedRules, adHocRule );
         }
 
         public List<string> GetExcludedFolders()

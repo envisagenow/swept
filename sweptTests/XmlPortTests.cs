@@ -7,6 +7,7 @@ using NUnit.Framework;
 using System.Xml;
 using System.Collections.Generic;
 using System.Xml.Linq;
+using swept.DSL;
 
 namespace swept.Tests
 {
@@ -88,6 +89,19 @@ namespace swept.Tests
             string badMode = "<SweptProjectData><RuleCatalog><Rule ID='this' FailMode='Fake'> ^CSharp </Rule></RuleCatalog></SweptProjectData>";
             var catalogParseException = Assert.Throws<Exception>( () => getRuleCatalog( badMode ) );
             Assert.That( catalogParseException.Message, Is.EqualTo( parseFailMessage ) );
+        }
+
+        [Test]
+        public void GetSortedRules_with_empty_rule_filters_and_adhoc_rule_returns_adhoc_rule()
+        {
+            string queryText = "^CSharp and @'Test' and ~'ExpectedException'";
+            var rule = _port.GetAdHocRule(queryText);
+
+            Assert.That(rule.ID, Is.EqualTo("adHoc_01"));
+            Assert.That(rule.Description, Is.EqualTo(queryText));
+            Assert.IsInstanceOf<OpIntersectionNode>(rule.Subquery);
+            Assert.IsInstanceOf<OpIntersectionNode>(((OpBinaryNode)(rule.Subquery)).LHS);
+            Assert.IsInstanceOf<QueryContentNode>(((OpBinaryNode)(rule.Subquery)).RHS);
         }
     }
 }

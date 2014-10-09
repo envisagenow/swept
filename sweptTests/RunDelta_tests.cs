@@ -108,10 +108,10 @@ namespace swept.Tests
             Assert_IsXElementMatching( fixElement, "<DeltaItem ID='411' Threshold='7' TaskCount='4' Outcome='Fix' Description='Less foo now!' />" );
         }
 
-        [Test, Ignore("Until it's got some didactic value")]
+        // TODO: Flesh this out when it's got some didactic value
+        [Test]
         public void Delta_shows_descriptions_from_new_run()
         {
-            Assert.Fail();
         }
 
 
