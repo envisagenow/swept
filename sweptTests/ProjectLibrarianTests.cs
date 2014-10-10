@@ -216,5 +216,64 @@ namespace swept.Tests
         {
             _tasks = e.Tasks;
         }
+
+        [TestCase("web*")]
+        [TestCase("b_52b")]
+        public void ListRule_returns_no_results_when_no_match( string searchString )
+        {
+            Rule a_17 = new Rule { ID = "a_17", };
+            Rule a_177 = new Rule { ID = "a_177", };
+            Rule b_52 = new Rule { ID = "b_52", };
+
+            _ruleCatalog._rules.Clear();
+            _ruleCatalog.Add(b_52);
+            _ruleCatalog.Add(a_17);
+            _ruleCatalog.Add(a_177);
+
+            List<string> rules = Horace.ShowRules(searchString);
+
+            Assert.That(rules.Count == 0);
+        }
+
+        [TestCase("a_17", "a_17:  We should polish all widgets")]
+        [TestCase("b_52", "b_52:  Fix!")]
+        public void ListRule_finds_exact_match( string searchString, string foundResult)
+        {
+            Rule a_17 = new Rule { ID = "a_17", Description = "We should polish all widgets" };
+            Rule a_177 = new Rule { ID = "a_177", };
+            Rule b_52 = new Rule { ID = "b_52", Description = "Fix!"};
+
+            _ruleCatalog._rules.Clear();
+            _ruleCatalog.Add(b_52);
+            _ruleCatalog.Add(a_17);
+            _ruleCatalog.Add(a_177);
+
+            List<string> rules = Horace.ShowRules(searchString);
+
+            Assert.That(rules[0], Is.EqualTo(foundResult));
+        }
+
+        [TestCase("a*", 2)]
+        [TestCase("a_17*", 2)]
+        [TestCase("a_4*", 0)]
+        [TestCase("*2", 1)]
+        [TestCase("a_17.*", 1)]  // this might be a surprise to regex-savvy people.
+        [TestCase("A*", 2)]
+        public void ListRule_finds_case_insensitive_wildcard_matches(string searchString, int matchCount)
+        {
+            Rule a_17 = new Rule { ID = "a_17", };
+            Rule a_177 = new Rule { ID = "a_177", };
+            Rule b_52 = new Rule { ID = "b_52", };
+
+            _ruleCatalog._rules.Clear();
+            _ruleCatalog.Add(b_52);
+            _ruleCatalog.Add(a_17);
+            _ruleCatalog.Add(a_177);
+
+            List<string> rules = Horace.ShowRules(searchString);
+
+            Assert.That(rules.Count == matchCount);
+        }
+
     }
 }

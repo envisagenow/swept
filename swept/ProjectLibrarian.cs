@@ -2,10 +2,12 @@
 //  Copyright (c) 2009, 2013 Jason Cole and Envisage Technologies Corp.
 //  This software is open source, MIT license.  See the file LICENSE for details.
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.IO;
 using System.Xml;
 using System.Xml.Linq;
+using System.Text.RegularExpressions;
 
 namespace swept
 {
@@ -144,6 +146,28 @@ namespace swept
         private void CloseSourceFile( string name )
         {
             _allTasks.RemoveAll( task => name == task.File.Name );
+        }
+
+        public List<string> ShowRules(string p)
+        {
+            List<string> result = new List<string>();
+
+            string pattern = p.Replace("*", ".*");
+         
+            List<Rule> foundRules = _ruleCatalog._rules
+                .Where(r => Regex.IsMatch( r.ID, pattern, RegexOptions.IgnoreCase ))
+                .ToList();
+
+            if (foundRules.Count() != 0)
+            {
+                foreach (var rule in foundRules)
+                {
+                    result.Add(string.Format("{0}:  {1}", rule.ID, rule.Description));
+                }              
+            }
+
+            return result;
+
         }
     }
 }

@@ -29,6 +29,7 @@ namespace swept
         public List<string> SpecifiedRules { get; private set; }
         public bool TrackHistory { get; set; }
         public string AdHoc { get; set; }
+        public string Show { get; set; }
 
         public bool AreInvalid
         {
@@ -46,6 +47,7 @@ namespace swept
     help:      Or 'h' or 'usage', gets this message.
     version:   Prints a brief version and credits message, and terminates.
     debug:     Triggers a Debugger.Launch(), then continues as usual.
+    show:      Show all rules ('show'), or a wildcarded subset ('show:ETC*').
     rule:      Followed by an ID, runs that rule from the catalog.
     adhoc:     Followed by a literal rule, runs it in the current directory.
     folder:    The top folder Swept will sweep for rule violations.
@@ -132,8 +134,13 @@ This software is open source, MIT license.  See the file LICENSE for details.
                     case "/?":
                         ShowUsage = true;
                         return;                        
+                    
                     case "trackhistory":
                         TrackHistory = true;
+                        continue;
+                    
+                    case "show":
+                        Show = "*";
                         continue;
 
                     default:
@@ -194,6 +201,10 @@ This software is open source, MIT license.  See the file LICENSE for details.
 
                 case "adhoc":
                     AdHoc = tokens[1].Replace("\"", "");
+                    break;
+
+                case "show":
+                    Show = tokens[1];
                     break;
 
                 case null:

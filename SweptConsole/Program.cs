@@ -31,7 +31,10 @@ namespace swept
             var arguments = new Arguments( args, storage );
 
             if (arguments.ShowUsage)
-                Console.Out.WriteLine( Arguments.UsageMessage );
+            {
+                Console.Out.WriteLine(Arguments.UsageMessage);
+                return 0;
+            }
 
             if (arguments.AreInvalid)
             {
@@ -49,6 +52,18 @@ namespace swept
             // TODO: subscriber.SubscribeExceptions( switchboard, this );
 
             librarian.OpenLibrary( arguments.Library );
+
+            if (!string.IsNullOrEmpty(arguments.Show))
+            {
+                var rulesToShow = librarian.ShowRules(arguments.Show);
+                foreach (var rule in rulesToShow)
+                    Console.Out.WriteLine(rule);
+
+                if (rulesToShow.Count() == 0)
+                    Console.Out.WriteLine("No rules match [{0}].", arguments.Show);
+
+                return 0;
+            }
 
             var rules = librarian.GetSortedRules( arguments.SpecifiedRules, arguments.AdHoc );
 

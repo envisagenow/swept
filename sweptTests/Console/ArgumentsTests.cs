@@ -330,5 +330,24 @@ namespace swept.Tests
 
             Assert.That(args.AdHoc, Is.EqualTo("^CSharp and @'Test' and ~'ExpectedException'"));
         }
+
+        [Test]
+        public void Show_argument_has_proper_unary_default()
+        {
+            var args = new Arguments(new string[] { "library:unused", "show" }, _storage);
+
+            Assert.That(args.Show, Is.EqualTo("*"));
+        }
+        
+        [TestCase("web*")]
+        [TestCase("web-011")]
+        [TestCase("etc-411")]
+        public void Show_argument_has_proper_binary_form(string showValue)
+        {
+            string showArg = "show:" + showValue;
+            var args = new Arguments(new string[] { "library:unused", showArg }, _storage);
+
+            Assert.That(args.Show, Is.EqualTo(showValue));
+        }
     }
 }
