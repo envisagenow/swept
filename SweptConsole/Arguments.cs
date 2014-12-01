@@ -30,6 +30,7 @@ namespace swept
         public bool TrackHistory { get; set; }
         public string AdHoc { get; set; }
         public string Show { get; set; }
+        public int FileCountLimit { get; set; }
 
         public bool AreInvalid
         {
@@ -103,6 +104,7 @@ This software is open source, MIT license.  See the file LICENSE for details.
             ShowVersion = false;
             SpecifiedRules = new List<string>();
             TrackHistory = false;
+            FileCountLimit = 20;
 
             List<string> exceptionMessages = new List<string>();
 
@@ -173,6 +175,10 @@ This software is open source, MIT license.  See the file LICENSE for details.
 
                 case "exclude":
                     Exclude = tokens[1].Split( ',' );
+                    break;
+
+                case "filelimit":
+                    FileCountLimit = int.Parse(tokens[1]);
                     break;
 
                 case "folder":

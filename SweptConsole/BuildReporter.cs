@@ -26,7 +26,7 @@ namespace swept
                 return "Swept check failed!\r\n";
         }
 
-        public string ReportDetailsXml( RuleTasks ruleTasks )
+        public string ReportDetailsXml( RuleTasks ruleTasks, int limit )
         {
             XDocument report_doc = new XDocument();
             XElement report_root = new XElement( "SweptBuildReport" );
@@ -40,6 +40,8 @@ namespace swept
             foreach (Rule rule in ruleTasks.Keys.OrderBy( c => c.ID ))
             {
                 int totalTasksPerRule = 0;
+                int additionalFiles = 0;
+                int filesSeen = 0;
 
                 var rule_element = new XElement( "Rule",
                     new XAttribute( "ID", rule.ID ),
@@ -47,7 +49,9 @@ namespace swept
                 );
 
                 var fileMatches = ruleTasks[rule];
-                foreach (SourceFile file in fileMatches.Keys.OrderBy( file => file.Name ))
+                foreach (SourceFile file in fileMatches.Keys
+                    .OrderByDescending(file => Task.FromMatch(fileMatches[file], rule, file).Count())
+                    .ThenBy( file => file.Name ))
                 {
                     var match = fileMatches[file];
                     var tasks = Task.FromMatch( match, rule, file );
@@ -56,15 +60,25 @@ namespace swept
                         continue;
 
                     totalTasksPerRule += tasks.Count;
+                    filesSeen++;
 
-                    var file_tasks = new XElement( "SourceFile",
-                        new XAttribute( "Name", file.Name ),
-                        new XAttribute( "TaskCount", tasks.Count )
-                    );
-                    rule_element.Add( file_tasks );
+                    if (filesSeen <= limit)
+                    {
+                        var file_tasks = new XElement("SourceFile",
+                            new XAttribute("Name", file.Name),
+                            new XAttribute("TaskCount", tasks.Count)
+                        );
+                        rule_element.Add(file_tasks);
+                    }
+                    else
+                    {
+                        additionalFiles++;
+                    }
                 }
 
                 rule_element.Add( new XAttribute( "TotalTasks", totalTasksPerRule ) );
+                rule_element.Add(new XAttribute("AdditionalFiles", additionalFiles));
+
                 totalTasks += totalTasksPerRule;
                 report_root.Add( rule_element );
             }

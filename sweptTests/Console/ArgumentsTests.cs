@@ -349,5 +349,23 @@ namespace swept.Tests
 
             Assert.That(args.Show, Is.EqualTo(showValue));
         }
+
+        [Test]
+        public void args_file_count_limit_defaults_to_20()
+        {
+            var argsText = new string[] { "library:c:\\foo.library" };
+            var args = new Arguments(argsText, _storage);
+            Assert.That(args.FileCountLimit, Is.EqualTo(20));
+        }
+
+        [Test]
+        public void args_file_count_limit_is_understood()
+        {
+            var argsText = new string[] { "library:c:\\foo.library", "filelimit:10" };
+            var args = new Arguments(argsText, _storage);
+            Assert.That(args.FileCountLimit, Is.EqualTo(10));
+        }
+
+
     }
 }

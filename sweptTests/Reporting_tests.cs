@@ -77,7 +77,7 @@ namespace swept.Tests
         }
 
         [Test]
-        public void With_no_violations_the_check_passes()
+        public void With_no_tasks_the_check_passes()
         {
             string message = _reporter.ReportCheckResult( new List<string>() );
 
@@ -85,7 +85,7 @@ namespace swept.Tests
         }
 
         [Test]
-        public void With_one_violation_the_check_fails()
+        public void With_one_task_the_check_fails()
         {
             string message = _reporter.ReportCheckResult( new List<string> { "I'm agonized about this." } );
 
@@ -93,7 +93,7 @@ namespace swept.Tests
         }
 
         [Test]
-        public void With_violations_the_check_fails()
+        public void With_tasks_the_check_fails()
         {
             List<string> failures = new List<string>();
             string problem = "Rule [NET-001] has been violated [22] times, and it breaks the build if there are over [18] violations.";
@@ -108,7 +108,7 @@ namespace swept.Tests
         [Test]
         public void No_task_data_creates_empty_report()
         {
-            string report = new BuildReporter().ReportDetailsXml( new RuleTasks() );
+            string report = new BuildReporter().ReportDetailsXml( new RuleTasks(), 20 );
 
             Assert.That( report, Is.EqualTo( EmptyReport ) );
         }
@@ -118,7 +118,7 @@ namespace swept.Tests
         {
             var expectedReport = XDocument.Parse(
 @"<SweptBuildReport TotalTasks='4' TotalFlags='0'>
-    <Rule ID='HTML 01' Description='Improve browser compatibility' TotalTasks='4'>
+    <Rule ID='HTML 01' Description='Improve browser compatibility' TotalTasks='4' AdditionalFiles='0'>
         <SourceFile Name='bar.htm' TaskCount='4' />
     </Rule>
 </SweptBuildReport>"
@@ -139,7 +139,7 @@ namespace swept.Tests
             fileMatches[bar] = new LineMatch( new List<int> { 1, 12, 123, 1234 } );
             ruleTasks.Add( rule, fileMatches );
 
-            string report = _reporter.ReportDetailsXml( ruleTasks );
+            string report = _reporter.ReportDetailsXml( ruleTasks, 20 );
 
             Assert.That( report, Is.EqualTo( expectedReport.ToString() ) );
         }
@@ -153,15 +153,15 @@ namespace swept.Tests
     <Rule 
         ID='DomainEvents 01' 
         Description='Use DomainEvents instead of AcadisUserPersister and AuditRecordPersister'
-        TotalTasks='4'>
+        TotalTasks='4' AdditionalFiles='0'>
         
-        <SourceFile Name='foo.cs' TaskCount='1' />
         <SourceFile Name='goo.cs' TaskCount='3' />
+        <SourceFile Name='foo.cs' TaskCount='1' />
     </Rule>
     <Rule 
         ID='HTML 01' 
         Description='Improve browser compatibility across IE versions'
-        TotalTasks='6'>
+        TotalTasks='6' AdditionalFiles='0'>
 
         <SourceFile Name='bar.htm' TaskCount='4' />
         <SourceFile Name='shmoo.aspx' TaskCount='2' />
@@ -201,10 +201,101 @@ namespace swept.Tests
             rules[csharpRule] = csharpFiles;
             rules[htmlRule] = htmlFiles;
 
-            string report = _reporter.ReportDetailsXml( rules );
+            string report = _reporter.ReportDetailsXml( rules, 20 );
 
             Assert.That( report, Is.EqualTo( expectedReport.ToString() ) );
         }
+
+        [Test]
+        public void SourceFile_sorted_by_TaskCount_then_FileName()
+        {
+            var expectedReport = XDocument.Parse(
+@"
+<SweptBuildReport TotalTasks='8' TotalFlags='0'>
+    <Rule 
+        ID='DomainEvents 01' 
+        Description='Use DomainEvents instead of AcadisUserPersister and AuditRecordPersister'
+        TotalTasks='8' AdditionalFiles='0'>
+
+        <SourceFile Name='goo.cs' TaskCount='3' />
+        <SourceFile Name='google_eyes.cs' TaskCount='3' />
+        <SourceFile Name='abc.cs' TaskCount='1' />
+        <SourceFile Name='foo.cs' TaskCount='1' />
+    </Rule>
+</SweptBuildReport>
+"
+            );
+
+            var csharpRule = new Rule {
+                ID = "DomainEvents 01",
+                Description = "Use DomainEvents instead of AcadisUserPersister and AuditRecordPersister"
+            };
+
+            SourceFile abc = new SourceFile("abc.cs");
+            SourceFile foo = new SourceFile("foo.cs");
+            SourceFile goo = new SourceFile("goo.cs");
+            SourceFile google = new SourceFile("google_eyes.cs");
+
+            var csharpFiles = new FileTasks();
+            csharpFiles[foo] = new FileMatch(true);
+            csharpFiles[abc] = new FileMatch(true);
+            csharpFiles[goo] = new LineMatch(new List<int> { 1, 2, 3 });
+            csharpFiles[google] = new LineMatch(new List<int> { 7, 77, 777 });
+
+            var rules = new RuleTasks();
+            rules[csharpRule] = csharpFiles;
+
+            string report = _reporter.ReportDetailsXml(rules, 20);
+
+            Assert.That(report, Is.EqualTo(expectedReport.ToString()));
+        }
+
+        [Test]
+        public void SourceFile__list_summarized_after_limit()
+        {
+            var expectedReport = XDocument.Parse(
+@"
+<SweptBuildReport TotalTasks='325' TotalFlags='0'>
+    <Rule 
+        ID='DomainEvents 01' 
+        Description='Use DomainEvents instead of AcadisUserPersister and AuditRecordPersister'
+        TotalTasks='325' AdditionalFiles='23'>
+
+        <SourceFile Name='fn_25.cs' TaskCount='25' />
+        <SourceFile Name='fn_24.cs' TaskCount='24' />
+    </Rule>
+</SweptBuildReport>
+"
+            );
+
+            var csharpRule = new Rule {
+                ID = "DomainEvents 01",
+                Description = "Use DomainEvents instead of AcadisUserPersister and AuditRecordPersister"
+            };
+
+            var csharpFiles = new FileTasks();
+
+            for (int i = 1; i < 26; i++)
+            {
+                var file = new SourceFile(String.Format("fn_{0}.cs", i));
+                var list = new List<int>();
+                for (int j = 0; j < i; j++)
+                {
+                    list.Add(j);
+                }
+                csharpFiles[file] = new LineMatch(list);
+            }
+
+            var rules = new RuleTasks();
+            rules[csharpRule] = csharpFiles;
+
+            string report = _reporter.ReportDetailsXml(rules, 2);
+
+            Assert.That(report, Is.EqualTo(expectedReport.ToString()));
+        }
+
+
+
 
         [Test]
         public void Files_with_false_FileMatch_not_added()
@@ -215,7 +306,7 @@ namespace swept.Tests
     <Rule 
         ID='DomainEvents 01' 
         Description='Use DomainEvents instead of AcadisUserPersister and AuditRecordPersister'
-        TotalTasks='1'>
+        TotalTasks='1' AdditionalFiles='0'>
         
         <SourceFile Name='foo.cs' TaskCount='1' />
     </Rule>
@@ -241,7 +332,7 @@ namespace swept.Tests
             var ruleTasks = new RuleTasks();
             ruleTasks[csharpRule] = csharpFiles;
 
-            string report = _reporter.ReportDetailsXml( ruleTasks );
+            string report = _reporter.ReportDetailsXml( ruleTasks, 20 );
 
             Assert.That( report, Is.EqualTo( expectedReport.ToString() ) );
         }
