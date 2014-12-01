@@ -31,11 +31,12 @@ namespace swept
 
     public class Rule
     {
-        public RuleFailOn FailOn { get; set; }
-        public string Notes { get; set; }
-        public List<SeeAlso> SeeAlsos { get; set; }
         public string ID { get; internal set; }
         public string Description { get; internal set; }
+        public string Notes { get; set; }
+        public string Rationale { get; set; }
+        public RuleFailOn FailOn { get; set; }
+        public List<SeeAlso> SeeAlsos { get; set; }
 
         public Rule()
         {
@@ -50,5 +51,6 @@ namespace swept
             match.Rule = this;
             return match;
         }
+
     }
 }

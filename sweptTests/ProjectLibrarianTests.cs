@@ -4,7 +4,7 @@
 using NUnit.Framework;
 using swept;
 using System;
-using System.Xml;
+using System.Linq;
 using System.IO;
 using swept.DSL;
 using System.Collections.Generic;
@@ -219,7 +219,7 @@ namespace swept.Tests
 
         [TestCase("web*")]
         [TestCase("b_52b")]
-        public void ListRule_returns_no_results_when_no_match( string searchString )
+        public void ShowRules_returns_no_results_when_no_match(string searchString)
         {
             Rule a_17 = new Rule { ID = "a_17", };
             Rule a_177 = new Rule { ID = "a_177", };
@@ -235,31 +235,13 @@ namespace swept.Tests
             Assert.That(rules.Count == 0);
         }
 
-        [TestCase("a_17", "a_17:  We should polish all widgets")]
-        [TestCase("b_52", "b_52:  Fix!")]
-        public void ListRule_finds_exact_match( string searchString, string foundResult)
-        {
-            Rule a_17 = new Rule { ID = "a_17", Description = "We should polish all widgets" };
-            Rule a_177 = new Rule { ID = "a_177", };
-            Rule b_52 = new Rule { ID = "b_52", Description = "Fix!"};
-
-            _ruleCatalog._rules.Clear();
-            _ruleCatalog.Add(b_52);
-            _ruleCatalog.Add(a_17);
-            _ruleCatalog.Add(a_177);
-
-            List<string> rules = Horace.ShowRules(searchString);
-
-            Assert.That(rules[0], Is.EqualTo(foundResult));
-        }
-
         [TestCase("a*", 2)]
         [TestCase("a_17*", 2)]
         [TestCase("a_4*", 0)]
         [TestCase("*2", 1)]
         [TestCase("a_17.*", 1)]  // this might be a surprise to regex-savvy people.
         [TestCase("A*", 2)]
-        public void ListRule_finds_case_insensitive_wildcard_matches(string searchString, int matchCount)
+        public void ShowRules_finds_case_insensitive_wildcard_matches(string searchString, int matchCount)
         {
             Rule a_17 = new Rule { ID = "a_17", };
             Rule a_177 = new Rule { ID = "a_177", };
@@ -275,5 +257,47 @@ namespace swept.Tests
             Assert.That(rules.Count == matchCount);
         }
 
+        [TestCase("a_17", "a_17:  We should polish all widgets")]
+        [TestCase("b_52", "b_52:  Fix!")]
+        public void ShowRules_finds_exact_match(string searchString, string foundResult)
+        {
+            Rule b_52 = new Rule { ID = "b_52", Description = "Fix!"};
+            Rule a_17 = new Rule { ID = "a_17", Description = "We should polish all widgets" };
+            Rule a_177 = new Rule { ID = "a_177", };
+
+            _ruleCatalog._rules.Clear();
+            _ruleCatalog.Add(b_52);
+            _ruleCatalog.Add(a_17);
+            _ruleCatalog.Add(a_177);
+
+            List<string> rules = Horace.ShowRules(searchString);
+
+            Assert.That(rules.Count(), Is.EqualTo(1));
+            Assert.That(rules[0], Is.StringStarting(foundResult));
+            // we know there's more, but other tests are checking the precise format
+            Assert.That(rules[0].Length, Is.GreaterThan(foundResult.Length));
+        }
+
+        [Test]
+        public void DisplayRuleDetail_gets_details()
+        {
+            string rationale = "Why I think this is important enough to eliminate";
+            string iD = "a_17";
+            string description = "We should remove every stain";
+            Rule a_17 = new Rule { ID = iD, Description = description, Notes = "a_17_notes", Rationale = rationale };
+
+            _ruleCatalog._rules.Clear();
+            _ruleCatalog.Add(a_17);
+
+            List<string> rules = Horace.ShowRules("a_17");
+
+            string expected =
+@"a_17:  We should remove every stain
+    Details:  a_17_notes
+    Why:  Why I think this is important enough to eliminate";
+
+            var actual = rules[0];
+            Assert.AreEqual(expected, actual);
+        }
     }
 }

@@ -83,7 +83,7 @@ namespace swept
                 try
                 {
                     //  When?:  rule.FailOn = RuleFailOn.Parse( failText );
-                    //  Or: rule.FailOn =  failText.To<RuleFailOn>();
+                    //  Or: rule.FailOn =  failText.ToEnumValue<RuleFailOn>();
                     //  Or even:  rule.FailOn = Enum.Parse<RuleFailOn>( failText );
                     rule.FailOn = (RuleFailOn)Enum.Parse( typeof( RuleFailOn ), failText );
                 }
