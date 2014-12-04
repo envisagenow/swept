@@ -366,6 +366,14 @@ namespace swept.Tests
             Assert.That(args.FileCountLimit, Is.EqualTo(10));
         }
 
+        [Test]
+        public void args_are_recognized_case_insensitive()
+        {
+            var argsText = new string[] { "LIbrarY:c:\\foo.library" };
+            var args = new Arguments(argsText, _storage);
+            Assert.That(args.Library, Is.EqualTo("c:\\foo.library"));
+        }
+
 
     }
 }

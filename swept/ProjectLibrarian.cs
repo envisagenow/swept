@@ -8,6 +8,7 @@ using System.IO;
 using System.Xml;
 using System.Xml.Linq;
 using System.Text.RegularExpressions;
+using System.Text;
 
 namespace swept
 {
@@ -177,7 +178,18 @@ namespace swept
         // TODO: ShowRules returns list of rules and the presentation code here gets a real home
         public string DisplayRuleDetail(Rule rule)
         {
-            return string.Format("{0}:  {1}\r\n    Details:  {2}\r\n    Why:  {3}", rule.ID, rule.Description, rule.Notes, rule.Rationale);
+            var builder = new StringBuilder();
+
+            builder.AppendFormat("{0}:  {1}", rule.ID, rule.Description);
+
+            if (!string.IsNullOrEmpty(rule.Why))
+                builder.AppendFormat("\r\n    Why:  {0}", rule.Why);
+
+            if (!string.IsNullOrEmpty(rule.Notes))
+                builder.AppendFormat("\r\n    Notes:  {0}", rule.Notes);
+
+
+            return builder.ToString();
         }
 
         public string DisplayRuleSummary(Rule rule)

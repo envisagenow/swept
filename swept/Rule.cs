@@ -32,19 +32,19 @@ namespace swept
     public class Rule
     {
         public string ID { get; internal set; }
-        public string Description { get; internal set; }
-        public string Notes { get; set; }
-        public string Rationale { get; set; }
-        public RuleFailOn FailOn { get; set; }
-        public List<SeeAlso> SeeAlsos { get; set; }
 
+        public string Description { get; internal set; }    // Describe the change from here to there
+        public string Why { get; set; }                     // Why it's important to do this, what goal it serves
+        public string Notes { get; set; }                   // Extra discussion or any other info not fitting elsewhere
+        public List<SeeAlso> SeeAlsos { get; set; }         // External resources supporting how or why
+
+        public RuleFailOn FailOn { get; set; }
         public Rule()
         {
             SeeAlsos = new List<SeeAlso>();
         }
 
         public ISubquery Subquery { get; set; }
-
         public ClauseMatch GetMatches( SourceFile file )
         {
             ClauseMatch match = Subquery.Answer( file );

@@ -158,7 +158,7 @@ This software is open source, MIT license.  See the file LICENSE for details.
                     tokens[1] += ":" + tokens[2];
                 }
 
-                switch (tokens[0])
+                switch (tokens[0].ToLower())
                 {
                 case "changeset":
                     ChangeSet = tokens[1];

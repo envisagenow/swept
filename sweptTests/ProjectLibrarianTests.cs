@@ -274,17 +274,15 @@ namespace swept.Tests
 
             Assert.That(rules.Count(), Is.EqualTo(1));
             Assert.That(rules[0], Is.StringStarting(foundResult));
-            // we know there's more, but other tests are checking the precise format
-            Assert.That(rules[0].Length, Is.GreaterThan(foundResult.Length));
         }
 
         [Test]
         public void DisplayRuleDetail_gets_details()
         {
-            string rationale = "Why I think this is important enough to eliminate";
+            string why = "We all agree that stains are intolerable";
             string iD = "a_17";
-            string description = "We should remove every stain";
-            Rule a_17 = new Rule { ID = iD, Description = description, Notes = "a_17_notes", Rationale = rationale };
+            string description = "Every Stain gets removed";
+            Rule a_17 = new Rule { ID = iD, Description = description, Notes = "a_17_notes, blah blah...", Why = why };
 
             _ruleCatalog._rules.Clear();
             _ruleCatalog.Add(a_17);
@@ -292,9 +290,51 @@ namespace swept.Tests
             List<string> rules = Horace.ShowRules("a_17");
 
             string expected =
-@"a_17:  We should remove every stain
-    Details:  a_17_notes
-    Why:  Why I think this is important enough to eliminate";
+@"a_17:  Every Stain gets removed
+    Why:  We all agree that stains are intolerable
+    Notes:  a_17_notes, blah blah...";
+
+            var actual = rules[0];
+            Assert.AreEqual(expected, actual);
+        }
+
+        [Test]
+        public void DisplayRuleDetail_omits_why_when_blank()
+        {
+            string iD = "a_17";
+            string description = "Every Stain gets removed";
+            Rule a_17 = new Rule { ID = iD, Description = description, Notes = "a_17_notes, blah blah..." };
+
+
+            _ruleCatalog._rules.Clear();
+            _ruleCatalog.Add(a_17);
+
+            List<string> rules = Horace.ShowRules("a_17");
+
+            string expected =
+@"a_17:  Every Stain gets removed
+    Notes:  a_17_notes, blah blah...";
+
+            var actual = rules[0];
+            Assert.AreEqual(expected, actual);
+        }
+
+        [Test]
+        public void DisplayRuleDetail_omits_notes_when_blank()
+        {
+            string why = "We all agree that stains are intolerable";
+            string iD = "a_17";
+            string description = "Every Stain gets removed";
+            Rule a_17 = new Rule { ID = iD, Description = description, Why = why };
+
+            _ruleCatalog._rules.Clear();
+            _ruleCatalog.Add(a_17);
+
+            List<string> rules = Horace.ShowRules("a_17");
+
+            string expected =
+@"a_17:  Every Stain gets removed
+    Why:  We all agree that stains are intolerable";
 
             var actual = rules[0];
             Assert.AreEqual(expected, actual);
