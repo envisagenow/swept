@@ -8,6 +8,22 @@ using System.Xml.Linq;
 
 namespace swept
 {
+    public class DetailDelta
+    {
+        public List<DetailDeltaFile> Files = new List<DetailDeltaFile>();
+    }
+
+    public class DetailDeltaFile
+    {
+        public string Name = string.Empty;
+        public List<DetailDeltaRule> Rules = new List<DetailDeltaRule>();
+    }
+
+    public class DetailDeltaRule
+    {
+
+    }
+
     public class RunInspector
     {
         private readonly RunHistory _runHistory;
@@ -32,6 +48,27 @@ namespace swept
             }
 
             return entry;
+        }
+
+        public DetailDelta GetDetailDelta(RuleTasks ruleTasks, RunDetails runDetails)
+        {
+
+            var result = new DetailDelta();
+
+            foreach (var file in runDetails.Files)
+            {
+                var detailDeltaFile = new DetailDeltaFile();
+                detailDeltaFile.Name = file.Name;
+
+                foreach (var rule in file.Rules)
+                {
+                     detailDeltaFile.Rules.Add (new DetailDeltaRule ());
+                }
+               
+                result.Files.Add(detailDeltaFile);
+            }
+
+            return result;
         }
 
         public XElement GenerateDeltaXml( RunEntry entry )

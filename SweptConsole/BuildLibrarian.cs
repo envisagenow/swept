@@ -9,6 +9,27 @@ using System.IO;
 
 namespace swept
 {
+    public class RunDetails
+    {
+        public int RunNumber = 0;
+        public DateTime DateTime = DateTime.MinValue;
+        public List<DetailFile> Files = new List<DetailFile>();
+    }
+
+    public class DetailFile
+    {
+        public string Name = string.Empty;
+        public List<DetailRule> Rules = new List<DetailRule>();
+    }
+
+    public class DetailRule
+    {
+        public string ID = string.Empty;
+        public int Was = 0;
+        public int Is = 0;
+        public bool Breaking = false;
+    }
+
     public class BuildLibrarian
     {
         private readonly IStorageAdapter _storage;
@@ -18,6 +39,46 @@ namespace swept
         {
             _args = args;
             _storage = storage;
+        }
+
+
+        public RunDetails ReadRunDetails( XDocument doc )
+        {
+            var result = new RunDetails();
+
+            if (doc.Root == null)
+                return result;
+
+            result.RunNumber = int.Parse(doc.Root.Attribute("RunNumber").Value);
+            result.DateTime = DateTime.Parse(doc.Root.Attribute("DateTime").Value);
+
+            foreach (var fileXml in doc.Descendants("File"))
+            {
+                var file = ReadDetailFile(fileXml);
+                result.Files.Add(file);
+
+            }
+
+            return result;
+        }
+
+        public DetailFile ReadDetailFile(XElement fileXml)
+        {
+            DetailFile result = new DetailFile();
+
+            result.Name = fileXml.Attribute("Name").Value;
+
+            foreach (var ruleXml in fileXml.Descendants("Rule"))
+            {
+                var rule = new DetailRule();
+                rule.ID = ruleXml.Attribute("ID").Value;
+                rule.Was = int.Parse(ruleXml.Attribute("Was").Value);
+                rule.Is = int.Parse(ruleXml.Attribute("Is").Value);
+                rule.Breaking = bool.Parse(ruleXml.Attribute("Breaking").Value);
+                result.Rules.Add(rule);
+            }
+            
+            return result;
         }
 
 

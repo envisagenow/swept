@@ -25,6 +25,60 @@ namespace swept.Tests
             _librarian = new BuildLibrarian( _args, _storage );
         }
 
+        [Test]
+        public void Empty_document_produces_Empty_RunDetails()
+        {
+            var result = _librarian.ReadRunDetails(new XDocument());
+
+            Assert.That(result, Is.InstanceOf<RunDetails>());
+            Assert.That(result.DateTime, Is.EqualTo(DateTime.MinValue));
+            Assert.That(result.RunNumber, Is.EqualTo(0));
+            Assert.That(result.Files.Count, Is.EqualTo(0));
+        }
+
+
+        [Test]
+        public void Minimal_document_produces_Proper_RunDetails()
+        {
+            // as we go on, we maintain what 'empty' means for a RunDetails object.
+
+            var detailsDoc = XDocument.Parse(
+@"<Run RunNumber=""22"" DateTime=""4/4/2012 10:25:02 AM"">
+    <File Name=""foo.cs"">
+        <Rule ID=""INT-012"" Was=""2"" Is=""5"" Breaking=""false"" />
+    </File>
+</Run>
+");
+
+            var result = _librarian.ReadRunDetails(detailsDoc);
+
+            Assert.That(result.RunNumber, Is.EqualTo(22));
+            Assert.That(result.DateTime, Is.EqualTo(DateTime.Parse("4/4/2012 10:25:02 AM")));
+            Assert.That(result.Files.Count, Is.EqualTo(1));
+        }
+
+        [Test]
+        public void Minimal_file_element_produces_Proper_DetailFile()
+        {
+            // as we go on, we maintain what 'empty' means for a RunDetails object.
+
+            var detailsDoc = XDocument.Parse(
+@"<File Name=""foo.cs"">
+    <Rule ID=""INT-012"" Was=""2"" Is=""5"" Breaking=""false"" />
+</File>
+");
+
+            var result = _librarian.ReadDetailFile(detailsDoc.Root);
+
+            Assert.That(result, Is.InstanceOf<DetailFile>());
+            Assert.That(result.Name, Is.EqualTo("foo.cs"));
+            Assert.That(result.Rules.Count, Is.EqualTo(1));
+            Assert.That(result.Rules[0].ID, Is.EqualTo("INT-012"));
+            Assert.That(result.Rules[0].Was, Is.EqualTo(2));
+            Assert.That(result.Rules[0].Is, Is.EqualTo(5));
+            Assert.That(result.Rules[0].Breaking, Is.False);
+        }
+
 
         [Test]
         public void we_can_read_run_history_from_disk()

@@ -41,7 +41,7 @@ namespace swept
             get
             {
                 if (Runs.Count() == 0) return 1;
-                else return Runs.Max( r => r.Number )  + 1;
+                else return Runs.Max( r => r.Number ) + 1;
             }
         }
 

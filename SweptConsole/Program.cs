@@ -106,7 +106,7 @@ namespace swept
             if (arguments.Check)
                 detailReport = reporter.ReportCheckResult( failures );
             else
-                detailReport = reporter.ReportDetailsXml( ruleTasks, arguments.FileCountLimit );
+                detailReport = reporter.ReportDetailsXml( ruleTasks, arguments.FileCountLimit, runHistory.NextRunNumber );
 
 
             buildLibrarian.WriteRunHistory( runHistory );
