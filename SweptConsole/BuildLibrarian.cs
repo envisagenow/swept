@@ -9,27 +9,6 @@ using System.IO;
 
 namespace swept
 {
-    public class RunDetails
-    {
-        public int RunNumber = 0;
-        public DateTime DateTime = DateTime.MinValue;
-        public List<DetailFile> Files = new List<DetailFile>();
-    }
-
-    public class DetailFile
-    {
-        public string Name = string.Empty;
-        public List<DetailRule> Rules = new List<DetailRule>();
-    }
-
-    public class DetailRule
-    {
-        public string ID = string.Empty;
-        public int Was = 0;
-        public int Is = 0;
-        public bool Breaking = false;
-    }
-
     public class BuildLibrarian
     {
         private readonly IStorageAdapter _storage;
@@ -40,7 +19,6 @@ namespace swept
             _args = args;
             _storage = storage;
         }
-
 
         public RunDetails ReadRunDetails( XDocument doc )
         {
@@ -67,6 +45,7 @@ namespace swept
             DetailFile result = new DetailFile();
 
             result.Name = fileXml.Attribute("Name").Value;
+            result.Delta = bool.Parse(fileXml.Attribute("Delta").Value);
 
             foreach (var ruleXml in fileXml.Descendants("Rule"))
             {

@@ -26,6 +26,11 @@ namespace swept
 
     public class LineMatch : ClauseMatch
     {
+        public LineMatch(params int[] lines)
+        {
+            Lines = lines.ToList();
+        }
+
         public LineMatch( IEnumerable<int> lines )
         {
             Lines = new List<int>( lines );

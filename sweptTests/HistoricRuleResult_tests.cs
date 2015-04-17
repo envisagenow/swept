@@ -63,31 +63,31 @@ namespace swept.Tests
         }
 
 
-        [Test]
-        public void finding_deltas_later()
-        {
-            Assert.Fail("I'll be back.");
+        //[Test]
+        //public void finding_deltas_later()
+        //{
+        //    Assert.Fail("I'll be back.");
 
-            var csharpRule = new Rule {
-                ID = "DomainEvents 01",
-                Description = "Use DomainEvents instead of AcadisUserPersister and AuditRecordPersister"
-            };
+        //    var csharpRule = new Rule {
+        //        ID = "DomainEvents 01",
+        //        Description = "Use DomainEvents instead of AcadisUserPersister and AuditRecordPersister"
+        //    };
 
-            SourceFile abc = new SourceFile("abc.cs");
-            SourceFile foo = new SourceFile("foo.cs");
-            SourceFile goo = new SourceFile("goo.cs");
-            SourceFile google = new SourceFile("google_eyes.cs");
+        //    SourceFile abc = new SourceFile("abc.cs");
+        //    SourceFile foo = new SourceFile("foo.cs");
+        //    SourceFile goo = new SourceFile("goo.cs");
+        //    SourceFile google = new SourceFile("google_eyes.cs");
 
-            var csharpFiles = new FileTasks();
-            csharpFiles[foo] = new FileMatch(true);
-            csharpFiles[abc] = new FileMatch(true);
-            csharpFiles[goo] = new LineMatch(new List<int> { 1, 2, 3 });
-            csharpFiles[google] = new LineMatch(new List<int> { 7, 77, 777 });
+        //    var csharpFiles = new FileTasks();
+        //    csharpFiles[foo] = new FileMatch(true);
+        //    csharpFiles[abc] = new FileMatch(true);
+        //    csharpFiles[goo] = new LineMatch(new List<int> { 1, 2, 3 });
+        //    csharpFiles[google] = new LineMatch(new List<int> { 7, 77, 777 });
 
-            var rules = new RuleTasks();
-            rules[csharpRule] = csharpFiles;
+        //    var rules = new RuleTasks();
+        //    rules[csharpRule] = csharpFiles;
 
-        }
+        //}
 
 
         [Test]

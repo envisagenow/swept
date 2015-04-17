@@ -70,6 +70,7 @@
     <Compile Include="BreakageDelta.cs" />
     <Compile Include="BuildReporter.cs" />
     <Compile Include="Commit.cs" />
+    <Compile Include="DetailFile.cs" />
     <Compile Include="Flag.cs" />
     <Compile Include="RuleResult.cs" />
     <Compile Include="RunHistory.cs" />

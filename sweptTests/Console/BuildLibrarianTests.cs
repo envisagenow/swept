@@ -10,6 +10,7 @@ using System.IO;
 
 namespace swept.Tests
 {
+
     [TestFixture]
     public class BuildLibrarianTests
     {
@@ -44,13 +45,13 @@ namespace swept.Tests
 
             var detailsDoc = XDocument.Parse(
 @"<Run RunNumber=""22"" DateTime=""4/4/2012 10:25:02 AM"">
-    <File Name=""foo.cs"">
+    <File Name=""foo.cs"" Delta=""true"">
         <Rule ID=""INT-012"" Was=""2"" Is=""5"" Breaking=""false"" />
     </File>
 </Run>
 ");
 
-            var result = _librarian.ReadRunDetails(detailsDoc);
+            RunDetails result = _librarian.ReadRunDetails(detailsDoc);
 
             Assert.That(result.RunNumber, Is.EqualTo(22));
             Assert.That(result.DateTime, Is.EqualTo(DateTime.Parse("4/4/2012 10:25:02 AM")));
@@ -63,20 +64,53 @@ namespace swept.Tests
             // as we go on, we maintain what 'empty' means for a RunDetails object.
 
             var detailsDoc = XDocument.Parse(
-@"<File Name=""foo.cs"">
+@"<File Name=""foo.cs"" Delta=""true"">
     <Rule ID=""INT-012"" Was=""2"" Is=""5"" Breaking=""false"" />
 </File>
 ");
 
-            var result = _librarian.ReadDetailFile(detailsDoc.Root);
+            DetailFile fileFoo = _librarian.ReadDetailFile(detailsDoc.Root);
 
-            Assert.That(result, Is.InstanceOf<DetailFile>());
-            Assert.That(result.Name, Is.EqualTo("foo.cs"));
-            Assert.That(result.Rules.Count, Is.EqualTo(1));
-            Assert.That(result.Rules[0].ID, Is.EqualTo("INT-012"));
-            Assert.That(result.Rules[0].Was, Is.EqualTo(2));
-            Assert.That(result.Rules[0].Is, Is.EqualTo(5));
-            Assert.That(result.Rules[0].Breaking, Is.False);
+            Assert.That(fileFoo, Is.InstanceOf<DetailFile>());
+            Assert.That(fileFoo.Name, Is.EqualTo("foo.cs"));
+            Assert.That(fileFoo.Delta, Is.True);
+            Assert.That(fileFoo.Rules.Count, Is.EqualTo(1));
+
+            DetailRule int012 = fileFoo.Rules[0];
+            Assert.That(int012.ID, Is.EqualTo("INT-012"));
+            Assert.That(int012.Was, Is.EqualTo(2));
+            Assert.That(int012.Is, Is.EqualTo(5));
+            Assert.That(int012.Breaking, Is.False);
+        }
+
+        [Test]
+        public void Another_file_element_produces_Proper_DetailFile()
+        {
+            var detailsDoc = XDocument.Parse(
+@"<File Name=""bar.cs"" Delta=""false"">
+    <Rule ID=""INT-004"" Was=""2"" Is=""2"" Breaking=""false"" />
+    <Rule ID=""INT-007"" Was=""22"" Is=""22"" Breaking=""false"" />
+</File>
+");
+
+            DetailFile fileBar = _librarian.ReadDetailFile(detailsDoc.Root);
+
+            Assert.That(fileBar, Is.InstanceOf<DetailFile>());
+            Assert.That(fileBar.Name, Is.EqualTo("bar.cs"));
+            Assert.That(fileBar.Delta, Is.False);
+            Assert.That(fileBar.Rules.Count, Is.EqualTo(2));
+
+            DetailRule rule4 = fileBar.Rules[0];
+            Assert.That(rule4.ID, Is.EqualTo("INT-004"));
+            Assert.That(rule4.Was, Is.EqualTo(2));
+            Assert.That(rule4.Is, Is.EqualTo(2));
+            Assert.That(rule4.Breaking, Is.False);
+
+            DetailRule rule7 = fileBar.Rules[1];
+            Assert.That(rule7.ID, Is.EqualTo("INT-007"));
+            Assert.That(rule7.Was, Is.EqualTo(22));
+            Assert.That(rule7.Is, Is.EqualTo(22));
+            Assert.That(rule7.Breaking, Is.False);
         }
 
 

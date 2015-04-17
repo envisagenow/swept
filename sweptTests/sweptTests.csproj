@@ -71,6 +71,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Console\AddNewDetailsToNextRunDetails_tests.cs" />
+    <Compile Include="Console\BuildNewRunDetails_tests.cs" />
     <Compile Include="RunInspector_Flagging_tests.cs" />
     <Compile Include="HistoricRuleResult_tests.cs" />
     <Compile Include="Extension_tests.cs" />
