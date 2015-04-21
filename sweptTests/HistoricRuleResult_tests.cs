@@ -24,7 +24,7 @@ namespace swept.Tests
         [Test]
         public void Inspector_finds_no_delta_between_empty_sources()
         {
-            DetailDelta result = _inspector.GetDetailDelta(new RuleTasks(), new RunDetails());
+            DetailDelta result = _inspector.GetDetailDelta(new RuleTasks(), new RunChanges());
 
 
             Assert.That(result, Is.InstanceOf<DetailDelta>());
@@ -34,14 +34,14 @@ namespace swept.Tests
         [Test]
         public void Inspector_finds_all_RunDetails_for_delta_with_empty_RuleTasks()
         {
-            RunDetails runDetails = new RunDetails();
+            RunChanges runDetails = new RunChanges();
             runDetails.RunNumber = 4;
             runDetails.DateTime = DateTime.Now;
 
-            DetailFile detailFile = new DetailFile();
+            FileChange detailFile = new FileChange();
             detailFile.Name = "somefile.cs";
 
-            DetailRule detailRule = new DetailRule();
+            RuleChange detailRule = new RuleChange();
             detailRule.ID = "INT-011";
             detailRule.Was = 3;
             detailRule.Is = 6;

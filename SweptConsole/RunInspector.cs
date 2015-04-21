@@ -1,5 +1,5 @@
 //  Swept:  Software Enhancement Progress Tracking.
-//  Copyright (c) 2009, 2012 Jason Cole and Envisage Technologies Corp.
+//  Copyright (c) 2009, 2015 Jason Cole and Envisage Technologies Corp.
 //  This software is open source, MIT license.  See the file LICENSE for details.
 using System;
 using System.Linq;
@@ -50,7 +50,7 @@ namespace swept
             return entry;
         }
 
-        public DetailDelta GetDetailDelta(RuleTasks ruleTasks, RunDetails runDetails)
+        public DetailDelta GetDetailDelta(RuleTasks ruleTasks, RunChanges runDetails)
         {
 
             var result = new DetailDelta();

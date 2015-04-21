@@ -1,5 +1,5 @@
 ﻿//  Swept:  Software Enhancement Progress Tracking.
-//  Copyright (c) 2009, 2013 Jason Cole and Envisage Technologies Corp.
+//  Copyright (c) 2009, 2015 Jason Cole and Envisage Technologies Corp.
 //  This software is open source, MIT license.  See the file LICENSE for details.
 using System;
 using System.Linq;
@@ -20,9 +20,9 @@ namespace swept
             _storage = storage;
         }
 
-        public RunDetails ReadRunDetails( XDocument doc )
+        public RunChanges ReadRunChanges( XDocument doc )
         {
-            var result = new RunDetails();
+            var result = new RunChanges();
 
             if (doc.Root == null)
                 return result;
@@ -32,7 +32,7 @@ namespace swept
 
             foreach (var fileXml in doc.Descendants("File"))
             {
-                var file = ReadDetailFile(fileXml);
+                var file = ReadFileChange(fileXml);
                 result.Files.Add(file);
 
             }
@@ -40,16 +40,15 @@ namespace swept
             return result;
         }
 
-        public DetailFile ReadDetailFile(XElement fileXml)
+        public FileChange ReadFileChange(XElement fileXml)
         {
-            DetailFile result = new DetailFile();
+            FileChange result = new FileChange();
 
             result.Name = fileXml.Attribute("Name").Value;
-            result.Delta = bool.Parse(fileXml.Attribute("Delta").Value);
 
             foreach (var ruleXml in fileXml.Descendants("Rule"))
             {
-                var rule = new DetailRule();
+                var rule = new RuleChange();
                 rule.ID = ruleXml.Attribute("ID").Value;
                 rule.Was = int.Parse(ruleXml.Attribute("Was").Value);
                 rule.Is = int.Parse(ruleXml.Attribute("Is").Value);
