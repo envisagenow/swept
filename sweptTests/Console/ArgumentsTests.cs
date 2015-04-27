@@ -44,7 +44,7 @@ namespace swept.Tests
         [Test]
         public void unknown_args_throw()
         {
-            var argsText = new string[] { "oddity:unrecognized_arg_name", "library:unused" };
+            var argsText = new string[] { "oddity:unrecognized_arg_name" };
             var ex = Assert.Throws<Exception>( () => new Arguments(argsText, _storage) );
             
             Assert.That( ex.Message, Is.EqualTo( "Don't recognize the argument [oddity]." ) );
@@ -53,7 +53,7 @@ namespace swept.Tests
         [TestCase( "usage" )]
         [TestCase( "help" )]
         [TestCase( "/?" )]
-        public void Request_for_help_works( string help )
+        public void Help_arg_works_even_without_library_arg( string help )
         {
             var args = new Arguments( new string[] { help }, _storage );
 
@@ -68,7 +68,7 @@ namespace swept.Tests
         }
 
         [Test]
-        public void Version_emits_version_and_copyright_even_when_missing_library()
+        public void Version_arg_works_even_without_library_arg()
         {
             var args = new Arguments( new string[] { "version" }, _storage );
             string output;
@@ -82,7 +82,7 @@ namespace swept.Tests
         }
 
         [Test]
-        public void Missing_History_arg_will_use_single_history_found_in_folder()
+        public void History_arg_will_default_to_single_history_found_in_folder()
         {
             var searchFolder = "f:\\work\\search_here";
             var foundHistory = "found.swept.history";
@@ -97,7 +97,7 @@ namespace swept.Tests
 
         [TestCase( "foo.custom.library.name", "foo.custom.history.name" )]
         [TestCase( "foo.custom.odd", "foo.custom.odd.history" )]
-        public void Missing_History_arg_will_assume_name_from_library_name( string libName, string expectedHistoryName )
+        public void History_arg_will_default_to_name_from_library_name( string libName, string expectedHistoryName )
         {
             var searchFolder = "f:\\work\\search_here";
             var foundFiles = new List<string>();
@@ -108,19 +108,7 @@ namespace swept.Tests
 
             Assert.That( args.History, Is.EqualTo( Path.Combine( searchFolder, expectedHistoryName ) ) );
         }
-
-        [Test]
-        public void Missing_Library_arg_will_throw_when_no_library_found_in_folder()
-        {
-            _storage.FilesInFolder["f:\\work\\search_here"] = new List<string>();
-            var argsText = new string[] { "folder:f:\\work\\search_here" };
-
-            var ex = Assert.Throws<Exception>( () => new Arguments( argsText, _storage ) );
-
-            Assert.That( ex.Message, Is.EqualTo( "A library is required for Swept to run.  No library found in folder [f:\\work\\search_here]." ) );
-        }
-
-        [Test]
+        [Test]  //  same as above?
         public void Omitting_Library_arg_will_use_single_library_found_in_folder()
         {
             var searchFolder = "f:\\work\\search_here";
@@ -129,9 +117,21 @@ namespace swept.Tests
             _storage.FilesInFolder[searchFolder] = foundFiles;
 
             var argsText = new string[] { "folder:" + searchFolder };
-            var args = new Arguments( argsText, _storage );
+            var args = new Arguments(argsText, _storage);
 
-            Assert.That( args.Library, Is.EqualTo( Path.Combine( searchFolder, foundLibrary ) ) );
+            Assert.That(args.Library, Is.EqualTo(Path.Combine(searchFolder, foundLibrary)));
+        }
+
+
+        [Test]
+        public void Missing_Library_arg_throws_when_no_library_found_in_folder()
+        {
+            _storage.FilesInFolder["f:\\work\\search_here"] = new List<string>();
+            var argsText = new string[] { "folder:f:\\work\\search_here" };
+
+            var ex = Assert.Throws<Exception>( () => new Arguments( argsText, _storage ) );
+
+            Assert.That( ex.Message, Is.EqualTo( "A library is required for Swept to run.  No library found in folder [f:\\work\\search_here]." ) );
         }
 
         [Test]

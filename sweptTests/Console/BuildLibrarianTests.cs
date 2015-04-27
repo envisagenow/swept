@@ -11,6 +11,7 @@ using System.IO;
 namespace swept.Tests
 {
 
+
     [TestFixture]
     public class BuildLibrarianTests
     {
@@ -25,90 +26,6 @@ namespace swept.Tests
             _args = new Arguments( new string[] { "library:foo.library", "history:foo.history" }, _storage );
             _librarian = new BuildLibrarian( _args, _storage );
         }
-
-        [Test]
-        public void Empty_document_produces_Empty_RunChanges()
-        {
-            var result = _librarian.ReadRunChanges(new XDocument());
-
-            Assert.That(result, Is.InstanceOf<RunChanges>());
-            Assert.That(result.DateTime, Is.EqualTo(DateTime.MinValue));
-            Assert.That(result.RunNumber, Is.EqualTo(0));
-            Assert.That(result.Files.Count, Is.EqualTo(0));
-        }
-
-
-        [Test]
-        public void Minimal_document_produces_Proper_RunChanges()
-        {
-            // as we go on, we maintain what 'empty' means for a RunDetails object.
-
-            var changesDoc = XDocument.Parse(
-@"<Run RunNumber=""22"" DateTime=""4/4/2012 10:25:02 AM"">
-    <File Name=""foo.cs"">
-        <Rule ID=""INT-012"" Was=""2"" Is=""5"" Breaking=""false"" />
-    </File>
-</Run>
-");
-
-            RunChanges result = _librarian.ReadRunChanges(changesDoc);
-
-            Assert.That(result.RunNumber, Is.EqualTo(22));
-            Assert.That(result.DateTime, Is.EqualTo(DateTime.Parse("4/4/2012 10:25:02 AM")));
-            Assert.That(result.Files.Count, Is.EqualTo(1));
-        }
-
-        [Test]
-        public void Minimal_file_element_produces_Proper_FileChange()
-        {
-            var changesDoc = XDocument.Parse(
-@"<File Name=""foo.cs"">
-    <Rule ID=""INT-012"" Was=""2"" Is=""5"" Breaking=""false"" />
-</File>
-");
-
-            FileChange fileFoo = _librarian.ReadFileChange(changesDoc.Root);
-
-            Assert.That(fileFoo, Is.InstanceOf<FileChange>());
-            Assert.That(fileFoo.Name, Is.EqualTo("foo.cs"));
-            Assert.That(fileFoo.Rules.Count, Is.EqualTo(1));
-
-            RuleChange int012 = fileFoo.Rules[0];
-            Assert.That(int012.ID, Is.EqualTo("INT-012"));
-            Assert.That(int012.Was, Is.EqualTo(2));
-            Assert.That(int012.Is, Is.EqualTo(5));
-            Assert.That(int012.Breaking, Is.False);
-        }
-
-        [Test]
-        public void Another_file_element_produces_Proper_FileChanges()
-        {
-            var changesDoc = XDocument.Parse(
-@"<File Name=""bar.cs"" Delta=""false"">
-    <Rule ID=""INT-004"" Was=""2"" Is=""2"" Breaking=""false"" />
-    <Rule ID=""INT-007"" Was=""22"" Is=""22"" Breaking=""false"" />
-</File>
-");
-
-            FileChange fileBar = _librarian.ReadFileChange(changesDoc.Root);
-
-            Assert.That(fileBar, Is.InstanceOf<FileChange>());
-            Assert.That(fileBar.Name, Is.EqualTo("bar.cs"));
-            Assert.That(fileBar.Rules.Count, Is.EqualTo(2));
-
-            RuleChange rule4 = fileBar.Rules[0];
-            Assert.That(rule4.ID, Is.EqualTo("INT-004"));
-            Assert.That(rule4.Was, Is.EqualTo(2));
-            Assert.That(rule4.Is, Is.EqualTo(2));
-            Assert.That(rule4.Breaking, Is.False);
-
-            RuleChange rule7 = fileBar.Rules[1];
-            Assert.That(rule7.ID, Is.EqualTo("INT-007"));
-            Assert.That(rule7.Was, Is.EqualTo(22));
-            Assert.That(rule7.Is, Is.EqualTo(22));
-            Assert.That(rule7.Breaking, Is.False);
-        }
-
 
         [Test]
         public void we_can_read_run_history_from_disk()

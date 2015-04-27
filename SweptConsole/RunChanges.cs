@@ -53,6 +53,7 @@ namespace swept
                     var fileChange = GetFileChange(sourcefile);
                     var ruleChange = fileChange.GetRuleChange(rule.ID);
                     ruleChange.Is = match.Count;
+                    fileChange.Changed = fileChange.Changed || (ruleChange.Is != ruleChange.Was);
                 }
             }
         }
@@ -76,6 +77,7 @@ namespace swept
     {
         public string Name = string.Empty;
         public List<RuleChange> Rules = new List<RuleChange>();
+        public bool Changed;
 
         public RuleChange GetRuleChange(string ruleID)
         {
@@ -95,7 +97,6 @@ namespace swept
         public string ID = string.Empty;
         public int Was = 0;
         public int Is = 0;
-        public bool Breaking = false;
     }
 
 }

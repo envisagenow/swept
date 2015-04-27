@@ -1,5 +1,5 @@
 ﻿//  Swept:  Software Enhancement Progress Tracking.
-//  Copyright (c) 2009, 2012 Jason Cole and Envisage Technologies Corp.
+//  Copyright (c) 2009, 2015 Jason Cole and Envisage Technologies Corp.
 //  This software is open source, MIT license.  See the file LICENSE for details.
 using System;
 using System.Xml;
@@ -14,7 +14,7 @@ namespace swept.Tests
     {
         public MockStorageAdapter()
         {
-            setDocFromText( StorageAdapter.emptyCatalogText );
+            setDocFromText(StorageAdapter.emptyCatalogText);
             FilesInFolder = new Dictionary<string, List<string>>();
             FoldersInFolder = new Dictionary<string, List<string>>();
             _loadedFiles = new List<string>();
@@ -33,22 +33,23 @@ namespace swept.Tests
         public string CWD = String.Empty;
         public bool ThrowBadXmlException;
 
-        public TextWriter GetOutputWriter( string output )
+        public TextWriter GetOutputWriter(string output)
         {
             throw new NotImplementedException();
         }
-        private void setDocFromText( string xmlText )
+
+        private void setDocFromText(string xmlText)
         {
-            LibraryDoc = XDocument.Parse( xmlText );
+            LibraryDoc = XDocument.Parse(xmlText);
         }
 
         private IOException _ll_ioex;
-        public void LoadLibrary_Throw( IOException ex )
+        public void LoadLibrary_Throw(IOException ex)
         {
             _ll_ioex = ex;
         }
 
-        public XDocument LoadLibrary( string libraryPath )
+        public XDocument LoadLibrary(string libraryPath)
         {
             if (_ll_ioex != null)
                 throw _ll_ioex;
@@ -69,19 +70,19 @@ namespace swept.Tests
         }
 
         private IOException _gfif_ioex;
-        public void GetFilesInFolder_Throw( IOException ex )
+        public void GetFilesInFolder_Throw(IOException ex)
         {
             _gfif_ioex = ex;
         }
 
-        public IEnumerable<string> GetFilesInFolder( string folder )
+        public IEnumerable<string> GetFilesInFolder(string folder)
         {
             if (_gfif_ioex != null)
                 throw _gfif_ioex;
 
             foreach (var key in FilesInFolder.Keys)
             {
-                if (key.Equals( folder, StringComparison.InvariantCultureIgnoreCase ))
+                if (key.Equals(folder, StringComparison.InvariantCultureIgnoreCase))
                     return FilesInFolder[key];
             }
             return new List<string>();
@@ -89,51 +90,56 @@ namespace swept.Tests
 
 
         // TODO: I should actually use the searchPattern in this overload
-        public IEnumerable<string> GetFilesInFolder( string folder, string searchPattern )
+        public IEnumerable<string> GetFilesInFolder(string folder, string searchPattern)
         {
-            if (FilesInFolder.ContainsKey( folder ))
+            if (FilesInFolder.ContainsKey(folder))
                 return FilesInFolder[folder];
 
             return new List<string>();
         }
 
-        public IEnumerable<string> GetFoldersInFolder( string folder )
+        public IEnumerable<string> GetFoldersInFolder(string folder)
         {
             foreach (var key in FoldersInFolder.Keys)
             {
-                if (key.Equals( folder, StringComparison.InvariantCultureIgnoreCase ))
+                if (key.Equals(folder, StringComparison.InvariantCultureIgnoreCase))
                     return FoldersInFolder[key];
             }
 
             return new List<string>();
         }
 
-        public SourceFile LoadFile( string fileName )
+        public SourceFile LoadFile(string fileName)
         {
-            if (!_loadedFiles.Contains( fileName ))
+            if (!_loadedFiles.Contains(fileName))
             {
-                _loadedFiles.Add( fileName );
+                _loadedFiles.Add(fileName);
             }
 
-            if (FilesToFailToLoad.Contains( fileName )) return null;
-            return new SourceFile( fileName );
+            if (FilesToFailToLoad.Contains(fileName)) return null;
+            return new SourceFile(fileName);
         }
 
 
-        internal bool DidLoad( string fileName )
+        internal bool DidLoad(string fileName)
         {
-            return _loadedFiles.Contains( fileName );
+            return _loadedFiles.Contains(fileName);
+        }
+
+        public void SaveRunChanges(XDocument runChanges, string fileName)
+        {
+            throw new NotImplementedException();
         }
 
         public string SavedHistoryFileName;
-        public void SaveRunHistory( XDocument runHistory, string fileName )
+        public void SaveRunHistory(XDocument runHistory, string fileName)
         {
             RunHistory = runHistory;
             SavedHistoryFileName = fileName;
         }
 
         public Exception RunHistoryNotFoundException { get; set; }
-        public XDocument LoadRunHistory( string historyPath )
+        public XDocument LoadRunHistory(string historyPath)
         {
             if (RunHistoryNotFoundException != null)
                 throw RunHistoryNotFoundException;
@@ -141,7 +147,7 @@ namespace swept.Tests
         }
 
         public Exception ChangeSetNotFoundException { get; set; }
-        public XDocument LoadChangeSet( string changeSetPath )
+        public XDocument LoadChangeSet(string changeSetPath)
         {
             if (ChangeSetNotFoundException != null)
                 throw ChangeSetNotFoundException;

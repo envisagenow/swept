@@ -1,5 +1,5 @@
 ﻿//  Swept:  Software Enhancement Progress Tracking.
-//  Copyright (c) 2009, 2013 Jason Cole and Envisage Technologies Corp.
+//  Copyright (c) 2009, 2015 Jason Cole and Envisage Technologies Corp.
 //  This software is open source, MIT license.  See the file LICENSE for details.
 using System;
 using System.Linq;
@@ -16,6 +16,7 @@ namespace swept
     {
         public bool BreakOnDeltaDrop { get; private set; }
         public string ChangeSet { get; private set; }
+        public string ChangesFileName { get; private set; }
         public bool Check { get; private set; }
         public string DeltaFileName { get; private set; }
         public string DetailsFileName { get; private set; }
@@ -32,9 +33,10 @@ namespace swept
         public string Show { get; set; }
         public int FileCountLimit { get; set; }
 
+
         public bool AreInvalid
         {
-            get { return String.IsNullOrEmpty( Folder ); }
+            get { return String.IsNullOrEmpty(Folder); }
         }
 
         public static string UsageMessage
@@ -47,7 +49,6 @@ namespace swept
   Arguments:
     help:      Or 'h' or 'usage', gets this message.
     version:   Prints a brief version and credits message, and terminates.
-    debug:     Triggers a Debugger.Launch(), then continues as usual.
     show:      Show all rules ('show'), or a wildcarded subset ('show:ETC*').
     rule:      Followed by an ID, runs that rule from the catalog.
     adhoc:     Followed by a literal rule, runs it in the current directory.
@@ -59,20 +60,25 @@ namespace swept
       Swept needs a library to run.
     exclude:   A comma-separated list of folders Swept will not search
       within.  All folders below these are also excluded.
-    pipe:svn:  Indicates that standard In will contain the output from an
-      svn status command, and these files will be used as the file list
-      to search for violations.
+    debug:     Triggers a Debugger.Launch(), then continues as usual.
+
     details:   The filename to get the detailed XML of the run.
     history:   The filename to read and update to maintain the delta.
       If no history file is specified, the library filename is used,
       with the '.library' suffix replaced with '.history'.
+    trackhistory:  Turns on tracking of result history.  Needed to generate
+      the delta report.
     delta:     The filename to get the delta of red-line rules.
       If no delta file is specified, a text delta report goes to the console.
-    trackhistory:  Turns on tracking of result history.
+    change:    The filename to get the change list since changes were
+      last tracked.
 ---
 Features below are Not Yet Implemented:
 *** files:  A comma-separated list of files to search for violations.  Not
       compatible with the 'folder' argument.
+    pipe:svn:  Indicates that standard In will contain the output from an
+      svn status command, and these files will be used as the file list
+      to search for violations.
 ";
             }
         }
@@ -82,16 +88,17 @@ Features below are Not Yet Implemented:
             get
             {
                 return @"Swept version 0.4, Swept core version 0.6.0
-Copyright (c) 2009, 2012 Jason Cole and Envisage Technologies Corp.
+Copyright (c) 2009, 2015 Jason Cole and Envisage Technologies Corp.
 This software is open source, MIT license.  See the file LICENSE for details.
 ";
             }
         }
 
-        public Arguments( string[] args, IStorageAdapter storageAdapter )
+        public Arguments(string[] args, IStorageAdapter storageAdapter)
         {
             BreakOnDeltaDrop = false;
             ChangeSet = "new_commits.xml";
+            ChangesFileName = string.Empty;
             Check = false;
             DetailsFileName = string.Empty;
             DeltaFileName = string.Empty;
@@ -110,7 +117,7 @@ This software is open source, MIT license.  See the file LICENSE for details.
 
             foreach (string s in args)
             {
-                if (!s.Contains( ":" ))
+                if (!s.Contains(":"))
                 {
                     switch (s.ToLower())
                     {
@@ -135,23 +142,23 @@ This software is open source, MIT license.  See the file LICENSE for details.
                     case "h":
                     case "/?":
                         ShowUsage = true;
-                        return;                        
-                    
+                        return;
+
                     case "trackhistory":
                         TrackHistory = true;
                         continue;
-                    
+
                     case "show":
                         Show = "*";
                         continue;
 
                     default:
-                        exceptionMessages.Add( String.Format( "Don't understand the input [{0}].  Try 'swept h' for help with arguments.", s ) );
+                        exceptionMessages.Add(String.Format("Don't understand the input [{0}].  Try 'swept h' for help with arguments.", s));
                         continue;
                     }
                 }
 
-                string[] tokens = s.Split( ':' );
+                string[] tokens = s.Split(':');
 
                 if (tokens.Length > 2)
                 {
@@ -164,6 +171,10 @@ This software is open source, MIT license.  See the file LICENSE for details.
                     ChangeSet = tokens[1];
                     break;
 
+                case "changes":
+                    ChangesFileName = tokens[1];
+                    break;
+
                 case "delta":
                     DeltaFileName = tokens[1];
                     break;
@@ -174,7 +185,7 @@ This software is open source, MIT license.  See the file LICENSE for details.
                     break;
 
                 case "exclude":
-                    Exclude = tokens[1].Split( ',' );
+                    Exclude = tokens[1].Split(',');
                     break;
 
                 case "filelimit":
@@ -195,14 +206,14 @@ This software is open source, MIT license.  See the file LICENSE for details.
 
                 case "pipe":
                     // TODO: Friendly let-down if they have an unrecognized VCS pipe-source
-                    PipeSource = (PipeSource)Enum.Parse( typeof( PipeSource ), tokens[1], true );
+                    PipeSource = (PipeSource)Enum.Parse(typeof(PipeSource), tokens[1], true);
                     break;
 
                 case "rule":
                     if (tokens[1].IndexOf(",") == -1)
-                        SpecifiedRules.Add( tokens[1] );
+                        SpecifiedRules.Add(tokens[1]);
                     else
-                        SpecifiedRules.AddRange( tokens[1].Split( ',' ) );
+                        SpecifiedRules.AddRange(tokens[1].Split(','));
                     break;
 
                 case "adhoc":
@@ -216,20 +227,25 @@ This software is open source, MIT license.  See the file LICENSE for details.
                 case null:
                 case "":
                 default:
-                    exceptionMessages.Add( String.Format( "Don't recognize the argument [{0}].", tokens[0] ) );
+                    exceptionMessages.Add(String.Format("Don't recognize the argument [{0}].", tokens[0]));
                     break;
                 }
             }
 
-            if (String.IsNullOrEmpty( Folder ))
+            if (String.IsNullOrEmpty(Folder))
             {
                 Folder = storageAdapter.GetCWD();
             }
 
-            if (!Folder.Contains( storageAdapter.GetCWD() ))
+            if (!Folder.Contains(storageAdapter.GetCWD()))
             {
-                Folder = Path.Combine( storageAdapter.GetCWD() , Folder);
+                Folder = Path.Combine(storageAdapter.GetCWD(), Folder);
             }
+
+
+            if (!ShowVersion && !ShowUsage && exceptionMessages.Any())
+                throw new Exception(string.Join("\n", exceptionMessages.ToArray()));
+
 
             if (string.IsNullOrEmpty( Library ))
             {
@@ -244,45 +260,46 @@ This software is open source, MIT license.  See the file LICENSE for details.
                     Library = possibilities.First();
             }
 
-            if (string.IsNullOrEmpty( History ))
+            if (!ShowVersion && !ShowUsage && exceptionMessages.Any())
+                throw new Exception(string.Join("\n", exceptionMessages.ToArray()));
+
+
+            if (string.IsNullOrEmpty(History))
             {
-                var candidates = storageAdapter.GetFilesInFolder( Folder, "*.swept.history" );
+                var candidates = storageAdapter.GetFilesInFolder(Folder, "*.swept.history");
                 int candidateCount = candidates.Count();
 
                 if (candidateCount == 1)
                     History = candidates.First();
                 else if (candidateCount == 0)
                 {
-                    History = Regex.Replace( Library, "library", "history" );
+                    History = Regex.Replace(Library, "library", "history");
                     if (History == Library)
                         History = Library + ".history";
                 }
             }
 
-            if (!ShowVersion && !ShowUsage && exceptionMessages.Any())
-                throw new Exception( string.Join( "\n", exceptionMessages.ToArray() ) );
-
-            if (!string.IsNullOrEmpty( Folder ) && Folder[1] == ':')
+            if (!string.IsNullOrEmpty(Folder) && Folder[1] == ':')
             {
-                if (!string.IsNullOrEmpty( Library ) && Library[1] != ':')
-                    Library = Path.Combine( Folder, Library );
-                if (!string.IsNullOrEmpty( History ) && History[1] != ':')
-                    History = Path.Combine( Folder, History );
+                if (!string.IsNullOrEmpty(Library) && Library[1] != ':')
+                    Library = Path.Combine(Folder, Library);
+                if (!string.IsNullOrEmpty(History) && History[1] != ':')
+                    History = Path.Combine(Folder, History);
             }
         }
 
-        public void DisplayMessages( StringWriter writer )
+        public void DisplayMessages(StringWriter writer)
         {
             if (ShowVersion)
-                writer.Write( VersionMessage );
+                writer.Write(VersionMessage);
 
             if (ShowUsage)
-                writer.Write( UsageMessage );
+                writer.Write(UsageMessage);
         }
 
-        public void FillExclusions( List<string> args )
+        public void FillExclusions(List<string> args)
         {
-            if ( Exclude.Count() == 0 )
+            if (Exclude.Count() == 0)
             {
                 Exclude = args;
             }

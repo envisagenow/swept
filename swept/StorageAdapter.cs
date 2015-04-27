@@ -81,7 +81,12 @@ namespace swept
             }
         }
 
-        public void SaveRunHistory( XDocument runHistory, string fileName )
+        public void SaveRunChanges(XDocument runChanges, string fileName)
+        {
+            runChanges.Save(fileName);
+        }
+
+        public void SaveRunHistory(XDocument runHistory, string fileName)
         {
             runHistory.Save( fileName );
         }

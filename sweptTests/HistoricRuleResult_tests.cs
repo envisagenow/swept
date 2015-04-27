@@ -34,23 +34,23 @@ namespace swept.Tests
         [Test]
         public void Inspector_finds_all_RunDetails_for_delta_with_empty_RuleTasks()
         {
-            RunChanges runDetails = new RunChanges();
-            runDetails.RunNumber = 4;
-            runDetails.DateTime = DateTime.Now;
+            RunChanges runChanges = new RunChanges();
+            runChanges.RunNumber = 4;
+            runChanges.DateTime = DateTime.Now;
 
-            FileChange detailFile = new FileChange();
-            detailFile.Name = "somefile.cs";
+            FileChange fileChanges = new FileChange();
+            fileChanges.Name = "somefile.cs";
+            fileChanges.Changed = true;
 
             RuleChange detailRule = new RuleChange();
             detailRule.ID = "INT-011";
             detailRule.Was = 3;
             detailRule.Is = 6;
-            detailRule.Breaking = true;
 
-            detailFile.Rules.Add(detailRule);
-            runDetails.Files.Add(detailFile);
+            fileChanges.Rules.Add(detailRule);
+            runChanges.Files.Add(fileChanges);
 
-            DetailDelta result = _inspector.GetDetailDelta(new RuleTasks(), runDetails);
+            DetailDelta result = _inspector.GetDetailDelta(new RuleTasks(), runChanges);
 
 
             Assert.That(result, Is.InstanceOf<DetailDelta>());

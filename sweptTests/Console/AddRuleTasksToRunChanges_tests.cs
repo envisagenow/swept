@@ -55,7 +55,7 @@ namespace swept.Tests
             var runTime = DateTime.Now;
             var runChanges = new RunChanges();
             var fileChange = new FileChange { Name = "foo.cs" };
-            fileChange.Rules.Add(new RuleChange { Breaking = true, ID = "Sys 22", Was = 2 });
+            fileChange.Rules.Add(new RuleChange { ID = "Sys 22", Was = 2 });
             runChanges.Files.Add(fileChange);
 
             var ruleTasks = new RuleTasks();
@@ -93,7 +93,7 @@ namespace swept.Tests
             var runTime = DateTime.Now;
             var runChanges = new RunChanges();
             var fileChange = new FileChange { Name = "foo.cs" };
-            fileChange.Rules.Add(new RuleChange { Breaking = true, ID = "Req 15", Was = 2 });
+            fileChange.Rules.Add(new RuleChange { ID = "Req 15", Was = 2 });
             runChanges.Files.Add(fileChange);
 
             var ruleTasks = new RuleTasks();
@@ -110,6 +110,7 @@ namespace swept.Tests
             Assert.That(runChanges.Files.Count(), Is.EqualTo(1));
 
             var fileFoo = runChanges.Files[0];
+            Assert.That(fileFoo.Changed);
             Assert.That(fileFoo.Rules.Count(), Is.EqualTo(1));
 
             var rule15 = fileFoo.Rules[0];

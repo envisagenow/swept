@@ -118,12 +118,23 @@ namespace swept
                 detailWriter.Flush();
             }
 
-            if (!string.IsNullOrEmpty( arguments.DeltaFileName ))
+            if (!string.IsNullOrEmpty(arguments.DeltaFileName))
             {
-                using (TextWriter deltaWriter = storage.GetOutputWriter( arguments.DeltaFileName ))
+                using (TextWriter deltaWriter = storage.GetOutputWriter(arguments.DeltaFileName))
                 {
-                    deltaWriter.Write( deltaXml.ToString() );
+                    deltaWriter.Write(deltaXml.ToString());
                     deltaWriter.Flush();
+                }
+            }
+
+            if (!string.IsNullOrEmpty(arguments.ChangesFileName))
+            {
+                // todo: Make this guy a real boy.
+                var changesXml = new XDocument();
+                using (TextWriter writer = storage.GetOutputWriter(arguments.ChangesFileName))
+                {
+                    writer.Write(changesXml.ToString());
+                    writer.Flush();
                 }
             }
 
