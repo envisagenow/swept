@@ -8,7 +8,7 @@ using System.IO;
 namespace swept.Tests
 {
     [TestFixture]
-    public class ReadRunChanges_tests
+    public class RunChangesIO_tests
     {
         private BuildLibrarian _librarian;
         private MockStorageAdapter _storage;
@@ -37,7 +37,7 @@ namespace swept.Tests
         [Test]
         public void Minimal_document_produces_Proper_RunChanges()
         {
-            // as we go on, we maintain what 'empty' means for a RunDetails object.
+            // as we go on, we maintain what 'empty' means for a RunChanges object.
 
             var changesDoc = XDocument.Parse(
 @"<RunChanges RunNumber=""22"" DateTime=""4/4/2012 10:25:02 AM"">
@@ -101,6 +101,22 @@ namespace swept.Tests
             Assert.That(rule7.ID, Is.EqualTo("INT-007"));
             Assert.That(rule7.Was, Is.EqualTo(22));
             Assert.That(rule7.Is, Is.EqualTo(22));
+        }
+
+        [Test]
+        public void Empty_inputs_produce_empty_RunChanges_document()
+        {
+
+            var expectedText = @"<RunChanges RunNumber=""22"" DateTime=""4/4/2012 10:25:02 AM"">
+  <Rules />
+  <Files />
+</RunChanges>
+";
+            _librarian.WriteRunChangesDoc(new RunChanges(), new RuleCatalog());
+            string actualText = _storage.RunChanges .ToString();
+            
+
+            Assert.That(actualText, Is.EqualTo(expectedText));
         }
     }
 }

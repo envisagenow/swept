@@ -30,6 +30,7 @@ namespace swept.Tests
         public Dictionary<string, List<string>> FoldersInFolder { get; set; }
         public List<string> FilesToFailToLoad { get; set; }
         public XDocument RunHistory { get; set; }
+        public XDocument RunChanges { get; set; }
         public string CWD = String.Empty;
         public bool ThrowBadXmlException;
 
@@ -126,11 +127,6 @@ namespace swept.Tests
             return _loadedFiles.Contains(fileName);
         }
 
-        public void SaveRunChanges(XDocument runChanges, string fileName)
-        {
-            throw new NotImplementedException();
-        }
-
         public string SavedHistoryFileName;
         public void SaveRunHistory(XDocument runHistory, string fileName)
         {
@@ -152,6 +148,13 @@ namespace swept.Tests
             if (ChangeSetNotFoundException != null)
                 throw ChangeSetNotFoundException;
             return ChangeDoc;
+        }
+
+        public string SavedChangesFileName;
+        public void SaveRunChanges(XDocument runChanges, string fileName)
+        {
+            RunChanges = runChanges;
+            SavedChangesFileName = fileName;
         }
     }
 }

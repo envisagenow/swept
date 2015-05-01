@@ -247,58 +247,47 @@ namespace swept
             _storage.SaveRunHistory(report, _args.History);
         }
 
-        private string oo = @"<RunChanges RunNumber=""22"" DateTime=""4/4/2012 10:25:02 AM"">
-    <Rules>
-        <Rule ID=""INT-012"" Description=""This is strimly po tent."" />
-    </Rules>
-    <Files>
-        <File Name=""foo.cs"">
-            <Rule ID=""INT-012"" Was=""2"" Is=""5"" Breaking=""false"" />
-        </File>
-    </Files>
-</RunChanges>
-";
-        public void WriteRunChanges(RunChanges runChanges, RuleCatalog ruleCatalog)
+        public void WriteRunChangesDoc(RunChanges runChanges, RuleCatalog ruleCatalog)
         {
-            var ruleDescriptions = new Dictionary<string, string>();
-            foreach (var rule in ruleCatalog.GetSortedRules())
-                ruleDescriptions[rule.ID] = rule.Description;
+            var runChangesDoc = BuildRunChangesDoc(runChanges, ruleCatalog);
 
-            var report_root = new XElement("RunChanges");
-            var rules = new XElement("Rules");
-            var files = new XElement("Files");
-            report_root.Add(rules, files);
+            _storage.SaveRunChanges(runChangesDoc, _args.ChangesFileName);
+        }
 
-            foreach (var fileChange in runChanges.Files)
-            {
-                var fileElement = new XElement("File",
-                    new XAttribute("Name", fileChange.Name)
-                );
+        public static XDocument BuildRunChangesDoc(RunChanges runChanges, RuleCatalog ruleCatalog)
+        {
+            return new XDocument(
+                new XElement("RunChanges",
+                    BuildRunChangeRules(ruleCatalog.GetSortedRules()),
+                    BuildRunChangeFiles(runChanges.Files)
+            ));
+        }
 
-                foreach (var ruleChange in fileChange.Rules.OrderBy(r => r.ID))
-                {
-                    var ruleElement = new XElement("Rule",
-                        new XAttribute("ID", ruleChange.ID),
-                        new XAttribute("Was", ruleChange.Was),
-                        new XAttribute("Is", ruleChange.Is)
-                    );
-
-                    fileElement.Add(ruleElement);
-                }
-
-                files.Add(fileElement);
-            }
-
-            foreach (var rule in ruleCatalog.GetSortedRules())
-            {
-                rules.Add(new XElement("Rule",
+        public static XElement BuildRunChangeRules(List<Rule> rules)
+        {
+            return new XElement("Rules",
+                from rule in rules
+                select new XElement("Rule",
                     new XAttribute("ID", rule.ID),
                     new XAttribute("Description", rule.Description)
-                ));
-            }
-
-            var report = new XDocument(report_root);
-            _storage.SaveRunChanges(report, _args.History);
+            ));
         }
+
+        public static XElement BuildRunChangeFiles(List<FileChange> fileChanges)
+        {
+            return new XElement("Files",
+                from file in fileChanges
+                select new XElement("File",
+                    new XAttribute("Name", file.Name),
+                    from rule in file.Rules.OrderBy(r => r.ID)
+                    select new XElement("Rule",
+                        new XAttribute("ID", rule.ID),
+                        new XAttribute("Was", rule.Was),
+                        new XAttribute("Is", rule.Is)
+                    )
+                )
+            );
+        }
+
     }
 }
