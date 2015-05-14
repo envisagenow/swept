@@ -15,14 +15,14 @@ namespace swept.Tests
         public void Can_add_empty_new_details()
         {
             var runChanges = new RunChanges();
-            Assert.That(runChanges.DateTime, Is.EqualTo(DateTime.MinValue));
+            Assert.That(runChanges.CurrentDateTime, Is.EqualTo(DateTime.MinValue));
             var ruleTasks = new RuleTasks();
             var runTime = DateTime.Now;
 
             runChanges.AddRuleTasks( ruleTasks, runTime );
 
             Assert.That(runChanges.Files.Count(), Is.EqualTo(0));
-            Assert.That(runChanges.DateTime, Is.EqualTo(runTime));
+            Assert.That(runChanges.CurrentDateTime, Is.EqualTo(runTime));
         }
 
         [Test]
@@ -41,11 +41,12 @@ namespace swept.Tests
             runChanges.AddRuleTasks(ruleTasks, runTime);
 
 
-            Assert.That(runChanges.DateTime, Is.EqualTo(runTime));
+            Assert.That(runChanges.CurrentDateTime, Is.EqualTo(runTime));
 
             Assert.That(runChanges.Files.Count(), Is.EqualTo(1));
             Assert.That(runChanges.Files[0].Rules.Count(), Is.EqualTo(1));
             Assert.That(runChanges.Files[0].Rules[0].Is, Is.EqualTo(3));
+            Assert.That(runChanges.Files[0].Rules[0].Was, Is.EqualTo(0));
             Assert.That(runChanges.Files[0].Rules[0].ID, Is.EqualTo("Req 15"));
         }
 
@@ -68,7 +69,7 @@ namespace swept.Tests
             runChanges.AddRuleTasks(ruleTasks, runTime);
 
 
-            Assert.That(runChanges.DateTime, Is.EqualTo(runTime));
+            Assert.That(runChanges.CurrentDateTime, Is.EqualTo(runTime));
             Assert.That(runChanges.Files.Count(), Is.EqualTo(1));
 
             var fileFoo = runChanges.Files[0];
@@ -106,7 +107,7 @@ namespace swept.Tests
             runChanges.AddRuleTasks(ruleTasks, runTime);
 
 
-            Assert.That(runChanges.DateTime, Is.EqualTo(runTime));
+            Assert.That(runChanges.CurrentDateTime, Is.EqualTo(runTime));
             Assert.That(runChanges.Files.Count(), Is.EqualTo(1));
 
             var fileFoo = runChanges.Files[0];

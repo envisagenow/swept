@@ -28,13 +28,19 @@ namespace swept
                 return result;
 
             result.RunNumber = int.Parse(doc.Root.Attribute("RunNumber").Value);
-            result.DateTime = DateTime.Parse(doc.Root.Attribute("DateTime").Value);
+            result.CurrentDateTime = DateTime.Parse(doc.Root.Attribute("CurrentDateTime").Value);
+            result.PreviousDateTime = DateTime.Parse(doc.Root.Attribute("PreviousDateTime").Value);
 
             foreach (var fileXml in doc.Descendants("Files").Descendants("File"))
             {
                 var file = ReadFileChange(fileXml);
                 result.Files.Add(file);
+            }
 
+            foreach (var ruleXml in doc.Descendants("Rules").Descendants("Rule"))
+            {
+                var ruleDesc = ReadRuleDescription(ruleXml);
+                result.Rules.Add(ruleDesc);
             }
 
             return result;
@@ -55,6 +61,16 @@ namespace swept
                 rule.Is = int.Parse(ruleXml.Attribute("Is").Value);
                 result.Rules.Add(rule);
             }
+
+            return result;
+        }
+
+        public RuleDescription ReadRuleDescription(XElement ruleDescXml)
+        {
+            RuleDescription result = new RuleDescription();
+
+            result.ID = ruleDescXml.Attribute("ID").Value;
+            result.Description = ruleDescXml.Attribute("Description").Value;
 
             return result;
         }
@@ -247,18 +263,21 @@ namespace swept
             _storage.SaveRunHistory(report, _args.History);
         }
 
-        public void WriteRunChangesDoc(RunChanges runChanges, RuleCatalog ruleCatalog)
+        public void WriteRunChangesDoc(RunChanges runChanges, List<Rule> rules)
         {
-            var runChangesDoc = BuildRunChangesDoc(runChanges, ruleCatalog);
+            var runChangesDoc = BuildRunChangesDoc(runChanges, rules);
 
             _storage.SaveRunChanges(runChangesDoc, _args.ChangesFileName);
         }
 
-        public static XDocument BuildRunChangesDoc(RunChanges runChanges, RuleCatalog ruleCatalog)
+        public XDocument BuildRunChangesDoc(RunChanges runChanges, List<Rule> rules)
         {
             return new XDocument(
-                new XElement("RunChanges",
-                    BuildRunChangeRules(ruleCatalog.GetSortedRules()),
+                new XElement("RunChanges", 
+                    new XAttribute("RunNumber", runChanges.RunNumber),
+                    new XAttribute("CurrentDateTime", runChanges.CurrentDateTime.ToString()),
+                    new XAttribute("PreviousDateTime", runChanges.PreviousDateTime.ToString()),
+                    BuildRunChangeRules(rules),
                     BuildRunChangeFiles(runChanges.Files)
             ));
         }
@@ -279,6 +298,7 @@ namespace swept
                 from file in fileChanges
                 select new XElement("File",
                     new XAttribute("Name", file.Name),
+                    new XAttribute("Changed", file.Changed),
                     from rule in file.Rules.OrderBy(r => r.ID)
                     select new XElement("Rule",
                         new XAttribute("ID", rule.ID),

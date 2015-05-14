@@ -36,7 +36,7 @@ namespace swept.Tests
         {
             RunChanges runChanges = new RunChanges();
             runChanges.RunNumber = 4;
-            runChanges.DateTime = DateTime.Now;
+            runChanges.CurrentDateTime = DateTime.Now;
 
             FileChange fileChanges = new FileChange();
             fileChanges.Name = "somefile.cs";

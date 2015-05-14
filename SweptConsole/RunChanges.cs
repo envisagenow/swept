@@ -9,8 +9,11 @@ namespace swept
 {
     public class RunChanges
     {
-        public int RunNumber = 0;
-        public DateTime DateTime = DateTime.MinValue;
+        public int RunNumber = 1;
+        public DateTime CurrentDateTime = DateTime.MinValue;
+        public DateTime PreviousDateTime = DateTime.MinValue;
+
+        public List<RuleDescription> Rules = new List<RuleDescription>();
         public List<FileChange> Files = new List<FileChange>();
 
 
@@ -41,7 +44,7 @@ namespace swept
 
         public void AddRuleTasks(RuleTasks ruleTasks, DateTime runTime)
         {
-            DateTime = runTime;
+            CurrentDateTime = runTime;
             foreach (Rule rule in ruleTasks.Keys)
             {
                 FileTasks fileTask = ruleTasks[rule];
@@ -49,6 +52,7 @@ namespace swept
                 foreach (SourceFile sourcefile in fileTask.Keys)
                 {
                     ClauseMatch match = fileTask[sourcefile];
+                    if (!match.DoesMatch) continue;
 
                     var fileChange = GetFileChange(sourcefile);
                     var ruleChange = fileChange.GetRuleChange(rule.ID);
@@ -57,6 +61,7 @@ namespace swept
                 }
             }
         }
+              
 
         private FileChange GetFileChange(SourceFile sourceFile)
         {
@@ -99,4 +104,9 @@ namespace swept
         public int Is = 0;
     }
 
+    public class RuleDescription
+    {
+        public string ID = string.Empty;
+        public string Description = string.Empty;
+    }
 }

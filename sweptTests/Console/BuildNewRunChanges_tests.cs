@@ -130,5 +130,5 @@ namespace swept.Tests
             var nextFileBar = nextRun.Files[0];
             Assert.That(nextFileBar.Name, Is.EqualTo("bar.cs"));
         }
-    }
+    } 
 }

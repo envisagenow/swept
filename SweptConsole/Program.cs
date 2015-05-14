@@ -91,10 +91,13 @@ namespace swept
             XElement deltaXml = null;
             if (!string.IsNullOrEmpty( arguments.DeltaFileName ))
             {
-                //  The delta should be generated before adding the new entry to the history,
-                //  because if the new entry is passing, it will become the .LatestPassingRun, 
+                //  The delta must be generated before adding the new entry to the history,
+                //  in case the new entry is passing, which would make it the .LatestPassingRun, 
                 //  making the delta empty.
                 deltaXml = inspector.GenerateDeltaXml( newRunEntry );
+                //  Todo:  Alter the GenerateDeltaXml to presume the NewRunEntry is in the history,
+                //  and create a .LatestPassingBefore( newRunEntry ).
+                //  That untangles this special sequencing untangled and the report moves down.
             }
 
             runHistory.AddEntry( newRunEntry );
@@ -108,7 +111,7 @@ namespace swept
             else
                 detailReport = reporter.ReportDetailsXml( ruleTasks, arguments.FileCountLimit, runHistory.NextRunNumber );
 
-
+            // TODO:  Untangle these
             buildLibrarian.WriteRunHistory( runHistory );
 
             using (TextWriter detailWriter = storage.GetOutputWriter( arguments.DetailsFileName ))
@@ -129,8 +132,11 @@ namespace swept
 
             if (!string.IsNullOrEmpty(arguments.ChangesFileName))
             {
-                // todo: Make this guy a real boy.
-                var changesXml = new XDocument();
+                RunChanges runChanges = new RunChanges();
+
+                runChanges.AddRuleTasks(ruleTasks, startTime);
+
+                var changesXml = buildLibrarian.BuildRunChangesDoc(runChanges, rules );
                 using (TextWriter writer = storage.GetOutputWriter(arguments.ChangesFileName))
                 {
                     writer.Write(changesXml.ToString());
