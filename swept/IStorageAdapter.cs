@@ -15,6 +15,7 @@ namespace swept
         SourceFile LoadFile(string fileName);
         XDocument LoadChangeSet(string changeSetPath);
         XDocument LoadRunHistory(string historyPath);
+        XDocument LoadRunChanges(string changesPath);
         void SaveRunChanges(XDocument runChanges, string fileName);
         void SaveRunHistory(XDocument runHistory, string fileName);
 

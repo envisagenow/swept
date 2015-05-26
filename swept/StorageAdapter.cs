@@ -81,6 +81,12 @@ namespace swept
             }
         }
 
+        public XDocument LoadRunChanges(string changesFilename)
+        {
+            var changesText = File.ReadAllText(changesFilename);
+            return XDocument.Parse(changesText);
+        }
+
         public void SaveRunChanges(XDocument runChanges, string fileName)
         {
             runChanges.Save(fileName);

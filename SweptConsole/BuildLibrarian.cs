@@ -20,6 +20,11 @@ namespace swept
             _storage = storage;
         }
 
+        public RunChanges ReadRunChanges()
+        {
+            return ReadRunChanges(_storage.LoadRunChanges(_args.ChangesFileName));
+        }
+
         public RunChanges ReadRunChanges(XDocument doc)
         {
             var result = new RunChanges();

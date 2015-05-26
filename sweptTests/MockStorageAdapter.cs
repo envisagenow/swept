@@ -156,5 +156,11 @@ namespace swept.Tests
             RunChanges = runChanges;
             SavedChangesFileName = fileName;
         }
+
+        public XDocument LoadRunChanges(string changesFilename)
+        {
+            throw new NotImplementedException();
+        }
+
     }
 }
