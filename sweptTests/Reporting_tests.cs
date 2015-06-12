@@ -108,18 +108,27 @@ namespace swept.Tests
         [Test]
         public void No_task_data_creates_empty_report()
         {
-            string report = new BuildReporter().ReportDetailsXml(new RuleTasks(), 20, 1);
+            string report = new BuildReporter().ReportDetailsXml(new RuleTasks(), 20, 1, null);
 
             Assert.That(report, Is.EqualTo(EmptyReport));
         }
 
         [TestCase(4)]
         [TestCase(17)]
-        public void RunNumber_appears_correctly_in_details( int expectedRunNumber )
+        public void RunNumber_appears_correctly_in_details(int expectedRunNumber)
         {
-            string report = new BuildReporter().ReportDetailsXml(new RuleTasks(), 20, expectedRunNumber);
+            string report = new BuildReporter().ReportDetailsXml(new RuleTasks(), 20, expectedRunNumber, null);
 
             string expectedReport = string.Format("<SweptBuildReport RunNumber=\"{0}\" TotalTasks=\"0\" TotalFlags=\"0\" />", expectedRunNumber);
+            Assert.That(report, Is.EqualTo(expectedReport));
+        }
+
+        [Test]
+        public void Tags_appear_correctly_in_header()
+        {
+            string report = new BuildReporter().ReportDetailsXml(new RuleTasks(), 20, 3, new List<string> { "ice-cream", "social" });
+
+            string expectedReport = "<SweptBuildReport RunNumber=\"3\" TotalTasks=\"0\" TotalFlags=\"0\" Tags=\"ice-cream social\" />";
             Assert.That(report, Is.EqualTo(expectedReport));
         }
 
@@ -148,7 +157,7 @@ namespace swept.Tests
             fileMatches[bar] = new LineMatch(new List<int> { 1, 12, 123, 1234 });
             ruleTasks.Add(rule, fileMatches);
 
-            string report = _reporter.ReportDetailsXml(ruleTasks, 20, 1);
+            string report = _reporter.ReportDetailsXml(ruleTasks, 20, 1, null);
 
             Assert.That(report, Is.EqualTo(expectedReport.ToString()));
         }
@@ -208,7 +217,7 @@ namespace swept.Tests
             rules[csharpRule] = csharpFiles;
             rules[htmlRule] = htmlFiles;
 
-            string report = _reporter.ReportDetailsXml(rules, 20, 1);
+            string report = _reporter.ReportDetailsXml(rules, 20, 1, null);
 
             Assert.That(report, Is.EqualTo(expectedReport.ToString()));
         }
@@ -252,7 +261,7 @@ namespace swept.Tests
             var rules = new RuleTasks();
             rules[csharpRule] = csharpFiles;
 
-            string report = _reporter.ReportDetailsXml(rules, 20, 1);
+            string report = _reporter.ReportDetailsXml(rules, 20, 1, null);
 
             Assert.That(report, Is.EqualTo(expectedReport.ToString()));
         }
@@ -296,7 +305,7 @@ namespace swept.Tests
             var rules = new RuleTasks();
             rules[csharpRule] = csharpFiles;
 
-            string report = _reporter.ReportDetailsXml(rules, 2, 1);
+            string report = _reporter.ReportDetailsXml(rules, 2, 1, null);
 
             Assert.That(report, Is.EqualTo(expectedReport.ToString()));
         }
@@ -338,7 +347,7 @@ namespace swept.Tests
             var ruleTasks = new RuleTasks();
             ruleTasks[csharpRule] = csharpFiles;
 
-            string report = _reporter.ReportDetailsXml(ruleTasks, 20, 1);
+            string report = _reporter.ReportDetailsXml(ruleTasks, 20, 1, null);
 
             Assert.That(report, Is.EqualTo(expectedReport.ToString()));
         }

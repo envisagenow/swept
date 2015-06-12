@@ -42,6 +42,26 @@ namespace swept.Tests
         }
 
         [Test]
+        public void parse_tags_from_args()
+        {
+            var args = new Arguments(new string[] { "tag:foo", "tag:bar", "library:foo" }, _storage);
+
+            Assert.That(args.Tags.Count, Is.EqualTo(2));
+            Assert.That(args.Tags[0], Is.EqualTo("foo"));
+            Assert.That(args.Tags[1], Is.EqualTo("bar"));
+        }
+
+        [Test]
+        public void parse_excluded_tags_from_args()
+        {
+            var args = new Arguments(new string[] { "tag:foo", "tag:-bar", "library:foo" }, _storage);
+
+            Assert.That(args.Tags.Count, Is.EqualTo(2));
+            Assert.That(args.Tags[0], Is.EqualTo("foo"));
+            Assert.That(args.Tags[1], Is.EqualTo("-bar"));
+        }
+
+        [Test]
         public void unknown_args_throw()
         {
             var argsText = new string[] { "oddity:unrecognized_arg_name" };

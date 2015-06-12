@@ -28,5 +28,6 @@ namespace swept.Tests
             rule.FailOn = RuleFailOn.Any;
             Assert.That( rule.FailOn, Is.EqualTo( RuleFailOn.Any ) );
         }
+
     }
 }

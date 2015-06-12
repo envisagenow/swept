@@ -49,7 +49,6 @@ namespace swept
 
             Subscriber subscriber = new Subscriber();
             subscriber.Subscribe(switchboard, librarian);
-            // TODO: subscriber.SubscribeExceptions( switchboard, this );
 
             librarian.OpenLibrary(arguments.Library);
 
@@ -65,7 +64,7 @@ namespace swept
                 return 0;
             }
 
-            var rules = librarian.GetSortedRules(arguments.SpecifiedRules, arguments.AdHoc);
+            var rules = librarian.GetSortedRules(arguments.SpecifiedRules, arguments.Tags, arguments.AdHoc);
 
             arguments.FillExclusions(librarian.GetExcludedFolders());
 
@@ -109,7 +108,7 @@ namespace swept
             if (arguments.Check)
                 detailReport = reporter.ReportCheckResult(failures);
             else
-                detailReport = reporter.ReportDetailsXml(ruleTasks, arguments.FileCountLimit, runHistory.NextRunNumber);
+                detailReport = reporter.ReportDetailsXml(ruleTasks, arguments.FileCountLimit, runHistory.NextRunNumber, arguments.Tags);
 
             // TODO:  Untangle these
             buildLibrarian.WriteRunHistory(runHistory);

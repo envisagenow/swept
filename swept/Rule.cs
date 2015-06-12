@@ -38,10 +38,12 @@ namespace swept
         public string Notes { get; set; }                   // Extra discussion or any other info not fitting elsewhere
         public List<SeeAlso> SeeAlsos { get; set; }         // External resources supporting how or why
 
+        public List<string> Tags { get; set; }
         public RuleFailOn FailOn { get; set; }
         public Rule()
         {
             SeeAlsos = new List<SeeAlso>();
+            Tags = new List<string>();
         }
 
         public ISubquery Subquery { get; set; }

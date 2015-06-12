@@ -42,6 +42,25 @@ namespace swept
             return filteredRules;
         }
 
+        public List<Rule> FilterRulesOnTags(List<Rule> rulesToFilter, List<string> tags)
+        {
+            var includedTags = tags.Where(t => !t.StartsWith("-"));
+            var excludedTags = tags.Where(t => t.StartsWith("-")).Select(s => s.Substring(1));  // Strip leading "-"
+
+            var goodRules = rulesToFilter;
+            if (includedTags.Any())
+            {
+                goodRules = rulesToFilter.Where(r => r.Tags.Any(t => includedTags.Contains(t))).ToList();
+            }
+
+            if (excludedTags.Any())
+            {
+                goodRules = goodRules.Where(r => !r.Tags.Any(t => excludedTags.Contains(t))).ToList();
+            }
+
+            return goodRules;
+        }
+
         public List<Rule> GetRulesForFile( SourceFile file )
         {
             return _rules.FindAll( rule => rule.GetMatches( file ).DoesMatch );

@@ -32,6 +32,7 @@ namespace swept
         public string AdHoc { get; set; }
         public string Show { get; set; }
         public int FileCountLimit { get; set; }
+        public List<string> Tags { get; set; }
 
 
         public bool AreInvalid
@@ -46,32 +47,36 @@ namespace swept
                 return @"Swept usage:
 > swept library:my_solution.swept.library details:logs\swept_report.xml
 > swept folder:c:\code\project exclude:.svn,bin,build
-  Arguments:
-    help:      Or 'h' or 'usage', gets this message.
-    version:   Prints a brief version and credits message, and terminates.
-    show:      Show all rules ('show'), or a wildcarded subset ('show:ETC*').
-    rule:      Followed by an ID, runs that rule from the catalog.
-    adhoc:     Followed by a literal rule, runs it in the current directory.
-    folder:    The top folder Swept will sweep for rule violations.
-      If no folder is specified, the current working directory is used.
-    library:   The Swept rules library file to check against.
-      If no library is specified, Swept checks the top folder for a file 
-      named '*.swept.library'.  If it finds exactly one, Swept will use it.
-      Swept needs a library to run.
-    exclude:   A comma-separated list of folders Swept will not search
-      within.  All folders below these are also excluded.
-    debug:     Triggers a Debugger.Launch(), then continues as usual.
 
-    details:   The filename to get the detailed XML of the run.
-    history:   The filename to read and update to maintain the delta.
-      If no history file is specified, the library filename is used,
-      with the '.library' suffix replaced with '.history'.
-    trackhistory:  Turns on tracking of result history.  Needed to generate
-      the delta report.
-    delta:     The filename to get the delta of red-line rules.
-      If no delta file is specified, a text delta report goes to the console.
-    change:    The filename to get the change list since changes were
-      last tracked.
+=== Arguments ===
+help:      Or 'h' or 'usage', gets this message.
+version:   Prints a brief version and credits message, and terminates.
+show:      Show all rules ('show'), or a wildcarded subset ('show:ETC*').
+rule:      Followed by an ID, runs that rule from the catalog.
+adhoc:     Followed by a literal rule, runs it in the current directory.
+tag:       Run rules with a tag, or don't run rules with tag:-that_tag
+
+folder:    The top folder Swept will sweep for rule violations.
+    If no folder is specified, the current working directory is used.
+library:   The Swept rules library file to check against.
+    If no library is specified, Swept checks the top folder for a file 
+    named '*.swept.library'.  If it finds exactly one, Swept will use it.
+    Swept needs a library to run.
+exclude:   A comma-separated list of folders Swept will not search
+    within.  All folders below these are also excluded.
+debug:     Triggers a Debugger.Launch(), then continues as usual.
+
+details:   The filename to get the detailed XML of the run.
+history:   The filename to read and update to maintain the delta.
+    If no history file is specified, the library filename is used,
+    with the '.library' suffix replaced with '.history'.
+trackhistory:  Turns on tracking of result history.  Needed to generate
+    the delta report.
+delta:     The filename to get the delta of red-line rules.
+    If no delta file is specified, a text delta report goes to the console.
+change:    The filename to get the change list since changes were
+    last tracked.
+
 ---
 Features below are Not Yet Implemented:
 *** files:  A comma-separated list of files to search for violations.  Not
@@ -112,6 +117,7 @@ This software is open source, MIT license.  See the file LICENSE for details.
             SpecifiedRules = new List<string>();
             TrackHistory = false;
             FileCountLimit = 20;
+            Tags = new List<string>();
 
             List<string> exceptionMessages = new List<string>();
 
@@ -137,13 +143,6 @@ This software is open source, MIT license.  See the file LICENSE for details.
                         ShowVersion = true;
                         continue;
 
-                    case "usage":
-                    case "help":
-                    case "h":
-                    case "/?":
-                        ShowUsage = true;
-                        return;
-
                     case "trackhistory":
                         TrackHistory = true;
                         continue;
@@ -152,18 +151,21 @@ This software is open source, MIT license.  See the file LICENSE for details.
                         Show = "*";
                         continue;
 
+                    case "usage":
+                    case "help":
+                    case "h":
+                    case "/?":
+                        ShowUsage = true;
+                        return;
+
                     default:
                         exceptionMessages.Add(String.Format("Don't understand the input [{0}].  Try 'swept h' for help with arguments.", s));
                         continue;
                     }
                 }
 
-                string[] tokens = s.Split(':');
-
-                if (tokens.Length > 2)
-                {
-                    tokens[1] += ":" + tokens[2];
-                }
+                // The 2 stops the split from fragmenting values with colons (filepaths).
+                string[] tokens = s.Split(new char[] { ':' }, 2);
 
                 switch (tokens[0].ToLower())
                 {
@@ -222,6 +224,10 @@ This software is open source, MIT license.  See the file LICENSE for details.
 
                 case "show":
                     Show = tokens[1];
+                    break;
+
+                case "tag":
+                    Tags.Add(tokens[1]);
                     break;
 
                 case null:
@@ -304,7 +310,6 @@ This software is open source, MIT license.  See the file LICENSE for details.
                 Exclude = args;
             }
         }
-
 
     }
 }
