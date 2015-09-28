@@ -29,6 +29,7 @@ namespace swept.Tests
         public Dictionary<string, List<string>> FilesInFolder { get; set; }
         public Dictionary<string, List<string>> FoldersInFolder { get; set; }
         public List<string> FilesToFailToLoad { get; set; }
+        public Object LoadRunChangesOutcome { get; set; }
         public XDocument RunHistory { get; set; }
         public XDocument RunChanges { get; set; }
         public string CWD = String.Empty;
@@ -159,7 +160,13 @@ namespace swept.Tests
 
         public XDocument LoadRunChanges(string changesFilename)
         {
-            throw new NotImplementedException();
+            if (LoadRunChangesOutcome == null)
+                throw new FileNotFoundException(changesFilename);
+
+            if (LoadRunChangesOutcome is Exception)
+                throw (Exception)LoadRunChangesOutcome;
+
+            return (XDocument)LoadRunChangesOutcome;
         }
 
     }

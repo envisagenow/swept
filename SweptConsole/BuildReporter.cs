@@ -62,7 +62,7 @@ namespace swept
                     totalTasksPerRule += tasks.Count;
                     filesSeen++;
 
-                    if (filesSeen <= limit)
+                    if (limit < 0 || filesSeen <= limit)
                     {
                         var file_tasks = new XElement("SourceFile",
                             new XAttribute("Name", file.Name),

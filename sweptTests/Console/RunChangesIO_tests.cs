@@ -33,6 +33,33 @@ namespace swept.Tests
             Assert.That(result.Files.Count, Is.EqualTo(0));
         }
 
+        [Test]
+        public void Unfound_document_starts_us_with_a_tabula_rasa()
+        {
+            var expectation = "A blank RunChanges (for example, when first run) has these values.";
+            var blank_changes = _librarian.ReadRunChanges();
+
+            Assert.That(blank_changes.PreviousDateTime, Is.EqualTo(DateTime.MinValue), expectation);
+            Assert.That(blank_changes.CurrentDateTime, Is.EqualTo(DateTime.MinValue), expectation);
+            Assert.That(blank_changes.Files, Has.Count.EqualTo(0), expectation);
+            Assert.That(blank_changes.Rules, Has.Count.EqualTo(0), expectation);
+            Assert.That(blank_changes.RunNumber, Is.EqualTo(1), expectation);
+        }
+
+        [Test]
+        public void Document_fetch_problem_writes_its_error()
+        {
+            var expectation = "RunChanges problems are reported to Console.Error, without the poison magic word.";
+
+            var errorWriter = new StringWriter();
+            Console.SetError(errorWriter);
+            _storage.LoadRunChangesOutcome = new Exception("Zommage!");
+
+            _librarian.ReadRunChanges();
+
+            var outText = errorWriter.ToString();
+            Assert.That(outText, Is.EqualTo("Didn't read RunChanges from [foo.changes], message [Zommage!].\r\n"), expectation);
+        }
 
         [Test]
         public void Minimal_document_produces_Proper_RunChanges()

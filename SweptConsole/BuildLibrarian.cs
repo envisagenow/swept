@@ -14,6 +14,8 @@ namespace swept
         private readonly IStorageAdapter _storage;
         private readonly Arguments _args;
 
+        public string RunChanges_Tabula_Rasa = "";
+        
         public BuildLibrarian(Arguments args, IStorageAdapter storage)
         {
             _args = args;
@@ -22,7 +24,17 @@ namespace swept
 
         public RunChanges ReadRunChanges()
         {
-            return ReadRunChanges(_storage.LoadRunChanges(_args.ChangesFileName));
+            try
+            {
+                XDocument runChangesXml = _storage.LoadRunChanges(_args.ChangesFileName);
+                RunChanges runChanges = ReadRunChanges(runChangesXml);
+                return runChanges;
+            }
+            catch(Exception ex)
+            {
+                Console.Error.WriteLine("Didn't read RunChanges from [{0}], message [{1}].", _args.ChangesFileName, ex.Message);
+                return new RunChanges();
+            }
         }
 
         public RunChanges ReadRunChanges(XDocument doc)

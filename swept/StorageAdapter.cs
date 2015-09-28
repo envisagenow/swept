@@ -9,10 +9,10 @@ using System.Xml.Linq;
 
 namespace swept
 {
-    [CoverageExclude( "Wrapper around file system" )]
+    [CoverageExclude("Wrapper around file system")]
     public class StorageAdapter : IStorageAdapter
     {
-        static internal string emptyCatalogText = 
+        static internal string emptyCatalogText =
 @"<SweptProjectData>
 <RuleCatalog>
 </RuleCatalog>
@@ -22,26 +22,26 @@ namespace swept
         {
             get
             {
-                return XDocument.Parse( emptyCatalogText );
+                return XDocument.Parse(emptyCatalogText);
             }
         }
 
-        public XDocument LoadLibrary( string libraryPath )
+        public XDocument LoadLibrary(string libraryPath)
         {
-            if (!File.Exists( libraryPath ))
+            if (!File.Exists(libraryPath))
             {
                 return emptyCatalogDoc;
             }
 
-            using (XmlTextReader reader = new XmlTextReader( libraryPath ))
+            using (XmlTextReader reader = new XmlTextReader(libraryPath))
             {
                 try
                 {
-                    return XDocument.Load( reader );
+                    return XDocument.Load(reader);
                 }
                 catch (XmlException xe)
                 {
-                    throw new Exception( string.Format( "Swept opened file [{0}] for its library, which was not valid XML.  Please check its contents.\n  Details: {1}", libraryPath, xe.Message ) );
+                    throw new Exception(string.Format("Swept opened file [{0}] for its library, which was not valid XML.  Please check its contents.\n  Details: {1}", libraryPath, xe.Message));
                 }
             }
         }
@@ -51,32 +51,32 @@ namespace swept
             return Environment.CurrentDirectory;
         }
 
-        public IEnumerable<string> GetFilesInFolder( string folder )
+        public IEnumerable<string> GetFilesInFolder(string folder)
         {
-            return Directory.GetFiles( folder );
+            return Directory.GetFiles(folder);
         }
 
-        public IEnumerable<string> GetFilesInFolder( string folder, string searchPattern )
+        public IEnumerable<string> GetFilesInFolder(string folder, string searchPattern)
         {
-            return Directory.GetFiles( folder, searchPattern );
+            return Directory.GetFiles(folder, searchPattern);
         }
 
-        public IEnumerable<string> GetFoldersInFolder( string folder )
+        public IEnumerable<string> GetFoldersInFolder(string folder)
         {
-            return Directory.GetDirectories( folder );
+            return Directory.GetDirectories(folder);
         }
 
-        public SourceFile LoadFile( string fileName )
+        public SourceFile LoadFile(string fileName)
         {
             try
             {
-                SourceFile file = new SourceFile( fileName );
-                file.Content = File.ReadAllText( fileName );
+                SourceFile file = new SourceFile(fileName);
+                file.Content = File.ReadAllText(fileName);
                 return file;
             }
-            catch
+            catch (Exception ex)
             {
-                Console.Out.WriteLine( String.Format( "LoadFile( {0} ) failed.", fileName ) );
+                Console.Error.WriteLine(String.Format("LoadFile({0}) failed.  Error [{1}].", fileName, ex.Message));
                 return null;
             }
         }
@@ -87,6 +87,7 @@ namespace swept
             return XDocument.Parse(changesText);
         }
 
+
         public void SaveRunChanges(XDocument runChanges, string fileName)
         {
             runChanges.Save(fileName);
@@ -94,27 +95,27 @@ namespace swept
 
         public void SaveRunHistory(XDocument runHistory, string fileName)
         {
-            runHistory.Save( fileName );
+            runHistory.Save(fileName);
         }
 
-        public XDocument LoadRunHistory( string historyPath )
+        public XDocument LoadRunHistory(string historyPath)
         {
-            var historyText = File.ReadAllText( historyPath );
-            return XDocument.Parse( historyText );
+            var historyText = File.ReadAllText(historyPath);
+            return XDocument.Parse(historyText);
         }
 
-        public XDocument LoadChangeSet( string changeSetPath )
+        public XDocument LoadChangeSet(string changeSetPath)
         {
-            var changeText = File.ReadAllText( changeSetPath );
-            return XDocument.Parse( changeText );
+            var changeText = File.ReadAllText(changeSetPath);
+            return XDocument.Parse(changeText);
         }
 
-        public TextWriter GetOutputWriter( string outputLocation )
+        public TextWriter GetOutputWriter(string outputLocation)
         {
-            if (string.IsNullOrEmpty( outputLocation ))
+            if (string.IsNullOrEmpty(outputLocation))
                 return Console.Out;
 
-            return new StreamWriter( File.Create(outputLocation) );
+            return new StreamWriter(File.Create(outputLocation));
         }
     }
 }

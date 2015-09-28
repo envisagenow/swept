@@ -55,6 +55,7 @@ show:      Show all rules ('show'), or a wildcarded subset ('show:ETC*').
 rule:      Followed by an ID, runs that rule from the catalog.
 adhoc:     Followed by a literal rule, runs it in the current directory.
 tag:       Run rules with a tag, or don't run rules with tag:-that_tag
+check:     Show a simple text list of failures instead of a detail xml.
 
 folder:    The top folder Swept will sweep for rule violations.
     If no folder is specified, the current working directory is used.
@@ -116,7 +117,7 @@ This software is open source, MIT license.  See the file LICENSE for details.
             ShowVersion = false;
             SpecifiedRules = new List<string>();
             TrackHistory = false;
-            FileCountLimit = 20;
+            FileCountLimit = -1;
             Tags = new List<string>();
 
             List<string> exceptionMessages = new List<string>();

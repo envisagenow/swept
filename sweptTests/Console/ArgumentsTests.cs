@@ -371,11 +371,11 @@ namespace swept.Tests
         }
 
         [Test]
-        public void args_file_count_limit_defaults_to_20()
+        public void args_file_count_limit_defaults_off()
         {
             var argsText = new string[] { "library:c:\\foo.library" };
             var args = new Arguments(argsText, _storage);
-            Assert.That(args.FileCountLimit, Is.EqualTo(20));
+            Assert.That(args.FileCountLimit, Is.EqualTo(-1));
         }
 
         [Test]
