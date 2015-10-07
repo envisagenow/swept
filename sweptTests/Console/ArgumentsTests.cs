@@ -172,16 +172,32 @@ namespace swept.Tests
         public void args_track_history_defaults_false()
         {
             var argsText = new string[] { "library:c:\\foo.library" };
-            var args = new Arguments( argsText, _storage );
-            Assert.That( args.TrackHistory, Is.False );
+            var args = new Arguments(argsText, _storage);
+            Assert.That(args.TrackHistory, Is.False);
         }
 
         [Test]
         public void args_track_history_when_requested()
         {
             var argsText = new string[] { "trackHistory", "library:c:\\foo.library" };
-            var args = new Arguments( argsText, _storage );
-            Assert.That( args.TrackHistory, Is.True );
+            var args = new Arguments(argsText, _storage);
+            Assert.That(args.TrackHistory, Is.True);
+        }
+
+        [Test]
+        public void args_tattle_defaults_false()
+        {
+            var argsText = new string[] { "library:c:\\foo.library" };
+            var args = new Arguments(argsText, _storage);
+            Assert.That(args.Tattle, Is.False);
+        }
+
+        [Test]
+        public void args_tattle_when_requested()
+        {
+            var argsText = new string[] { "tattle", "library:c:\\foo.library" };
+            var args = new Arguments(argsText, _storage);
+            Assert.That(args.Tattle, Is.True);
         }
 
         [Test]

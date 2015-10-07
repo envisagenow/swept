@@ -24,7 +24,7 @@ namespace swept
             foreach (var myFile in Files)
             {
                 FileChange nextFile = new FileChange();
-                foreach (var myRule in myFile.Rules.Where( r => r.Is > 0 ))
+                foreach (var myRule in myFile.Rules.Where(r => r.Is > 0))
                 {
                     nextFile.Rules.Add(new RuleChange {
                         ID = myRule.ID,
@@ -37,7 +37,7 @@ namespace swept
                     nextFile.Name = myFile.Name;
                     nextRun.Files.Add(nextFile);
                 }
-           }
+            }
 
             return nextRun;
         }
@@ -61,7 +61,7 @@ namespace swept
                 }
             }
         }
-              
+
 
         private FileChange GetFileChange(SourceFile sourceFile)
         {
@@ -73,6 +73,55 @@ namespace swept
             }
 
             return matchingFile;
+        }
+
+        public string TattleReport()
+        {
+            // loop through files finding those that changed
+            //  piling them into 'better' and 'worse' buckets?
+            // talk about the bottom line
+
+            int totalImprovements = 0;
+            int totalWorsenings = 0;
+
+            foreach (var file in Files)
+            {
+                if(file.Changed)
+                {
+                    foreach(var rule in file.Rules)
+                    {
+                        if(rule.Is > rule.Was)
+                        {
+                            totalWorsenings += rule.Is - rule.Was;
+                        }
+                        else if (rule.Is < rule.Was)
+                        {
+                            totalImprovements += rule.Was - rule.Is;
+                        }
+                    }
+                 }
+                 else
+                 {
+                     
+                 }
+            }
+
+            if (totalImprovements == 0 && totalWorsenings == 0)
+            {
+                return "No changes from baseline.  You're free to commit, boss!";
+            }
+            else
+            {
+                if(totalImprovements > 0)
+                {
+                    return String.Format("{0} improvement{1}. Way to go!", totalImprovements, totalImprovements == 1? "" : "s");
+                }
+                else
+                {
+                    return "This is no good at all. Please fix this.";
+                }
+            }
+
         }
 
     }

@@ -29,6 +29,7 @@ namespace swept
         public bool ShowUsage { get; private set; }
         public List<string> SpecifiedRules { get; private set; }
         public bool TrackHistory { get; set; }
+        public bool Tattle { get; set; }
         public string AdHoc { get; set; }
         public string Show { get; set; }
         public int FileCountLimit { get; set; }
@@ -117,6 +118,7 @@ This software is open source, MIT license.  See the file LICENSE for details.
             ShowVersion = false;
             SpecifiedRules = new List<string>();
             TrackHistory = false;
+            Tattle = false;
             FileCountLimit = -1;
             Tags = new List<string>();
 
@@ -146,6 +148,9 @@ This software is open source, MIT license.  See the file LICENSE for details.
 
                     case "trackhistory":
                         TrackHistory = true;
+                        continue;
+                    case "tattle":
+                        Tattle = true;
                         continue;
 
                     case "show":

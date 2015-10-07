@@ -7,6 +7,7 @@ using System.IO;
 
 namespace swept.Tests
 {
+
     [TestFixture]
     public class RunChangesIO_tests
     {

@@ -50,6 +50,16 @@ namespace swept.Tests
             Assert.That( files.Count(), Is.EqualTo( 0 ) );
         }
 
+        //[Test]
+        //public void excluded_folder_only_matches_complete_folder_name()
+        //{
+        //    var allFolders = { "bin", "combin", "binary" };
+        //    //var folders = ???
+        //    //Assert.That(folders, Has.Count.EqualTo(2));
+        //    //Assert.That(folders[0], Is.EqualTo("combination"));
+        //    //Assert.That(folders[1], Is.EqualTo("binary"));
+        //}
+
         [Test]
         public void traversal_returns_all_filenames_in_folder()
         {

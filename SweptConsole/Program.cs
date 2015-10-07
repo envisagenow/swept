@@ -142,6 +142,12 @@ namespace swept
                     writer.Write(changesXml.ToString());
                     writer.Flush();
                 }
+
+                ////future goal code:
+                //if (arguments.Tattle)
+                //{
+                //    Console.Out.Write(newChanges.TattleReport());
+                //}
             }
 
             if (!newRunEntry.Passed)
