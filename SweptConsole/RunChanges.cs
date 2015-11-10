@@ -4,6 +4,7 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.Text;
 
 namespace swept
 {
@@ -82,48 +83,63 @@ namespace swept
             // talk about the bottom line
 
             int totalImprovements = 0;
-            int totalWorsenings = 0;
+            int totalRegressions = 0;
+            StringBuilder improvementsReportBuilder = new StringBuilder();
+            StringBuilder regressionsReportBuilder = new StringBuilder();
 
             foreach (var file in Files)
             {
-                if(file.Changed)
+                if (!file.Changed) continue;
+                var fileImprovements = 0;
+                var fileRegressions = 0;
+                foreach (var rule in file.Rules)
                 {
-                    foreach(var rule in file.Rules)
+                    if (rule.Is > rule.Was)
                     {
-                        if(rule.Is > rule.Was)
-                        {
-                            totalWorsenings += rule.Is - rule.Was;
-                        }
-                        else if (rule.Is < rule.Was)
-                        {
-                            totalImprovements += rule.Was - rule.Is;
-                        }
+                        fileRegressions += rule.Is - rule.Was;
                     }
-                 }
-                 else
-                 {
-                     
-                 }
-            }
+                    else
+                    {
+                        fileImprovements += rule.Was - rule.Is;
 
-            if (totalImprovements == 0 && totalWorsenings == 0)
-            {
-                return "No changes from baseline.  You're free to commit, boss!";
-            }
-            else
-            {
-                if(totalImprovements > 0)
-                {
-                    return String.Format("{0} improvement{1}. Way to go!", totalImprovements, totalImprovements == 1? "" : "s");
+                    }
                 }
-                else
+
+                totalImprovements += fileImprovements;
+                if (fileImprovements > 0)
                 {
-                    return "This is no good at all. Please fix this.";
+                    improvementsReportBuilder.AppendLine(string.Format("\t{0}: {1} improvement{2}.", file.Name, fileImprovements, fileImprovements == 1 ? "" : "s"));
+                }
+
+                totalRegressions += fileRegressions;
+                if (fileRegressions > 0)
+                {
+                    regressionsReportBuilder.AppendLine(string.Format("\t{0}: {1} regression{2}.", file.Name, fileRegressions, fileRegressions == 1 ? "" : "s"));
                 }
             }
 
+            var finalMessage = new StringBuilder();
+
+            if (totalImprovements == 0 && totalRegressions == 0)
+            {
+                finalMessage.Append("No changes from baseline.  You're free to commit, boss!");
+            }
+
+            if (totalRegressions > 0)
+            {
+                finalMessage.AppendFormat("{0} regression{1}.\n{2}", totalRegressions, totalRegressions == 1 ? "" : "s", regressionsReportBuilder);
+            }
+
+            if (totalImprovements > 0 && totalRegressions > 0)
+                finalMessage.AppendLine();
+
+            if (totalImprovements > 0)
+            {
+                finalMessage.AppendFormat("{0} improvement{1}.\n{2}", totalImprovements, totalImprovements == 1 ? "" : "s", improvementsReportBuilder);
+            }
+
+            return finalMessage.ToString();
         }
-
     }
 
 
