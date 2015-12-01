@@ -78,45 +78,34 @@ namespace swept
 
         public string TattleReport()
         {
-            // loop through files finding those that changed
-            //  piling them into 'better' and 'worse' buckets?
-            // talk about the bottom line
+            int totalRegressions = 0;
+            StringBuilder regressionsReportBuilder = new StringBuilder();
+            foreach (var file in Files.Where(f => f.Changed))
+            {
+                totalRegressions += TattleFileRegression(file, regressionsReportBuilder);
+            }
+
 
             int totalImprovements = 0;
-            int totalRegressions = 0;
             StringBuilder improvementsReportBuilder = new StringBuilder();
-            StringBuilder regressionsReportBuilder = new StringBuilder();
-
-            foreach (var file in Files)
+            foreach (var file in Files.Where(f => f.Changed))
             {
-                if (!file.Changed) continue;
-                var fileImprovements = 0;
-                var fileRegressions = 0;
+                var fileimprovements = 0;
                 foreach (var rule in file.Rules)
                 {
-                    if (rule.Is > rule.Was)
-                    {
-                        fileRegressions += rule.Is - rule.Was;
-                    }
-                    else
-                    {
-                        fileImprovements += rule.Was - rule.Is;
+                    int improvementCount = rule.Was - rule.Is;
+                    if (improvementCount < 1) continue;
 
-                    }
+                    fileimprovements += improvementCount;
                 }
 
-                totalImprovements += fileImprovements;
-                if (fileImprovements > 0)
+                if (fileimprovements > 0)
                 {
-                    improvementsReportBuilder.AppendLine(string.Format("\t{0}: {1} improvement{2}.", file.Name, fileImprovements, fileImprovements == 1 ? "" : "s"));
+                    improvementsReportBuilder.AppendLine(string.Format("\t{0}: {1} improvement{2}.", file.Name, fileimprovements, fileimprovements == 1 ? "" : "s"));
                 }
-
-                totalRegressions += fileRegressions;
-                if (fileRegressions > 0)
-                {
-                    regressionsReportBuilder.AppendLine(string.Format("\t{0}: {1} regression{2}.", file.Name, fileRegressions, fileRegressions == 1 ? "" : "s"));
-                }
+                totalImprovements += fileimprovements;
             }
+
 
             var finalMessage = new StringBuilder();
 
@@ -140,6 +129,44 @@ namespace swept
 
             return finalMessage.ToString();
         }
+
+        public int TattleFileRegression(FileChange file, StringBuilder builder)
+        {
+            int deltaCount = 0;
+            var deltaDetails = "";
+            foreach (var rule in file.Rules)
+            {
+                int ruleDeltaCount = rule.Is - rule.Was;
+                if (ruleDeltaCount < 1) continue;
+
+                deltaCount += ruleDeltaCount;
+                deltaDetails += TattleRuleDelta(rule);
+            }
+            if (deltaCount == 0) return 0;
+
+            string fileHeader = TattleDelta("\t" + file.Name, deltaCount);
+            builder.Append(fileHeader);
+            builder.Append(deltaDetails);
+
+            return deltaCount;
+        }
+
+        public string TattleRuleDelta(RuleChange rule)
+        {
+            return TattleDelta(rule.ID, rule.Is - rule.Was);
+        }
+
+        public string TattleDelta(string label, int delta)
+        {
+            if (delta == 0) return string.Empty;
+
+            bool isRegression = delta > 0;
+            string changeDirection = isRegression ? "regression" : "improvement";
+            delta = Math.Abs(delta);
+            string plurality = delta == 1 ? "" : "s";
+            return string.Format("{0}:  {1} {2}{3}.{4}", label, delta, changeDirection, plurality, Environment.NewLine);
+        }
+
     }
 
 
