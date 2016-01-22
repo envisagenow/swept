@@ -185,19 +185,19 @@ namespace swept.Tests
         }
 
         [Test]
-        public void args_tattle_defaults_false()
+        public void args_foresight_defaults_false()
         {
             var argsText = new string[] { "library:c:\\foo.library" };
             var args = new Arguments(argsText, _storage);
-            Assert.That(args.Tattle, Is.False);
+            Assert.That(args.Foresight, Is.False);
         }
 
         [Test]
-        public void args_tattle_when_requested()
+        public void args_foresight_when_requested()
         {
-            var argsText = new string[] { "tattle", "library:c:\\foo.library" };
+            var argsText = new string[] { "foresight", "library:c:\\foo.library" };
             var args = new Arguments(argsText, _storage);
-            Assert.That(args.Tattle, Is.True);
+            Assert.That(args.Foresight, Is.True);
         }
 
         [Test]

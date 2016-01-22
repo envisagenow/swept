@@ -7,7 +7,7 @@ using NUnit.Framework;
 namespace swept.Tests
 {
     [TestFixture]
-    public class RunChangesTattle_tests
+    public class Foresight_tests
     {
         private BuildLibrarian _librarian;
         private MockStorageAdapter _storage;
@@ -22,17 +22,17 @@ namespace swept.Tests
         }
 
         [Test]
-        public void Empty_RunChanges_produces_no_change_tattle()
+        public void Empty_RunChanges_foretells_no_change()
         {
             var changes = new RunChanges();
 
-            var tattle = changes.TattleReport();
+            var report = changes.ForesightReport();
 
-            Assert.That(tattle, Is.EqualTo("No changes from baseline.  You're free to commit, boss!"));
+            Assert.That(report, Is.EqualTo("No changes from baseline.  You're free to commit, boss!"));
         }
 
-        [TestCase(2, 2, "1 improvement.")]
-        [TestCase(22, 20, "3 improvements.")]
+        [TestCase(8, 7, "2 improvements.")] //  One improvement in another rule plus one here = two.
+        [TestCase(3, 3, "1 improvement.")]  //  Swept is not Gollum.
         public void Improvements_accumulate_across_all_rules(int was, int isNow, string expectedMessage)
         {
             var changes = new RunChanges();
@@ -42,9 +42,9 @@ namespace swept.Tests
             file.Rules.Add(new RuleChange { ID = "second", Was = was, Is = isNow });
             changes.Files.Add(file);
 
-            var tattle = changes.TattleReport();
+            var report = changes.ForesightReport();
 
-            Assert.That(tattle, Is.StringStarting(expectedMessage));
+            Assert.That(report, Is.StringStarting(expectedMessage));
         }
 
         [Test]
@@ -65,32 +65,33 @@ namespace swept.Tests
             boring.Rules.Add(new RuleChange { ID = "first", Was = 1, Is = 1 });
             changes.Files.Add(boring);
 
-            var tattle = changes.TattleReport();
+            var report = changes.ForesightReport();
 
             string expectedMessage = "28 improvements.\n\tfoo.cs: 27 improvements.\r\n\tfla.cs: 1 improvement.\r\n";
 
-            Assert.That(tattle, Is.EqualTo(expectedMessage));
+            Assert.That(report, Is.EqualTo(expectedMessage));
         }
 
 
         [TestCase(13, 14, "1 regression.")]
         [TestCase(10, 14, "4 regressions.")]
+        [TestCase(10, 10, "72 improvements.")]  //  No regressions text when no regressions exist.
         public void AnyRegression_Produces_warning_even_when_Improvements_exist(int was, int isNow, string regressionCountMessage)
         {
             var changes = new RunChanges();
 
             FileChange file = new FileChange { Changed = true };
             file.Rules.Add(new RuleChange { Was = was, Is = isNow });
-            file.Rules.Add(new RuleChange { Was = 88, Is = 22 });
+            file.Rules.Add(new RuleChange { Was = 28, Is = 22 });   //  Some improvements inside the regressing file
             changes.Files.Add(file);
 
             FileChange improvedFile = new FileChange { Name = "improved.cs", Changed = true };
-            improvedFile.Rules.Add(new RuleChange { Was = 88, Is = 22 });
+            improvedFile.Rules.Add(new RuleChange { Was = 88, Is = 22 });   //  Some improvements in another file
             changes.Files.Add(improvedFile);
 
-            var tattle = changes.TattleReport();
+            var report = changes.ForesightReport();
 
-            Assert.That(tattle, Is.StringStarting(regressionCountMessage));
+            Assert.That(report, Is.StringStarting(regressionCountMessage));
         }
 
 
@@ -112,11 +113,11 @@ namespace swept.Tests
             boring.Rules.Add(new RuleChange { ID = "first", Was = 1, Is = 1 });
             changes.Files.Add(boring);
 
-            var tattle = changes.TattleReport();
+            var report = changes.ForesightReport();
 
-            string expectedMessage = "6 regressions.\n\tfoo.cs:  5 regressions.\r\n\tfla.cs:  1 regression.\r\n";
+            string expectedMessage = "6 regressions.\n\tfoo.cs:  5 regressions.\r\nfirst:  1 regression.\r\nsecond:  4 regressions.\r\n\tfla.cs:  1 regression.\r\nfirst:  1 regression.\r\n";
 
-            Assert.That(tattle, Is.EqualTo(expectedMessage));
+            Assert.That(report, Is.EqualTo(expectedMessage));
         }
 
 
@@ -130,12 +131,12 @@ namespace swept.Tests
             changes.Files.Add(file);
 
             StringBuilder sb = new StringBuilder();
-            int regressions = changes.TattleFileRegression(file, sb);
+            int regressions = changes.ForesightFileRegression(file, sb);
 
             Assert.That(regressions, Is.EqualTo(4));
             Assert.That(sb.ToString(), Is.EqualTo("\tfoo.cs:  4 regressions.\r\nrule12:  4 regressions.\r\n"));
- 
         }
+
 
         [TestCase("second", 18, 22, "second:  4 regressions.\r\n")]
         [TestCase("impRule66", 18, 3, "impRule66:  15 improvements.\r\n")]
@@ -145,40 +146,9 @@ namespace swept.Tests
             var changes = new RunChanges();
             var regressingRule = new RuleChange { ID = id, Was = wasCount, Is = isCount };
 
-            var tattle = changes.TattleRuleDelta(regressingRule);
+            var foresight = changes.ForesightRuleDelta(regressingRule);
 
-            Assert.That(tattle, Is.EqualTo(expected));
+            Assert.That(foresight, Is.EqualTo(expected));
         }
-
-        //  Details are coming in, so the expected result is growing rapidly.  Fix test after stabilizing.
-        //[Test]
-        //public void Mixed_results_report_regresssions_first()
-        //{
-        //    var changes = new RunChanges();
-
-        //    FileChange mixed = new FileChange { Name = "foo.cs", Changed = true };
-        //    mixed.Rules.Add(new RuleChange { ID = "first", Was = 14, Is = 15 });
-        //    mixed.Rules.Add(new RuleChange { ID = "second", Was = 18, Is = 12 });
-        //    changes.Files.Add(mixed);
-
-        //    FileChange worse = new FileChange { Name = "fla.cs", Changed = true };
-        //    worse.Rules.Add(new RuleChange { ID = "first", Was = 1, Is = 2 });
-        //    changes.Files.Add(worse);
-
-        //    FileChange boring = new FileChange { Name = "oga.cs", Changed = true };
-        //    boring.Rules.Add(new RuleChange { ID = "first", Was = 1, Is = 1 });
-        //    changes.Files.Add(boring);
-
-        //    FileChange better = new FileChange { Name = "lol.cs", Changed = true };
-        //    better.Rules.Add(new RuleChange { ID = "second", Was = 31, Is = 6 });
-        //    changes.Files.Add(better);
-
-        //    var tattle = changes.TattleReport();
-
-        //    string expectedMessage = "2 regressions.\n\tfoo.cs:  1 regression.\r\n\tfla.cs:  1 regression.\r\n\r\n31 improvements.\n\tfoo.cs: 6 improvements.\r\n\tlol.cs: 25 improvements.\r\n";
-
-        //    Assert.That(tattle, Is.EqualTo(expectedMessage));
-        //}
-
     }
 }

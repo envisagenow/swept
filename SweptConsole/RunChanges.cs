@@ -1,5 +1,5 @@
 //  Swept:  Software Enhancement Progress Tracking.
-//  Copyright (c) 2009, 2015 Jason Cole and Envisage Technologies Corp.
+//  Copyright (c) 2009, 2016 Jason Cole and Envisage Technologies Corp.
 //  This software is open source, MIT license.  See the file LICENSE for details.
 using System;
 using System.Linq;
@@ -76,13 +76,13 @@ namespace swept
             return matchingFile;
         }
 
-        public string TattleReport()
+        public string ForesightReport()
         {
             int totalRegressions = 0;
             StringBuilder regressionsReportBuilder = new StringBuilder();
             foreach (var file in Files.Where(f => f.Changed))
             {
-                totalRegressions += TattleFileRegression(file, regressionsReportBuilder);
+                totalRegressions += ForesightFileRegression(file, regressionsReportBuilder);
             }
 
 
@@ -130,7 +130,7 @@ namespace swept
             return finalMessage.ToString();
         }
 
-        public int TattleFileRegression(FileChange file, StringBuilder builder)
+        public int ForesightFileRegression(FileChange file, StringBuilder builder)
         {
             int deltaCount = 0;
             var deltaDetails = "";
@@ -140,23 +140,23 @@ namespace swept
                 if (ruleDeltaCount < 1) continue;
 
                 deltaCount += ruleDeltaCount;
-                deltaDetails += TattleRuleDelta(rule);
+                deltaDetails += ForesightRuleDelta(rule);
             }
             if (deltaCount == 0) return 0;
 
-            string fileHeader = TattleDelta("\t" + file.Name, deltaCount);
+            string fileHeader = ForesightDelta("\t" + file.Name, deltaCount);
             builder.Append(fileHeader);
             builder.Append(deltaDetails);
 
             return deltaCount;
         }
 
-        public string TattleRuleDelta(RuleChange rule)
+        public string ForesightRuleDelta(RuleChange rule)
         {
-            return TattleDelta(rule.ID, rule.Is - rule.Was);
+            return ForesightDelta(rule.ID, rule.Is - rule.Was);
         }
 
-        public string TattleDelta(string label, int delta)
+        public string ForesightDelta(string label, int delta)
         {
             if (delta == 0) return string.Empty;
 

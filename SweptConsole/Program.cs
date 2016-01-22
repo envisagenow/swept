@@ -144,9 +144,9 @@ namespace swept
                 }
 
                 ////future goal code:
-                //if (arguments.Tattle)
+                //if (arguments.Foresight)
                 //{
-                //    Console.Out.Write(newChanges.TattleReport());
+                //    Console.Out.Write(newChanges.ForesightReport());
                 //}
             }
 
