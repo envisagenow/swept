@@ -53,7 +53,16 @@ namespace swept
 
         public IEnumerable<string> GetFilesInFolder(string folder)
         {
-            return Directory.GetFiles(folder);
+
+            try
+            {
+                return Directory.GetFiles( GetCWD() + folder);
+            }
+            catch (Exception ex)
+            {
+                string message = string.Format ( "Couldn't get files from folder [{0}].  {1}", folder, ex.Message);
+                throw new Exception(message, ex);
+            }
         }
 
         public IEnumerable<string> GetFilesInFolder(string folder, string searchPattern)
@@ -63,7 +72,7 @@ namespace swept
 
         public IEnumerable<string> GetFoldersInFolder(string folder)
         {
-            return Directory.GetDirectories(folder);
+            return Directory.GetDirectories(GetCWD() + folder);
         }
 
         public SourceFile LoadFile(string fileName)

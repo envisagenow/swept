@@ -144,7 +144,7 @@ namespace swept
             }
             if (deltaCount == 0) return 0;
 
-            string fileHeader = ForesightDelta("\t" + file.Name, deltaCount);
+            string fileHeader = ForesightDeltaLine("\t" + file.Name, deltaCount);
             builder.Append(fileHeader);
             builder.Append(deltaDetails);
 
@@ -153,10 +153,11 @@ namespace swept
 
         public string ForesightRuleDelta(RuleChange rule)
         {
-            return ForesightDelta(rule.ID, rule.Is - rule.Was);
+            string description = Rules.Single(r => r.ID == rule.ID).Description;
+            return ForesightDeltaLine(rule.ID, rule.Is - rule.Was, description);
         }
 
-        public string ForesightDelta(string label, int delta)
+        public string ForesightDeltaLine(string label, int delta, string description = "")
         {
             if (delta == 0) return string.Empty;
 
@@ -164,7 +165,12 @@ namespace swept
             string changeDirection = isRegression ? "regression" : "improvement";
             delta = Math.Abs(delta);
             string plurality = delta == 1 ? "" : "s";
-            return string.Format("{0}:  {1} {2}{3}.{4}", label, delta, changeDirection, plurality, Environment.NewLine);
+            
+            var decoratedDescription = string.IsNullOrEmpty(description)
+                ? ""
+                : string.Format(" ({0})", description);
+
+            return string.Format("{0}{1}:  {2} {3}{4}.{5}", label, decoratedDescription, delta, changeDirection, plurality, Environment.NewLine);
         }
 
     }

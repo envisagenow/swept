@@ -149,7 +149,8 @@ This software is open source, MIT license.  See the file LICENSE for details.
                     case "trackhistory":
                         TrackHistory = true;
                         continue;
-                    case "foretell":
+
+                    case "foresight":
                         Foresight = true;
                         continue;
 

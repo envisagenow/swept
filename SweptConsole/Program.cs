@@ -113,11 +113,14 @@ namespace swept
             // TODO:  Untangle these
             buildLibrarian.WriteRunHistory(runHistory);
 
-            using (TextWriter detailWriter = storage.GetOutputWriter(arguments.DetailsFileName))
+            if (!arguments.Foresight)
             {
-                detailWriter.Write(header);
-                detailWriter.WriteLine(detailReport);
-                detailWriter.Flush();
+                using (TextWriter detailWriter = storage.GetOutputWriter(arguments.DetailsFileName))
+                {
+                    detailWriter.Write(header);
+                    detailWriter.WriteLine(detailReport);
+                    detailWriter.Flush();
+                }
             }
 
             if (!string.IsNullOrEmpty(arguments.DeltaFileName))
@@ -133,6 +136,7 @@ namespace swept
             {
                 RunChanges oldChanges = buildLibrarian.ReadRunChanges();
                 RunChanges newChanges = oldChanges.InitializeNextRun();
+                newChanges.Rules = oldChanges.Rules;
 
                 newChanges.AddRuleTasks(ruleTasks, startTime);
 
@@ -143,11 +147,11 @@ namespace swept
                     writer.Flush();
                 }
 
-                ////future goal code:
-                //if (arguments.Foresight)
-                //{
-                //    Console.Out.Write(newChanges.ForesightReport());
-                //}
+                if (arguments.Foresight)
+                {
+                    string foresight = newChanges.ForesightReport();
+                    Console.Out.Write(foresight);
+                }
             }
 
             if (!newRunEntry.Passed)
