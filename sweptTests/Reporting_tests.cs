@@ -126,7 +126,11 @@ namespace swept.Tests
         [Test]
         public void Tags_appear_correctly_in_header()
         {
-            string report = new BuildReporter().ReportDetailsXml(new RuleTasks(), 20, 3, new List<string> { "ice-cream", "social" });
+            string report = new BuildReporter().ReportDetailsXml(new RuleTasks(), 20, 3, 
+                new List<Pick> { 
+                    new Pick { Domain = PickDomain.Tag, Value = "ice-cream" }, 
+                    new Pick { Domain = PickDomain.Tag, Value = "social" }
+                });
 
             string expectedReport = "<SweptBuildReport RunNumber=\"3\" TotalTasks=\"0\" TotalFlags=\"0\" Tags=\"ice-cream social\" />";
             Assert.That(report, Is.EqualTo(expectedReport));

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Xml.Linq;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace swept.Tests
 {
@@ -90,12 +91,13 @@ namespace swept.Tests
             return new List<string>();
         }
 
-
-        // TODO: I should actually use the searchPattern in this overload
         public IEnumerable<string> GetFilesInFolder(string folder, string searchPattern)
         {
+            //  approximate and good enough for our tests.
+            var regex = searchPattern.Replace("*", ".*");
+
             if (FilesInFolder.ContainsKey(folder))
-                return FilesInFolder[folder];
+                return FilesInFolder[folder].Where(f => Regex.IsMatch(f, regex));
 
             return new List<string>();
         }

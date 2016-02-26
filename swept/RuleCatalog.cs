@@ -1,5 +1,5 @@
 //  Swept:  Software Enhancement Progress Tracking.
-//  Copyright (c) 2009, 2012 Jason Cole and Envisage Technologies Corp.
+//  Copyright (c) 2009, 2016 Jason Cole and Envisage Technologies Corp.
 //  This software is open source, MIT license.  See the file LICENSE for details.
 using System;
 using System.Linq;
@@ -42,10 +42,11 @@ namespace swept
             return filteredRules;
         }
 
-        public List<Rule> FilterRulesOnTags(List<Rule> rulesToFilter, List<string> tags)
+        public List<Rule> FilterRulesOnPicks(List<Rule> rulesToFilter, List<Pick> picks)
         {
-            var includedTags = tags.Where(t => !t.StartsWith("-"));
-            var excludedTags = tags.Where(t => t.StartsWith("-")).Select(s => s.Substring(1));  // Strip leading "-"
+            //FIX: only checking Tags so far.
+            var includedTags = picks.Where(t => !t.Value.StartsWith("-")).Select(p => p.Value);
+            var excludedTags = picks.Where(t => t.Value.StartsWith("-")).Select(s => s.Value.Substring(1));  // Strip leading "-"
 
             var goodRules = rulesToFilter;
             if (includedTags.Any())

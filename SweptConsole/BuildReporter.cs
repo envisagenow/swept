@@ -26,7 +26,7 @@ namespace swept
                 return "Swept check failed!\r\n";
         }
 
-        public string ReportDetailsXml(RuleTasks ruleTasks, int limit, int runNumber, List<string> tags)
+        public string ReportDetailsXml(RuleTasks ruleTasks, int limit, int runNumber, List<Pick> picks)
         {
             XDocument report_doc = new XDocument();
             XElement report_root = new XElement("SweptBuildReport");
@@ -86,10 +86,14 @@ namespace swept
             report_root.Add(new XAttribute("RunNumber", runNumber));
             report_root.Add(new XAttribute("TotalTasks", totalTasks));
             report_root.Add(new XAttribute("TotalFlags", 0));
-            if (tags !=null && tags.Any()) 
+
+            if (picks != null) 
             {
-                report_root.Add(new XAttribute("Tags", string.Join(" ", tags.ToArray())));
+                var tags = picks.Where(p => p.Domain == PickDomain.Tag).Select(p => p.Value);
+                if (tags.Any())
+                    report_root.Add(new XAttribute("Tags", string.Join(" ", tags.ToArray())));
             }
+
             report_doc.Add(report_root);
             return report_doc.ToString();
         }

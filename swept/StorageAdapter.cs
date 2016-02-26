@@ -56,7 +56,7 @@ namespace swept
 
             try
             {
-                return Directory.GetFiles( GetCWD() + folder);
+                return Directory.GetFiles(Path.Combine(GetCWD(), folder));
             }
             catch (Exception ex)
             {
@@ -72,7 +72,7 @@ namespace swept
 
         public IEnumerable<string> GetFoldersInFolder(string folder)
         {
-            return Directory.GetDirectories(GetCWD() + folder);
+            return Directory.GetDirectories(Path.Combine(GetCWD(), folder));
         }
 
         public SourceFile LoadFile(string fileName)

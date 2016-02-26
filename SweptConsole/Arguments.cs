@@ -11,7 +11,6 @@ using System.Text.RegularExpressions;
 namespace swept
 {
     public enum PipeSource { None, SVN }
-
     public class Arguments
     {
         public bool BreakOnDeltaDrop { get; private set; }
@@ -20,7 +19,7 @@ namespace swept
         public bool Check { get; private set; }
         public string DeltaFileName { get; private set; }
         public string DetailsFileName { get; private set; }
-        public IEnumerable<string> Exclude { get; private set; }
+        public List<string> Exclude { get; private set; }
         public string Folder { get; private set; }
         public string History { get; private set; }
         public string Library { get; private set; }
@@ -33,8 +32,7 @@ namespace swept
         public string AdHoc { get; set; }
         public string Show { get; set; }
         public int FileCountLimit { get; set; }
-        public List<string> Tags { get; set; }
-
+        public List<Pick> Picks { get; set; }
 
         public bool AreInvalid
         {
@@ -52,23 +50,25 @@ namespace swept
 === Arguments ===
 help:      Or 'h' or 'usage', gets this message.
 version:   Prints a brief version and credits message, and terminates.
-show:      Show all rules ('show'), or a wildcarded subset ('show:ETC*').
+
+show:[pattern]  Show all rules ('show'), or a wildcarded subset ('show:ETC*').
 rule:      Followed by an ID, runs that rule from the catalog.
-adhoc:     Followed by a literal rule, runs it in the current directory.
 tag:       Run rules with a tag, or don't run rules with tag:-that_tag
+adhoc:     Followed by a literal rule, runs it in the current directory.
+
 check:     Show a simple text list of failures instead of a detail xml.
 
 folder:    The top folder Swept will sweep for rule violations.
     If no folder is specified, the current working directory is used.
-library:   The Swept rules library file to check against.
-    If no library is specified, Swept checks the top folder for a file 
-    named '*.swept.library'.  If it finds exactly one, Swept will use it.
-    Swept needs a library to run.
+library:   The Swept rules library file to check the files against.
+    If no library is specified, Swept checks the top folder for files 
+    matching '*.swept.library'.  If it finds exactly one, Swept uses it.
+    Swept needs a rules library to run, unless an adhoc argument is given.
 exclude:   A comma-separated list of folders Swept will not search
     within.  All folders below these are also excluded.
-debug:     Triggers a Debugger.Launch(), then continues as usual.
+debug      Triggers a Debugger.Launch(), then continues as usual.
 
-details:   The filename to get the detailed XML of the run.
+details:   Save the detailed XML of the run with the following filename.
 history:   The filename to read and update to maintain the delta.
     If no history file is specified, the library filename is used,
     with the '.library' suffix replaced with '.history'.
@@ -78,14 +78,6 @@ delta:     The filename to get the delta of red-line rules.
     If no delta file is specified, a text delta report goes to the console.
 change:    The filename to get the change list since changes were
     last tracked.
-
----
-Features below are Not Yet Implemented:
-*** files:  A comma-separated list of files to search for violations.  Not
-      compatible with the 'folder' argument.
-    pipe:svn:  Indicates that standard In will contain the output from an
-      svn status command, and these files will be used as the file list
-      to search for violations.
 ";
             }
         }
@@ -95,7 +87,7 @@ Features below are Not Yet Implemented:
             get
             {
                 return @"Swept version 0.4, Swept core version 0.6.0
-Copyright (c) 2009, 2015 Jason Cole and Envisage Technologies Corp.
+Copyright (c) 2009, 2016 Jason Cole and Envisage Technologies Corp.
 This software is open source, MIT license.  See the file LICENSE for details.
 ";
             }
@@ -120,7 +112,7 @@ This software is open source, MIT license.  See the file LICENSE for details.
             TrackHistory = false;
             Foresight = false;
             FileCountLimit = -1;
-            Tags = new List<string>();
+            Picks = new List<Pick>();
 
             List<string> exceptionMessages = new List<string>();
 
@@ -171,7 +163,7 @@ This software is open source, MIT license.  See the file LICENSE for details.
                     }
                 }
 
-                // The 2 stops the split from fragmenting values with colons (filepaths).
+                // The 2 stops the split from fragmenting values containing colons (filepaths).
                 string[] tokens = s.Split(new char[] { ':' }, 2);
 
                 switch (tokens[0].ToLower())
@@ -194,7 +186,7 @@ This software is open source, MIT license.  See the file LICENSE for details.
                     break;
 
                 case "exclude":
-                    Exclude = tokens[1].Split(',');
+                    Exclude.AddRange( tokens[1].Split(',') );
                     break;
 
                 case "filelimit":
@@ -207,6 +199,10 @@ This software is open source, MIT license.  See the file LICENSE for details.
 
                 case "history":
                     History = tokens[1];
+                    break;
+
+                case "id":
+                    Picks.Add(new Pick { Domain = PickDomain.ID, Value = tokens[1] });
                     break;
 
                 case "library":
@@ -234,7 +230,7 @@ This software is open source, MIT license.  See the file LICENSE for details.
                     break;
 
                 case "tag":
-                    Tags.Add(tokens[1]);
+                    Picks.Add(new Pick { Domain = PickDomain.Tag, Value = tokens[1] });
                     break;
 
                 case null:
@@ -286,12 +282,12 @@ This software is open source, MIT license.  See the file LICENSE for details.
                     History = candidates.First();
                 else if (candidateCount == 0)
                 {
-                    History = Regex.Replace(Library, "library", "history");
+                    History = Regex.Replace(Library, @"\.library$", ".history");
                     if (History == Library)
                         History = Library + ".history";
                 }
             }
-
+            
             if (!string.IsNullOrEmpty(Folder) && Folder[1] == ':')
             {
                 if (!string.IsNullOrEmpty(Library) && Library[1] != ':')

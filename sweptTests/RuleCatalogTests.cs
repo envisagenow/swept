@@ -123,7 +123,7 @@ namespace swept.Tests
         [Test]
         public void Filter_out_rules_on_single_tag()
         {
-            List<string> tags = new List<string> { "dev" };
+            var tags = new List<Pick> { new Pick { Domain = PickDomain.Tag, Value = "dev" } };
 
             Rule a_17 = new Rule { ID = "biz_cares", Tags = new List<string> { "weasels", "devotees", "biz" } };
             Rule b_52 = new Rule { ID = "dev_cares", Tags = new List<string> { "weasels", "dev" } };
@@ -136,7 +136,7 @@ namespace swept.Tests
             List<Rule> actualRules;
             List<Rule> expectedRules = new List<Rule> { b_52 };
 
-            actualRules = cat.FilterRulesOnTags(cat._rules, tags);
+            actualRules = cat.FilterRulesOnPicks(cat._rules, tags);
 
 
             Assert.That(actualRules.All(r => expectedRules.Contains(r)));
@@ -146,7 +146,7 @@ namespace swept.Tests
         [Test]
         public void Filter_out_rules_on_several_tags()
         {
-            List<string> tags = new List<string> { "biz", "cust" };
+            var tags = new List<Pick> { new Pick { Domain = PickDomain.Tag, Value = "biz" }, new Pick { Domain = PickDomain.Tag, Value = "cust" }};
 
             Rule a_17 = new Rule { ID = "biz_cares", Tags = new List<string> { "weasels", "devotees", "biz" } };
             Rule a_99 = new Rule { ID = "cust_cares", Tags = new List<string> { "weasels", "devotees", "cust" } };
@@ -161,7 +161,7 @@ namespace swept.Tests
             List<Rule> actualRules;
             List<Rule> expectedRules = new List<Rule> { a_17, a_99 };
 
-            actualRules = cat.FilterRulesOnTags(cat._rules, tags);
+            actualRules = cat.FilterRulesOnPicks(cat._rules, tags);
 
             Assert.That(actualRules.All(r => expectedRules.Contains(r)));
             Assert.That(expectedRules.All(r => actualRules.Contains(r)));
@@ -171,7 +171,7 @@ namespace swept.Tests
         [Test]
         public void Filter_out_rules_on_single_excluded_tag()
         {
-            List<string> tags = new List<string> { "-dev" };
+            var tags = new List<Pick> { new Pick { Domain = PickDomain.Tag, Value = "-dev" } };
 
             Rule a_17 = new Rule { ID = "biz_cares", Tags = new List<string> { "weasels", "devotees", "biz" } };
             Rule b_52 = new Rule { ID = "dev_cares", Tags = new List<string> { "weasels", "dev" } };
@@ -184,7 +184,7 @@ namespace swept.Tests
             List<Rule> actualRules;
             List<Rule> expectedRules = new List<Rule> { a_17 };
 
-            actualRules = cat.FilterRulesOnTags(cat._rules, tags);
+            actualRules = cat.FilterRulesOnPicks(cat._rules, tags);
 
 
             Assert.That(actualRules.All(r => expectedRules.Contains(r)));
@@ -192,11 +192,10 @@ namespace swept.Tests
         }
 
 
-
         [Test]
         public void Filter_out_rules_on_includes_and_excludes()
         {
-            List<string> tags = new List<string> { "dev", "-devotees" };
+            var tags = new List<Pick> { new Pick { Domain = PickDomain.Tag, Value = "dev" }, new Pick { Domain = PickDomain.Tag, Value = "-devotees" } };
 
             Rule a_17 = new Rule { ID = "biz_cares", Tags = new List<string> { "weasels", "devotees", "biz" } };
             Rule a_99 = new Rule { ID = "dev_cares", Tags = new List<string> { "weasels", "devotees", "dev" } };
@@ -213,7 +212,7 @@ namespace swept.Tests
             List<Rule> actualRules;
             List<Rule> expectedRules = new List<Rule> { b_52, c_64 };
 
-            actualRules = cat.FilterRulesOnTags(cat._rules, tags);
+            actualRules = cat.FilterRulesOnPicks(cat._rules, tags);
 
 
             Assert.That(actualRules.All(r => expectedRules.Contains(r)));

@@ -1,5 +1,5 @@
 ﻿//  Swept:  Software Enhancement Progress Tracking.
-//  Copyright (c) 2009, 2013 Jason Cole and Envisage Technologies Corp.
+//  Copyright (c) 2009, 2016 Jason Cole and Envisage Technologies Corp.
 //  This software is open source, MIT license.  See the file LICENSE for details.
 using System;
 using System.Linq;
@@ -133,11 +133,11 @@ namespace swept
             return tasks;
         }
 
-        public List<Rule> GetSortedRules(List<string> specifiedRules, List<string> tags, string adHocRule = "")
+        public List<Rule> GetSortedRules(List<string> specifiedRules, List<Pick> picks, string adHocRule = "")
         {
             var rules = _ruleCatalog.GetSortedRules(specifiedRules, adHocRule);
             
-            var filteredRules = _ruleCatalog.FilterRulesOnTags(rules, tags);
+            var filteredRules = _ruleCatalog.FilterRulesOnPicks(rules, picks);
 
             return filteredRules;
         }

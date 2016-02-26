@@ -74,6 +74,7 @@
     <Compile Include="DSL\OpIntersectionNode.cs" />
     <Compile Include="DSL\ISubquery.cs" />
     <Compile Include="Extensions.cs" />
+    <Compile Include="Pick.cs" />
     <Compile Include="Rule.cs" />
     <Compile Include="RuleCatalog.cs" />
     <Compile Include="ClauseMatch.cs" />

@@ -64,7 +64,7 @@ namespace swept
                 return 0;
             }
 
-            var rules = librarian.GetSortedRules(arguments.SpecifiedRules, arguments.Tags, arguments.AdHoc);
+            var rules = librarian.GetSortedRules(arguments.SpecifiedRules, arguments.Picks, arguments.AdHoc);
 
             arguments.FillExclusions(librarian.GetExcludedFolders());
 
@@ -108,7 +108,7 @@ namespace swept
             if (arguments.Check)
                 detailReport = reporter.ReportCheckResult(failures);
             else
-                detailReport = reporter.ReportDetailsXml(ruleTasks, arguments.FileCountLimit, runHistory.NextRunNumber, arguments.Tags);
+                detailReport = reporter.ReportDetailsXml(ruleTasks, arguments.FileCountLimit, runHistory.NextRunNumber, arguments.Picks);
 
             // TODO:  Untangle these
             buildLibrarian.WriteRunHistory(runHistory);

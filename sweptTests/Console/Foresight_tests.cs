@@ -22,7 +22,7 @@ namespace swept.Tests
         }
 
         [Test]
-        public void Empty_RunChanges_foretells_no_change()
+        public void Empty_RunChanges_reports_no_change()
         {
             var changes = new RunChanges();
 
@@ -146,14 +146,14 @@ namespace swept.Tests
 
         [TestCase("second", "The next most important thing", 18, 22, "second (The next most important thing):  4 regressions.\r\n")]
         [TestCase("impRule66", "IMPORTANT!", 18, 3, "impRule66 (IMPORTANT!):  15 improvements.\r\n")]
-        [TestCase("dull", "Blah blah blah", 4, 4, "")]
-        public void Rule_reports_its_delta(string id, string description, int wasCount, int isCount, string expected)
+        [TestCase("dull", "Blah blah blah", 4, 4, "")]  //  No changee, no talkee.
+        public void RunChanges_reports_changes_per_rule_based_on_sign_of_delta(string id, string description, int wasCount, int isCount, string expected)
         {
             var changes = new RunChanges();
-            var regressingRule = new RuleChange { ID = id, Was = wasCount, Is = isCount };
+            var possiblyChangedRule = new RuleChange { ID = id, Was = wasCount, Is = isCount };
             changes.Rules.Add(new RuleDescription { Description = description, ID = id });
 
-            var foresight = changes.ForesightRuleDelta(regressingRule);
+            var foresight = changes.ForesightRuleDelta(possiblyChangedRule);
 
             Assert.That(foresight, Is.EqualTo(expected));
         }

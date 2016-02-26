@@ -56,7 +56,7 @@ namespace swept.Tests
             _ruleCatalog.Add(a_17);
             _ruleCatalog.Add(a_177);
 
-            var rules = Horace.GetSortedRules(new List<string>(), new List<string>());
+            var rules = Horace.GetSortedRules(new List<string>(), new List<Pick>());
             Assert.That(rules[0].ID, Is.EqualTo(a_17.ID));
             Assert.That(rules[1].ID, Is.EqualTo(a_177.ID));
             Assert.That(rules[2].ID, Is.EqualTo(b_52.ID));
@@ -73,7 +73,7 @@ namespace swept.Tests
             _ruleCatalog._rules.Clear();
             _ruleCatalog.Add(a_17);
 
-            var rules = Horace.GetSortedRules(new List<string>(), new List<string>(), "^CSharp and @'Test' and ~'ExpectedException'");
+            var rules = Horace.GetSortedRules(new List<string>(), new List<Pick>(), "^CSharp and @'Test' and ~'ExpectedException'");
             Assert.That(rules[0].ID, Is.EqualTo("adHoc_01"));
             Assert.That(rules[0].Description, Is.EqualTo("^CSharp and @'Test' and ~'ExpectedException'"));
         }
@@ -90,7 +90,7 @@ namespace swept.Tests
             _ruleCatalog.Add(a_17);
             _ruleCatalog.Add(a_177);
 
-            var rules = Horace.GetSortedRules(new List<string>(), new List<string>());
+            var rules = Horace.GetSortedRules(new List<string>(), new List<Pick>());
             Assert.That(rules[0].ID, Is.EqualTo(a_17.ID));
             Assert.That(rules[1].ID, Is.EqualTo(a_177.ID));
             Assert.That(rules[2].ID, Is.EqualTo(b_52.ID));
