@@ -28,15 +28,14 @@ namespace swept.Tests
         }
 
         [Test]
-        public void Run_with_no_prior_passing_run_shows_empty_delta()
+        public void Run_with_no_prior_passing_run_shows_valid_delta()
         {
             RunEntry priorButFailingEntry = new RunEntry { Passed = false };
 
-            //  This rule result causes this run to fail.  Deltas only apply between the
-            //  RunHistory.PriorPassingRun and the current run in hand.
+            //  This rule result causes this run to fail.  Delta still shows up!
             priorButFailingEntry.AddResult( "917", true, RuleFailOn.Any, 0, 3, "No document.all() allowed" );
 
-            //  So even though this rule passes, it will not lead to a delta showing with
+            //  This rule passes, so it will lead to a delta showing with
             //  next run's improvement on this rule.
             priorButFailingEntry.AddResult( "644", true, RuleFailOn.Increase, 40, 40, "Replace WR framework with DF" );
 
@@ -48,7 +47,10 @@ namespace swept.Tests
 
             XElement delta = _inspector.GenerateDeltaXml( entry );
 
-            Assert.That( delta.Descendants().Count(), Is.EqualTo( 0 ) );
+            var fix644 = delta.Descendants().ElementAt(1);
+
+            Assert.That(fix644.Attribute("Threshold").Value, Is.EqualTo("10"));
+            Assert.That(fix644.Attribute("Outcome").Value, Is.EqualTo("Fix"));
         }
 
         [Test]

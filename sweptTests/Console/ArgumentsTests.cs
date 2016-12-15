@@ -190,9 +190,9 @@ namespace swept.Tests
             Assert.That( ex.Message, Is.EqualTo( String.Format( "Too many libraries (*.swept.library) found in folder [{0}].", searchFolder ) ) );
         }
 
-        [TestCase("foo.custom.library.name", "foo.custom.history.name")]
-        [TestCase("foo.custom.odd", "foo.custom.odd.history")]
-        public void History_arg_will_default_to_name_from_library_name(string libName, string expectedHistoryName)
+        [TestCase("foo.custom.library.name", "foo.custom.history.name", "replaces 'library' with 'history' when 'library' present")]
+        [TestCase("foo.custom.odd", "foo.custom.odd.history", "appends 'history' when 'library' not present")]
+        public void Default_History_filename_derived_from_library_filename(string libName, string expectedHistoryName, string expectation)
         {
             var searchFolder = "f:\\work\\search_here";
             var foundFiles = new List<string>();
@@ -201,7 +201,7 @@ namespace swept.Tests
             var argsText = new string[] { "library:" + libName, "folder:" + searchFolder };
             var args = new Arguments(argsText, _storage);
 
-            Assert.That(args.History, Is.EqualTo(Path.Combine(searchFolder, expectedHistoryName)));
+            Assert.That(args.History, Is.EqualTo(Path.Combine(searchFolder, expectedHistoryName)), expectation);
         }
 
         [Test]
@@ -212,7 +212,7 @@ namespace swept.Tests
             var foundFiles = new List<string> { foundHistory };
             _storage.FilesInFolder[searchFolder] = foundFiles;
 
-            var argsText = new string[] { "folder:" + searchFolder };
+            var argsText = new string[] { "folder:" + searchFolder, "library:foo.library" };
             var args = new Arguments(argsText, _storage);
 
             Assert.That(args.History, Is.EqualTo(Path.Combine(searchFolder, foundHistory)));

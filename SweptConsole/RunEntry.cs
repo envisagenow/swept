@@ -36,5 +36,18 @@ namespace swept
 
             return result;
         }
+
+        public int WaterlineFor( string ruleID )
+        {
+            if (RuleResults.ContainsKey(ruleID))
+            {
+                var ruleResult = RuleResults[ruleID];
+                return Math.Min(ruleResult.TaskCount, ruleResult.Threshold);
+            }
+
+            return RunHistory.HighWaterLine;
+        }
+
+
     }
 }

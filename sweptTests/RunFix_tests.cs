@@ -63,5 +63,99 @@ namespace swept.Tests
             Assert.That( fixes.Count(), Is.EqualTo( 1 ) );
         }
 
+        [Test]
+        public void No_fix_from_equal_or_higher_task_count()
+        {
+            var oldEntry = _inspector.GenerateEntry( DateTime.Now.AddDays( -2 ), _ruleTasks );
+            var fooResult = new RuleResult {
+                FailOn = RuleFailOn.Increase,
+                ID = "No more Foo!",
+                Threshold = 221,
+                TaskCount = 221,
+                Breaking = false
+            };
+            var barResult = new RuleResult {
+                FailOn = RuleFailOn.Increase,
+                ID = "Less bar!",
+                Threshold = 41,
+                TaskCount = 41,
+                Breaking = false
+            };
+            oldEntry.RuleResults.Add( "No more Foo!", fooResult );
+            oldEntry.RuleResults.Add( "Less bar!", barResult );
+            _runHistory.AddEntry( oldEntry );
+            Assert.That( _runHistory.LatestPassingRun, Is.SameAs( oldEntry ) );
+
+
+            var newEntry = _inspector.GenerateEntry( DateTime.Now, new RuleTasks() );
+            var newFooResult = new RuleResult {
+                FailOn = RuleFailOn.Increase,
+                ID = "No more Foo!",
+                Threshold = 221,
+                TaskCount = 291,
+                Breaking = false
+            };
+            var newBarResult = new RuleResult {
+                FailOn = RuleFailOn.Increase,
+                ID = "Less bar!",
+                Threshold = 41,
+                TaskCount = 41,
+                Breaking = false
+            };
+            newEntry.RuleResults.Add( "No more Foo!", newFooResult );
+            newEntry.RuleResults.Add( "Less bar!", newBarResult );
+
+            var fixes = _inspector.ListRunFixIDs( newEntry );
+            Assert.That( fixes.Count(), Is.EqualTo( 0 ) );
+        }
+
+        [Test]
+        public void Fixes_scored_even_if_no_passing_run_exists()
+        {
+            var oldEntry = _inspector.GenerateEntry( DateTime.Now.AddDays( -2 ), _ruleTasks );
+            oldEntry.Passed = false;
+            var fooResult = new RuleResult {
+                FailOn = RuleFailOn.Increase,
+                ID = "No more Foo!",
+                Threshold = 221,
+                TaskCount = 250,
+                Breaking = false
+            };
+            var barResult = new RuleResult {
+                FailOn = RuleFailOn.Increase,
+                ID = "Less bar!",
+                Threshold = 41,
+                TaskCount = 41,
+                Breaking = false
+            };
+            oldEntry.RuleResults.Add( "No more Foo!", fooResult );
+            oldEntry.RuleResults.Add( "Less bar!", barResult );
+            _runHistory.AddEntry( oldEntry );
+            Assert.That( _runHistory.LatestPassingRun, Is.Null );
+
+
+            var newEntry = _inspector.GenerateEntry( DateTime.Now, new RuleTasks() );
+            var newFooResult = new RuleResult {
+                FailOn = RuleFailOn.Increase,
+                ID = "No more Foo!",
+                Threshold = 221,
+                TaskCount = 200,
+                Breaking = false
+            };
+            var newBarResult = new RuleResult {
+                FailOn = RuleFailOn.Increase,
+                ID = "Less bar!",
+                Threshold = 41,
+                TaskCount = 41,
+                Breaking = false
+            };
+            newEntry.RuleResults.Add( "No more Foo!", newFooResult );
+            newEntry.RuleResults.Add( "Less bar!", newBarResult );
+
+            var fixes = _inspector.ListRunFixIDs( newEntry );
+            Assert.That( fixes.Count(), Is.EqualTo( 1 ) );
+        }
+
+
     }
 }

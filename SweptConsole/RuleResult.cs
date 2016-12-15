@@ -11,7 +11,35 @@ namespace swept
     {
         public string ID;
         public int TaskCount;
-        public int Threshold;
+        private int _threshold = -1;
+        public int Threshold
+        {
+            get
+            {
+                if (_threshold < 0)
+                {
+                    switch (FailOn)
+                    {
+                    case RuleFailOn.Any:
+                        _threshold = 0;
+                        break;
+
+                    case RuleFailOn.None:
+                    case RuleFailOn.Increase:
+                        _threshold = int.MaxValue;
+                        break;
+
+                    default:
+                        throw new Exception(String.Format("Don't know the case [{0}].", FailOn));
+                    }
+                }
+                return _threshold;
+            }
+            set
+            {
+                _threshold = value;
+            }
+        }
         public bool Breaking;
         public RuleFailOn FailOn;
         public string Description;

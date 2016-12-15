@@ -97,7 +97,7 @@ namespace swept.Tests
             var regex = searchPattern.Replace("*", ".*");
 
             if (FilesInFolder.ContainsKey(folder))
-                return FilesInFolder[folder].Where(f => Regex.IsMatch(f, regex));
+                return FilesInFolder[folder].Where(f => Regex.IsMatch(f, regex, RegexOptions.IgnoreCase));
 
             return new List<string>();
         }

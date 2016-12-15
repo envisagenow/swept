@@ -68,6 +68,8 @@ exclude:   A comma-separated list of folders Swept will not search
     within.  All folders below these are also excluded.
 debug      Triggers a Debugger.Launch(), then continues as usual.
 
+change:    The filename to get the change list since changes were
+    last tracked.
 details:   Save the detailed XML of the run with the following filename.
 history:   The filename to read and update to maintain the delta.
     If no history file is specified, the library filename is used,
@@ -76,8 +78,8 @@ trackhistory:  Turns on tracking of result history.  Needed to generate
     the delta report.
 delta:     The filename to get the delta of red-line rules.
     If no delta file is specified, a text delta report goes to the console.
-change:    The filename to get the change list since changes were
-    last tracked.
+breakondeltadrop:   If any rule has more violations than earlier by
+    count of the delta report, Swept exits with return code 10.
 ";
             }
         }
@@ -282,7 +284,7 @@ This software is open source, MIT license.  See the file LICENSE for details.
                     History = candidates.First();
                 else if (candidateCount == 0)
                 {
-                    History = Regex.Replace(Library, @"\.library$", ".history");
+                    History = Regex.Replace(Library, @"\.library", ".history");
                     if (History == Library)
                         History = Library + ".history";
                 }

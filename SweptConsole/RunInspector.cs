@@ -44,7 +44,7 @@ namespace swept
             foreach (var keyRule in ruleTasks.Keys)
             {
                 int violations = ruleTasks[keyRule].CountTasks();
-                entry.RuleResults[keyRule.ID] = GetRuleResult( keyRule, violations, _runHistory.LatestPassingRun );
+                entry.RuleResults[keyRule.ID] = GetRuleResult( keyRule, violations, _runHistory.Runs.LastOrDefault() );
             }
 
             return entry;
@@ -86,6 +86,7 @@ namespace swept
             if (failIDs.Count == 0)
             {
                 var fixIDs = ListRunFixIDs( entry );
+                var latestRun = _runHistory.Runs.LastOrDefault();
                 foreach (var fixID in fixIDs)
                 {
                     if (entry.RuleResults.ContainsKey( fixID ))
@@ -95,7 +96,7 @@ namespace swept
                     }
                     else
                     {
-                        var result = _runHistory.LatestPassingRun.RuleResults[fixID];
+                        var result = latestRun.RuleResults[fixID];
                         doc.Add( NewDeltaItem( fixID, result.Threshold, 0, "Gone", result.Description ) );
                     }
                 }
@@ -165,12 +166,13 @@ namespace swept
         public List<string> ListRunFixIDs( RunEntry currentEntry )
         {
             var fixes = new List<string>();
-            if (_runHistory.LatestPassingRun == null)
+            var latestRun = _runHistory.Runs.LastOrDefault();
+            if (latestRun == null)
                 return fixes;
 
-            foreach (string priorRuleID in _runHistory.LatestPassingRun.RuleResults.Keys)
+            foreach (string priorRuleID in latestRun.RuleResults.Keys)
             {
-                int waterline = _runHistory.WaterlineFor( priorRuleID );
+                int waterline = latestRun.WaterlineFor( priorRuleID );
                 if (currentEntry.RuleResults.ContainsKey( priorRuleID ))
                 {
                     RuleResult result = currentEntry.RuleResults[priorRuleID];
@@ -186,17 +188,17 @@ namespace swept
             return fixes;
         }
 
-        public RuleResult GetRuleResult( Rule ruleUnderTest, int violations, RunEntry priorSuccess )
+        public RuleResult GetRuleResult( Rule ruleUnderTest, int violations, RunEntry priorRun )
         {
             int priorViolations = 0;
 
             if (ruleUnderTest.FailOn == RuleFailOn.Increase)
                 priorViolations = violations;
 
-            if (priorSuccess != null)
+            if (priorRun != null)
             {
-                if (priorSuccess.RuleResults.ContainsKey( ruleUnderTest.ID ))
-                    priorViolations = priorSuccess.RuleResults[ruleUnderTest.ID].TaskCount;
+                if (priorRun.RuleResults.ContainsKey( ruleUnderTest.ID ))
+                    priorViolations = priorRun.RuleResults[ruleUnderTest.ID].TaskCount;
             }
 
             bool breaking = false;

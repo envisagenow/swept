@@ -58,36 +58,23 @@ namespace swept
 
         public int GetThreshold( Rule rule )
         {
-            int threshold;
-            switch (rule.FailOn)
+            if (rule.FailOn == RuleFailOn.Increase)
+                return WaterlineFor(rule.ID);
+            else
             {
-            case RuleFailOn.Any:
-                threshold = 0;
-                break;
-
-            case RuleFailOn.Increase:
-                threshold = WaterlineFor( rule.ID );
-                break;
-
-            case RuleFailOn.None:
-                threshold = int.MaxValue;
-                break;
-
-            default:
-                System.Reflection.MethodBase thisMethod = new System.Diagnostics.StackTrace().GetFrame( 0 ).GetMethod();
-                throw new Exception( String.Format( "Swept does not know how to check a failure mode of [{0}].  Please extend {1}.{2}.",
-                    rule.FailOn, thisMethod.ReflectedType, thisMethod.Name ) );
+                // TODO: somewhat smelly!
+                var result = new RuleResult { FailOn = rule.FailOn };
+                return result.Threshold;
             }
-
-            return threshold;
         }
 
         public int WaterlineFor( string ruleID )
         {
-            if (LatestPassingRun != null && LatestPassingRun.RuleResults.ContainsKey( ruleID ))
-                return LatestPassingRun.RuleResults[ruleID].TaskCount;
-
-            return HighWaterLine;
+            RunEntry targetRun = Runs.LastOrDefault();
+            if (targetRun == null)
+               return HighWaterLine;
+            
+            return targetRun.WaterlineFor(ruleID);
         }
 
     }
