@@ -73,6 +73,7 @@
   <ItemGroup>
     <Compile Include="Console\AddRuleTasksToRunChanges_tests.cs" />
     <Compile Include="Console\BuildNewRunChanges_tests.cs" />
+    <Compile Include="Console\RunChangesDigest_tests.cs" />
     <Compile Include="Console\RunChangesIO_tests.cs" />
     <Compile Include="Console\Foresight_tests.cs" />
     <Compile Include="RuleResult_tests.cs" />

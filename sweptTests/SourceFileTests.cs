@@ -94,6 +94,36 @@ cxxxxxxxxx
             Assert.That( foo.LineIndices[1], Is.EqualTo( 10 ) );
         }
 
+
+        [TestCase("q:\\archives\\project")]
+        [TestCase("q:\\archives\\project\\")]
+        public void StorageAdapter_can_stem_filename(string folder)
+        {
+            var expected = "subfolder\\file.cs";
+
+            var fullPath = "q:\\archives\\project\\subfolder\\file.cs";
+
+            var adapter = new StorageAdapter();
+            var stemmedName = adapter.StemFileName(folder, fullPath);
+
+            Assert.That(stemmedName, Is.EqualTo(expected));
+        }
+
+        [TestCase("q:\\archives\\reject\\")]
+        [TestCase("q:\\archives\\project\\")]
+        public void Stemming_throws_when_file_not_in_folder(string folder)
+        {
+            var fullPath = "q:\\archives\\happy_land\\subfolder\\file.cs";
+
+            var adapter = new StorageAdapter();
+            
+            var ex = Assert.Throws<Exception>( () => adapter.StemFileName(folder, fullPath) );
+
+            Assert.That(ex.Message, Is.StringContaining(folder));
+            Assert.That(ex.Message, Is.StringContaining("File not found in folder"));
+            Assert.That(ex.Message, Is.StringContaining(fullPath));
+            Assert.That(ex.Message, Is.StringContaining("File name is"));
+        }
     }
 }
 

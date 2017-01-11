@@ -173,6 +173,19 @@ namespace swept
             return string.Format("{0}{1}:  {2} {3}{4}.{5}", label, decoratedDescription, delta, changeDirection, plurality, Environment.NewLine);
         }
 
+
+
+        public RunChanges CreateDigest()
+        {
+            var digest = new RunChanges();
+
+            digest.RunNumber = RunNumber;    
+
+            return digest;
+        }
+
+
+
     }
 
 

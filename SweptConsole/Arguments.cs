@@ -250,6 +250,7 @@ This software is open source, MIT license.  See the file LICENSE for details.
 
             if (!Folder.Contains(storageAdapter.GetCWD()))
             {
+                //  Path.Combine will ignore CWD if Folder is an absolute path
                 Folder = Path.Combine(storageAdapter.GetCWD(), Folder);
             }
 

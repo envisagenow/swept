@@ -72,7 +72,7 @@ namespace swept
             var files = traverser.GetFilesToScan();
 
 
-            var gatherer = new Gatherer(rules, files, storage);
+            var gatherer = new Gatherer(rules, arguments.Folder, files, storage);
             var ruleTasks = gatherer.GetRuleTasks();
 
             var buildLibrarian = new BuildLibrarian(arguments, storage);

@@ -24,7 +24,7 @@ namespace swept.Tests
             List<Rule> changes = new List<Rule>();
             List<string> files = new List<string>();
             MockStorageAdapter storage = new MockStorageAdapter();
-            Gatherer gatherer = new Gatherer( changes, files, storage );
+            Gatherer gatherer = new Gatherer( changes, "", files, storage );
 
             var results = gatherer.GetRuleTasks();
 
@@ -38,7 +38,7 @@ namespace swept.Tests
             List<Rule> changes = new List<Rule>();
             List<string> files = new List<string> { FILEONE };
             MockStorageAdapter storage = new MockStorageAdapter();
-            Gatherer gatherer = new Gatherer( changes, files, storage );
+            Gatherer gatherer = new Gatherer( changes, "", files, storage );
 
             var results = gatherer.GetRuleTasks();
 
@@ -51,7 +51,7 @@ namespace swept.Tests
         {
             List<string> files = new List<string> { FILEONE, FILETWO };
             MockStorageAdapter storage = new MockStorageAdapter();
-            Gatherer gatherer = new Gatherer( new List<Rule>(), files, storage );
+            Gatherer gatherer = new Gatherer( new List<Rule>(), "", files, storage );
 
             var results = gatherer.GetRuleTasks();
 
@@ -68,7 +68,7 @@ namespace swept.Tests
             changes.Add( change );
             List<string> files = new List<string> { FILEONE };
             MockStorageAdapter storage = new MockStorageAdapter();
-            Gatherer gatherer = new Gatherer( changes, files, storage );
+            Gatherer gatherer = new Gatherer( changes, "", files, storage );
 
             Dictionary<Rule, FileTasks> results = gatherer.GetRuleTasks();
 
@@ -89,7 +89,7 @@ namespace swept.Tests
             changes.Add( change );
             List<string> files = new List<string> { FILEONE, FILETWO };
             MockStorageAdapter storage = new MockStorageAdapter();
-            Gatherer gatherer = new Gatherer( changes, files, storage );
+            Gatherer gatherer = new Gatherer( changes, "", files, storage );
 
             var results = gatherer.GetRuleTasks();
 
@@ -109,7 +109,7 @@ namespace swept.Tests
             List<string> files = new List<string> { FILEONE, FILETWO };
             MockStorageAdapter storage = new MockStorageAdapter();
             storage.FilesToFailToLoad.Add( FILEONE );
-            Gatherer gatherer = new Gatherer( rules, files, storage );
+            Gatherer gatherer = new Gatherer( rules, "", files, storage );
 
             var results = gatherer.GetRuleTasks();
 
@@ -131,7 +131,7 @@ namespace swept.Tests
             changes.Add( change2 );
             List<string> files = new List<string> { FILEONE };
             MockStorageAdapter storage = new MockStorageAdapter();
-            Gatherer gatherer = new Gatherer( changes, files, storage );
+            Gatherer gatherer = new Gatherer( changes, "", files, storage );
 
             var results = gatherer.GetRuleTasks();
 

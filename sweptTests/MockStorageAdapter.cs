@@ -113,7 +113,7 @@ namespace swept.Tests
             return new List<string>();
         }
 
-        public SourceFile LoadFile(string fileName)
+        public SourceFile LoadFile(string folder, string fileName)
         {
             if (!_loadedFiles.Contains(fileName))
             {

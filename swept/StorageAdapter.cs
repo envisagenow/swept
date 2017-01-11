@@ -60,7 +60,7 @@ namespace swept
             }
             catch (Exception ex)
             {
-                string message = string.Format ( "Couldn't get files from folder [{0}].  {1}", folder, ex.Message);
+                string message = string.Format("Couldn't get files from folder [{0}].  {1}", folder, ex.Message);
                 throw new Exception(message, ex);
             }
         }
@@ -75,11 +75,25 @@ namespace swept
             return Directory.GetDirectories(Path.Combine(GetCWD(), folder));
         }
 
-        public SourceFile LoadFile(string fileName)
+        public string StemFileName(string folder, string fileName)
+        {
+            if (!folder.EndsWith("\\"))
+                folder += "\\";
+
+            // Option for stemmed name
+            if (fileName.Contains(folder))
+                return fileName.Replace(folder, "");
+
+            string message = "File not found in folder " + folder + ". File name is " + fileName + ". Please review.";
+            throw new Exception(message);
+        }
+
+        public SourceFile LoadFile(string folder, string fileName)
         {
             try
             {
-                SourceFile file = new SourceFile(fileName);
+                string stemmedName = StemFileName(folder, fileName);
+                SourceFile file = new SourceFile(stemmedName);
                 file.Content = File.ReadAllText(fileName);
                 return file;
             }
