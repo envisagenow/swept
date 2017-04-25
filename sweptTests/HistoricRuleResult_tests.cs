@@ -236,15 +236,42 @@ namespace swept.Tests
             DateTime nowish = DateTime.Now;
 
             RunHistory runHistory = new RunHistory();
-            runHistory.AddEntry( new RunEntry { Number = 887, Passed = true } );
+            runHistory.AddEntry(new RunEntry
+            {
+                Number = 886,
+                Passed = true,
+                RuleResults = new Dictionary<string, RuleResult>
+                {
+                    {"basic entry", new RuleResult { TaskCount = 9 } }
+                }
+            });
+            runHistory.AddEntry(new RunEntry
+            {
+                Number = 887,
+                Passed = true,
+                RuleResults = new Dictionary<string, RuleResult>
+                {
+                    {"basic entry", new RuleResult { TaskCount = 6 } }
+                }
+            });
+            runHistory.AddEntry(new RunEntry
+            {
+                Number = 888,
+                Passed = false,
+                RuleResults = new Dictionary<string, RuleResult>
+                {
+                    {"basic entry", new RuleResult { TaskCount = 7 } }
+                }
+            });
 
             var inspector = new RunInspector( runHistory );
             RunEntry entry = inspector.GenerateEntry( nowish, ruleTasks );
 
-            Assert.That( entry.Number, Is.EqualTo( 888 ) );
+            Assert.That( entry.Number, Is.EqualTo( 889 ) );
             Assert.That( entry.Date, Is.EqualTo( nowish ) );
             Assert.That( entry.RuleResults.Count, Is.EqualTo( 1 ) );
             Assert.That( entry.RuleResults[rule.ID].TaskCount, Is.EqualTo( 7 ) );
+            Assert.That( entry.RuleResults[rule.ID].Threshold, Is.EqualTo( 6 ) );
             Assert.That( entry.Passed, Is.False );
         }
     }

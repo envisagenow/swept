@@ -44,7 +44,7 @@ namespace swept
             foreach (var keyRule in ruleTasks.Keys)
             {
                 int violations = ruleTasks[keyRule].CountTasks();
-                entry.RuleResults[keyRule.ID] = GetRuleResult( keyRule, violations, _runHistory.Runs.LastOrDefault() );
+                entry.RuleResults[keyRule.ID] = GetRuleResult( keyRule, violations, _runHistory.Runs.LastOrDefault(r => r.Passed) );
             }
 
             return entry;
