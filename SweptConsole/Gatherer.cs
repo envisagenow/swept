@@ -4,6 +4,7 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace swept
 {
@@ -24,23 +25,31 @@ namespace swept
 
         public RuleTasks GetRuleTasks()
         {
+            var files = _files.ToList();
             var result = new RuleTasks();
-
-            foreach (string fileName in _files)
-            {
-                var sourceFile = _storage.LoadFile( _folder, fileName );
-                if (sourceFile == null) continue;
-
-                foreach (var rule in _rules.OrderBy( c => c.ID ))
+            var orderedRules = _rules.OrderBy(c => c.ID).ToArray();
+            Parallel.ForEach(
+                files,
+                fileName =>
                 {
-                    var match = rule.Subquery.Answer( sourceFile );
+                    var sourceFile = _storage.LoadFile( _folder, fileName );
+                    if (sourceFile != null)
+                    {
+                        for (var i = 0; i < orderedRules.Length; i++)
+                        {
+                            var rule = orderedRules[i];
+                            var match = rule.Subquery.Answer(sourceFile);
 
-                    if (!result.ContainsKey( rule ))
-                        result[rule] = new FileTasks();
+                            lock (result)
+                            {
+                                if (!result.ContainsKey(rule))
+                                    result[rule] = new FileTasks();
 
-                    result[rule][sourceFile] = match;
-                }
-            }
+                                result[rule][sourceFile] = match;
+                            }
+                        }
+                    }
+                });
 
             return result;
         }

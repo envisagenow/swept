@@ -10,6 +10,9 @@ namespace swept
 {
     public class SourceFile
     {
+        // TODO: consider another place for this
+        private static Dictionary<string, FileLanguage> ExtensionLanguage;
+
         public SourceFile( string name )
         {
             Name = name;
@@ -18,6 +21,28 @@ namespace swept
 
             string fileExt = Path.GetExtension( name );
             Language = SourceFile.FileLanguageFromExtension( fileExt );
+        }
+
+        static SourceFile()
+        {
+            ExtensionLanguage = new Dictionary<string, FileLanguage>();
+            ExtensionLanguage[".cs"] = FileLanguage.CSharp;
+            ExtensionLanguage[".css"] = FileLanguage.CSS;
+            ExtensionLanguage[".html"] = FileLanguage.HTML;
+            ExtensionLanguage[".aspx"] = FileLanguage.HTML;
+            ExtensionLanguage[".ascx"] = FileLanguage.HTML;
+            ExtensionLanguage[".asp"] = FileLanguage.HTML;
+            ExtensionLanguage[".htm"] = FileLanguage.HTML;
+            ExtensionLanguage[".master"] = FileLanguage.HTML;
+            ExtensionLanguage[".js"] = FileLanguage.JavaScript;
+            ExtensionLanguage[".csproj"] = FileLanguage.Project;
+            ExtensionLanguage[".vbproj"] = FileLanguage.Project;
+            ExtensionLanguage[".sln"] = FileLanguage.Solution;
+            ExtensionLanguage[".vb"] = FileLanguage.VBNet;
+            ExtensionLanguage[".xsl"] = FileLanguage.XSLT;
+            ExtensionLanguage[".xslt"] = FileLanguage.XSLT;
+            ExtensionLanguage[".sql"] = FileLanguage.SQL;
+            ExtensionLanguage[""] = FileLanguage.None;
         }
 
         public FileLanguage Language;
@@ -32,37 +57,6 @@ namespace swept
             {
                 _content = value;
                 LineIndices = GetLineIndices( _content );
-            }
-        }
-
-        // TODO: consider another place for this
-        private static Dictionary<string, FileLanguage> extensionLanguage;
-        private static Dictionary<string, FileLanguage> ExtensionLanguage
-        {
-            get
-            {
-                if( extensionLanguage == null )
-                {
-                    extensionLanguage = new Dictionary<string, FileLanguage>();
-                    extensionLanguage[".cs"] = FileLanguage.CSharp;
-                    extensionLanguage[".css"] = FileLanguage.CSS;
-                    extensionLanguage[".html"] = FileLanguage.HTML;
-                    extensionLanguage[".aspx"] = FileLanguage.HTML;
-                    extensionLanguage[".ascx"] = FileLanguage.HTML;
-                    extensionLanguage[".asp"] = FileLanguage.HTML;
-                    extensionLanguage[".htm"] = FileLanguage.HTML;
-                    extensionLanguage[".master"] = FileLanguage.HTML;
-                    extensionLanguage[".js"] = FileLanguage.JavaScript;
-                    extensionLanguage[".csproj"] = FileLanguage.Project;
-                    extensionLanguage[".vbproj"] = FileLanguage.Project;
-                    extensionLanguage[".sln"] = FileLanguage.Solution;
-                    extensionLanguage[".vb"] = FileLanguage.VBNet;
-                    extensionLanguage[".xsl"] = FileLanguage.XSLT;
-                    extensionLanguage[".xslt"] = FileLanguage.XSLT;
-                    extensionLanguage[".sql"] = FileLanguage.SQL;
-                    extensionLanguage[""] = FileLanguage.None;
-                }
-                return extensionLanguage;
             }
         }
 
