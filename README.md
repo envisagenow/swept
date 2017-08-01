@@ -1,5 +1,5 @@
 # swept
-Sofware Enhancement Progress Tracking
+Software Enhancement Progress Tracking
 
 Larger projects fall apart under the weight of their own unfinished improvements. Swept helps developers track where refactorings or improvements have been made and where they are still missing.
 
