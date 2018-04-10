@@ -13,26 +13,27 @@ namespace swept
     public enum PipeSource { None, SVN }
     public class Arguments
     {
-        public bool BreakOnDeltaDrop { get; private set; }
-        public string ChangeSet { get; private set; }
-        public string ChangesFileName { get; private set; }
-        public bool Check { get; private set; }
-        public string DeltaFileName { get; private set; }
-        public string DetailsFileName { get; private set; }
+        public bool BreakOnDeltaDrop { get; }
+        public string ChangeSet { get; }
+        public string ChangesFileName { get; }
+        public bool Check { get; }
+        public bool TeamCity { get; }
+        public string DeltaFileName { get; }
+        public string DetailsFileName { get; }
         public List<string> Exclude { get; private set; }
-        public string Folder { get; private set; }
-        public string History { get; private set; }
-        public string Library { get; private set; }
-        public PipeSource PipeSource { get; private set; }
-        public bool ShowVersion { get; private set; }
-        public bool ShowUsage { get; private set; }
-        public List<string> SpecifiedRules { get; private set; }
-        public bool TrackHistory { get; set; }
-        public bool Foresight { get; set; }
-        public string AdHoc { get; set; }
-        public string Show { get; set; }
-        public int FileCountLimit { get; set; }
-        public List<Pick> Picks { get; set; }
+        public string Folder { get; }
+        public string History { get; }
+        public string Library { get; }
+        public PipeSource PipeSource { get; }
+        public bool ShowVersion { get; }
+        public bool ShowUsage { get; }
+        public List<string> SpecifiedRules { get; }
+        public bool TrackHistory { get; }
+        public bool Foresight { get; }
+        public string AdHoc { get; }
+        public string Show { get; }
+        public int FileCountLimit { get; }
+        public List<Pick> Picks { get; }
 
         public bool AreInvalid
         {
@@ -113,6 +114,7 @@ This software is open source, MIT license.  See the file LICENSE for details.
             SpecifiedRules = new List<string>();
             TrackHistory = false;
             Foresight = false;
+            TeamCity = false;
             FileCountLimit = -1;
             Picks = new List<Pick>();
 
@@ -150,6 +152,10 @@ This software is open source, MIT license.  See the file LICENSE for details.
 
                     case "show":
                         Show = "*";
+                        continue;
+
+                    case "teamcity":
+                        TeamCity = true;
                         continue;
 
                     case "usage":

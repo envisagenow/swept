@@ -4,6 +4,7 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.IO;
 using System.Xml.Linq;
 
 namespace swept
@@ -69,6 +70,36 @@ namespace swept
             }
 
             return result;
+        }
+
+        public void GenerateDeltaTeamCityOutput(TextWriter standardOutput, RunEntry entry)
+        {
+            var failIDs = ListRunFailureIDs( entry );
+
+            foreach (var failID in failIDs)
+            {
+                var result = entry.RuleResults[failID];
+                standardOutput.WriteLine($"Swept Failure [{result.ID}] {result.Description}: has {result.TaskCount} task(s), increased from {result.Threshold}");
+            }
+
+            if (failIDs.Count == 0)
+            {
+                var fixIDs = ListRunFixIDs( entry );
+                var latestRun = _runHistory.Runs.LastOrDefault();
+                foreach (var fixID in fixIDs)
+                {
+                    if (entry.RuleResults.ContainsKey( fixID ))
+                    {
+                        var result = entry.RuleResults[fixID];
+                        standardOutput.WriteLine($"Swept Fix [{result.ID}] {result.Description}: has {result.TaskCount} task(s), decreased from {result.Threshold}");
+                    }
+                    else
+                    {
+                        var result = latestRun.RuleResults[fixID];
+                        standardOutput.WriteLine($"Swept Fix [{result.ID}] {result.Description}: has 0 tasks, decreased from {result.Threshold}");
+                    }
+                }
+            }
         }
 
         public XElement GenerateDeltaXml( RunEntry entry )

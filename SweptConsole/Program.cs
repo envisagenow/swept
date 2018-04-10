@@ -58,7 +58,7 @@ namespace swept
                 foreach (var rule in rulesToShow)
                     Console.Out.WriteLine(rule);
 
-                if (rulesToShow.Count() == 0)
+                if (rulesToShow.Count == 0)
                     Console.Out.WriteLine("No rules match [{0}].", arguments.Show);
 
                 return 0;
@@ -97,6 +97,11 @@ namespace swept
                 //  Todo:  Alter the GenerateDeltaXml to presume the NewRunEntry is in the history,
                 //  and create a .LatestPassingBefore( newRunEntry ).
                 //  That untangles this special sequencing and the report moves down.
+            }
+
+            if (arguments.TeamCity)
+            {
+                inspector.GenerateDeltaTeamCityOutput(Console.Out, newRunEntry);
             }
 
             runHistory.AddEntry(newRunEntry);
