@@ -18,7 +18,7 @@ namespace swept
         {
             _storageAdapter = storageAdapter;
             _args = args;
-            WhiteListPattern = @"\.(cs|as[chmp]x|x?html?|master|xml|txt|xslt?|css|js|vb|(cs|vb)proj|sln|sql|catalog|swf|fla|ocx|jar|java|applet)$";
+            WhiteListPattern = @"\.(cs|as[chmp]x|x?html?|master|xml|txt|xslt?|css|js|vb|(cs|vb)proj|sln|sql|catalog|swf|fla|ocx|jar|java|applet|template)$";
             currentWorkingDirectory = _storageAdapter.GetCWD();
         }
 
