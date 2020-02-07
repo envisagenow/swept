@@ -12,6 +12,7 @@ namespace swept
         None,
         CSharp,
         HTML,
+        CSHTML,
         JavaScript,
         CSS,
         XSLT,

@@ -27,7 +27,9 @@ namespace swept
         {
             ExtensionLanguage = new Dictionary<string, FileLanguage>();
             ExtensionLanguage[".cs"] = FileLanguage.CSharp;
+            ExtensionLanguage[".cshtml"] = FileLanguage.CSHTML;
             ExtensionLanguage[".css"] = FileLanguage.CSS;
+            ExtensionLanguage[".scss"] = FileLanguage.CSS;
             ExtensionLanguage[".html"] = FileLanguage.HTML;
             ExtensionLanguage[".aspx"] = FileLanguage.HTML;
             ExtensionLanguage[".ascx"] = FileLanguage.HTML;
